@@ -1,0 +1,8 @@
+{
+    "autoload": {
+        "psr-4": {
+            "LicenseManager\\Classes\\": "includes/classes/",
+            "LicenseManager\\Classes\\Lists\\": "includes/classes/lists"
+        }
+    }
+}
