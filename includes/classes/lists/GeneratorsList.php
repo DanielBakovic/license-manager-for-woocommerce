@@ -32,7 +32,7 @@ class GeneratorsList extends \WP_List_Table
         $table = $wpdb->prefix . \LicenseManager\Classes\Setup::GENERATORS_TABLE_NAME;
         $sql = "SELECT * FROM $table";
         $sql .= ' ORDER BY ' . (empty($_REQUEST['orderby']) ? 'id' : esc_sql($_REQUEST['orderby']));
-        $sql .= ' '          . (empty($_REQUEST['order'])   ? 'DESC'  : esc_sql($_REQUEST['order']));
+        $sql .= ' '          . (empty($_REQUEST['order'])   ? 'ASC'  : esc_sql($_REQUEST['order']));
         $sql .= " LIMIT $per_page";
         $sql .= ' OFFSET ' . ($page_number - 1) * $per_page;
 
@@ -57,6 +57,18 @@ class GeneratorsList extends \WP_List_Table
     public function column_default($item, $column_name)
     {
         switch ($column_name) {
+            case 'charset':
+                ($item['charset'] == '') ? $charset = '' : $charset = sprintf('<code>%s</code>', $item['charset']);
+                return $charset;
+            case 'separator':
+                ($item['separator'] == '') ? $separator = '' : $separator = sprintf('<code>%s</code>', $item['separator']);
+                return $separator;
+            case 'prefix':
+                ($item['prefix'] == '') ? $prefix = '' : $prefix = sprintf('<code>%s</code>', $item['prefix']);
+                return $prefix;
+            case 'suffix':
+                ($item['suffix'] == '') ? $suffix = '' : $suffix = sprintf('<code>%s</code>', $item['suffix']);
+                return $suffix;
             default:
                 return $item[$column_name];
         }
@@ -90,11 +102,18 @@ class GeneratorsList extends \WP_List_Table
     {
         $sortable_columns = array(
             'id' => array('id', true),
-            'product_id' => array('product_id', true),
-            'order_id' => array('order_id', true)
         );
 
         return $sortable_columns;
+    }
+
+    public function get_bulk_actions()
+    {
+        $actions = [
+            'delete' => __('Delete', 'lima'),
+        ];
+
+        return $actions;
     }
 
     public function prepare_items()

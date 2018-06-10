@@ -25,9 +25,10 @@ class AdminMenus
      */
     public function __construct()
     {
-        // Add menus.
+        // Main menu.
         add_action('admin_menu', array($this, 'main'), 9);
         add_action('admin_menu', array($this, 'generators'), 9);
+        add_action('admin_menu', array($this, 'generatorsAdd'), 9);
         add_action('admin_menu', array($this, 'settings'), 9);
 
         // WooCommerce related
@@ -65,6 +66,18 @@ class AdminMenus
             'manage_options',
             'license_manager_generators',
             array($this, 'generatorsPage')
+        );
+    }
+
+    public function generatorsAdd()
+    {
+        add_submenu_page(
+            'license_manager',
+            __('Add New Generator', 'lima'),
+            __('Add New Generator', 'lima'),
+            'manage_options',
+            'license_manager_generators_add',
+            array($this, 'generatorsAddPage')
         );
     }
 
@@ -144,5 +157,10 @@ class AdminMenus
         );
 
         include LM_TEMPLATES_DIR . 'generators_page.php';
+    }
+
+    public function generatorsAddPage()
+    {
+        include LM_TEMPLATES_DIR . 'generators_add_new.php';
     }
 }

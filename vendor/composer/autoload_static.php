@@ -27,8 +27,10 @@ class ComposerStaticInita298e9646be03aea3d38b4fef4ffde56
 
     public static $classMap = array (
         'LicenseManager\\Classes\\AdminMenus' => __DIR__ . '/../..' . '/includes/classes/AdminMenus.php',
+        'LicenseManager\\Classes\\Database' => __DIR__ . '/../..' . '/includes/classes/Database.php',
+        'LicenseManager\\Classes\\FormHandler' => __DIR__ . '/../..' . '/includes/classes/FormHandler.php',
         'LicenseManager\\Classes\\Generator' => __DIR__ . '/../..' . '/includes/classes/Generator.php',
-        'LicenseManager\\Classes\\Lists\\CampaignList' => __DIR__ . '/../..' . '/includes/classes/lists/CampaignsList.php',
+        'LicenseManager\\Classes\\Lists\\GeneratorsList' => __DIR__ . '/../..' . '/includes/classes/lists/GeneratorsList.php',
         'LicenseManager\\Classes\\Lists\\LicensesList' => __DIR__ . '/../..' . '/includes/classes/lists/LicensesList.php',
         'LicenseManager\\Classes\\Logger' => __DIR__ . '/../..' . '/includes/classes/Logger.php',
         'LicenseManager\\Classes\\Main' => __DIR__ . '/../..' . '/includes/classes/Main.php',

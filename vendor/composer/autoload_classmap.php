@@ -7,8 +7,10 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'LicenseManager\\Classes\\AdminMenus' => $baseDir . '/includes/classes/AdminMenus.php',
+    'LicenseManager\\Classes\\Database' => $baseDir . '/includes/classes/Database.php',
+    'LicenseManager\\Classes\\FormHandler' => $baseDir . '/includes/classes/FormHandler.php',
     'LicenseManager\\Classes\\Generator' => $baseDir . '/includes/classes/Generator.php',
-    'LicenseManager\\Classes\\Lists\\CampaignList' => $baseDir . '/includes/classes/lists/CampaignsList.php',
+    'LicenseManager\\Classes\\Lists\\GeneratorsList' => $baseDir . '/includes/classes/lists/GeneratorsList.php',
     'LicenseManager\\Classes\\Lists\\LicensesList' => $baseDir . '/includes/classes/lists/LicensesList.php',
     'LicenseManager\\Classes\\Logger' => $baseDir . '/includes/classes/Logger.php',
     'LicenseManager\\Classes\\Main' => $baseDir . '/includes/classes/Main.php',

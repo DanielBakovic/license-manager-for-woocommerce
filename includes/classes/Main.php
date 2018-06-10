@@ -105,6 +105,7 @@ final class Main
         new Generator();
         new OrderManager();
         new Database();
+        new FormHandler();
     }
 
 }
