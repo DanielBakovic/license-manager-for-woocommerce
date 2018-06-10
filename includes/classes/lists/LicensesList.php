@@ -27,7 +27,7 @@ class LicensesList extends \WP_List_Table
         ]);
     }
 
-    public static function get_orders($per_page = 5, $page_number = 1)
+    public static function get_orders($per_page = 20, $page_number = 1)
     {
         global $wpdb;
         $table = $wpdb->prefix . \LicenseManager\Classes\Setup::LICENSES_TABLE_NAME;
@@ -73,26 +73,37 @@ class LicensesList extends \WP_List_Table
     public function column_default($item, $column_name)
     {
         switch ($column_name) {
-            case 'product_id':
-                $product = wc_get_product($item['product_id']);
-                $link = sprintf(
-                    '<a href="%s" target="_blank">%s</a>',
-                    get_edit_post_link($item['product_id']),
-                    $product->get_name()
-                );
-                return $link;
             case 'order_id':
-                $order = wc_get_order($item['order_id']);
-                $link = sprintf(
-                    '<a href="%s" target="_blank">#%s</a>',
-                    get_edit_post_link($item['order_id']),
-                    $order->get_order_number()
-                );
+                if ($order = wc_get_order($item['order_id'])) {
+                    $link = sprintf(
+                        '<a href="%s" target="_blank">#%s</a>',
+                        get_edit_post_link($item['order_id']),
+                        $order->get_order_number()
+                    );
+                } else {
+                    $link = '';
+                }
                 return $link;
+            case 'product_id':
+                if ($product = wc_get_product($item['product_id'])) {
+                    $link = sprintf(
+                        '<a href="%s" target="_blank">%s</a>',
+                        get_edit_post_link($item['product_id']),
+                        $product->get_name()
+                    );
+                } else {
+                    $link = '';
+                }
+                return $link;
+            case 'license_key':
+                return sprintf('<code>%s</code>', $item['license_key']);
             case 'status':
                 switch ($item['status']) {
                     case 1:
                         $status = __('Available', 'lima');
+                        break;
+                    case 2:
+                        $status = __('Deactivated', 'lima');
                         break;
                     default:
                         $status = __('Unknown', 'lima');
@@ -132,7 +143,8 @@ class LicensesList extends \WP_List_Table
         $sortable_columns = array(
             'id' => array('id', true),
             'product_id' => array('product_id', true),
-            'order_id' => array('order_id', true)
+            'order_id' => array('order_id', true),
+            'status' => array('status', true)
         );
 
         return $sortable_columns;
@@ -141,7 +153,8 @@ class LicensesList extends \WP_List_Table
     public function get_bulk_actions()
     {
         $actions = [
-            'export' => __('Export', 'lima')
+            'activate' => __('Activate', 'lima'),
+            'deactivate' => __('Deactivate', 'lima')
         ];
 
         return $actions;
@@ -157,7 +170,7 @@ class LicensesList extends \WP_List_Table
 
         $this->process_bulk_action();
 
-        $per_page     = $this->get_items_per_page('orders_per_page', 10);
+        $per_page     = $this->get_items_per_page('licenses_per_page', 10);
         $current_page = $this->get_pagenum();
         $total_items  = self::record_count();
 
@@ -173,49 +186,14 @@ class LicensesList extends \WP_List_Table
     {
         $action = $this->current_action();
         switch ($action) {
-            case 'export':
-                $this->export_orders_pdf($_REQUEST['bulk']);
+            case 'activate':
+                //$this->some_function();
+                break;
+            case 'deactivate':
+                //$this->some_function();
                 break;
             default:
                 break;
         }
-    }
-
-    public function export_orders_pdf($orders)
-    {
-        global $wpdb;
-        $sql = "SELECT purchase_date, voucher_id, voucher_url FROM {$wpdb->prefix}internetmarke_orders";
-        $sql .= ' WHERE id IN (';
-        foreach ($orders as $order_id) {
-            $sql .= sprintf('%d, ', $order_id);
-        }
-        $sql = rtrim($sql, ', ');
-        $sql .= ');';
-
-        $vouchers = $wpdb->get_results($sql, ARRAY_A);
-
-        ob_clean();
-        $file = tempnam('tmp', 'zip');
-        $zip  = new \ZipArchive;
-
-        if ($zip->open($file, \ZipArchive::CREATE) !== true) {
-            exit('can not open');
-        }
-
-        foreach ($vouchers as $voucher) {
-            $date    = new \DateTime($voucher['purchase_date']);
-            $content = file_get_contents($voucher['voucher_url']);
-            $zip->addFromString($date->format('Y_m_d-H_i-') . $voucher['voucher_id'] . '.pdf', $content);
-        }
-        $zip->close();
-
-        header('Content-Type: application/zip');
-        header('Content-Length: ' . filesize($file));
-        header(
-            'Content-Disposition: attachment; filename="stina_internetmarke_export_' . date('Y_m_d-H_i_s') . '.zip"'
-        );
-        readfile($file);
-        unlink($file);
-        exit();
     }
 }

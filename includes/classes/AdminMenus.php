@@ -132,6 +132,17 @@ class AdminMenus
 
     public function generatorsPage()
     {
-        echo 'Generators Page!';
+        $generators = new \LicenseManager\Classes\Lists\GeneratorsList();
+
+        add_screen_option(
+            'per_page',
+            array(
+                'label'   => 'Generators per page',
+                'default' => 5,
+                'option'  => 'generators_per_page'
+            )
+        );
+
+        include LM_TEMPLATES_DIR . 'generators_page.php';
     }
 }

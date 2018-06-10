@@ -15,8 +15,18 @@ defined('ABSPATH') || exit;
  */
 class Setup
 {
-
+    /**
+     * License table name.
+     *
+     * @since 1.0.0
+     */
     const LICENSES_TABLE_NAME = 'licensemanager_licenses';
+
+    /**
+     * Generators table name.
+     *
+     * @since 1.0.0
+     */
     const GENERATORS_TABLE_NAME = 'licensemanager_generators';
 
     /**
@@ -27,7 +37,7 @@ class Setup
     }
 
     /**
-     * Installation script,
+     * Installation script.
      *
      * @since 1.0.0
      */
@@ -37,7 +47,7 @@ class Setup
     }
 
     /**
-     * Uninstallation script,
+     * Uninstallation script.
      *
      * @since 1.0.0
      */
@@ -76,13 +86,19 @@ class Setup
                 `product_id` bigint(20) NOT NULL,
                 `license_key` varchar(256) NOT NULL,
                 `created_at` datetime NOT NULL,
-                `expires_at` datetime NOT NULL,
+                `expires_at` datetime NULL,
                 `status` smallint(5) NOT NULL,
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
             CREATE TABLE $table2 (
                 `id` int(20) NOT NULL AUTO_INCREMENT,
                 `name` varchar(256) NOT NULL,
+                `charset` varchar(256) NULL,
+                `chunks` int(10) NOT NULL,
+                `chunk_length` int(10) NOT NULL,
+                `separator` varchar(256) NOT NULL,
+                `prefix` varchar(256) NULL,
+                `suffix` varchar(256) NULL,
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         ";

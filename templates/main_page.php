@@ -2,13 +2,14 @@
 
 <div class="wrap">
 
-	<h1><?=__('License Manager', 'lima'); ?></h1>
+    <h1 class="wp-heading-inline"><?=__('Licenses', 'lima'); ?></h1>
+    <a href="" class="page-title-action"><?=__('Import');?></a>
 
-	<form method="post">
-		<?php
-			$licenses->prepare_items();
-			$licenses->display();
-		?>
-	</form>
+    <form method="post">
+        <?php
+            $licenses->prepare_items();
+            $licenses->display();
+        ?>
+    </form>
 
 </div>

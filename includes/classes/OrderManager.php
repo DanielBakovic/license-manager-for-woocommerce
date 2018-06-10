@@ -34,7 +34,6 @@ class OrderManager
             /**
              * @todo Obtain the parameters programatically, from the options or generator rule?
              */
-
             // Create the license keys
             $create_license_args = array(
                 'amount'       => $item_data->get_quantity(),
@@ -49,15 +48,10 @@ class OrderManager
             $save_license_args = array(
                 'order_id' => $order_id,
                 'product_id' => $product->get_id(),
-                'licenses' => $licenses['licenses']
+                'licenses' => $licenses['licenses'],
+                'expires_in' => $licenses['expires_in']
             );
             do_action('LM_save_license_keys', $save_license_args);
-
-            // Log to file
-            Logger::file(array(
-                'order_id' => $order_id,
-                'licenses' => $licenses
-            ));
         }
     }
 }

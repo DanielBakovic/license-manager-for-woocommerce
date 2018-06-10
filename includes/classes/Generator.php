@@ -44,12 +44,26 @@ class Generator
     const SEPARATOR = '-';
 
     /**
+     * Prefix
+     *
+     * @since 1.0.0
+     */
+    const PREFIX = '';
+
+    /**
+     * Suffix
+     *
+     * @since 1.0.0
+     */
+    const SUFFIX = '';
+
+    /**
      * Generator Constructor.
      */
     public function __construct()
     {
-        add_filter('LM_create_license_keys', array($this, 'createLicenseKeys'), 10, 1);
-        add_filter('LM_generate_license_string', array($this, 'generateLicenseString'), 10, 4);
+        add_filter('LM_create_license_keys', array($this, 'createLicenseKeys'), 10);
+        add_filter('LM_generate_license_string', array($this, 'generateLicenseString'), 10);
     }
 
     /**
@@ -57,38 +71,42 @@ class Generator
      *
      * @since 1.0.0
      *
-     * @param string $charset      - Character map from which the license will be generated
-     * @param int    $chunks       - Number of chunks
-     * @param int    $chunk_length - The length of an individual chunk
-     * @param string $separator    - Separator used
+     * @param string $args['charset']      - Character map from which the license will be generated
+     * @param int    $args['chunks']       - Number of chunks
+     * @param int    $args['chunk_length'] - The length of an individual chunk
+     * @param string $args['separator']    - Separator used
+     * @param string $args['prefix']       - Prefix used
+     * @param string $args['suffix']       - Suffix used
+     * @param int    $args['expires_in']   - Number of days in which the license key expires
+     *
+     * @todo Retrieve the default parameters from the user settings.
      *
      * @return string
      */
-    public function generateLicenseString(
-        $charset      = self::CHARSET,
-        $chunks       = self::CHUNKS,
-        $chunk_length = self::CHUNK_LENGTH,
-        $separator    = self::SEPARATOR
-    ) {
-        if ($charset      == null) $charset      = self::CHARSET;
-        if ($chunks       == null) $chunks       = self::CHUNKS;
-        if ($chunk_length == null) $chunk_length = self::CHUNK_LENGTH;
-        if ($separator    == null) $separator    = self::SEPARATOR;
+    public function generateLicenseString($args) {
+        if ($args['charset']      == null) $args['charset']      = self::CHARSET;
+        if ($args['chunks']       == null) $args['chunks']       = self::CHUNKS;
+        if ($args['chunk_length'] == null) $args['chunk_length'] = self::CHUNK_LENGTH;
+        if ($args['separator']    == null) $args['separator']    = self::SEPARATOR;
+        if ($args['prefix']       == null) $args['prefix']       = self::PREFIX;
+        if ($args['suffix']       == null) $args['suffix']       = self::SUFFIX;
 
-        $charset_length = strlen($charset);
-        $license_string = '';
+        $charset_length = strlen($args['charset']);
+        $license_string = $args['prefix'];
 
         // loop through the chunks
-        for ($i=0; $i < $chunks; $i++) {
-            // generate n characters, where n = $chunk_length
-            for ($j = 0; $j < $chunk_length; $j++) {
-                $license_string .= $charset[rand(0, $charset_length - 1)];
+        for ($i=0; $i < $args['chunks']; $i++) {
+            // add n random characters from $args['charset'] to chunk, where n = $args['chunk_length']
+            for ($j = 0; $j < $args['chunk_length']; $j++) {
+                $license_string .= $args['charset'][rand(0, $charset_length - 1)];
             }
             // do not add the separator on the last iteration
-            if ($i < $chunks - 1) {
-                $license_string .= $separator;
+            if ($i < $args['chunks'] - 1) {
+                $license_string .= $args['separator'];
             }
         }
+
+        $license_string .= $args['suffix'];
 
         return $license_string;
     }
@@ -103,6 +121,11 @@ class Generator
      * @param int    $args['chunks']       - Number of chunks
      * @param int    $args['chunk_length'] - The length of an individual chunk
      * @param string $args['separator']    - Separator used
+     * @param string $args['prefix']       - Prefix used
+     * @param string $args['suffix']       - Suffix used
+     * @param int    $args['expires_in']   - Number of days in which the license key expires
+     *
+     * @todo Improve the parameter input validation.
      *
      * @return array
      */
@@ -115,7 +138,7 @@ class Generator
             $amount = 1;
         }
 
-        // check if it's possible to create as many variations using the input args
+        // check if it's possible to create as many combinations using the input args
         $unique_characters = count(array_unique(str_split($args['charset'])));
         $max_possible_keys = pow($unique_characters, $args['chunks'] * $args['chunk_length']);
 
@@ -135,10 +158,14 @@ class Generator
         for ($i=0; $i < $amount; $i++) { 
             $args['licenses'][] = apply_filters(
                 'LM_generate_license_string',
-                $args['charset'],
-                $args['chunks'],
-                $args['chunk_length'],
-                $args['separator']
+                array(
+                    'charset'      => $args['charset'],
+                    'chunks'       => $args['chunks'],
+                    'chunk_length' => $args['chunk_length'],
+                    'separator'    => $args['separator'],
+                    'prefix'       => $args['prefix'],
+                    'suffix'       => $args['suffix'],
+                )
             );
         }
 
@@ -156,7 +183,9 @@ class Generator
                         'charset'      => $args['charset'],
                         'chunks'       => $args['chunks'],
                         'chunk_length' => $args['chunk_length'],
-                        'separator'    => $args['separator']
+                        'separator'    => $args['separator'],
+                        'prefix'       => $args['prefix'],
+                        'suffix'       => $args['suffix']
                     )
                 );
             }

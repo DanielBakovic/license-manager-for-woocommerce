@@ -28,9 +28,10 @@ class Database
      *
      * @since 1.0.0
      *
-     * @param int   $args['order_id']   - Corresponding order ID
-     * @param int   $args['product_id'] - Corresponding product ID
-     * @param array $args['licenses']   - Return value of the 'LM_create_license_keys' filter
+     * @param int   $args['order_id']   - Corresponding order ID.
+     * @param int   $args['product_id'] - Corresponding product ID.
+     * @param array $args['licenses']   - Return value of the 'LM_create_license_keys' filter.
+     * @param array $args['expires_in'] - Number of days in which the license key expires.
      *
      * @return null
      */
@@ -38,7 +39,14 @@ class Database
     {
         global $wpdb;
 
-        Logger::file(date('Y-m-d H:i:s'));
+        $date       = new \DateTime();
+        $created_at = $date->format('Y-m-d H:i:s');
+        $expires_at = null;
+
+        // Set the expiration date if specified
+        if ($args['expires_in'] != null && is_numeric($args['expires_in'])) {
+            $expires_at = $date->add(new \DateInterval('P' . $args['expires_in'] . 'D'))->format('Y-m-d H:i:s');
+        }
 
         /**
          * @todo update with proper status handling
@@ -47,13 +55,14 @@ class Database
             $wpdb->insert(
                 $wpdb->prefix . \LicenseManager\Classes\Setup::LICENSES_TABLE_NAME,
                 array(
+                    'order_id'    => $args['order_id'],
                     'product_id'  => $args['product_id'],
                     'license_key' => $license_key,
-                    'order_id'    => $args['order_id'],
-                    'created'     => date('Y-m-d H:i:s'),
+                    'created_at'  => $created_at,
+                    'expires_at'  => $expires_at,
                     'status'      => 1
                 ),
-                array('%d', '%d', '%s', '%d', '%s', '%d')
+                array('%d', '%d', '%s', '%s', '%s', '%d')
             );
         }
     }
