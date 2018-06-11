@@ -116,14 +116,14 @@ class Generator
      *
      * @since 1.0.0
      *
-     * @param int    $args['amount']       - Number of license keys to be generated
-     * @param string $args['charset']      - Character map from which the license will be generated
-     * @param int    $args['chunks']       - Number of chunks
-     * @param int    $args['chunk_length'] - The length of an individual chunk
-     * @param string $args['separator']    - Separator used
-     * @param string $args['prefix']       - Prefix used
-     * @param string $args['suffix']       - Suffix used
-     * @param int    $args['expires_in']   - Number of days in which the license key expires
+     * @param int    $args['amount']       - Number of license keys to be generated.
+     * @param string $args['charset']      - Character map from which the license will be generated.
+     * @param int    $args['chunks']       - Number of chunks.
+     * @param int    $args['chunk_length'] - The length of an individual chunk.
+     * @param string $args['separator']    - Separator used.
+     * @param string $args['prefix']       - Prefix used.
+     * @param string $args['suffix']       - Suffix used.
+     * @param int    $args['expires_in']   - Number of days in which the license key expires.
      *
      * @todo Improve the parameter input validation.
      *
