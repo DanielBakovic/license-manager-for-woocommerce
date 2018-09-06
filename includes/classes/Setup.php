@@ -30,6 +30,13 @@ class Setup
     const GENERATORS_TABLE_NAME = 'licensemanager_generators';
 
     /**
+     * Database version.
+     *
+     * @since 1.0.0
+     */
+    const DB_VERSION = 100;
+
+    /**
      * Setup Constructor.
      */
     public function __construct()
@@ -99,6 +106,7 @@ class Setup
                 `separator` varchar(256) NOT NULL,
                 `prefix` varchar(256) NULL,
                 `suffix` varchar(256) NULL,
+                `expires_in` int(10) NULL DEFAULT NULL,
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         ";

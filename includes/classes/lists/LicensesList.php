@@ -100,13 +100,13 @@ class LicensesList extends \WP_List_Table
             case 'status':
                 switch ($item['status']) {
                     case 1:
-                        $status = __('Available', 'lima');
+                        $status = __('<span class="lm-status available">Available</span>', 'lima');
                         break;
                     case 2:
-                        $status = __('Deactivated', 'lima');
+                        $status = __('<span class="lm-status deactivated">Deactivated</span>', 'lima');
                         break;
                     default:
-                        $status = __('Unknown', 'lima');
+                        $status = __('<span class="lm-status unknown">Unknown</span>', 'lima');
                         break;
                 }
                 return $status;

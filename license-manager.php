@@ -21,7 +21,10 @@ require_once __DIR__ . '/vendor/autoload.php';
 if (!defined('LM_PLUGIN_FILE')) {
     define('LM_PLUGIN_FILE', __FILE__);
 }
-
+// Define LM_PLUGIN_URL.
+if (!defined('LM_PLUGIN_URL')) {
+    define('LM_PLUGIN_URL', plugins_url('', __FILE__) . '/');
+}
 
 /**
  * Main instance of LicenseManager.
@@ -37,3 +40,16 @@ function licensemanager() {
 
 // Global for backwards compatibility.
 $GLOBALS['licensemanager'] = licensemanager();
+
+/*
+$args = array(
+    'charset' => '123456789ABCDEFGHIJKLMNPQRSTUVWXYZ',
+    'chunks' => 2,
+    'chunk_length' => 5,
+    'separator' => '-',
+    'prefix' => 'PRE-',
+    'suffix' => '-SUF',
+    'expires_in' => 90
+);
+\LicenseManager\Classes\Logger::console(apply_filters('LM_add_license_key', $args));
+*/

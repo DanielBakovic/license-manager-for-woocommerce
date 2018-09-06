@@ -1,0 +1,22 @@
+/* Table auto-width fix */
+table.wp-list-table.generators,
+table.wp-list-table.licenses {
+	table-layout: auto !important;
+}
+
+/* Status colors */
+.lm-status:before {
+	content: "";
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	border-radius: 50%;
+	margin-right: 5px;
+}
+.lm-status.available:before {
+	background: #28a745;
+}.lm-status.deactivated:before {
+	background: #ffc107;
+}.lm-status.unknown:before {
+	background: #343a40;
+}

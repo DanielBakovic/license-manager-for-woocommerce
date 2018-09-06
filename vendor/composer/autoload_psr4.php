@@ -8,4 +8,5 @@ $baseDir = dirname($vendorDir);
 return array(
     'LicenseManager\\Classes\\Lists\\' => array($baseDir . '/includes/classes/lists'),
     'LicenseManager\\Classes\\' => array($baseDir . '/includes/classes'),
+    'Defuse\\Crypto\\' => array($vendorDir . '/defuse/php-encryption/src'),
 );

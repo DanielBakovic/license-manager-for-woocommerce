@@ -4,5 +4,8 @@
             "LicenseManager\\Classes\\": "includes/classes/",
             "LicenseManager\\Classes\\Lists\\": "includes/classes/lists"
         }
+    },
+    "require": {
+        "defuse/php-encryption": "^2.2"
     }
 }

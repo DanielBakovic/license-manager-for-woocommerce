@@ -21,7 +21,7 @@ if (class_exists('AdminMenus', false)) {
 class AdminMenus
 {
     /**
-     * Hook in tabs.
+     * Class constructor.
      */
     public function __construct()
     {
@@ -34,6 +34,9 @@ class AdminMenus
         // WooCommerce related
         add_filter('woocommerce_product_data_tabs', array($this, 'wooLicenseProductDataTab'));
         add_action('woocommerce_product_data_panels', array($this, 'wooLicenseProductDataPanel'));
+
+        // Meta Box
+        add_action('add_meta_boxes', array($this, 'licensesMetaBoxHandler'));
     }
 
     public function main()
@@ -162,5 +165,32 @@ class AdminMenus
     public function generatorsAddPage()
     {
         include LM_TEMPLATES_DIR . 'generators_add_new.php';
+    }
+
+    /**
+     * @todo If statement should check if this order has licenses attached to it. Perhaps loop through the products and
+     * Check if a meta data entry exists for any of them. Or set a meta data for the entire order, should it contain
+     * license products.
+     * @todo Add a meta box for the edit products view.
+     */
+    public function licensesMetaBoxHandler($post_type)
+    {
+        if (1 == 1) {
+            add_meta_box(
+                'lm-licenses-meta-box',
+                __('Licenses', 'lima'),
+                array($this, 'licensesMetaBox'),
+                'shop_order'
+            );
+        }
+    }
+
+    public function licensesMetaBox()
+    {
+        global $post;
+
+        $licenses = Database::getLicenseKeys($post->ID);
+
+        include LM_TEMPLATES_DIR . 'licenses_meta_box.php';
     }
 }

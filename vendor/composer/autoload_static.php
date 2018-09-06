@@ -12,6 +12,10 @@ class ComposerStaticInita298e9646be03aea3d38b4fef4ffde56
             'LicenseManager\\Classes\\Lists\\' => 29,
             'LicenseManager\\Classes\\' => 23,
         ),
+        'D' => 
+        array (
+            'Defuse\\Crypto\\' => 14,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -23,19 +27,10 @@ class ComposerStaticInita298e9646be03aea3d38b4fef4ffde56
         array (
             0 => __DIR__ . '/../..' . '/includes/classes',
         ),
-    );
-
-    public static $classMap = array (
-        'LicenseManager\\Classes\\AdminMenus' => __DIR__ . '/../..' . '/includes/classes/AdminMenus.php',
-        'LicenseManager\\Classes\\Database' => __DIR__ . '/../..' . '/includes/classes/Database.php',
-        'LicenseManager\\Classes\\FormHandler' => __DIR__ . '/../..' . '/includes/classes/FormHandler.php',
-        'LicenseManager\\Classes\\Generator' => __DIR__ . '/../..' . '/includes/classes/Generator.php',
-        'LicenseManager\\Classes\\Lists\\GeneratorsList' => __DIR__ . '/../..' . '/includes/classes/lists/GeneratorsList.php',
-        'LicenseManager\\Classes\\Lists\\LicensesList' => __DIR__ . '/../..' . '/includes/classes/lists/LicensesList.php',
-        'LicenseManager\\Classes\\Logger' => __DIR__ . '/../..' . '/includes/classes/Logger.php',
-        'LicenseManager\\Classes\\Main' => __DIR__ . '/../..' . '/includes/classes/Main.php',
-        'LicenseManager\\Classes\\OrderManager' => __DIR__ . '/../..' . '/includes/classes/OrderManager.php',
-        'LicenseManager\\Classes\\Setup' => __DIR__ . '/../..' . '/includes/classes/Setup.php',
+        'Defuse\\Crypto\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/defuse/php-encryption/src',
+        ),
     );
 
     public static function getInitializer(ClassLoader $loader)
@@ -43,7 +38,6 @@ class ComposerStaticInita298e9646be03aea3d38b4fef4ffde56
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInita298e9646be03aea3d38b4fef4ffde56::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInita298e9646be03aea3d38b4fef4ffde56::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInita298e9646be03aea3d38b4fef4ffde56::$classMap;
 
         }, null, ClassLoader::class);
     }

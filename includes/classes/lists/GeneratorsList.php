@@ -17,13 +17,19 @@ if (!class_exists('WP_List_Table')) {
 
 class GeneratorsList extends \WP_List_Table
 {
+    protected $table;
+
     public function __construct()
     {
+        global $wpdb;
+
         parent::__construct([
             'singular' => __('Generator', 'lima'),
             'plural'   => __('Generators', 'lima'),
             'ajax'     => false
         ]);
+
+        $this->table = $wpdb->prefix . \LicenseManager\Classes\Setup::GENERATORS_TABLE_NAME;
     }
 
     public static function get_orders($per_page = 20, $page_number = 1)
@@ -54,6 +60,25 @@ class GeneratorsList extends \WP_List_Table
         _e('No generators found.', 'lima');
     }
 
+
+    public function column_name($item)
+    {
+        $title = '<strong>' . $item['name'] . '</strong>';
+
+        $actions = [
+            'delete' => sprintf(
+                '<a href="?page=%s&action=%s&generator_id=%s&_wpnonce=%s">%s</a>',
+                esc_attr($_REQUEST['page']),
+                'delete',
+                absint($item['id']),
+                wp_create_nonce('lima_delete_generator'),
+                __('Delete', 'lima')
+            ),
+        ];
+
+        return $title . $this->row_actions($actions);
+    }
+
     public function column_default($item, $column_name)
     {
         switch ($column_name) {
@@ -61,8 +86,8 @@ class GeneratorsList extends \WP_List_Table
                 ($item['charset'] == '') ? $charset = '' : $charset = sprintf('<code>%s</code>', $item['charset']);
                 return $charset;
             case 'separator':
-                ($item['separator'] == '') ? $separator = '' : $separator = sprintf('<code>%s</code>', $item['separator']);
-                return $separator;
+                ($item['separator'] == '') ? $sep = '' : $sep = sprintf('<code>%s</code>', $item['separator']);
+                return $sep;
             case 'prefix':
                 ($item['prefix'] == '') ? $prefix = '' : $prefix = sprintf('<code>%s</code>', $item['prefix']);
                 return $prefix;
@@ -116,6 +141,32 @@ class GeneratorsList extends \WP_List_Table
         return $actions;
     }
 
+    public function process_bulk_action()
+    {
+        $action = $this->current_action();
+
+        switch ($action) {
+            case 'delete':
+                // Handle the bulk delete request.
+                if (isset($_REQUEST['bulk'])) {
+                    $this->delete_generators($_REQUEST['bulk']);
+                // Handle the single delete request.
+                } elseif (isset($_REQUEST['generator_id'])) {
+                    // Check nonce.
+                    if (!wp_verify_nonce(esc_attr($_REQUEST['_wpnonce']), 'lima_delete_generator')) {
+                        die('Go get a life script kiddies');
+                    } else {
+                        $this->delete_generators($_REQUEST['generator_id']);
+                    }
+                }
+                // Redirect to URL.
+                wp_redirect(admin_url('admin.php?page=license_manager_generators'));
+                break;
+            default:
+                break;
+        }
+    }
+
     public function prepare_items()
     {
         $this->_column_headers = array(
@@ -138,4 +189,25 @@ class GeneratorsList extends \WP_List_Table
         $this->items = self::get_orders($per_page, $current_page);
     }
 
+    /**
+     * Bulk deletes the generators from the table by an array of ID's.
+     *
+     * @since 1.0.0
+     *
+     * @param array $ids - ID's corresponding to the "id" field in the custom table.
+     *
+     * @todo Retrieve the default parameters from the user settings.
+     *
+     * @return string
+     */
+    public function delete_generators($ids)
+    {
+        global $wpdb;
+
+        if (!is_array($ids)) $ids = (array)$ids;
+
+        foreach ($ids as $id) {
+            $wpdb->delete($this->table, array('id' => $id));
+        }
+    }
 }

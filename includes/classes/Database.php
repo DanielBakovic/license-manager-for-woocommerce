@@ -22,12 +22,15 @@ class Database
     {
         add_action('LM_save_license_keys', array($this, 'saveLicenseKeys'), 10, 1);
         add_filter('LM_license_key_exists', array($this, 'licenseKeyExists'), 10, 1);
+        add_filter('LM_add_license_key', array($this, 'addLicenseKey'), 10, 1);
     }
 
     /**
      * Save the license keys for a given product to the database.
      *
      * @since 1.0.0
+     *
+     * @todo Convert to filter, return array of added licenses.
      *
      * @param int    $args['order_id']     - Corresponding order ID.
      * @param int    $args['product_id']   - Corresponding product ID.
@@ -111,16 +114,94 @@ class Database
      *
      * @since 1.0.0
      *
-     * @param string $license - License key to be checked.
+     * @param string $license_key - License key to be checked.
+     *
      * @return boolean
      */
-    public function licenseKeyExists($license)
+    public function licenseKeyExists($license_key)
     {
         global $wpdb;
 
         $table = $wpdb->prefix . \LicenseManager\Classes\Setup::LICENSES_TABLE_NAME;
         $sql   = "SELECT license_key FROM `{$table}` WHERE license_key = '%s';";
 
-        return $wpdb->get_var($wpdb->prepare($sql, $license)) != null;
+        return $wpdb->get_var($wpdb->prepare($sql, $license_key)) != null;
+    }
+
+    /**
+     * Check if the license key already exists in the database. Returns the license key that was added. If the function
+     * looped for more than 20 times (for whatever reason), it will return boolean false.
+     *
+     * @since 1.0.0
+     *
+     * @param int    $args['order_id']     - Corresponding order ID.
+     * @param int    $args['product_id']   - Corresponding product ID.
+     * @param int    $args['expires_in']   - Number of days in which the license key expires.
+     * @param string $args['charset']      - Character map from which the license will be generated.
+     * @param int    $args['chunk_length'] - The length of an individual chunk.
+     * @param int    $args['chunks']       - Number of chunks.
+     * @param string $args['prefix']       - Prefix used.
+     * @param string $args['separator']    - Separator used.
+     * @param string $args['suffix']       - Suffix used.
+     * 
+     * @return boolean|string
+     */
+    public function addLicenseKey($args)
+    {
+        // Used to prevent the function from looping indefinitely.
+        static $counter = 0;
+
+        // Generate the license string.
+        $license_key = apply_filters('LM_generate_license_string', $args);
+        $license_key = '00000-AAAAA';
+
+        // Returns false and logs an exception if the function has looped for more than 20 times.
+        if ($counter >= 20) {
+            return 'if';
+
+            $e = new \Exception(
+                __(
+                    'Too many failed attempts at generating a license key. Parameters are included in the exception log.',
+                    'lima'
+                ),
+                2
+            );
+
+            Logger::exception($e);
+            Logger::exception($args);
+
+            return false;
+        // Recursively call this method to generate a new license key with the the same arguments. Also up the counter.
+        } else if (apply_filters('LM_license_key_exists', $license_key)) {
+            $counter++;
+            $this->addLicenseKey($args);
+        // License key is valid, save it in the database table.
+        } else {
+            return 'else';
+            return $license_key;
+        }
+
+        return false;
+    }
+
+    /**
+     * Retrieves all license keys from the licenses table in the database.
+     *
+     * @since 1.0.0
+     *
+     * @param int $order_id - The order ID for which the keys will be retrieved.
+     */
+    public static function getLicenseKeys($order_id)
+    {
+        global $wpdb;
+        $table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
+
+        return $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT id, order_id, product_id, license_key, created_at, expires_at, status FROM $table WHERE order_id = %d",
+                $order_id
+            ),
+            OBJECT
+        );
     }
 }

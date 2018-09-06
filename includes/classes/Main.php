@@ -57,6 +57,7 @@ final class Main
         if (is_null(self::$_instance)) {
             self::$_instance = new self();
         }
+
         return self::$_instance;
     }
 
@@ -65,12 +66,28 @@ final class Main
      */
     private function defineConstants()
     {
-        $this->define('ABSPATH_LENGTH', strlen(ABSPATH));
-        $this->define('LM_ABSPATH', dirname(LM_PLUGIN_FILE) . '/' );
+        $this->define('ABSPATH_LENGTH',     strlen(ABSPATH));
+        $this->define('LM_VERSION',         $this->version);
+        $this->define('LM_ABSPATH',         dirname(LM_PLUGIN_FILE) . '/' );
         $this->define('LM_PLUGIN_BASENAME', plugin_basename(LM_PLUGIN_FILE));
-        $this->define('LM_VERSION', $this->version);
+
+        // Directories
         $this->define('LM_LOG_DIR', LM_ABSPATH . 'logs/');
-        $this->define('LM_TEMPLATES_DIR', LM_ABSPATH . 'templates/');
+
+        // URL's
+        $this->define('LM_ASSETS_URL',    LM_PLUGIN_URL . 'assets/');
+        $this->define('LM_ETC_URL',       LM_ASSETS_URL . 'etc/');
+        $this->define('LM_CSS_URL',       LM_ASSETS_URL . 'css/');
+        $this->define('LM_TEMPLATES_DIR', LM_ABSPATH    . 'templates/');
+    }
+
+
+    /**
+     * Include JS and CSS files.
+     */
+    public function adminEnqueueScripts()
+    {
+        wp_enqueue_style('LM_Admin_CSS', LM_CSS_URL . 'main.css');
     }
 
     /**
@@ -94,6 +111,8 @@ final class Main
     {
         register_activation_hook(LM_PLUGIN_FILE, array('\LicenseManager\Classes\Setup', 'install'));
         register_deactivation_hook(LM_PLUGIN_FILE, array('\LicenseManager\Classes\Setup', 'uninstall'));
+
+        add_action('admin_enqueue_scripts', array($this, 'adminEnqueueScripts'));
     }
 
     /**
@@ -106,6 +125,7 @@ final class Main
         new OrderManager();
         new Database();
         new FormHandler();
+        new Crypto();
     }
 
 }
