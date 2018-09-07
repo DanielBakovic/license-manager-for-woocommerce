@@ -38,11 +38,6 @@ class Crypto
     public function __construct()
     {
         $this->keyAscii = file_get_contents(LM_ETC_URL . self::DEFUSE_FILE);
-
-        $encrypted = $this->encrypt('DOOFUSROOFUS');
-        Logger::console($encrypted);
-        $decrypted = $this->decrypt($encrypted);
-        Logger::console($decrypted);
     }
 
     /**

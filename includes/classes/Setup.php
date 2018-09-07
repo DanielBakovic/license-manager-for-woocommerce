@@ -51,6 +51,7 @@ class Setup
     public static function install()
     {
         self::createTables();
+        self::setDefaulOptions();
     }
 
     /**
@@ -112,5 +113,10 @@ class Setup
         ";
 
         \dbDelta($tables);
+    }
+
+    public static function setDefaulOptions()
+    {
+        update_option('_lima_encrypt_license_keys', 1, '', 'yes');
     }
 }

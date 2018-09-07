@@ -2,7 +2,7 @@
 
 <div class="wrap">
 
-    <h1><?=__('Add New Generator', 'lima'); ?></h1>
+    <h1><?=__('Edit Generator', 'lima'); ?></h1>
 
     <form method="post" action="<?=admin_url('admin-post.php');?>">
         <input type="hidden" name="action" value="LM_save_generator">
@@ -56,8 +56,9 @@
             </tbody>
         </table>
         <p class="submit">
-            <input name="submit" id="submit" class="button button-primary" value="<?=__('Save' ,'lima');?>" type="submit">
+            <input name="submit" id="submit" class="button button-primary" value="<?=__('Update' ,'lima');?>" type="submit">
         </p>
     </form>
+
 
 </div>

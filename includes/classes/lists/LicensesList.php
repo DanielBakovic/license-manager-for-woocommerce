@@ -17,9 +17,13 @@ if (!class_exists('WP_List_Table')) {
 
 class LicensesList extends \WP_List_Table
 {
+    private $crypto;
 
-    public function __construct()
-    {
+    public function __construct(
+        \LicenseManager\Classes\Crypto $crypto
+    ) {
+        $this->crypto = $crypto;
+
         parent::__construct([
             'singular' => __('License', 'lima'),
             'plural'   => __('Licenses', 'lima'),
@@ -96,17 +100,21 @@ class LicensesList extends \WP_List_Table
                 }
                 return $link;
             case 'license_key':
-                return sprintf('<code>%s</code>', $item['license_key']);
+                if (get_option('_lima_encrypt_license_keys')) {
+                    return sprintf('<code>%s</code>', $this->crypto->decrypt($item['license_key']));
+                } else {
+                    return sprintf('<code>%s</code>', $item['license_key']);
+                }
             case 'status':
                 switch ($item['status']) {
                     case 1:
-                        $status = __('<span class="lm-status available">Available</span>', 'lima');
+                        $status = __('<span class="lima-status available">Available</span>', 'lima');
                         break;
                     case 2:
-                        $status = __('<span class="lm-status deactivated">Deactivated</span>', 'lima');
+                        $status = __('<span class="lima-status deactivated">Deactivated</span>', 'lima');
                         break;
                     default:
-                        $status = __('<span class="lm-status unknown">Unknown</span>', 'lima');
+                        $status = __('<span class="lima-status unknown">Unknown</span>', 'lima');
                         break;
                 }
                 return $status;

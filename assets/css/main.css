@@ -1,3 +1,15 @@
+/* Variables */
+:root {
+	--color-primary: #007bff;
+	--color-secondary: #6c757d;
+	--color-success: #28a745;
+	--color-danger: #dc3545;
+	--color-warning: #ffc107;
+	--color-info: #17a2b8;
+	--color-light: #f8f9fa;
+	--color-dark: #343a40;
+}
+
 /* Table auto-width fix */
 table.wp-list-table.generators,
 table.wp-list-table.licenses {
@@ -5,7 +17,7 @@ table.wp-list-table.licenses {
 }
 
 /* Status colors */
-.lm-status:before {
+.lima-status:before {
 	content: "";
 	display: inline-block;
 	width: 1em;
@@ -13,10 +25,12 @@ table.wp-list-table.licenses {
 	border-radius: 50%;
 	margin-right: 5px;
 }
-.lm-status.available:before {
-	background: #28a745;
-}.lm-status.deactivated:before {
-	background: #ffc107;
-}.lm-status.unknown:before {
-	background: #343a40;
+.lima-status.available:before {
+	background: var(--color-success);
+}
+.lima-status.deactivated:before {
+	background: var(--color-warning);
+}
+.lima-status.unknown:before {
+	background: var(--color-dark);
 }

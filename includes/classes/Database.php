@@ -15,14 +15,19 @@ defined('ABSPATH') || exit;
  */
 class Database
 {
+    private $crpyto;
+
     /**
      * Database Constructor.
      */
-    public function __construct()
-    {
-        add_action('LM_save_license_keys', array($this, 'saveLicenseKeys'), 10, 1);
+    public function __construct(
+        \LicenseManager\Classes\Crypto $crypto
+    ) {
+        $this->crypto = $crypto;
+
+        add_action('LM_save_license_keys',  array($this, 'saveLicenseKeys'), 10, 1);
         add_filter('LM_license_key_exists', array($this, 'licenseKeyExists'), 10, 1);
-        add_filter('LM_add_license_key', array($this, 'addLicenseKey'), 10, 1);
+        add_filter('LM_add_license_key',    array($this, 'addLicenseKey'), 10, 1);
     }
 
     /**
@@ -67,6 +72,12 @@ class Database
                 $invalid_keys++;
             // Key doesn't exist, add it to the database table.
             } else {
+                // Check if the keys should be encrypted before saving.
+                if (get_option('_lima_encrypt_license_keys')) {
+                    $license_key = $this->crypto->encrypt($license_key);
+                }
+
+                // Save to database.
                 $wpdb->insert(
                     $wpdb->prefix . \LicenseManager\Classes\Setup::LICENSES_TABLE_NAME,
                     array(
@@ -106,6 +117,9 @@ class Database
                 'separator'    => $args['separator'],
                 'suffix'       => $args['suffix']
             ));
+        } else {
+            // Keys have been generated and saved, this order is now complete.
+            update_post_meta($args['order_id'], '_lima_order_status', 'complete');
         }
     }
 
@@ -198,10 +212,26 @@ class Database
 
         return $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT id, order_id, product_id, license_key, created_at, expires_at, status FROM $table WHERE order_id = %d",
+                "SELECT * FROM $table WHERE order_id = %d",
                 $order_id
             ),
             OBJECT
         );
+    }
+
+    public static function getGenerators()
+    {
+        global $wpdb;
+        $table = $wpdb->prefix . Setup::GENERATORS_TABLE_NAME;
+
+        return $wpdb->get_results("SELECT * FROM $table", OBJECT);
+    }
+
+    public static function getGenerator($id)
+    {
+        global $wpdb;
+        $table = $wpdb->prefix . Setup::GENERATORS_TABLE_NAME;
+
+        return $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE id = %d", $id), OBJECT);
     }
 }

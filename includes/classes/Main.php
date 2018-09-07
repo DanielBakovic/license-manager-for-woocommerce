@@ -72,13 +72,15 @@ final class Main
         $this->define('LM_PLUGIN_BASENAME', plugin_basename(LM_PLUGIN_FILE));
 
         // Directories
-        $this->define('LM_LOG_DIR', LM_ABSPATH . 'logs/');
+        $this->define('LM_LOG_DIR',       LM_ABSPATH       . 'logs/');
+        $this->define('LM_TEMPLATES_DIR', LM_ABSPATH       . 'templates/');
+        $this->define('LM_METABOX_DIR',   LM_TEMPLATES_DIR . 'meta-box/');
 
         // URL's
-        $this->define('LM_ASSETS_URL',    LM_PLUGIN_URL . 'assets/');
-        $this->define('LM_ETC_URL',       LM_ASSETS_URL . 'etc/');
-        $this->define('LM_CSS_URL',       LM_ASSETS_URL . 'css/');
-        $this->define('LM_TEMPLATES_DIR', LM_ABSPATH    . 'templates/');
+        $this->define('LM_ASSETS_URL', LM_PLUGIN_URL . 'assets/');
+        $this->define('LM_ETC_URL',    LM_ASSETS_URL . 'etc/');
+        $this->define('LM_CSS_URL',    LM_ASSETS_URL . 'css/');
+        $this->define('LM_JS_URL',     LM_ASSETS_URL . 'js/');
     }
 
 
@@ -87,7 +89,8 @@ final class Main
      */
     public function adminEnqueueScripts()
     {
-        wp_enqueue_style('LM_Admin_CSS', LM_CSS_URL . 'main.css');
+        wp_enqueue_style('LM_Admin_CSS',  LM_CSS_URL . 'main.css');
+        wp_enqueue_script('LM_Aadmin_JS', LM_JS_URL  . 'script.js');
     }
 
     /**
@@ -120,12 +123,13 @@ final class Main
      */
     public function init()
     {
-        new AdminMenus();
+        $crypto = new Crypto();
+
+        new AdminMenus($crypto);
         new Generator();
         new OrderManager();
-        new Database();
+        new Database($crypto);
         new FormHandler();
-        new Crypto();
     }
 
 }

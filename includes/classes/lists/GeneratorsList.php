@@ -74,6 +74,14 @@ class GeneratorsList extends \WP_List_Table
                 wp_create_nonce('lima_delete_generator'),
                 __('Delete', 'lima')
             ),
+            'edit' => sprintf(
+                '<a href="?page=%s&action=%s&generator_id=%s&_wpnonce=%s">%s</a>',
+                'license_manager_generators_edit',
+                'edit',
+                absint($item['id']),
+                wp_create_nonce('lima_edit_generator'),
+                __('Edit', 'lima')
+            )
         ];
 
         return $title . $this->row_actions($actions);
@@ -94,6 +102,9 @@ class GeneratorsList extends \WP_List_Table
             case 'suffix':
                 ($item['suffix'] == '') ? $suffix = '' : $suffix = sprintf('<code>%s</code>', $item['suffix']);
                 return $suffix;
+            case 'expires_in':
+                ($item['expires_in'] == '') ? $expires_in = __('never', 'lima') : $expires_in = sprintf('%d %s', $item['expires_in'], __('day(s)', 'lima'));
+                return $expires_in;
             default:
                 return $item[$column_name];
         }
@@ -118,6 +129,7 @@ class GeneratorsList extends \WP_List_Table
             'separator'    => __('Separator', 'lima'),
             'prefix'       => __('Prefix', 'lima'),
             'suffix'       => __('Suffix', 'lima'),
+            'expires_in'   => __('Expires in', 'lima'),
         );
 
         return $columns;

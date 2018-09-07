@@ -20,26 +20,30 @@ if (class_exists('AdminMenus', false)) {
  */
 class AdminMenus
 {
+    private $crypto;
+
     /**
      * Class constructor.
      */
-    public function __construct()
-    {
-        // Main menu.
-        add_action('admin_menu', array($this, 'main'), 9);
-        add_action('admin_menu', array($this, 'generators'), 9);
-        add_action('admin_menu', array($this, 'generatorsAdd'), 9);
-        add_action('admin_menu', array($this, 'settings'), 9);
+    public function __construct(
+        \LicenseManager\Classes\Crypto $crypto
+    ) {
+        $this->crypto = $crypto;
+
+        // Plugin pages.
+        add_action('admin_menu', array($this, 'createPluginPages'), 9);
+
+        // Meta Boxes.
+        add_action('add_meta_boxes', array($this, 'metaBoxHandler'));
 
         // WooCommerce related
+        /* This will (probably) not be a v1.0 feature.
         add_filter('woocommerce_product_data_tabs', array($this, 'wooLicenseProductDataTab'));
         add_action('woocommerce_product_data_panels', array($this, 'wooLicenseProductDataPanel'));
-
-        // Meta Box
-        add_action('add_meta_boxes', array($this, 'licensesMetaBoxHandler'));
+        */
     }
 
-    public function main()
+    public function createPluginPages()
     {
         add_menu_page(
             __('License Manager', 'lima'),
@@ -58,10 +62,6 @@ class AdminMenus
             'license_manager',
             array($this, 'mainPage')
         );
-    }
-
-    public function generators()
-    {
         add_submenu_page(
             'license_manager',
             __('License Manager - Generators', 'lima'),
@@ -70,10 +70,6 @@ class AdminMenus
             'license_manager_generators',
             array($this, 'generatorsPage')
         );
-    }
-
-    public function generatorsAdd()
-    {
         add_submenu_page(
             'license_manager',
             __('Add New Generator', 'lima'),
@@ -82,10 +78,14 @@ class AdminMenus
             'license_manager_generators_add',
             array($this, 'generatorsAddPage')
         );
-    }
-
-    public function settings()
-    {
+        add_submenu_page(
+            null,
+            __('Edit Generator', 'lima'),
+            __('Edit Generator', 'lima'),
+            'manage_options',
+            'license_manager_generators_edit',
+            array($this, 'generatorsEditPage')
+        );
         add_submenu_page(
             'license_manager',
             __('License Manager - Settings', 'lima'),
@@ -96,6 +96,105 @@ class AdminMenus
         );
     }
 
+    public function mainPage()
+    {
+        $licenses = new \LicenseManager\Classes\Lists\LicensesList($this->crypto);
+
+        add_screen_option(
+            'per_page',
+            array(
+                'label'   => 'Licenses per page',
+                'default' => 5,
+                'option'  => 'licenses_per_page'
+            )
+        );
+
+        include LM_TEMPLATES_DIR . 'main_page.php';
+    }
+
+    public function settingsPage()
+    {
+        include LM_TEMPLATES_DIR . 'settings_page.php';
+    }
+
+    public function generatorsPage()
+    {
+        $generators = new \LicenseManager\Classes\Lists\GeneratorsList();
+
+        add_screen_option(
+            'per_page',
+            array(
+                'label'   => 'Generators per page',
+                'default' => 5,
+                'option'  => 'generators_per_page'
+            )
+        );
+
+        include LM_TEMPLATES_DIR . 'generators_page.php';
+    }
+
+    public function generatorsAddPage()
+    {
+        include LM_TEMPLATES_DIR . 'generators_add_new.php';
+    }
+
+    public function generatorsEditPage()
+    {
+        include LM_TEMPLATES_DIR . 'generators_edit.php';
+    }
+
+    /**
+     * @todo If statement should check if this order has licenses attached to it. Perhaps loop through the products and
+     * Check if a meta data entry exists for any of them. Or set a meta data for the entire order, should it contain
+     * license products.
+     * @todo Add a meta box for the edit products view.
+     */
+    public function metaBoxHandler($post_type)
+    {
+        // The edit order meta box.
+        if (1 == 1) {
+            add_meta_box(
+                'lm-licenses-meta-box',
+                __('License Manager - Order Licenses', 'lima'),
+                array($this, 'orderMetaBox'),
+                'shop_order'
+            );
+        }
+
+        // The edit product meta box.
+        if (1 == 1) {
+            add_meta_box(
+                'lm-licenses-meta-box',
+                __('License Manager - Product License Settings', 'lima'),
+                array($this, 'productMetaBox'),
+                'product'
+            );
+        }
+    }
+
+    public function orderMetaBox()
+    {
+        global $post;
+
+        $licenses = Database::getLicenseKeys($post->ID);
+
+        include LM_METABOX_DIR . 'edit-order.php';
+    }
+
+    public function productMetaBox()
+    {
+        global $post;
+
+        $generators = Database::getGenerators();
+
+        if (!$gen_id = get_post_meta($post->ID, '_lima_generator_id', true)) {
+            $gen_id = false;
+        }
+
+        include LM_METABOX_DIR . 'edit-product.php';
+    }
+
+    /*
     public function wooLicenseProductDataTab($product_data_tabs)
     {
         $product_data_tabs['license-manager-tab'] = array(
@@ -124,73 +223,5 @@ class AdminMenus
             </div>
         <?php
     }
-
-    public function mainPage()
-    {
-        $licenses = new \LicenseManager\Classes\Lists\LicensesList();
-
-        add_screen_option(
-            'per_page',
-            array(
-                'label'   => 'Licenses per page',
-                'default' => 5,
-                'option'  => 'licenses_per_page'
-            )
-        );
-
-        include LM_TEMPLATES_DIR . 'main_page.php';
-    }
-
-    public function settingsPage()
-    {
-        echo 'Settings Page!';
-    }
-
-    public function generatorsPage()
-    {
-        $generators = new \LicenseManager\Classes\Lists\GeneratorsList();
-
-        add_screen_option(
-            'per_page',
-            array(
-                'label'   => 'Generators per page',
-                'default' => 5,
-                'option'  => 'generators_per_page'
-            )
-        );
-
-        include LM_TEMPLATES_DIR . 'generators_page.php';
-    }
-
-    public function generatorsAddPage()
-    {
-        include LM_TEMPLATES_DIR . 'generators_add_new.php';
-    }
-
-    /**
-     * @todo If statement should check if this order has licenses attached to it. Perhaps loop through the products and
-     * Check if a meta data entry exists for any of them. Or set a meta data for the entire order, should it contain
-     * license products.
-     * @todo Add a meta box for the edit products view.
-     */
-    public function licensesMetaBoxHandler($post_type)
-    {
-        if (1 == 1) {
-            add_meta_box(
-                'lm-licenses-meta-box',
-                __('Licenses', 'lima'),
-                array($this, 'licensesMetaBox'),
-                'shop_order'
-            );
-        }
-    }
-
-    public function licensesMetaBox()
-    {
-        global $post;
-
-        $licenses = Database::getLicenseKeys($post->ID);
-
-        include LM_TEMPLATES_DIR . 'licenses_meta_box.php';
-    }
+    */
 }
