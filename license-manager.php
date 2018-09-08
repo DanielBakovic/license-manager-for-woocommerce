@@ -40,16 +40,3 @@ function licensemanager() {
 
 // Global for backwards compatibility.
 $GLOBALS['licensemanager'] = licensemanager();
-
-/*
-$args = array(
-    'charset' => '123456789ABCDEFGHIJKLMNPQRSTUVWXYZ',
-    'chunks' => 2,
-    'chunk_length' => 5,
-    'separator' => '-',
-    'prefix' => 'PRE-',
-    'suffix' => '-SUF',
-    'expires_in' => 90
-);
-\LicenseManager\Classes\Logger::console(apply_filters('LM_add_license_key', $args));
-*/

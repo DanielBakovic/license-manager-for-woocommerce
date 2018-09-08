@@ -32,6 +32,7 @@ class AdminMenus
 
         // Plugin pages.
         add_action('admin_menu', array($this, 'createPluginPages'), 9);
+        add_action('admin_init', array($this, 'initSettingsAPI'));
 
         // Meta Boxes.
         add_action('add_meta_boxes', array($this, 'metaBoxHandler'));
@@ -49,33 +50,41 @@ class AdminMenus
             __('License Manager', 'lima'),
             __('License Manager', 'lima'),
             'manage_options',
-            'license_manager',
-            array($this, 'mainPage'),
+            'licence_manager',
+            array($this, 'licencesPage'),
             'dashicons-lock',
             10
         );
         add_submenu_page(
-            'license_manager',
+            'licence_manager',
             __('License Manager', 'lima'),
             __('Licenses', 'lima'),
             'manage_options',
-            'license_manager',
-            array($this, 'mainPage')
+            'licence_manager',
+            array($this, 'licencesPage')
         );
         add_submenu_page(
-            'license_manager',
+            'licence_manager',
+            __('License Manager - Add/Import Licence(s)', 'lima'),
+            __('Add/Import Licence(s)', 'lima'),
+            'manage_options',
+            'licence_manager_add_import',
+            array($this, 'licensesAddImportPage')
+        );
+        add_submenu_page(
+            'licence_manager',
             __('License Manager - Generators', 'lima'),
             __('Generators', 'lima'),
             'manage_options',
-            'license_manager_generators',
+            'licence_manager_generators',
             array($this, 'generatorsPage')
         );
         add_submenu_page(
-            'license_manager',
+            'licence_manager',
             __('Add New Generator', 'lima'),
             __('Add New Generator', 'lima'),
             'manage_options',
-            'license_manager_generators_add',
+            'licence_manager_generators_add',
             array($this, 'generatorsAddPage')
         );
         add_submenu_page(
@@ -83,20 +92,20 @@ class AdminMenus
             __('Edit Generator', 'lima'),
             __('Edit Generator', 'lima'),
             'manage_options',
-            'license_manager_generators_edit',
+            'licence_manager_generators_edit',
             array($this, 'generatorsEditPage')
         );
         add_submenu_page(
-            'license_manager',
+            'licence_manager',
             __('License Manager - Settings', 'lima'),
             __('Settings', 'lima'),
             'manage_options',
-            'license_manager_settings',
+            'licence_manager_settings',
             array($this, 'settingsPage')
         );
     }
 
-    public function mainPage()
+    public function licencesPage()
     {
         $licenses = new \LicenseManager\Classes\Lists\LicensesList($this->crypto);
 
@@ -109,7 +118,19 @@ class AdminMenus
             )
         );
 
-        include LM_TEMPLATES_DIR . 'main_page.php';
+        include LM_TEMPLATES_DIR . 'licences_page.php';
+    }
+
+    public function licensesAddImportPage()
+    {
+        $products = new \WP_Query(
+            array(
+                'post_type'      => 'product',
+                'posts_per_page' => -1
+            )
+        );
+
+        include LM_TEMPLATES_DIR . 'licences_add_import_page.php';
     }
 
     public function settingsPage()
@@ -194,12 +215,17 @@ class AdminMenus
         include LM_METABOX_DIR . 'edit-product.php';
     }
 
+    public function initSettingsAPI()
+    {
+        new Settings();
+    }
+
     /*
     public function wooLicenseProductDataTab($product_data_tabs)
     {
         $product_data_tabs['license-manager-tab'] = array(
             'label'  => __( 'License Manager', 'lima' ),
-            'target' => 'license_manager_product_data'
+            'target' => 'licence_manager_product_data'
         );
 
         return $product_data_tabs;
@@ -209,7 +235,7 @@ class AdminMenus
     {
         global $woocommerce, $post;
             ?>
-            <div id="license_manager_product_data" class="panel woocommerce_options_panel">
+            <div id="licence_manager_product_data" class="panel woocommerce_options_panel">
                 <?php
                 woocommerce_wp_checkbox(array( 
                     'id'            => 'sell_licenses', 

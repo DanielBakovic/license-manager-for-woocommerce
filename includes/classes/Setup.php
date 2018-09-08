@@ -117,6 +117,10 @@ class Setup
 
     public static function setDefaulOptions()
     {
-        update_option('_lima_encrypt_license_keys', 1, '', 'yes');
+        $defaults = array(
+            '_lima_encrypt_license_keys' => 1
+        );
+
+        update_option('_lima_settings', $defaults, '', 'yes');
     }
 }

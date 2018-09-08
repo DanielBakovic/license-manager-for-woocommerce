@@ -72,8 +72,10 @@ final class Main
         $this->define('LM_PLUGIN_BASENAME', plugin_basename(LM_PLUGIN_FILE));
 
         // Directories
+        $this->define('LM_ASSETS_DIR',    LM_ABSPATH       . 'assets/');
         $this->define('LM_LOG_DIR',       LM_ABSPATH       . 'logs/');
         $this->define('LM_TEMPLATES_DIR', LM_ABSPATH       . 'templates/');
+        $this->define('LM_ETC_DIR',       LM_ASSETS_DIR    . 'etc/');
         $this->define('LM_METABOX_DIR',   LM_TEMPLATES_DIR . 'meta-box/');
 
         // URL's

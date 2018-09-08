@@ -15,13 +15,17 @@ defined('ABSPATH') || exit;
  */
 class FormHandler
 {
+    const TEMP_CSV_FILE = 'import.tmp.csv';
+    const TEMP_TXT_FILE = 'import.tmp.txt';
+
     /**
      * FormHandler Constructor.
      */
     public function __construct()
     {
-        add_action('admin_post_LM_save_generator', array($this, 'saveGenerator'), 10);
-        add_action('admin_post_LM_save_settings',  array($this, 'saveSettings'), 10);
+        // Admin POST requests.
+        add_action('admin_post_LM_save_generator',      array($this, 'saveGenerator'), 10);
+        add_action('admin_post_LM_import_licence_keys', array($this, 'importLicences'), 10);
 
         // Meta box handlers
         add_action('save_post', array($this, 'assignGeneratorToProduct'), 10);
@@ -41,7 +45,6 @@ class FormHandler
      * @param string $args['suffis']       - License key suffix.
      * @param string $args['expires_in']   - Number of days for which the license is valid.
      *
-     * @return null
      */
     public static function saveGenerator($args)
     {
@@ -66,15 +69,44 @@ class FormHandler
         exit;
     }
 
-    public static function saveSettings()
+    /**
+     * Import licences from a compatible CSV or TXT file into the database.
+     *
+     * @since 1.0.0
+     *
+     */
+    public function importLicences()
     {
-        if (isset($_POST['lima_encrypt'])) {
-            update_option('_lima_encrypt_license_keys', 1, '', 'yes');
+        // Check the nonce.
+        check_admin_referer('lima-import');
+
+        //$extension = pathinfo($_POST['file'], PATHINFO_EXTENSION);
+        $extension = 'txt';
+
+        // CSV Import
+        if ($extension == 'csv') {
+            # code...
+
+        // TXT Import
+        } elseif ($extension == 'txt') {
+
+            // File upload file, return with error.
+            if (!move_uploaded_file($_FILES['file']['tmp_name'], LM_ETC_DIR . self::TEMP_TXT_FILE)) {
+                echo "There was an error uploading the file, please try again!";
+                return;
+            }
+
+            $license_keys = file(LM_ETC_DIR . self::TEMP_TXT_FILE, FILE_IGNORE_NEW_LINES);
+
+            $test = apply_filters('LM_import_license_keys', $license_keys);
+
         } else {
-            update_option('_lima_encrypt_license_keys', 0, '', 'yes');
+            // Wrong file type.
         }
 
-        wp_redirect(admin_url('admin.php?page=license_manager_settings'));
+        echo '<pre>';
+        var_dump($test);
+        exit();
     }
 
     /**

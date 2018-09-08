@@ -25,9 +25,9 @@ class Database
     ) {
         $this->crypto = $crypto;
 
-        add_action('LM_save_license_keys',  array($this, 'saveLicenseKeys'), 10, 1);
-        add_filter('LM_license_key_exists', array($this, 'licenseKeyExists'), 10, 1);
-        add_filter('LM_add_license_key',    array($this, 'addLicenseKey'), 10, 1);
+        add_action('LM_save_license_keys',   array($this, 'saveLicenseKeys'), 10, 1);
+        add_filter('LM_license_key_exists',  array($this, 'licenseKeyExists'), 10, 1);
+        add_filter('LM_import_license_keys', array($this, 'importLicenseKeys'), 10, 1);
     }
 
     /**
@@ -72,18 +72,13 @@ class Database
                 $invalid_keys++;
             // Key doesn't exist, add it to the database table.
             } else {
-                // Check if the keys should be encrypted before saving.
-                if (get_option('_lima_encrypt_license_keys')) {
-                    $license_key = $this->crypto->encrypt($license_key);
-                }
-
                 // Save to database.
                 $wpdb->insert(
                     $wpdb->prefix . \LicenseManager\Classes\Setup::LICENSES_TABLE_NAME,
                     array(
                         'order_id'    => $args['order_id'],
                         'product_id'  => $args['product_id'],
-                        'license_key' => $license_key,
+                        'license_key' => $this->crypto->encrypt($license_key),
                         'created_at'  => $created_at,
                         'expires_at'  => $expires_at,
                         'status'      => 1
@@ -143,59 +138,26 @@ class Database
     }
 
     /**
-     * Check if the license key already exists in the database. Returns the license key that was added. If the function
-     * looped for more than 20 times (for whatever reason), it will return boolean false.
+     * Imports an array of un-encrypted licence keys into the database..
      *
      * @since 1.0.0
      *
-     * @param int    $args['order_id']     - Corresponding order ID.
-     * @param int    $args['product_id']   - Corresponding product ID.
-     * @param int    $args['expires_in']   - Number of days in which the license key expires.
-     * @param string $args['charset']      - Character map from which the license will be generated.
-     * @param int    $args['chunk_length'] - The length of an individual chunk.
-     * @param int    $args['chunks']       - Number of chunks.
-     * @param string $args['prefix']       - Prefix used.
-     * @param string $args['separator']    - Separator used.
-     * @param string $args['suffix']       - Suffix used.
-     * 
-     * @return boolean|string
+     * @param array $licence_keys
+     *
+     * @return array
      */
-    public function addLicenseKey($args)
+    public function importLicenseKeys($licence_keys)
     {
-        // Used to prevent the function from looping indefinitely.
-        static $counter = 0;
-
-        // Generate the license string.
-        $license_key = apply_filters('LM_generate_license_string', $args);
-        $license_key = '00000-AAAAA';
-
-        // Returns false and logs an exception if the function has looped for more than 20 times.
-        if ($counter >= 20) {
-            return 'if';
-
-            $e = new \Exception(
-                __(
-                    'Too many failed attempts at generating a license key. Parameters are included in the exception log.',
-                    'lima'
-                ),
-                2
-            );
-
-            Logger::exception($e);
-            Logger::exception($args);
-
-            return false;
-        // Recursively call this method to generate a new license key with the the same arguments. Also up the counter.
-        } else if (apply_filters('LM_license_key_exists', $license_key)) {
-            $counter++;
-            $this->addLicenseKey($args);
-        // License key is valid, save it in the database table.
-        } else {
-            return 'else';
-            return $license_key;
+        foreach ($licence_keys as $licence_key) {
+            var_dump($licence_key);
         }
 
-        return false;
+        return 'foobar';
+
+        //if (apply_filters('LM_license_key_exists', $license_key)) {
+        //    $invalid_keys++;
+        //// Key doesn't exist, add it to the database table.
+        //} 
     }
 
     /**

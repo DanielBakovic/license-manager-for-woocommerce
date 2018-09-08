@@ -2,6 +2,8 @@
 
 namespace LicenseManager\Classes\Lists;
 
+use \LicenseManager\Classes\Settings;
+
 /**
  * Create the Licenses list
  *
@@ -100,21 +102,26 @@ class LicensesList extends \WP_List_Table
                 }
                 return $link;
             case 'license_key':
-                if (get_option('_lima_encrypt_license_keys')) {
-                    return sprintf('<code>%s</code>', $this->crypto->decrypt($item['license_key']));
-                } else {
-                    return sprintf('<code>%s</code>', $item['license_key']);
-                }
+                return sprintf('<code>%s</code>', $this->crypto->decrypt($item['license_key']));
             case 'status':
                 switch ($item['status']) {
                     case 1:
-                        $status = __('<span class="lima-status available">Available</span>', 'lima');
+                        $status = sprintf('
+                            <span class="lima-status available">%s</span>',
+                            __('Available', 'lima')
+                        );
                         break;
                     case 2:
-                        $status = __('<span class="lima-status deactivated">Deactivated</span>', 'lima');
+                        $status = sprintf('
+                            <span class="lima-status deactivated">%s</span>',
+                            __('Deactivated', 'lima')
+                        );
                         break;
                     default:
-                        $status = __('<span class="lima-status unknown">Unknown</span>', 'lima');
+                        $status = sprintf('
+                            <span class="lima-status unknown">%s</span>',
+                            __('Unknown', 'lima')
+                        );
                         break;
                 }
                 return $status;
