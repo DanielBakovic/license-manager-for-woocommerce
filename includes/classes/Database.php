@@ -27,6 +27,7 @@ class Database
 
         add_action('lima_save_generated_licence_keys',   array($this, 'saveGeneratedLicenceKeys' ), 10, 1);
         add_filter('lima_save_imported_licence_keys',    array($this, 'saveImportedLicenseKeys'  ), 10, 1);
+        add_filter('lima_save_added_licence_key',        array($this, 'saveAddedLicenseKey'      ), 10, 1);
         add_filter('lima_license_key_exists',            array($this, 'licenseKeyExists'         ), 10, 1);
         add_filter('lima_import_license_keys',           array($this, 'importLicenseKeys'        ), 10, 1);
     }
@@ -163,6 +164,40 @@ class Database
         }
 
         return $result;
+    }
+
+    /**
+     * Saves an un-encrypted licence keys into the database.
+     *
+     * @since 1.0.0
+     *
+     * @param string  $args['licence_key']
+     * @param boolean $args['activate']
+     * @param int     $args['product_id']
+     *
+     * @return array
+     */
+    public function saveAddedLicenseKey($args)
+    {
+        global $wpdb;
+
+        $created_at = date('Y-m-d H:i:s');
+        $args['activate'] ? $status = 3 : $status = 4;
+
+        return $wpdb->insert(
+            $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
+            array(
+                'order_id'    => null,
+                'product_id'  => $args['product_id'],
+                'license_key' => $this->crypto->encrypt($args['licence_key']),
+                'hash'        => $this->crypto->hash($args['licence_key']),
+                'created_at'  => $created_at,
+                'expires_at'  => null,
+                'source'      => 3,
+                'status'      => $status
+            ),
+            array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
+        );
     }
 
     /**

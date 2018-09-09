@@ -5,7 +5,7 @@
     <h1><?=__('Edit Generator', 'lima'); ?></h1>
 
     <form method="post" action="<?=admin_url('admin-post.php');?>">
-        <input type="hidden" name="action" value="LM_save_generator">
+        <input type="hidden" name="action" value="lima_save_generator">
         <table class="form-table">
             <tbody>
                 <tr scope="row">

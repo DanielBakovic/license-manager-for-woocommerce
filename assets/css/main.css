@@ -42,6 +42,16 @@ table.wp-list-table.licences {
 	table-layout: auto !important;
 }
 
+/* Table vertical-align fix */
+table.wp-list-table.generators td,
+table.wp-list-table.licences td {
+	vertical-align: middle;
+}
+
+table.wp-list-table.licences td.source.column-source > span {
+	font-size: 2em;
+}
+
 .lima-status {
 	padding: 5px 10px;
 	border-radius: 3px;

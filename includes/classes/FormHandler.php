@@ -23,8 +23,9 @@ class FormHandler
     public function __construct()
     {
         // Admin POST requests.
-        add_action('admin_post_LM_save_generator',      array($this, 'saveGenerator' ), 10);
-        add_action('admin_post_LM_import_licence_keys', array($this, 'importLicences'), 10);
+        add_action('admin_post_lima_save_generator',      array($this, 'saveGenerator' ), 10);
+        add_action('admin_post_lima_import_licence_keys', array($this, 'importLicences'), 10);
+        add_action('admin_post_lima_add_licence_key',     array($this, 'addLicence'    ), 10);
 
         // Meta box handlers
         add_action('save_post', array($this, 'assignGeneratorToProduct'), 10);
@@ -129,6 +130,33 @@ class FormHandler
                     )
                 )
             );
+        }
+    }
+
+    /**
+     * Add a single licence key to the database.
+     *
+     * @since 1.0.0
+     *
+     */
+    public function addLicence()
+    {
+        // Check the nonce.
+        check_admin_referer('lima-add');
+
+        $result = apply_filters(
+            'lima_save_added_licence_key',
+            array(
+                'licence_key' => sanitize_text_field($_POST['licence_key']),
+                'activate'    => array_key_exists('activate', $_POST) ? true : false,
+                'product_id'  => intval($_POST['product'])
+            )
+        );
+
+        if ($result) {
+            wp_redirect(admin_url('admin.php?page=licence_manager_add_import&add=success'));
+        } else {
+            wp_redirect(admin_url('admin.php?page=licence_manager_add_import&add=failed'));
         }
     }
 

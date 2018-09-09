@@ -124,19 +124,19 @@ class LicensesList extends \WP_List_Table
                 switch ($item['source']) {
                     case 1:
                         $status = sprintf(
-                            '<span class="dashicons dashicons-admin-network"></span> <span>%s</span>',
+                            '<span class="dashicons dashicons-admin-network" title="%s"></span>',
                             __('Generator', 'lima')
                         );
                         break;
                     case 2:
                         $status = sprintf(
-                            '<span class="dashicons dashicons-download"></span> <span>%s</span>',
+                            '<span class="dashicons dashicons-download" title="%s"></span>',
                             __('Import', 'lima')
                         );
                         break;
                     case 3:
                         $status = sprintf(
-                            '<span class="dashicons dashicons-admin-users"></span> <span>%s</span>',
+                            '<span class="dashicons dashicons-admin-users" title="%s"></span>',
                             __('Added manually', 'lima')
                         );
                         break;

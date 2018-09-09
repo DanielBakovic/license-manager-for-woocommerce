@@ -28,6 +28,7 @@ class AdminNotice
      */
     public function __construct() {
         add_action('admin_notices', array($this, 'importLicenceKeys'));
+        add_action('admin_notices', array($this, 'addLicenceKey'));
     }
 
     public function importLicenceKeys()
@@ -68,6 +69,26 @@ class AdminNotice
                     intval($_GET['added']),
                     intval($_GET['rejected'])
                 )
+            );
+        }
+    }
+
+    public function addLicenceKey()
+    {
+        // Return if this is not related to the import messages.
+        if (!isset($_GET['add'])) return;
+
+        if ($_GET['add'] == 'success') {
+            echo sprintf(
+                self::MESSAGE_DISMISSIBLE,
+                self::NOTICE_SUCCESS,
+                __('Your licence key has been added successfully.', 'lima')
+            );
+        } else {
+            echo sprintf(
+                self::MESSAGE_DISMISSIBLE,
+                self::NOTICE_ERROR,
+                __('Something went wrong, your key was not added. Please try again.', 'lima')
             );
         }
     }
