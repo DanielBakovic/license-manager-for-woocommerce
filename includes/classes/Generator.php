@@ -62,8 +62,8 @@ class Generator
      */
     public function __construct()
     {
-        add_filter('LM_create_license_keys', array($this, 'createLicenseKeys'), 10);
-        add_filter('LM_generate_license_string', array($this, 'generateLicenseString'), 10);
+        add_filter('lima_create_license_keys',     array($this, 'createLicenseKeys'    ), 10);
+        add_filter('lima_generate_license_string', array($this, 'generateLicenseString'), 10);
     }
 
     /**
@@ -157,7 +157,7 @@ class Generator
         // Generate the license strings
         for ($i=0; $i < $amount; $i++) { 
             $args['licenses'][] = apply_filters(
-                'LM_generate_license_string',
+                'lima_generate_license_string',
                 array(
                     'charset'      => $args['charset'],
                     'chunks'       => $args['chunks'],

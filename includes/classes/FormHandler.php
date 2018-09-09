@@ -24,7 +24,7 @@ class FormHandler
     public function __construct()
     {
         // Admin POST requests.
-        add_action('admin_post_LM_save_generator',      array($this, 'saveGenerator'), 10);
+        add_action('admin_post_LM_save_generator',      array($this, 'saveGenerator' ), 10);
         add_action('admin_post_LM_import_licence_keys', array($this, 'importLicences'), 10);
 
         // Meta box handlers
@@ -98,7 +98,7 @@ class FormHandler
 
             $license_keys = file(LM_ETC_DIR . self::TEMP_TXT_FILE, FILE_IGNORE_NEW_LINES);
 
-            $test = apply_filters('LM_import_license_keys', $license_keys);
+            $test = apply_filters('lima_import_license_keys', $license_keys);
 
         } else {
             // Wrong file type.

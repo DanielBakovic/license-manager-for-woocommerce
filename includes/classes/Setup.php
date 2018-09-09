@@ -117,10 +117,16 @@ class Setup
 
     public static function setDefaulOptions()
     {
+        // The defaults for the Setting API.
         $defaults = array(
             '_lima_encrypt_license_keys' => 1
         );
 
         update_option('_lima_settings', $defaults, '', 'yes');
+
+        // Cryptographic secrets.
+        if (!file_exists(LM_ETC_DIR . 'secret.txt')) {
+            file_put_contents(LM_ETC_DIR . 'secret.txt', bin2hex(random_bytes(16)));
+        }
     }
 }

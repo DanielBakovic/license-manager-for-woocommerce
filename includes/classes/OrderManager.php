@@ -62,7 +62,7 @@ class OrderManager
                     'expires_in'   => $generator->expires_in
                 );
 
-                $licenses = apply_filters('LM_create_license_keys', $create_license_args);
+                $licenses = apply_filters('lima_create_license_keys', $create_license_args);
 
                 // Save the license keys
                 $save_license_args = array(
@@ -71,7 +71,7 @@ class OrderManager
                     'licenses'   => $licenses['licenses'],
                     'expires_in' => $licenses['expires_in']
                 );
-                do_action('LM_save_license_keys', $save_license_args);
+                do_action('lima_save_license_keys', $save_license_args);
             }
         }
     }

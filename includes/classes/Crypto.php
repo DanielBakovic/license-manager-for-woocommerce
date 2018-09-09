@@ -4,6 +4,7 @@ namespace LicenseManager\Classes;
 
 use Defuse\Crypto\Key;
 use Defuse\Crypto\Crypto as DefuseCrypto;
+use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 
 /**
  * LicenseManager Crypto.
@@ -79,9 +80,14 @@ class Crypto
     {
         try {
             return DefuseCrypto::decrypt($cipher, $this->loadEncryptionKeyFromConfig());
-        } catch (\Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException $ex) {
+        } catch (WrongKeyOrModifiedCiphertextException $ex) {
             // An attack! Either the wrong key was loaded, or the ciphertext has changed since it was created -- either
             // corrupted in the database or intentionally modified by someone trying to carry out an attack.
         }
+    }
+
+    public function hash($value)
+    {
+        return hash_hmac('sha256', $value, file_get_contents(LM_ETC_DIR . 'secret.txt'));
     }
 }
