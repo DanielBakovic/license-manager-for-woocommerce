@@ -10,6 +10,32 @@
 	--color-dark: #343a40;
 }
 
+/* Text colors */
+.text-primary {
+	color: var(--color-primary);
+}
+.text-secondary {
+	color: var(--color-secondary);
+}
+.text-success {
+	color: var(--color-success);
+}
+.text-danger {
+	color: var(--color-danger);
+}
+.text-warning {
+	color: var(--color-warning);
+}
+.text-info {
+	color: var(--color-info);
+}
+.text-light {
+	color: var(--color-light);
+}
+.text-dark {
+	color: var(--color-dark);
+}
+
 /* Table auto-width fix */
 table.wp-list-table.generators,
 table.wp-list-table.licences {

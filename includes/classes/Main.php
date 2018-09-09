@@ -131,6 +131,7 @@ final class Main
         $crypto = new Crypto();
 
         new AdminMenus($crypto);
+        new AdminNotice();
         new Generator();
         new OrderManager();
         new Database($crypto);

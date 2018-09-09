@@ -232,9 +232,10 @@ class LicensesList extends \WP_List_Table
     public function get_bulk_actions()
     {
         $actions = [
-            'export' => __('Export', 'lima'),
-            'activate' => __('Activate', 'lima'),
-            'deactivate' => __('Deactivate', 'lima')
+            'export'     => __('Export', 'lima'),
+            'activate'   => __('Activate', 'lima'),
+            'deactivate' => __('Deactivate', 'lima'),
+            'delete'     => __('Delete', 'lima')
         ];
 
         return $actions;

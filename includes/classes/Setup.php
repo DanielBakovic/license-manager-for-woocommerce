@@ -93,6 +93,7 @@ class Setup
                 `order_id` bigint(20) NULL DEFAULT NULL,
                 `product_id` bigint(20) NULL DEFAULT NULL,
                 `license_key` varchar(256) NOT NULL,
+                `hash` varchar(256) NOT NULL,
                 `created_at` datetime NOT NULL,
                 `expires_at` datetime NULL,
                 `source` varchar(256) NOT NULL,

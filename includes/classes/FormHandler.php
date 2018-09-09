@@ -15,7 +15,6 @@ defined('ABSPATH') || exit;
  */
 class FormHandler
 {
-    const TEMP_CSV_FILE = 'import.tmp.csv';
     const TEMP_TXT_FILE = 'import.tmp.txt';
 
     /**
@@ -80,33 +79,57 @@ class FormHandler
         // Check the nonce.
         check_admin_referer('lima-import');
 
-        //$extension = pathinfo($_POST['file'], PATHINFO_EXTENSION);
-        $extension = 'txt';
-
-        // CSV Import
-        if ($extension == 'csv') {
-            # code...
-
-        // TXT Import
-        } elseif ($extension == 'txt') {
-
-            // File upload file, return with error.
-            if (!move_uploaded_file($_FILES['file']['tmp_name'], LM_ETC_DIR . self::TEMP_TXT_FILE)) {
-                echo "There was an error uploading the file, please try again!";
-                return;
-            }
-
-            $license_keys = file(LM_ETC_DIR . self::TEMP_TXT_FILE, FILE_IGNORE_NEW_LINES);
-
-            $test = apply_filters('lima_import_license_keys', $license_keys);
-
-        } else {
-            // Wrong file type.
+        // Check the file extension, return if not .txt
+        if (!pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION) == 'txt' || $_FILES['file']['type'] != 'text/plain') {
+            return null;
         }
 
-        echo '<pre>';
-        var_dump($test);
-        exit();
+        // File upload file, return with error.
+        if (!move_uploaded_file($_FILES['file']['tmp_name'], LM_ETC_DIR . self::TEMP_TXT_FILE)) {
+            return null;
+        }
+
+        // Check for invalid file contents.
+        if (!is_array($licence_keys = file(LM_ETC_DIR . self::TEMP_TXT_FILE, FILE_IGNORE_NEW_LINES))) {
+            return null;
+        }
+
+        $result = apply_filters(
+            'lima_save_imported_licence_keys',
+            array(
+                'licence_keys' => $licence_keys,
+                'activate'     => array_key_exists('activate', $_POST) ? true : false,
+                'product_id'   => intval($_POST['product'])
+            )
+        );
+
+        if ($result['failed'] == 0 && $result['added'] == 0) {
+            wp_redirect(admin_url('admin.php?page=licence_manager_add_import&import=error'));
+        }
+        if ($result['failed'] == 0 && $result['added'] > 0) {
+            wp_redirect(
+                admin_url(
+                    sprintf('admin.php?page=licence_manager_add_import&import=success&added=%d', $result['added'])
+                )
+            );
+        }
+        if ($result['failed'] > 0 && $result['added'] == 0) {
+            wp_redirect(
+                admin_url(
+                    sprintf('admin.php?page=licence_manager_add_import&import=failed&rejected=%d', $result['failed'])
+                )
+            );
+        }
+        if ($result['failed'] > 0 && $result['added'] > 0) {
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=licence_manager_add_import&import=mixed&added=%d&rejected=%d',
+                        $result['failed']
+                    )
+                )
+            );
+        }
     }
 
     /**

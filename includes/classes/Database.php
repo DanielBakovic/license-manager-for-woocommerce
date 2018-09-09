@@ -25,9 +25,10 @@ class Database
     ) {
         $this->crypto = $crypto;
 
-        add_action('lima_save_generated_licence_keys',   array($this, 'saveLicenseKeys'  ), 10, 1);
-        add_filter('lima_license_key_exists',            array($this, 'licenseKeyExists' ), 10, 1);
-        add_filter('lima_import_license_keys',           array($this, 'importLicenseKeys'), 10, 1);
+        add_action('lima_save_generated_licence_keys',   array($this, 'saveGeneratedLicenceKeys' ), 10, 1);
+        add_filter('lima_save_imported_licence_keys',    array($this, 'saveImportedLicenseKeys'  ), 10, 1);
+        add_filter('lima_license_key_exists',            array($this, 'licenseKeyExists'         ), 10, 1);
+        add_filter('lima_import_license_keys',           array($this, 'importLicenseKeys'        ), 10, 1);
     }
 
     /**
@@ -48,7 +49,7 @@ class Database
      * @param string $args['separator']    - Separator used.
      * @param string $args['suffix']       - Suffix used.
      */
-    public function saveLicenseKeys($args)
+    public function saveGeneratedLicenceKeys($args)
     {
         global $wpdb;
 
@@ -67,7 +68,7 @@ class Database
          */
         // Add the keys to the database table.
         foreach ($args['licenses'] as $license_key) {
-            // Kex exists, up the invalid keys count.
+            // Key exists, up the invalid keys count.
             if (apply_filters('lima_license_key_exists', $license_key)) {
                 $invalid_keys++;
             // Key doesn't exist, add it to the database table.
@@ -101,7 +102,7 @@ class Database
                 'suffix'       => $args['suffix'],
                 'expires_in'   => $args['expires_in']
             ));
-            $this->saveLicenseKeys(array(
+            $this->saveGeneratedLicenceKeys(array(
                 'order_id'     => $args['order_id'],
                 'product_id'   => $args['product_id'],
                 'licenses'     => $new_keys['licenses'],
@@ -117,6 +118,51 @@ class Database
             // Keys have been generated and saved, this order is now complete.
             //update_post_meta($args['order_id'], '_lima_order_status', 'complete');
         }
+    }
+
+    /**
+     * Imports an array of un-encrypted licence keys into the database.
+     *
+     * @since 1.0.0
+     *
+     * @param array   $args['licence_keys']
+     * @param boolean $args['activate'] 
+     * @param int     $args['product_id']
+     *
+     * @return array
+     */
+    public function saveImportedLicenseKeys($args)
+    {
+        global $wpdb;
+
+        $created_at = date('Y-m-d H:i:s');
+        $result['added'] = $result['failed'] = 0;
+        $args['activate'] ? $status = 3 : $status = 4;
+
+        // Add the keys to the database table.
+        foreach ($args['licence_keys'] as $licence_key) {
+            if ($wpdb->insert(
+                    $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
+                    array(
+                        'order_id'    => null,
+                        'product_id'  => $args['product_id'],
+                        'license_key' => $this->crypto->encrypt($licence_key),
+                        'hash'        => $this->crypto->hash($licence_key),
+                        'created_at'  => $created_at,
+                        'expires_at'  => null,
+                        'source'      => 2,
+                        'status'      => $status
+                    ),
+                    array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
+                )
+            ) {
+                $result['added']++;
+            } else {
+                $result['failed']++;
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -136,29 +182,6 @@ class Database
         $sql   = "SELECT license_key FROM `{$table}` WHERE hash = '%s';";
 
         return $wpdb->get_var($wpdb->prepare($sql, $this->crypto->hash($license_key))) != null;
-    }
-
-    /**
-     * Imports an array of un-encrypted licence keys into the database..
-     *
-     * @since 1.0.0
-     *
-     * @param array $licence_keys
-     *
-     * @return array
-     */
-    public function importLicenseKeys($licence_keys)
-    {
-        foreach ($licence_keys as $licence_key) {
-            var_dump($licence_key);
-        }
-
-        return 'foobar';
-
-        //if (apply_filters('lima_license_key_exists', $license_key)) {
-        //    $invalid_keys++;
-        //// Key doesn't exist, add it to the database table.
-        //} 
     }
 
     /**

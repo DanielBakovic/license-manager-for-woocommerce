@@ -2,7 +2,7 @@
 
 <div class="wrap">
 
-    <h1><?=__('Add/Import Licence Keys', 'lima'); ?></h1>
+    <h1><?=__('Import Licence Keys', 'lima'); ?></h1>
 
     <form method="post" action="<?=admin_url('admin-post.php');?>" enctype="multipart/form-data">
 
@@ -11,23 +11,32 @@
 
         <table class="form-table">
             <tbody>
+                <!-- FILE -->
                 <tr scope="row">
                     <th scope="row"><label><?=__('File (CSV/TXT)', 'lima');?></label></th>
                     <td>
                         <input name="file" id="file" class="regular-text" type="file" accept=".csv,.txt">
-                        <p class="description" id="tagline-description"><?=__('One line per key. Keys must be un-encrypted.', 'lima');?></p>
+                        <p class="description" id="tagline-description">
+                            <span><?=__('<b class="text-danger">Important:</b> One line per key. Keys must be un-encrypted.', 'lima');?></span>
+                        </p>
                     </td>
                 </tr>
+
+                <!-- ACTIVATION STATUS -->
                 <tr scope="row">
-                    <th scope="row"><label><?=__('Duplicate licences', 'lima');?></label></th>
+                    <th scope="row"><label><?=__('Activate licences', 'lima');?></label></th>
                     <td>
-                        <label for="duplicate">
-                            <input name="duplicate" id="duplicate" class="regular-text" type="checkbox">
-                            <span><?=__('Abort if duplicates are found.');?></span>
+                        <label for="activate">
+                            <input name="activate" id="activate" class="regular-text" type="checkbox" checked="checked">
+                            <span><?=__('Activate licences immediatelly after import.', 'lima');?></span>
                         </label>
-                        <p class="description" id="tagline-description"><?=__('By selecting this option the whole import process will abort if even a single duplicate is found. Leaving this option unselected will skip duplicate keys.', 'lima');?></p>
+                        <p class="description" id="tagline-description">
+                            <span><?=__('Activated licences are immediatelly availabale for sale, while inactive licences must be activated manually.', 'lima');?></span>
+                        </p>
                     </td>
                 </tr>
+
+                <!-- FILE -->
                 <tr scope="row">
                     <th scope="row"><label><?=__('Product', 'lima');?></label></th>
                     <td>
