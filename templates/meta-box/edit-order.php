@@ -2,7 +2,8 @@
 
 <?php foreach ($licenses as $license): ?>
 	<div>
-		<span class="dashicons dashicons-admin-network"></span> <code><?=$license->license_key;?></code>
+		<span class="dashicons dashicons-admin-network"></span>
+		<code><?=$this->crypto->decrypt($license->license_key);?></code>
 	</div>
 <?php endforeach; ?>
 

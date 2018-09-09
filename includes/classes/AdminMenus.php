@@ -35,13 +35,7 @@ class AdminMenus
         add_action('admin_init', array($this, 'initSettingsAPI'));
 
         // Meta Boxes.
-        add_action('add_meta_boxes', array($this, 'metaBoxHandler'));
-
-        // WooCommerce related
-        /* This will (probably) not be a v1.0 feature.
-        add_filter('woocommerce_product_data_tabs', array($this, 'wooLicenseProductDataTab'));
-        add_action('woocommerce_product_data_panels', array($this, 'wooLicenseProductDataPanel'));
-        */
+        add_action('add_meta_boxes', array($this, 'createMetaBoxes'));
     }
 
     public function createPluginPages()
@@ -105,6 +99,35 @@ class AdminMenus
         );
     }
 
+    /**
+     * @todo If statement should check if this order has licenses attached to it. Perhaps loop through the products and
+     * Check if a meta data entry exists for any of them. Or set a meta data for the entire order, should it contain
+     * license products.
+     * @todo Add a meta box for the edit products view.
+     */
+    public function createMetaBoxes($post_type)
+    {
+        // The edit order meta box.
+        if (1 == 1) {
+            add_meta_box(
+                'lm-licenses-meta-box',
+                __('License Manager - Order Licenses', 'lima'),
+                array($this, 'orderMetaBox'),
+                'shop_order'
+            );
+        }
+
+        // The edit product meta box.
+        if (1 == 1) {
+            add_meta_box(
+                'lm-licenses-meta-box',
+                __('License Manager - Product License Settings', 'lima'),
+                array($this, 'productMetaBox'),
+                'product'
+            );
+        }
+    }
+
     public function licencesPage()
     {
         $licenses = new \LicenseManager\Classes\Lists\LicensesList($this->crypto);
@@ -164,35 +187,6 @@ class AdminMenus
         include LM_TEMPLATES_DIR . 'generators_edit.php';
     }
 
-    /**
-     * @todo If statement should check if this order has licenses attached to it. Perhaps loop through the products and
-     * Check if a meta data entry exists for any of them. Or set a meta data for the entire order, should it contain
-     * license products.
-     * @todo Add a meta box for the edit products view.
-     */
-    public function metaBoxHandler($post_type)
-    {
-        // The edit order meta box.
-        if (1 == 1) {
-            add_meta_box(
-                'lm-licenses-meta-box',
-                __('License Manager - Order Licenses', 'lima'),
-                array($this, 'orderMetaBox'),
-                'shop_order'
-            );
-        }
-
-        // The edit product meta box.
-        if (1 == 1) {
-            add_meta_box(
-                'lm-licenses-meta-box',
-                __('License Manager - Product License Settings', 'lima'),
-                array($this, 'productMetaBox'),
-                'product'
-            );
-        }
-    }
-
     public function orderMetaBox()
     {
         global $post;
@@ -220,34 +214,4 @@ class AdminMenus
         new Settings();
     }
 
-    /*
-    public function wooLicenseProductDataTab($product_data_tabs)
-    {
-        $product_data_tabs['license-manager-tab'] = array(
-            'label'  => __( 'License Manager', 'lima' ),
-            'target' => 'licence_manager_product_data'
-        );
-
-        return $product_data_tabs;
-    }
-
-    public function wooLicenseProductDataPanel()
-    {
-        global $woocommerce, $post;
-            ?>
-            <div id="licence_manager_product_data" class="panel woocommerce_options_panel">
-                <?php
-                woocommerce_wp_checkbox(array( 
-                    'id'            => 'sell_licenses', 
-                    'wrapper_class' => 'show_if_simple', 
-                    'label'         => __('Sell licenses for this product?', 'lima'),
-                    'description'   => __('License Manager Description', 'lima'),
-                    'default'       => '0',
-                    'desc_tip'      => false,
-                ));
-                ?>
-            </div>
-        <?php
-    }
-    */
 }

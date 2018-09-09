@@ -90,12 +90,13 @@ class Setup
         $tables = "
             CREATE TABLE $table1 (
                 `id` bigint(20) NOT NULL AUTO_INCREMENT,
-                `order_id` int(20) NOT NULL,
-                `product_id` bigint(20) NOT NULL,
+                `order_id` bigint(20) NULL DEFAULT NULL,
+                `product_id` bigint(20) NULL DEFAULT NULL,
                 `license_key` varchar(256) NOT NULL,
                 `created_at` datetime NOT NULL,
                 `expires_at` datetime NULL,
-                `status` smallint(5) NOT NULL,
+                `source` varchar(256) NOT NULL,
+                `status` tinyint(1) NOT NULL,
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
             CREATE TABLE $table2 (

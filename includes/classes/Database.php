@@ -25,9 +25,9 @@ class Database
     ) {
         $this->crypto = $crypto;
 
-        add_action('lima_save_license_keys',   array($this, 'saveLicenseKeys'  ), 10, 1);
-        add_filter('lima_license_key_exists',  array($this, 'licenseKeyExists' ), 10, 1);
-        add_filter('lima_import_license_keys', array($this, 'importLicenseKeys'), 10, 1);
+        add_action('lima_save_generated_licence_keys',   array($this, 'saveLicenseKeys'  ), 10, 1);
+        add_filter('lima_license_key_exists',            array($this, 'licenseKeyExists' ), 10, 1);
+        add_filter('lima_import_license_keys',           array($this, 'importLicenseKeys'), 10, 1);
     }
 
     /**
@@ -84,7 +84,7 @@ class Database
                         'expires_at'  => $expires_at,
                         'status'      => 1
                     ),
-                    array('%d', '%d', '%s', '%s', '%s', '%d')
+                    array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
                 );
             }
         }
@@ -115,7 +115,7 @@ class Database
             ));
         } else {
             // Keys have been generated and saved, this order is now complete.
-            update_post_meta($args['order_id'], '_lima_order_status', 'complete');
+            //update_post_meta($args['order_id'], '_lima_order_status', 'complete');
         }
     }
 

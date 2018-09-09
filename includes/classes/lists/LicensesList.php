@@ -3,6 +3,7 @@
 namespace LicenseManager\Classes\Lists;
 
 use \LicenseManager\Classes\Settings;
+use \LicenseManager\Classes\Logger;
 
 /**
  * Create the Licenses list
@@ -27,8 +28,8 @@ class LicensesList extends \WP_List_Table
         $this->crypto = $crypto;
 
         parent::__construct([
-            'singular' => __('License', 'lima'),
-            'plural'   => __('Licenses', 'lima'),
+            'singular' => __('Licence', 'lima'),
+            'plural'   => __('Licences', 'lima'),
             'ajax'     => false
         ]);
     }
@@ -58,18 +59,34 @@ class LicensesList extends \WP_List_Table
 
     public function no_items()
     {
-        _e('No licenses found.', 'lima');
+        _e('No licences found.', 'lima');
     }
 
-    public function column_name($item)
+    public function column_license_key($item)
     {
-        $title = '<strong>' . $item['shop_order_id'] . '</strong>';
+        $title = '<strong>' . $item['id'] . '</strong>';
+        $title = sprintf('<code>%s</code>', $this->crypto->decrypt($item['license_key']));
 
         $actions = [
-            'download' => sprintf(
+            'show' => sprintf(
                 '<a href="%s">%s</a>',
-                $item['voucher_url'],
-                __('Download', 'lima')
+                $item['id'],
+                __('Show', 'lima')
+            ),
+            'hide' => sprintf(
+                '<a href="%s">%s</a>',
+                $item['id'],
+                __('Hide', 'lima')
+            ),
+            'deliver' => sprintf(
+                '<a href="%s">%s</a>',
+                $item['id'],
+                __('Deliver', 'lima')
+            ),
+            'delete' => sprintf(
+                '<a href="%s">%s</a>',
+                $item['id'],
+                __('Delete', 'lima')
             ),
         ];
 
@@ -103,28 +120,71 @@ class LicensesList extends \WP_List_Table
                 return $link;
             case 'license_key':
                 return sprintf('<code>%s</code>', $this->crypto->decrypt($item['license_key']));
-            case 'status':
-                switch ($item['status']) {
+            case 'source':
+                switch ($item['source']) {
                     case 1:
-                        $status = sprintf('
-                            <span class="lima-status available">%s</span>',
-                            __('Available', 'lima')
+                        $status = sprintf(
+                            '<span class="dashicons dashicons-admin-network"></span> <span>%s</span>',
+                            __('Generator', 'lima')
                         );
                         break;
                     case 2:
-                        $status = sprintf('
-                            <span class="lima-status deactivated">%s</span>',
-                            __('Deactivated', 'lima')
+                        $status = sprintf(
+                            '<span class="dashicons dashicons-download"></span> <span>%s</span>',
+                            __('Import', 'lima')
                         );
                         break;
+                    case 3:
+                        $status = sprintf(
+                            '<span class="dashicons dashicons-admin-users"></span> <span>%s</span>',
+                            __('Added manually', 'lima')
+                        );
+                        break;
+
+                    // Default switch case
                     default:
-                        $status = sprintf('
-                            <span class="lima-status unknown">%s</span>',
+                        $status = '';
+                        break;
+                }
+                return $status;
+            case 'status':
+                switch ($item['status']) {
+                    case 1:
+                        $status = sprintf(
+                            '<div class="lima-status sold-pending">%s</div>',
+                            __('Sold, pending delivery', 'lima')
+                        );
+                        break;
+                    case 2:
+                        $status = sprintf(
+                            '<div class="lima-status sold-delivered">%s</div>',
+                            __('Sold, delivered', 'lima')
+                        );
+                        break;
+                    case 3:
+                        $status = sprintf(
+                            '<div class="lima-status available-ready">%s</div>',
+                            __('Available, awaiting purchase', 'lima')
+                        );
+                        break;
+                    case 4:
+                        $status = sprintf(
+                            '<div class="lima-status available-deactivated">%s</div>',
+                            __('Available, deactivated', 'lima')
+                        );
+                        break;
+
+                    // Default switch case
+                    default:
+                        $status = sprintf(
+                            '<div class="lima-status unknown">%s</div>',
                             __('Unknown', 'lima')
                         );
                         break;
                 }
                 return $status;
+
+            // Default switch case
             default:
                 return $item[$column_name];
         }
@@ -142,11 +202,12 @@ class LicensesList extends \WP_List_Table
         $columns = array(
             'cb'          => '<input type="checkbox" />',
             'id'          => __('ID', 'lima'),
+            'license_key' => __('Licence Key', 'lima'),
             'order_id'    => __('Order', 'lima'),
             'product_id'  => __('Product', 'lima'),
-            'license_key' => __('License Key', 'lima'),
             'created_at'  => __('Created at', 'lima'),
             'expires_at'  => __('Expires at', 'lima'),
+            'source'      => __('Source', 'lima'),
             'status'      => __('Status', 'lima')
         );
 
@@ -156,10 +217,13 @@ class LicensesList extends \WP_List_Table
     public function get_sortable_columns()
     {
         $sortable_columns = array(
-            'id' => array('id', true),
+            'id'         => array('id', true),
+            'order_id'   => array('order_id', true),
             'product_id' => array('product_id', true),
-            'order_id' => array('order_id', true),
-            'status' => array('status', true)
+            'created_at' => array('created_at', true),
+            'expires_at' => array('expires_at', true),
+            'source'     => array('source', true),
+            'status'     => array('status', true)
         );
 
         return $sortable_columns;
@@ -168,6 +232,7 @@ class LicensesList extends \WP_List_Table
     public function get_bulk_actions()
     {
         $actions = [
+            'export' => __('Export', 'lima'),
             'activate' => __('Activate', 'lima'),
             'deactivate' => __('Deactivate', 'lima')
         ];

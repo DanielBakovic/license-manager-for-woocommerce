@@ -91,8 +91,11 @@ final class Main
      */
     public function adminEnqueueScripts()
     {
-        wp_enqueue_style('LM_Admin_CSS',  LM_CSS_URL . 'main.css');
-        wp_enqueue_script('LM_Aadmin_JS', LM_JS_URL  . 'script.js');
+        // JavaScript
+        wp_enqueue_script('lima_admin_js', LM_JS_URL  . 'script.js');
+
+        // CSS
+        wp_enqueue_style('lima_admin_css', LM_CSS_URL . 'main.css');
     }
 
     /**

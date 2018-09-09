@@ -71,7 +71,7 @@ class OrderManager
                     'licenses'   => $licenses['licenses'],
                     'expires_in' => $licenses['expires_in']
                 );
-                do_action('lima_save_license_keys', $save_license_args);
+                do_action('lima_save_generated_licence_keys', $save_license_args);
             }
         }
     }
