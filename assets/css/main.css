@@ -48,10 +48,25 @@ table.wp-list-table.licences td {
 	vertical-align: middle;
 }
 
+/* Licence table */
 table.wp-list-table.licences td.source.column-source > span {
 	font-size: 2em;
 }
+.lima-licence-key-toggle {
+	cursor: pointer;
+}
+.lima-placeholder {
+	display: inline-block;
+	width: 150px;
+	background: var(--color-secondary);
+	border-radius: 3px;
+}
+.lima-spinner {
+	opacity: 0;
+	margin-left: 5px;
+}
 
+/* Custom status */
 .lima-status {
 	padding: 5px 10px;
 	border-radius: 3px;
@@ -59,7 +74,6 @@ table.wp-list-table.licences td.source.column-source > span {
 	font-weight: 600;
 	box-shadow: inset 0 0 0 1px rgba(0,0,0,.2);
 }
-
 .lima-status.sold-pending {
 	background: var(--color-info);
 	color: var(--color-light);

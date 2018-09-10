@@ -17,15 +17,23 @@ class FormHandler
 {
     const TEMP_TXT_FILE = 'import.tmp.txt';
 
+    private $crypto;
+
     /**
      * FormHandler Constructor.
      */
-    public function __construct()
-    {
+    public function __construct(
+        \LicenseManager\Classes\Crypto $crypto
+    ) {
+        $this->crypto = $crypto;
+
         // Admin POST requests.
         add_action('admin_post_lima_save_generator',      array($this, 'saveGenerator' ), 10);
         add_action('admin_post_lima_import_licence_keys', array($this, 'importLicences'), 10);
         add_action('admin_post_lima_add_licence_key',     array($this, 'addLicence'    ), 10);
+
+        // AJAX calls.
+        add_action('wp_ajax_lima_show_licence_key', array($this, 'showLicenceKey'), 10);
 
         // Meta box handlers
         add_action('save_post', array($this, 'assignGeneratorToProduct'), 10);
@@ -158,6 +166,19 @@ class FormHandler
         } else {
             wp_redirect(admin_url('admin.php?page=licence_manager_add_import&add=failed'));
         }
+    }
+
+    public function showLicenceKey()
+    {
+        // Validate request.
+        check_ajax_referer('lima_show_licence_key', 'show');
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') wp_die('Invalid request.');
+
+        $licence_key = Database::getLicenceKey(intval($_POST['id']));
+
+        wp_send_json($licence_key);
+
+        wp_die();
     }
 
     /**

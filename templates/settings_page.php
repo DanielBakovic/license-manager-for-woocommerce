@@ -5,7 +5,6 @@
     <h1><?=__('Settings', 'lima'); ?></h1>
 
     <pre><?php var_dump((array)get_option('_lima_settings'));?></pre>
-    <pre><?php var_dump(\LicenseManager\Classes\Settings::useEncryption());?></pre>
 
     <?php settings_errors(); ?>
     <form action="options.php" method="POST">

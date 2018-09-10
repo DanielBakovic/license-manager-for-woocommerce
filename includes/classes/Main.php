@@ -91,11 +91,16 @@ final class Main
      */
     public function adminEnqueueScripts()
     {
+        // CSS
+        wp_enqueue_style('lima_admin_css', LM_CSS_URL . 'main.css');
+
         // JavaScript
         wp_enqueue_script('lima_admin_js', LM_JS_URL  . 'script.js');
 
-        // CSS
-        wp_enqueue_style('lima_admin_css', LM_CSS_URL . 'main.css');
+        // Script localization
+        wp_localize_script('lima_admin_js', 'licence', array(
+            'show' => wp_create_nonce('lima_show_licence_key'),
+        ));
     }
 
     /**
@@ -135,7 +140,7 @@ final class Main
         new Generator();
         new OrderManager();
         new Database($crypto);
-        new FormHandler();
+        new FormHandler($crypto);
     }
 
 }

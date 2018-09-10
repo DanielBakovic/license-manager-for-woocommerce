@@ -255,4 +255,21 @@ class Database
 
         return $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE id = %d", $id), OBJECT);
     }
+
+    public static function getLicenceKey($id)
+    {
+        global $wpdb;
+
+        $table       = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
+        $crypto      = new Crypto();
+        $licence_key = $wpdb->get_var($wpdb->prepare("SELECT license_key FROM $table WHERE id = %d", $id));
+
+        if ($licence_key) {
+            return $crypto->decrypt($licence_key);
+        } else {
+            return $licence_key;
+        }
+
+        return $licence_key;
+    }
 }
