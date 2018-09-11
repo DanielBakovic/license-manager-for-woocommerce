@@ -84,16 +84,16 @@ function ajax(option)
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {
-    var toggleShow = document.querySelectorAll('.lima-licence-key-show');
-    var toggleHide = document.querySelectorAll('.lima-licence-key-hide');
+    var toggleShow = document.querySelectorAll('.lima-license-key-show');
+    var toggleHide = document.querySelectorAll('.lima-license-key-hide');
 
     if (toggleShow) {
         for(var i = 0; i < toggleShow.length; i++) {
             toggleShow[i].addEventListener('click', function() {
-                var licenceKeyId = parseInt(this.dataset.id);
+                var licenseKeyId = parseInt(this.dataset.id);
                 var spinner      = this.parentNode.parentNode.previousSibling;
                 var code         = spinner.previousSibling;
-                var licenceField = code.children[0];
+                var licenseField = code.children[0];
                 var placeholder  = code.children[1];
 
                 spinner.style.opacity = 1;
@@ -102,13 +102,13 @@ document.addEventListener('DOMContentLoaded', function(event) {
                     url: ajaxurl,
                     type: 'POST',
                     data: {
-                        action: 'lima_show_licence_key',
-                        show: licence.show,
-                        id: licenceKeyId
+                        action: 'lima_show_license_key',
+                        show: license.show,
+                        id: licenseKeyId
                     },
                     success: function(response) {
                         code.classList.remove('lima-placeholder');
-                        licenceField.innerText = JSON.parse(response);
+                        licenseField.innerText = JSON.parse(response);
                         placeholder.style.display = 'none';
                     },
                     error: function(response) {
@@ -127,11 +127,11 @@ document.addEventListener('DOMContentLoaded', function(event) {
         for(var i = 0; i < toggleHide.length; i++) {
             toggleHide[i].addEventListener('click', function() {
                 var code         = this.parentNode.parentNode.previousSibling.previousSibling;
-                var licence      = code.children[0];
+                var license      = code.children[0];
                 var placeholder  = code.children[1];
 
                 code.classList.add('lima-placeholder');
-                licence.innerText = '';
+                license.innerText = '';
                 placeholder.style.display = 'inline-block';
             });
         }

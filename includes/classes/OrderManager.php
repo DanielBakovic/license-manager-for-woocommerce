@@ -20,7 +20,7 @@ class OrderManager
      */
     public function __construct()
     {
-        add_action('woocommerce_order_status_completed', array($this, 'generateOrderLicences'));
+        add_action('woocommerce_order_status_completed', array($this, 'generateOrderLicenses'));
     }
 
     /**
@@ -30,9 +30,9 @@ class OrderManager
      *
      * @param int $order_id - WooCommerce Order ID
      *
-     * @todo Implement sending licences from other sources (imported or manually added lists for now).
+     * @todo Implement sending licenses from other sources (imported or manually added lists for now).
      */
-    public function generateOrderLicences($order_id)
+    public function generateOrderLicenses($order_id)
     {
         // Keys have already been generated for this order, since there's a status for it.
         if (get_post_meta($order_id, '_lima_order_status')) {
@@ -71,7 +71,7 @@ class OrderManager
                     'licenses'   => $licenses['licenses'],
                     'expires_in' => $licenses['expires_in']
                 );
-                do_action('lima_save_generated_licence_keys', $save_license_args);
+                do_action('lima_save_generated_license_keys', $save_license_args);
             }
         }
     }

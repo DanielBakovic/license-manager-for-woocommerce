@@ -42,9 +42,9 @@ class Settings
 
         // _lima_security section fields.
         add_settings_field(
-            '_lima_hide_licence_keys',
-            __('Hide or Show Licences', 'lima'),
-            array($this, 'limaFieldHideLicenceKeys'),
+            '_lima_hide_license_keys',
+            __('Hide or Show Licenses', 'lima'),
+            array($this, 'limaFieldHideLicenseKeys'),
             '_lima',
             '_lima_security'
         );
@@ -62,15 +62,15 @@ class Settings
     }
 
     /**
-     * Callback for the "_lima_hide_licence_keys" field.
+     * Callback for the "_lima_hide_license_keys" field.
      *
      * @since 1.0.0
      *
      */
-    public function limaFieldHideLicenceKeys()
+    public function limaFieldHideLicenseKeys()
     {
-        $field = '_lima_hide_licence_keys';
-        (array_key_exists('_lima_hide_licence_keys', $this->settings)) ? $value = true : $value = false;
+        $field = '_lima_hide_license_keys';
+        (array_key_exists('_lima_hide_license_keys', $this->settings)) ? $value = true : $value = false;
 
         $html = '<fieldset>';
         $html .= sprintf('<label for="%s">', $field);
@@ -79,11 +79,11 @@ class Settings
             $field,
             $field
         );
-        $html .= sprintf('<span>%s</span>', __('Hide licence keys in the admin dashboard.', 'lima'));
+        $html .= sprintf('<span>%s</span>', __('Hide license keys in the admin dashboard.', 'lima'));
         $html .= '</label>';
         $html .= sprintf(
             '<p class="description" id="tagline-description">%s</p>',
-            __('All licences will be hidden and only displayed when the \'Show\' action is clicked.', 'lima')
+            __('All licenses will be hidden and only displayed when the \'Show\' action is clicked.', 'lima')
         );
         $html .= '</fieldset>';
 
@@ -91,17 +91,17 @@ class Settings
     }
 
     /**
-     * Helper function which determines whether licence keys in the admin dashboard are hidden or not.
+     * Helper function which determines whether license keys in the admin dashboard are hidden or not.
      *
      * @since 1.0.0
      *
      * @return boolean
      */
-    public static function hideLicenceKeys()
+    public static function hideLicenseKeys()
     {
         $settings = (array)get_option('_lima_settings');
-        $field    = "_lima_hide_licence_keys";
-        (array_key_exists('_lima_hide_licence_keys', $settings)) ? $value = true : $value = false;
+        $field    = "_lima_hide_license_keys";
+        (array_key_exists('_lima_hide_license_keys', $settings)) ? $value = true : $value = false;
 
         return $value;
     }

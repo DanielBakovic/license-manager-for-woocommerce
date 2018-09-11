@@ -6,7 +6,7 @@
 
     <form method="post" action="<?=admin_url('admin-post.php');?>" enctype="multipart/form-data">
 
-        <input type="hidden" name="action" value="lima_import_licence_keys">
+        <input type="hidden" name="action" value="lima_import_license_keys">
         <?php wp_nonce_field('lima-import'); ?>
 
         <table class="form-table">
@@ -24,14 +24,14 @@
 
                 <!-- ACTIVATION STATUS -->
                 <tr scope="row">
-                    <th scope="row"><label><?=__('Activate licences', 'lima');?></label></th>
+                    <th scope="row"><label><?=__('Activate licenses', 'lima');?></label></th>
                     <td>
                         <label for="activate">
                             <input name="activate" id="activate" class="regular-text" type="checkbox" checked="checked">
-                            <span><?=__('Activate licences immediatelly after import.', 'lima');?></span>
+                            <span><?=__('Activate licenses immediatelly after import.', 'lima');?></span>
                         </label>
                         <p class="description" id="tagline-description">
-                            <span><?=__('Activated licences are immediatelly availabale for sale, while inactive licences must be activated manually.', 'lima');?></span>
+                            <span><?=__('Activated licenses are immediatelly availabale for sale, while inactive licenses must be activated manually.', 'lima');?></span>
                         </p>
                     </td>
                 </tr>
@@ -65,7 +65,7 @@
 
     <form method="post" action="<?=admin_url('admin-post.php');?>">
 
-        <input type="hidden" name="action" value="lima_add_licence_key">
+        <input type="hidden" name="action" value="lima_add_license_key">
         <?php wp_nonce_field('lima-add'); ?>
 
         <table class="form-table">
@@ -74,7 +74,7 @@
                 <tr scope="row">
                     <th scope="row"><label><?=__('Licence Key', 'lima');?></label></th>
                     <td>
-                        <input name="licence_key" id="licence_key" class="regular-text" type="text">
+                        <input name="license_key" id="license_key" class="regular-text" type="text">
                         <p class="description" id="tagline-description">
                         </p>
                     </td>
@@ -82,14 +82,14 @@
 
                 <!-- ACTIVATION STATUS -->
                 <tr scope="row">
-                    <th scope="row"><label><?=__('Activate licences', 'lima');?></label></th>
+                    <th scope="row"><label><?=__('Activate licenses', 'lima');?></label></th>
                     <td>
                         <label for="activate">
                             <input name="activate" id="activate" class="regular-text" type="checkbox" checked="checked">
-                            <span><?=__('Activate licence immediatelly after import.', 'lima');?></span>
+                            <span><?=__('Activate license immediatelly after import.', 'lima');?></span>
                         </label>
                         <p class="description" id="tagline-description">
-                            <span><?=__('Activated licences are immediatelly availabale for sale, while inactive licences must be activated manually.', 'lima');?></span>
+                            <span><?=__('Activated licenses are immediatelly availabale for sale, while inactive licenses must be activated manually.', 'lima');?></span>
                         </p>
                     </td>
                 </tr>

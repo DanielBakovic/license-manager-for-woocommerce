@@ -3,7 +3,7 @@
 <div class="wrap">
 
     <h1 class="wp-heading-inline"><?=__('Licenses', 'lima'); ?></h1>
-    <a href="<?=admin_url('admin.php?page=licence_manager_add_import');?>" class="page-title-action">
+    <a href="<?=admin_url('admin.php?page=license_manager_add_import');?>" class="page-title-action">
         <span><?=__('Add/Import', 'lima');?></span>
     </a>
 

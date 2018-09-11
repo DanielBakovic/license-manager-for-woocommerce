@@ -25,9 +25,9 @@ class Database
     ) {
         $this->crypto = $crypto;
 
-        add_action('lima_save_generated_licence_keys',   array($this, 'saveGeneratedLicenceKeys' ), 10, 1);
-        add_filter('lima_save_imported_licence_keys',    array($this, 'saveImportedLicenseKeys'  ), 10, 1);
-        add_filter('lima_save_added_licence_key',        array($this, 'saveAddedLicenseKey'      ), 10, 1);
+        add_action('lima_save_generated_license_keys',   array($this, 'saveGeneratedLicenseKeys' ), 10, 1);
+        add_filter('lima_save_imported_license_keys',    array($this, 'saveImportedLicenseKeys'  ), 10, 1);
+        add_filter('lima_save_added_license_key',        array($this, 'saveAddedLicenseKey'      ), 10, 1);
         add_filter('lima_license_key_exists',            array($this, 'licenseKeyExists'         ), 10, 1);
         add_filter('lima_import_license_keys',           array($this, 'importLicenseKeys'        ), 10, 1);
     }
@@ -50,7 +50,7 @@ class Database
      * @param string $args['separator']    - Separator used.
      * @param string $args['suffix']       - Suffix used.
      */
-    public function saveGeneratedLicenceKeys($args)
+    public function saveGeneratedLicenseKeys($args)
     {
         global $wpdb;
 
@@ -103,7 +103,7 @@ class Database
                 'suffix'       => $args['suffix'],
                 'expires_in'   => $args['expires_in']
             ));
-            $this->saveGeneratedLicenceKeys(array(
+            $this->saveGeneratedLicenseKeys(array(
                 'order_id'     => $args['order_id'],
                 'product_id'   => $args['product_id'],
                 'licenses'     => $new_keys['licenses'],
@@ -122,11 +122,11 @@ class Database
     }
 
     /**
-     * Imports an array of un-encrypted licence keys into the database.
+     * Imports an array of un-encrypted license keys into the database.
      *
      * @since 1.0.0
      *
-     * @param array   $args['licence_keys']
+     * @param array   $args['license_keys']
      * @param boolean $args['activate'] 
      * @param int     $args['product_id']
      *
@@ -141,14 +141,14 @@ class Database
         $args['activate'] ? $status = 3 : $status = 4;
 
         // Add the keys to the database table.
-        foreach ($args['licence_keys'] as $licence_key) {
+        foreach ($args['license_keys'] as $license_key) {
             if ($wpdb->insert(
                     $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
                     array(
                         'order_id'    => null,
                         'product_id'  => $args['product_id'],
-                        'license_key' => $this->crypto->encrypt($licence_key),
-                        'hash'        => $this->crypto->hash($licence_key),
+                        'license_key' => $this->crypto->encrypt($license_key),
+                        'hash'        => $this->crypto->hash($license_key),
                         'created_at'  => $created_at,
                         'expires_at'  => null,
                         'source'      => 2,
@@ -167,11 +167,11 @@ class Database
     }
 
     /**
-     * Saves an un-encrypted licence keys into the database.
+     * Saves an un-encrypted license keys into the database.
      *
      * @since 1.0.0
      *
-     * @param string  $args['licence_key']
+     * @param string  $args['license_key']
      * @param boolean $args['activate']
      * @param int     $args['product_id']
      *
@@ -189,8 +189,8 @@ class Database
             array(
                 'order_id'    => null,
                 'product_id'  => $args['product_id'],
-                'license_key' => $this->crypto->encrypt($args['licence_key']),
-                'hash'        => $this->crypto->hash($args['licence_key']),
+                'license_key' => $this->crypto->encrypt($args['license_key']),
+                'hash'        => $this->crypto->hash($args['license_key']),
                 'created_at'  => $created_at,
                 'expires_at'  => null,
                 'source'      => 3,
@@ -256,20 +256,20 @@ class Database
         return $wpdb->get_row($wpdb->prepare("SELECT * FROM $table WHERE id = %d", $id), OBJECT);
     }
 
-    public static function getLicenceKey($id)
+    public static function getLicenseKey($id)
     {
         global $wpdb;
 
         $table       = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
         $crypto      = new Crypto();
-        $licence_key = $wpdb->get_var($wpdb->prepare("SELECT license_key FROM $table WHERE id = %d", $id));
+        $license_key = $wpdb->get_var($wpdb->prepare("SELECT license_key FROM $table WHERE id = %d", $id));
 
-        if ($licence_key) {
-            return $crypto->decrypt($licence_key);
+        if ($license_key) {
+            return $crypto->decrypt($license_key);
         } else {
-            return $licence_key;
+            return $license_key;
         }
 
-        return $licence_key;
+        return $license_key;
     }
 }

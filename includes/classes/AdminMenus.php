@@ -44,41 +44,41 @@ class AdminMenus
             __('License Manager', 'lima'),
             __('License Manager', 'lima'),
             'manage_options',
-            'licence_manager',
-            array($this, 'licencesPage'),
+            'license_manager',
+            array($this, 'licensesPage'),
             'dashicons-lock',
             10
         );
         add_submenu_page(
-            'licence_manager',
+            'license_manager',
             __('License Manager', 'lima'),
             __('Licenses', 'lima'),
             'manage_options',
-            'licence_manager',
-            array($this, 'licencesPage')
+            'license_manager',
+            array($this, 'licensesPage')
         );
         add_submenu_page(
-            'licence_manager',
-            __('License Manager - Add/Import Licence(s)', 'lima'),
-            __('Add/Import Licence(s)', 'lima'),
+            'license_manager',
+            __('License Manager - Add/Import License(s)', 'lima'),
+            __('Add/Import License(s)', 'lima'),
             'manage_options',
-            'licence_manager_add_import',
+            'license_manager_add_import',
             array($this, 'licensesAddImportPage')
         );
         add_submenu_page(
-            'licence_manager',
+            'license_manager',
             __('License Manager - Generators', 'lima'),
             __('Generators', 'lima'),
             'manage_options',
-            'licence_manager_generators',
+            'license_manager_generators',
             array($this, 'generatorsPage')
         );
         add_submenu_page(
-            'licence_manager',
+            'license_manager',
             __('Add New Generator', 'lima'),
             __('Add New Generator', 'lima'),
             'manage_options',
-            'licence_manager_generators_add',
+            'license_manager_generators_add',
             array($this, 'generatorsAddPage')
         );
         add_submenu_page(
@@ -86,15 +86,15 @@ class AdminMenus
             __('Edit Generator', 'lima'),
             __('Edit Generator', 'lima'),
             'manage_options',
-            'licence_manager_generators_edit',
+            'license_manager_generators_edit',
             array($this, 'generatorsEditPage')
         );
         add_submenu_page(
-            'licence_manager',
+            'license_manager',
             __('License Manager - Settings', 'lima'),
             __('Settings', 'lima'),
             'manage_options',
-            'licence_manager_settings',
+            'license_manager_settings',
             array($this, 'settingsPage')
         );
     }
@@ -128,7 +128,7 @@ class AdminMenus
         }
     }
 
-    public function licencesPage()
+    public function licensesPage()
     {
         $licenses = new \LicenseManager\Classes\Lists\LicensesList($this->crypto);
 
@@ -141,7 +141,7 @@ class AdminMenus
             )
         );
 
-        include LM_TEMPLATES_DIR . 'licences_page.php';
+        include LM_TEMPLATES_DIR . 'licenses_page.php';
     }
 
     public function licensesAddImportPage()
@@ -153,7 +153,7 @@ class AdminMenus
             )
         );
 
-        include LM_TEMPLATES_DIR . 'licences_add_import_page.php';
+        include LM_TEMPLATES_DIR . 'licenses_add_import_page.php';
     }
 
     public function settingsPage()

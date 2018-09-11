@@ -29,11 +29,11 @@ class FormHandler
 
         // Admin POST requests.
         add_action('admin_post_lima_save_generator',      array($this, 'saveGenerator' ), 10);
-        add_action('admin_post_lima_import_licence_keys', array($this, 'importLicences'), 10);
-        add_action('admin_post_lima_add_licence_key',     array($this, 'addLicence'    ), 10);
+        add_action('admin_post_lima_import_license_keys', array($this, 'importLicenses'), 10);
+        add_action('admin_post_lima_add_license_key',     array($this, 'addLicense'    ), 10);
 
         // AJAX calls.
-        add_action('wp_ajax_lima_show_licence_key', array($this, 'showLicenceKey'), 10);
+        add_action('wp_ajax_lima_show_license_key', array($this, 'showLicenseKey'), 10);
 
         // Meta box handlers
         add_action('save_post', array($this, 'assignGeneratorToProduct'), 10);
@@ -78,12 +78,12 @@ class FormHandler
     }
 
     /**
-     * Import licences from a compatible CSV or TXT file into the database.
+     * Import licenses from a compatible CSV or TXT file into the database.
      *
      * @since 1.0.0
      *
      */
-    public function importLicences()
+    public function importLicenses()
     {
         // Check the nonce.
         check_admin_referer('lima-import');
@@ -99,33 +99,33 @@ class FormHandler
         }
 
         // Check for invalid file contents.
-        if (!is_array($licence_keys = file(LM_ETC_DIR . self::TEMP_TXT_FILE, FILE_IGNORE_NEW_LINES))) {
+        if (!is_array($license_keys = file(LM_ETC_DIR . self::TEMP_TXT_FILE, FILE_IGNORE_NEW_LINES))) {
             return null;
         }
 
         $result = apply_filters(
-            'lima_save_imported_licence_keys',
+            'lima_save_imported_license_keys',
             array(
-                'licence_keys' => $licence_keys,
+                'license_keys' => $license_keys,
                 'activate'     => array_key_exists('activate', $_POST) ? true : false,
                 'product_id'   => intval($_POST['product'])
             )
         );
 
         if ($result['failed'] == 0 && $result['added'] == 0) {
-            wp_redirect(admin_url('admin.php?page=licence_manager_add_import&import=error'));
+            wp_redirect(admin_url('admin.php?page=license_manager_add_import&import=error'));
         }
         if ($result['failed'] == 0 && $result['added'] > 0) {
             wp_redirect(
                 admin_url(
-                    sprintf('admin.php?page=licence_manager_add_import&import=success&added=%d', $result['added'])
+                    sprintf('admin.php?page=license_manager_add_import&import=success&added=%d', $result['added'])
                 )
             );
         }
         if ($result['failed'] > 0 && $result['added'] == 0) {
             wp_redirect(
                 admin_url(
-                    sprintf('admin.php?page=licence_manager_add_import&import=failed&rejected=%d', $result['failed'])
+                    sprintf('admin.php?page=license_manager_add_import&import=failed&rejected=%d', $result['failed'])
                 )
             );
         }
@@ -133,7 +133,7 @@ class FormHandler
             wp_redirect(
                 admin_url(
                     sprintf(
-                        'admin.php?page=licence_manager_add_import&import=mixed&added=%d&rejected=%d',
+                        'admin.php?page=license_manager_add_import&import=mixed&added=%d&rejected=%d',
                         $result['failed']
                     )
                 )
@@ -142,41 +142,41 @@ class FormHandler
     }
 
     /**
-     * Add a single licence key to the database.
+     * Add a single license key to the database.
      *
      * @since 1.0.0
      *
      */
-    public function addLicence()
+    public function addLicense()
     {
         // Check the nonce.
         check_admin_referer('lima-add');
 
         $result = apply_filters(
-            'lima_save_added_licence_key',
+            'lima_save_added_license_key',
             array(
-                'licence_key' => sanitize_text_field($_POST['licence_key']),
+                'license_key' => sanitize_text_field($_POST['license_key']),
                 'activate'    => array_key_exists('activate', $_POST) ? true : false,
                 'product_id'  => intval($_POST['product'])
             )
         );
 
         if ($result) {
-            wp_redirect(admin_url('admin.php?page=licence_manager_add_import&add=success'));
+            wp_redirect(admin_url('admin.php?page=license_manager_add_import&add=success'));
         } else {
-            wp_redirect(admin_url('admin.php?page=licence_manager_add_import&add=failed'));
+            wp_redirect(admin_url('admin.php?page=license_manager_add_import&add=failed'));
         }
     }
 
-    public function showLicenceKey()
+    public function showLicenseKey()
     {
         // Validate request.
-        check_ajax_referer('lima_show_licence_key', 'show');
+        check_ajax_referer('lima_show_license_key', 'show');
         if ($_SERVER['REQUEST_METHOD'] != 'POST') wp_die('Invalid request.');
 
-        $licence_key = Database::getLicenceKey(intval($_POST['id']));
+        $license_key = Database::getLicenseKey(intval($_POST['id']));
 
-        wp_send_json($licence_key);
+        wp_send_json($license_key);
 
         wp_die();
     }

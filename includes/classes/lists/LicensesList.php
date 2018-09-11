@@ -31,8 +31,8 @@ class LicensesList extends \WP_List_Table
         $this->crypto = $crypto;
 
         parent::__construct([
-            'singular' => __('Licence', 'lima'),
-            'plural'   => __('Licences', 'lima'),
+            'singular' => __('License', 'lima'),
+            'plural'   => __('Licenses', 'lima'),
             'ajax'     => false
         ]);
     }
@@ -62,12 +62,12 @@ class LicensesList extends \WP_List_Table
 
     public function no_items()
     {
-        _e('No licences found.', 'lima');
+        _e('No licenses found.', 'lima');
     }
 
     public function column_license_key($item)
     {
-        if (Settings::hideLicenceKeys()) {
+        if (Settings::hideLicenseKeys()) {
             $title = sprintf(
                 '<code class="lima-placeholder"><span></span><img src="%s"></code>',
                 LM_IMG_URL . self::PLACEHOLDER_IMG
@@ -79,12 +79,12 @@ class LicensesList extends \WP_List_Table
 
         $actions = [
             'show' => sprintf(
-                '<a class="lima-licence-key-show" data-id="%d">%s</a>',
+                '<a class="lima-license-key-show" data-id="%d">%s</a>',
                 $item['id'],
                 __('Show', 'lima')
             ),
             'hide' => sprintf(
-                '<a class="lima-licence-key-hide" data-id="%d">%s</a>',
+                '<a class="lima-license-key-hide" data-id="%d">%s</a>',
                 $item['id'],
                 __('Hide', 'lima')
             ),
@@ -142,12 +142,6 @@ class LicensesList extends \WP_List_Table
                         $status = sprintf(
                             '<span class="dashicons dashicons-download" title="%s"></span>',
                             __('Import', 'lima')
-                        );
-                        break;
-                    case 3:
-                        $status = sprintf(
-                            '<span class="dashicons dashicons-admin-users" title="%s"></span>',
-                            __('Added manually', 'lima')
                         );
                         break;
 
@@ -212,7 +206,7 @@ class LicensesList extends \WP_List_Table
         $columns = array(
             'cb'          => '<input type="checkbox" />',
             'id'          => __('ID', 'lima'),
-            'license_key' => __('Licence Key', 'lima'),
+            'license_key' => __('License Key', 'lima'),
             'order_id'    => __('Order', 'lima'),
             'product_id'  => __('Product', 'lima'),
             'created_at'  => __('Created at', 'lima'),

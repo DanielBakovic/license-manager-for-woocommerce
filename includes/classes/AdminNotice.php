@@ -27,11 +27,11 @@ class AdminNotice
      * Class constructor.
      */
     public function __construct() {
-        add_action('admin_notices', array($this, 'importLicenceKeys'));
-        add_action('admin_notices', array($this, 'addLicenceKey'));
+        add_action('admin_notices', array($this, 'importLicenseKeys'));
+        add_action('admin_notices', array($this, 'addLicenseKey'));
     }
 
-    public function importLicenceKeys()
+    public function importLicenseKeys()
     {
         // Return if this is not related to the import messages.
         if (!isset($_GET['import'])) return;
@@ -73,7 +73,7 @@ class AdminNotice
         }
     }
 
-    public function addLicenceKey()
+    public function addLicenseKey()
     {
         // Return if this is not related to the import messages.
         if (!isset($_GET['add'])) return;
@@ -82,7 +82,7 @@ class AdminNotice
             echo sprintf(
                 self::MESSAGE_DISMISSIBLE,
                 self::NOTICE_SUCCESS,
-                __('Your licence key has been added successfully.', 'lima')
+                __('Your license key has been added successfully.', 'lima')
             );
         } else {
             echo sprintf(

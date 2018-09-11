@@ -38,22 +38,22 @@
 
 /* Table auto-width fix */
 table.wp-list-table.generators,
-table.wp-list-table.licences {
+table.wp-list-table.licenses {
 	table-layout: auto !important;
 }
 
 /* Table vertical-align fix */
 table.wp-list-table.generators td,
-table.wp-list-table.licences td {
+table.wp-list-table.licenses td {
 	vertical-align: middle;
 }
 
 /* Licence table */
-table.wp-list-table.licences td.source.column-source > span {
+table.wp-list-table.licenses td.source.column-source > span {
 	font-size: 2em;
 }
-.lima-licence-key-show,
-.lima-licence-key-hide {
+.lima-license-key-show,
+.lima-license-key-hide {
 	cursor: pointer;
 }
 .lima-placeholder {

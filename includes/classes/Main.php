@@ -99,8 +99,8 @@ final class Main
         wp_enqueue_script('lima_admin_js', LM_JS_URL  . 'script.js');
 
         // Script localization
-        wp_localize_script('lima_admin_js', 'licence', array(
-            'show' => wp_create_nonce('lima_show_licence_key')
+        wp_localize_script('lima_admin_js', 'license', array(
+            'show' => wp_create_nonce('lima_show_license_key')
         ));
     }
 
