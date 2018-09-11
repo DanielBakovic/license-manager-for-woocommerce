@@ -84,18 +84,17 @@ function ajax(option)
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {
-    var toggle = document.querySelectorAll('.lima-licence-key-toggle');
+    var toggleShow = document.querySelectorAll('.lima-licence-key-show');
+    var toggleHide = document.querySelectorAll('.lima-licence-key-hide');
 
-    if (toggle) {
-        for(var i = 0; i < toggle.length; i++) {
-
-            
-
-            toggle[i].addEventListener('click', function() {
-
-                var spinner = this.parentNode.parentNode.previousSibling;
-                spinner.style.opacity = 1;
+    if (toggleShow) {
+        for(var i = 0; i < toggleShow.length; i++) {
+            toggleShow[i].addEventListener('click', function() {
+                var spinner      = this.parentNode.parentNode.previousSibling;
+                var placeholder  = this.parentNode.parentNode.previousSibling.previousSibling;
                 var licenceKeyId = parseInt(this.dataset.id);
+
+                spinner.style.opacity = 1;
 
                 ajax({
                     url: ajaxurl,
@@ -106,8 +105,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
                         id: licenceKeyId
                     },
                     success: function(response) {
-                        var response = JSON.parse(response);
-                        console.log(response);
+                        placeholder.classList.remove('lima-placeholder');
+                        placeholder.innerText = JSON.parse(response);
                     },
                     error: function(response) {
                         console.log(response);
@@ -116,6 +115,25 @@ document.addEventListener('DOMContentLoaded', function(event) {
                         spinner.style.opacity = 0;
                     }
                 });
+
+            });
+        }
+    }
+
+    if (toggleHide) {
+        for(var i = 0; i < toggleHide.length; i++) {
+            toggleHide[i].addEventListener('click', function() {
+                var spinner      = this.parentNode.parentNode.previousSibling;
+                var placeholder  = this.parentNode.parentNode.previousSibling.previousSibling;
+                var licenceKeyId = parseInt(this.dataset.id);
+
+                spinner.style.opacity = 1;
+
+                placeholder.innerText = '';
+                placeholder.classList.add('lima-placeholder');
+                console.log(placeholder);
+
+                spinner.style.opacity = 0;
 
             });
         }

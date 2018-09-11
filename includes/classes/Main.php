@@ -83,6 +83,7 @@ final class Main
         $this->define('LM_ETC_URL',    LM_ASSETS_URL . 'etc/');
         $this->define('LM_CSS_URL',    LM_ASSETS_URL . 'css/');
         $this->define('LM_JS_URL',     LM_ASSETS_URL . 'js/');
+        $this->define('LM_IMG_URL',    LM_ASSETS_URL . 'img/');
     }
 
 
@@ -100,6 +101,7 @@ final class Main
         // Script localization
         wp_localize_script('lima_admin_js', 'licence', array(
             'show' => wp_create_nonce('lima_show_licence_key'),
+            'hide' => wp_create_nonce('lima_hide_licence_key')
         ));
     }
 

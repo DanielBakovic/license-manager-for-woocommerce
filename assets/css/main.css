@@ -52,14 +52,17 @@ table.wp-list-table.licences td {
 table.wp-list-table.licences td.source.column-source > span {
 	font-size: 2em;
 }
-.lima-licence-key-toggle {
+.lima-licence-key-show,
+.lima-licence-key-hide {
 	cursor: pointer;
 }
 .lima-placeholder {
 	display: inline-block;
-	width: 150px;
-	background: var(--color-secondary);
 	border-radius: 3px;
+}
+.lima-placeholder > img {
+	vertical-align: middle;
+	padding: 4px 7px;
 }
 .lima-spinner {
 	opacity: 0;

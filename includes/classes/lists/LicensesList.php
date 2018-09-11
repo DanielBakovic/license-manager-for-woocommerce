@@ -20,7 +20,8 @@ if (!class_exists('WP_List_Table')) {
 
 class LicensesList extends \WP_List_Table
 {
-    const SPINNER_URL = '/wp-admin/images/loading.gif';
+    const SPINNER_URL     = '/wp-admin/images/loading.gif';
+    const PLACEHOLDER_IMG = 'placeholder.png';
 
     private $crypto;
 
@@ -67,7 +68,10 @@ class LicensesList extends \WP_List_Table
     public function column_license_key($item)
     {
         if (Settings::hideLicenceKeys()) {
-            $title = sprintf('<code class="lima-placeholder" data-id="%d">&nbsp;</code>', $item['id']);
+            $title = sprintf(
+                '<code class="lima-placeholder"><img src="%s"></code>',
+                LM_IMG_URL . self::PLACEHOLDER_IMG
+            );
             $title .= sprintf('<img class="lima-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
         } else {
             $title = sprintf('<code>%s</code>', $this->crypto->decrypt($item['license_key']));
@@ -75,12 +79,12 @@ class LicensesList extends \WP_List_Table
 
         $actions = [
             'show' => sprintf(
-                '<a class="lima-licence-key-toggle" data-id="%d">%s</a>',
+                '<a class="lima-licence-key-show" data-id="%d">%s</a>',
                 $item['id'],
                 __('Show', 'lima')
             ),
             'hide' => sprintf(
-                '<a href="%s">%s</a>',
+                '<a class="lima-licence-key-hide" data-id="%d">%s</a>',
                 $item['id'],
                 __('Hide', 'lima')
             ),
