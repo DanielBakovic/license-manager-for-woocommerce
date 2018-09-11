@@ -90,9 +90,11 @@ document.addEventListener('DOMContentLoaded', function(event) {
     if (toggleShow) {
         for(var i = 0; i < toggleShow.length; i++) {
             toggleShow[i].addEventListener('click', function() {
-                var spinner      = this.parentNode.parentNode.previousSibling;
-                var placeholder  = this.parentNode.parentNode.previousSibling.previousSibling;
                 var licenceKeyId = parseInt(this.dataset.id);
+                var spinner      = this.parentNode.parentNode.previousSibling;
+                var code         = spinner.previousSibling;
+                var licenceField = code.children[0];
+                var placeholder  = code.children[1];
 
                 spinner.style.opacity = 1;
 
@@ -105,8 +107,9 @@ document.addEventListener('DOMContentLoaded', function(event) {
                         id: licenceKeyId
                     },
                     success: function(response) {
-                        placeholder.classList.remove('lima-placeholder');
-                        placeholder.innerText = JSON.parse(response);
+                        code.classList.remove('lima-placeholder');
+                        licenceField.innerText = JSON.parse(response);
+                        placeholder.style.display = 'none';
                     },
                     error: function(response) {
                         console.log(response);
@@ -123,18 +126,13 @@ document.addEventListener('DOMContentLoaded', function(event) {
     if (toggleHide) {
         for(var i = 0; i < toggleHide.length; i++) {
             toggleHide[i].addEventListener('click', function() {
-                var spinner      = this.parentNode.parentNode.previousSibling;
-                var placeholder  = this.parentNode.parentNode.previousSibling.previousSibling;
-                var licenceKeyId = parseInt(this.dataset.id);
+                var code         = this.parentNode.parentNode.previousSibling.previousSibling;
+                var licence      = code.children[0];
+                var placeholder  = code.children[1];
 
-                spinner.style.opacity = 1;
-
-                placeholder.innerText = '';
-                placeholder.classList.add('lima-placeholder');
-                console.log(placeholder);
-
-                spinner.style.opacity = 0;
-
+                code.classList.add('lima-placeholder');
+                licence.innerText = '';
+                placeholder.style.display = 'inline-block';
             });
         }
     }

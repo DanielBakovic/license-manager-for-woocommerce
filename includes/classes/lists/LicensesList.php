@@ -69,7 +69,7 @@ class LicensesList extends \WP_List_Table
     {
         if (Settings::hideLicenceKeys()) {
             $title = sprintf(
-                '<code class="lima-placeholder"><img src="%s"></code>',
+                '<code class="lima-placeholder"><span></span><img src="%s"></code>',
                 LM_IMG_URL . self::PLACEHOLDER_IMG
             );
             $title .= sprintf('<img class="lima-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
@@ -161,25 +161,25 @@ class LicensesList extends \WP_List_Table
                 switch ($item['status']) {
                     case 1:
                         $status = sprintf(
-                            '<div class="lima-status sold-pending">%s</div>',
+                            '<span class="lima-status sold-pending">%s</span>',
                             __('Sold, pending delivery', 'lima')
                         );
                         break;
                     case 2:
                         $status = sprintf(
-                            '<div class="lima-status sold-delivered">%s</div>',
+                            '<span class="lima-status sold-delivered">%s</span>',
                             __('Sold, delivered', 'lima')
                         );
                         break;
                     case 3:
                         $status = sprintf(
-                            '<div class="lima-status available-ready">%s</div>',
+                            '<span class="lima-status available-ready">%s</span>',
                             __('Available, awaiting purchase', 'lima')
                         );
                         break;
                     case 4:
                         $status = sprintf(
-                            '<div class="lima-status available-deactivated">%s</div>',
+                            '<span class="lima-status available-deactivated">%s</span>',
                             __('Available, deactivated', 'lima')
                         );
                         break;

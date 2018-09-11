@@ -72,24 +72,35 @@ table.wp-list-table.licences td.source.column-source > span {
 /* Custom status */
 .lima-status {
 	padding: 5px 10px;
-	border-radius: 3px;
-	text-align: center;
+	background: #e7e7e7;
+	position: relative;
 	font-weight: 600;
-	box-shadow: inset 0 0 0 1px rgba(0,0,0,.2);
+	border-top-right-radius: 3px;
+	border-bottom-right-radius: 3px;
 }
-.lima-status.sold-pending {
+.lima-status:before {
+	content: '';
+	width: 8px;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: -8px;
+	border-top-left-radius: 3px;
+	border-bottom-left-radius: 3px;
+}
+.lima-status.sold-pending:before {
 	background: var(--color-info);
 	color: var(--color-light);
 }
-.lima-status.sold-delivered {
+.lima-status.sold-delivered:before {
 	background: var(--color-success);
 	color: var(--color-light);
 }
-.lima-status.available-ready {
+.lima-status.available-ready:before {
 	background: var(--color-primary);
 	color: var(--color-light);
 }
-.lima-status.available-deactivated {
+.lima-status.available-deactivated:before {
 	background: var(--color-dark);
 	color: var(--color-light);
 }
