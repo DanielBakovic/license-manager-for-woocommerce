@@ -42,15 +42,38 @@ class OrderManager
         $order    = new \WC_Order($order_id);
         $licenses = [];
 
+        // Loop through the order items
         foreach ($order->get_items() as $item_data) {
+
             // Get an instance of the corresponding WC_Product object
             $product = $item_data->get_product();
 
+            // Check if the product has active keys attached to it.
+            if ($license_keys = Database::getLicenseKeysByProductId($product->get_id(), 3)) {
+                /**
+                 * @todo Improve quantity check.
+                 */
+                if ($item_data->get_quantity() > count($license_keys)) {
+                    return;
+                }
+
+                // Set the license keys as sold.
+                $sell_imported_args = array(
+                    'license_keys' => $license_keys,
+                    'order_id'     => $order_id,
+                    'amount'       => $item_data->get_quantity()
+                );
+                do_action('lima_sell_imported_license_keys', $sell_imported_args);
+
+                // Set the order as complete.
+                update_post_meta($order_id, '_lima_order_status', 'complete');
+
             // Check if the product has a generator assigned to it.
-            if ($gen_id = get_post_meta($product->get_id(), '_lima_generator_id', true)) {
+            } elseif ($gen_id = get_post_meta($product->get_id(), '_lima_generator_id', true)) {
 
                 // Obtain the generator details from the database and set up the args.
                 $generator = Database::getGenerator($gen_id);
+
                 $create_license_args = array(
                     'amount'       => $item_data->get_quantity(),
                     'charset'      => $generator->charset,
@@ -61,10 +84,9 @@ class OrderManager
                     'suffix'       => $generator->suffix,
                     'expires_in'   => $generator->expires_in
                 );
-
                 $licenses = apply_filters('lima_create_license_keys', $create_license_args);
 
-                // Save the license keys
+                // Save the license keys.
                 $save_license_args = array(
                     'order_id'   => $order_id,
                     'product_id' => $product->get_id(),

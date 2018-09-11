@@ -59,8 +59,8 @@ class AdminMenus
         );
         add_submenu_page(
             'license_manager',
-            __('License Manager - Add/Import License(s)', 'lima'),
-            __('Add/Import License(s)', 'lima'),
+            __('License Manager - Import', 'lima'),
+            __('Import', 'lima'),
             'manage_options',
             'license_manager_add_import',
             array($this, 'licensesAddImportPage')
@@ -75,7 +75,7 @@ class AdminMenus
         );
         add_submenu_page(
             'license_manager',
-            __('Add New Generator', 'lima'),
+            __('License Manager - Add New Generator', 'lima'),
             __('Add New Generator', 'lima'),
             'manage_options',
             'license_manager_generators_add',
@@ -83,7 +83,7 @@ class AdminMenus
         );
         add_submenu_page(
             null,
-            __('Edit Generator', 'lima'),
+            __('License Manager - Edit Generator', 'lima'),
             __('Edit Generator', 'lima'),
             'manage_options',
             'license_manager_generators_edit',
@@ -99,33 +99,26 @@ class AdminMenus
         );
     }
 
-    /**
-     * @todo If statement should check if this order has licenses attached to it. Perhaps loop through the products and
-     * Check if a meta data entry exists for any of them. Or set a meta data for the entire order, should it contain
-     * license products.
-     * @todo Add a meta box for the edit products view.
-     */
     public function createMetaBoxes($post_type)
     {
+        // Not relevant for post types other than product and shop_order.
+        if ($post_type != 'product' && $post_type != 'shop_order') return;
+
         // The edit order meta box.
-        if (1 == 1) {
-            add_meta_box(
-                'lm-licenses-meta-box',
-                __('License Manager - Order Licenses', 'lima'),
-                array($this, 'orderMetaBox'),
-                'shop_order'
-            );
-        }
+        add_meta_box(
+            'lm-licenses-meta-box',
+            __('License Manager - Order Licenses', 'lima'),
+            array($this, 'orderMetaBox'),
+            'shop_order'
+        );
 
         // The edit product meta box.
-        if (1 == 1) {
-            add_meta_box(
-                'lm-licenses-meta-box',
-                __('License Manager - Product License Settings', 'lima'),
-                array($this, 'productMetaBox'),
-                'product'
-            );
-        }
+        add_meta_box(
+            'lm-licenses-meta-box',
+            __('License Manager - Product License Settings', 'lima'),
+            array($this, 'productMetaBox'),
+            'product'
+        );
     }
 
     public function licensesPage()
@@ -187,11 +180,16 @@ class AdminMenus
         include LM_TEMPLATES_DIR . 'generators_edit.php';
     }
 
+    /**
+     * @todo If statement should check if this order has licenses attached to it. Perhaps loop through the products and
+     * Check if a meta data entry exists for any of them. Or set a meta data for the entire order, should it contain
+     * license products.
+     */
     public function orderMetaBox()
     {
         global $post;
 
-        $licenses = Database::getLicenseKeys($post->ID);
+        $licenses = Database::getLicenseKeysByOrderId($post->ID);
 
         include LM_METABOX_DIR . 'edit-order.php';
     }
@@ -201,6 +199,10 @@ class AdminMenus
         global $post;
 
         $generators = Database::getGenerators();
+        $license_keys = array(
+            'available' => Database::getLicenseKeysByProductId($post->ID, 3),
+            'inactive' => Database::getLicenseKeysByProductId($post->ID, 4)
+        );
 
         if (!$gen_id = get_post_meta($post->ID, '_lima_generator_id', true)) {
             $gen_id = false;

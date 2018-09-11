@@ -89,7 +89,7 @@ table.wp-list-table.licenses td.source.column-source > span {
 	border-bottom-left-radius: 3px;
 }
 .lima-status.sold-pending:before {
-	background: var(--color-info);
+	background: var(--color-warning);
 	color: var(--color-light);
 }
 .lima-status.sold-delivered:before {

@@ -26,6 +26,7 @@ class Database
         $this->crypto = $crypto;
 
         add_action('lima_save_generated_license_keys',   array($this, 'saveGeneratedLicenseKeys' ), 10, 1);
+        add_action('lima_sell_imported_license_keys',    array($this, 'sellImportedLicenseKeys'  ), 10, 1);
         add_filter('lima_save_imported_license_keys',    array($this, 'saveImportedLicenseKeys'  ), 10, 1);
         add_filter('lima_save_added_license_key',        array($this, 'saveAddedLicenseKey'      ), 10, 1);
         add_filter('lima_license_key_exists',            array($this, 'licenseKeyExists'         ), 10, 1);
@@ -39,16 +40,16 @@ class Database
      *
      * @todo Convert to filter, return array of added licenses.
      *
-     * @param int    $args['order_id']     - Corresponding order ID.
-     * @param int    $args['product_id']   - Corresponding product ID.
-     * @param array  $args['licenses']     - Return value of the 'lima_create_license_keys' filter.
-     * @param int    $args['expires_in']   - Number of days in which the license key expires.
-     * @param string $args['charset']      - Character map from which the license will be generated.
-     * @param int    $args['chunk_length'] - The length of an individual chunk.
-     * @param int    $args['chunks']       - Number of chunks.
-     * @param string $args['prefix']       - Prefix used.
-     * @param string $args['separator']    - Separator used.
-     * @param string $args['suffix']       - Suffix used.
+     * @param int    $args['order_id']
+     * @param int    $args['product_id']
+     * @param array  $args['licenses']
+     * @param int    $args['expires_in']
+     * @param string $args['charset']
+     * @param int    $args['chunk_length']
+     * @param int    $args['chunks']
+     * @param string $args['prefix']
+     * @param string $args['separator']
+     * @param string $args['suffix']
      */
     public function saveGeneratedLicenseKeys($args)
     {
@@ -76,7 +77,7 @@ class Database
             } else {
                 // Save to database.
                 $wpdb->insert(
-                    $wpdb->prefix . \LicenseManager\Classes\Setup::LICENSES_TABLE_NAME,
+                    $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
                     array(
                         'order_id'    => $args['order_id'],
                         'product_id'  => $args['product_id'],
@@ -84,6 +85,7 @@ class Database
                         'hash'        => $this->crypto->hash($license_key),
                         'created_at'  => $created_at,
                         'expires_at'  => $expires_at,
+                        'source'      => 1,
                         'status'      => 1
                     ),
                     array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
@@ -117,7 +119,45 @@ class Database
             ));
         } else {
             // Keys have been generated and saved, this order is now complete.
-            //update_post_meta($args['order_id'], '_lima_order_status', 'complete');
+            update_post_meta($args['order_id'], '_lima_order_status', 'complete');
+        }
+    }
+
+    /**
+     * Sell license keys already present in the database.
+     *
+     * @since 1.0.0
+     *
+     * @todo Add a 'valid_for' field in the license table and import forms. This is for how long manually added or
+     * imported license keys are valid.
+     *
+     * @param array  $args['license_keys']
+     * @param int    $args['order_id']
+     * @param int    $args['amount']
+     */
+    public function sellImportedLicenseKeys($args)
+    {
+        global $wpdb;
+
+        for ($i = 0; $i < $args['amount']; $i++) {
+            $valid_for  = null;
+            $expires_at = null;
+
+            if (is_int($valid_for)) {
+                $expires_at = $date->add(new \DateInterval('P' . $valid_for . 'D'))->format('Y-m-d H:i:s');
+            }
+
+            $wpdb->update(
+                $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
+                array(
+                    'order_id'   => intval($args['order_id']),
+                    'expires_at' => $expires_at,
+                    'status'     => 1
+                ),
+                array('id' => $args['license_keys'][$i]->id),
+                array('%d', '%s', '%d'),
+                array('%d')
+            );
         }
     }
 
@@ -213,20 +253,22 @@ class Database
     {
         global $wpdb;
 
-        $table = $wpdb->prefix . \LicenseManager\Classes\Setup::LICENSES_TABLE_NAME;
+        $table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
         $sql   = "SELECT license_key FROM `{$table}` WHERE hash = '%s';";
 
         return $wpdb->get_var($wpdb->prepare($sql, $this->crypto->hash($license_key))) != null;
     }
 
     /**
-     * Retrieves all license keys from the licenses table in the database.
+     * Retrieves all license keys related to a specific order.
      *
      * @since 1.0.0
      *
-     * @param int $order_id - The order ID for which the keys will be retrieved.
+     * @param int $order_id
+     *
+     * @return array
      */
-    public static function getLicenseKeys($order_id)
+    public static function getLicenseKeysByOrderId($order_id)
     {
         global $wpdb;
         $table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
@@ -234,7 +276,32 @@ class Database
         return $wpdb->get_results(
             $wpdb->prepare(
                 "SELECT * FROM $table WHERE order_id = %d",
-                $order_id
+                intval($order_id)
+            ),
+            OBJECT
+        );
+    }
+
+    /**
+     * Retrieves all license keys related to a specific product.
+     *
+     * @since 1.0.0
+     *
+     * @param int $product_id
+     * @param int $status
+     *
+     * @return array
+     */
+    public static function getLicenseKeysByProductId($product_id, $status)
+    {
+        global $wpdb;
+        $table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
+
+        return $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM $table WHERE product_id = %d AND status = %d",
+                intval($product_id),
+                intval($status)
             ),
             OBJECT
         );

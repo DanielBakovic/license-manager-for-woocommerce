@@ -134,7 +134,7 @@ class LicensesList extends \WP_List_Table
                 switch ($item['source']) {
                     case 1:
                         $status = sprintf(
-                            '<span class="dashicons dashicons-admin-network" title="%s"></span>',
+                            '<span class="dashicons dashicons-admin-generic" title="%s"></span>',
                             __('Generator', 'lima')
                         );
                         break;
@@ -156,25 +156,25 @@ class LicensesList extends \WP_List_Table
                     case 1:
                         $status = sprintf(
                             '<span class="lima-status sold-pending">%s</span>',
-                            __('Sold, pending delivery', 'lima')
+                            __('Sold', 'lima')
                         );
                         break;
                     case 2:
                         $status = sprintf(
                             '<span class="lima-status sold-delivered">%s</span>',
-                            __('Sold, delivered', 'lima')
+                            __('Delivered', 'lima')
                         );
                         break;
                     case 3:
                         $status = sprintf(
                             '<span class="lima-status available-ready">%s</span>',
-                            __('Available, awaiting purchase', 'lima')
+                            __('Active', 'lima')
                         );
                         break;
                     case 4:
                         $status = sprintf(
                             '<span class="lima-status available-deactivated">%s</span>',
-                            __('Available, deactivated', 'lima')
+                            __('Inactive', 'lima')
                         );
                         break;
 
