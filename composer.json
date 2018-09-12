@@ -2,7 +2,8 @@
     "autoload": {
         "psr-4": {
             "LicenseManager\\Classes\\": "includes/classes/",
-            "LicenseManager\\Classes\\Lists\\": "includes/classes/lists"
+            "LicenseManager\\Classes\\Lists\\": "includes/classes/lists",
+            "LicenseManager\\Classes\\Abstracts\\": "includes/classes/abstracts"
         }
     },
     "require": {

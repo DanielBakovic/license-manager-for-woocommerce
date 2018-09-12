@@ -2,6 +2,8 @@
 
 namespace LicenseManager\Classes;
 
+use \LicenseManager\Classes\Abstracts\LicenseStatusEnum;
+
 /**
  * LicenseManager Database.
  *
@@ -86,7 +88,7 @@ class Database
                         'created_at'  => $created_at,
                         'expires_at'  => $expires_at,
                         'source'      => 1,
-                        'status'      => 1
+                        'status'      => LicenseStatusEnum::SOLD
                     ),
                     array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
                 );
@@ -152,7 +154,7 @@ class Database
                 array(
                     'order_id'   => intval($args['order_id']),
                     'expires_at' => $expires_at,
-                    'status'     => 1
+                    'status'     => LicenseStatusEnum::SOLD
                 ),
                 array('id' => $args['license_keys'][$i]->id),
                 array('%d', '%s', '%d'),
@@ -178,7 +180,7 @@ class Database
 
         $created_at = date('Y-m-d H:i:s');
         $result['added'] = $result['failed'] = 0;
-        $args['activate'] ? $status = 3 : $status = 4;
+        $args['activate'] ? $status = LicenseStatusEnum::ACTIVE : $status = LicenseStatusEnum::INACTIVE;
 
         // Add the keys to the database table.
         foreach ($args['license_keys'] as $license_key) {
@@ -222,7 +224,7 @@ class Database
         global $wpdb;
 
         $created_at = date('Y-m-d H:i:s');
-        $args['activate'] ? $status = 3 : $status = 4;
+        $args['activate'] ? $status = LicenseStatusEnum::ACTIVE : $status = LicenseStatusEnum::INACTIVE;
 
         return $wpdb->insert(
             $wpdb->prefix . Setup::LICENSES_TABLE_NAME,

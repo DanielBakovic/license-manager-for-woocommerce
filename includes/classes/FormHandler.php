@@ -37,6 +37,9 @@ class FormHandler
 
         // Meta box handlers
         add_action('save_post', array($this, 'assignGeneratorToProduct'), 10);
+
+        // WooCommerce
+        add_action('woocommerce_after_order_itemmeta', array($this, 'addLicenseKeysToOrder'), 10, 3);
     }
 
     /**
@@ -181,6 +184,11 @@ class FormHandler
         wp_die();
     }
 
+    public function addLicenseKeysToOrder($item_id, $item, $product) {
+        //var_dump(array($item_id, $item, $product));
+        echo 'Your license key is: <code>1002-2301-9534-1321</code>, it expires on 2018-12-24';
+    }
+
     /**
      * Hook into 'save_post' and assign a generator to the product (if  selected).
      *
@@ -191,7 +199,7 @@ class FormHandler
     public static function assignGeneratorToProduct($post_id)
     {
         // This is not a product.
-        if ($_POST['post_type'] != 'product') {
+        if (!array_key_exists('post_type', $_POST) || $_POST['post_type'] != 'product') {
             return;
         }
 

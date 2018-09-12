@@ -1,8 +1,5 @@
 <?php if (count($generators) > 0): ?>
 
-
-<pre><?php \LicenseManager\Classes\Logger::console($license_keys); ?></pre>
-
     <input
         id="lima-sell-licenses"
         name="lima-sell-licenses"

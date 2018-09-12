@@ -4,6 +4,7 @@ namespace LicenseManager\Classes\Lists;
 
 use \LicenseManager\Classes\Settings;
 use \LicenseManager\Classes\Logger;
+use \LicenseManager\Classes\Abstracts\LicenseStatusEnum;
 
 /**
  * Create the Licenses list
@@ -153,25 +154,25 @@ class LicensesList extends \WP_List_Table
                 return $status;
             case 'status':
                 switch ($item['status']) {
-                    case 1:
+                    case LicenseStatusEnum::SOLD:
                         $status = sprintf(
                             '<span class="lima-status sold-pending">%s</span>',
                             __('Sold', 'lima')
                         );
                         break;
-                    case 2:
+                    case LicenseStatusEnum::DELIVERED:
                         $status = sprintf(
                             '<span class="lima-status sold-delivered">%s</span>',
                             __('Delivered', 'lima')
                         );
                         break;
-                    case 3:
+                    case LicenseStatusEnum::ACTIVE:
                         $status = sprintf(
                             '<span class="lima-status available-ready">%s</span>',
                             __('Active', 'lima')
                         );
                         break;
-                    case 4:
+                    case LicenseStatusEnum::INACTIVE:
                         $status = sprintf(
                             '<span class="lima-status available-deactivated">%s</span>',
                             __('Inactive', 'lima')

@@ -2,6 +2,8 @@
 
 namespace LicenseManager\Classes;
 
+use \LicenseManager\Classes\Abstracts\LicenseStatusEnum;
+
 /**
  * Setup menus in WP admin.
  *
@@ -200,8 +202,8 @@ class AdminMenus
 
         $generators = Database::getGenerators();
         $license_keys = array(
-            'available' => Database::getLicenseKeysByProductId($post->ID, 3),
-            'inactive' => Database::getLicenseKeysByProductId($post->ID, 4)
+            'available' => Database::getLicenseKeysByProductId($post->ID, LicenseStatusEnum::ACTIVE),
+            'inactive' => Database::getLicenseKeysByProductId($post->ID, LicenseStatusEnum::INACTIVE)
         );
 
         if (!$gen_id = get_post_meta($post->ID, '_lima_generator_id', true)) {
