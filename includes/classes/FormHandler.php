@@ -35,7 +35,8 @@ class FormHandler
         add_action('admin_post_lima_add_license_key',     array($this, 'addLicense'    ), 10);
 
         // AJAX calls.
-        add_action('wp_ajax_lima_show_license_key', array($this, 'showLicenseKey'), 10);
+        add_action('wp_ajax_lima_show_license_key',      array($this, 'showLicenseKey'    ), 10);
+        add_action('wp_ajax_lima_show_all_license_keys', array($this, 'showAllLicenseKeys'), 10);
 
         // Meta box handlers
         add_action('save_post', array($this, 'assignGeneratorToProduct'), 10);
@@ -185,6 +186,23 @@ class FormHandler
         wp_die();
     }
 
+    public function showAllLicenseKeys()
+    {
+        // Validate request.
+        check_ajax_referer('lima_show_all_license_keys', 'show_all');
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') wp_die('Invalid request.');
+
+        $license_keys = array();
+
+        foreach (json_decode($_POST['ids']) as $license_key_id) {
+            $license_keys[$license_key_id] = Database::getLicenseKey(intval($license_key_id));
+        }
+
+        wp_send_json($license_keys);
+
+        wp_die();
+    }
+
     /**
      * Hook into the WordPress Order Item Meta Box and display the license key(s)
      *
@@ -208,7 +226,7 @@ class FormHandler
         if (!Settings::hideLicenseKeys()) {
             foreach ($license_keys as $license_key) {
                 $html .= sprintf(
-                    '<li></span> <code>%s</code></li>',
+                    '<li></span> <code class="lima-placeholder">%s</code></li>',
                     $this->crypto->decrypt($license_key->license_key)
                 );
             }
@@ -225,9 +243,14 @@ class FormHandler
             $html .= '<p>';
 
             $html .= sprintf(
-                '<a class="button lima-license-keys-toggle" data-order-id="%d">%s</a>',
+                '<a class="button lima-license-keys-show-all" data-order-id="%d">%s</a>',
                 $item->get_order_id(),
-                __('Show/Hide License Key(s)', 'lima')
+                __('Show License Key(s)', 'lima')
+            );
+            $html .= sprintf(
+                '<a class="button lima-license-keys-hide-all" data-order-id="%d">%s</a>',
+                $item->get_order_id(),
+                __('Hide License Key(s)', 'lima')
             );
             $html .= sprintf(
                 '<img class="lima-spinner" data-id="%d" src="%s">',

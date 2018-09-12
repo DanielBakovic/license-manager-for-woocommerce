@@ -100,7 +100,8 @@ final class Main
 
         // Script localization
         wp_localize_script('lima_admin_js', 'license', array(
-            'show' => wp_create_nonce('lima_show_license_key')
+            'show'     => wp_create_nonce('lima_show_license_key'),
+            'show_all' => wp_create_nonce('lima_show_all_license_keys'),
         ));
     }
 
