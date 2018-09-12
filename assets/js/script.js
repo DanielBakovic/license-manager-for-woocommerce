@@ -86,6 +86,7 @@ function ajax(option)
 document.addEventListener('DOMContentLoaded', function(event) {
     var toggleShow = document.querySelectorAll('.lima-license-key-show');
     var toggleHide = document.querySelectorAll('.lima-license-key-hide');
+    var toggleAll = document.querySelector('.lima-license-keys-toggle');
 
     if (toggleShow) {
         for(var i = 0; i < toggleShow.length; i++) {
@@ -93,8 +94,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 var licenseKeyId = parseInt(this.dataset.id);
                 var spinner      = this.parentNode.parentNode.previousSibling;
                 var code         = spinner.previousSibling;
-                var licenseField = code.children[0];
-                var placeholder  = code.children[1];
 
                 spinner.style.opacity = 1;
 
@@ -107,9 +106,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
                         id: licenseKeyId
                     },
                     success: function(response) {
-                        code.classList.remove('lima-placeholder');
-                        licenseField.innerText = JSON.parse(response);
-                        placeholder.style.display = 'none';
+                        code.classList.remove('empty');
+                        code.innerText = JSON.parse(response);
                     },
                     error: function(response) {
                         console.log(response);
@@ -126,14 +124,22 @@ document.addEventListener('DOMContentLoaded', function(event) {
     if (toggleHide) {
         for(var i = 0; i < toggleHide.length; i++) {
             toggleHide[i].addEventListener('click', function() {
-                var code         = this.parentNode.parentNode.previousSibling.previousSibling;
-                var license      = code.children[0];
-                var placeholder  = code.children[1];
+                var code = this.parentNode.parentNode.previousSibling.previousSibling;
 
-                code.classList.add('lima-placeholder');
-                license.innerText = '';
-                placeholder.style.display = 'inline-block';
+                code.innerText = '';
+                code.classList.add('empty');
             });
         }
+    }
+
+    if (toggleAll) {
+        var codeList = toggleAll.parentNode.previousSibling.children;
+        var orderId = parseInt(toggleAll.dataset.orderId);
+
+        console.log(orderId);
+        for(var i = 0, length = codeList.length; i < length; i++){
+            console.log(parseInt(codeList[i].children[0].dataset.id));
+        }
+
     }
 });

@@ -59,6 +59,21 @@ table.wp-list-table.licenses td.source.column-source > span {
 .lima-placeholder {
 	display: inline-block;
 	border-radius: 3px;
+	min-width: 154px;
+	text-align: center;
+}
+.lima-placeholder.empty {
+	position: relative;
+	height: 15px;
+}
+.lima-placeholder.empty:after {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	content: 'XXXX-XXXX-XXXX-XXXX';
+	color: rgba(0,0,0,.4)
 }
 .lima-placeholder > img {
 	vertical-align: middle;

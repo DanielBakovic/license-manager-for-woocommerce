@@ -309,6 +309,31 @@ class Database
         );
     }
 
+    /**
+     * Retrieves all license keys related to a order/product combination.
+     *
+     * @since 1.0.0
+     *
+     * @param int $product_id
+     * @param int $status
+     *
+     * @return array
+     */
+    public static function getOrderedLicenseKeys($order_id, $product_id)
+    {
+        global $wpdb;
+        $table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
+
+        return $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM $table WHERE order_id = %d AND product_id = %d",
+                intval($order_id),
+                intval($product_id)
+            ),
+            OBJECT
+        );
+    }
+
     public static function getGenerators()
     {
         global $wpdb;

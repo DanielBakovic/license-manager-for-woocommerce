@@ -2,6 +2,8 @@
 
 namespace LicenseManager\Classes;
 
+use \LicenseManager\Classes\Lists\LicensesList;
+
 /**
  * LicenseManager FormHandler.
  *
@@ -39,7 +41,7 @@ class FormHandler
         add_action('save_post', array($this, 'assignGeneratorToProduct'), 10);
 
         // WooCommerce
-        add_action('woocommerce_after_order_itemmeta', array($this, 'addLicenseKeysToOrder'), 10, 3);
+        add_action('woocommerce_after_order_itemmeta', array($this, 'showOrderedLicenses'), 10, 3);
     }
 
     /**
@@ -55,7 +57,6 @@ class FormHandler
      * @param string $args['prefix']       - License key prefix.
      * @param string $args['suffis']       - License key suffix.
      * @param string $args['expires_in']   - Number of days for which the license is valid.
-     *
      */
     public static function saveGenerator($args)
     {
@@ -184,9 +185,59 @@ class FormHandler
         wp_die();
     }
 
-    public function addLicenseKeysToOrder($item_id, $item, $product) {
-        //var_dump(array($item_id, $item, $product));
-        echo 'Your license key is: <code>1002-2301-9534-1321</code>, it expires on 2018-12-24';
+    /**
+     * Hook into the WordPress Order Item Meta Box and display the license key(s)
+     *
+     * @since 1.0.0
+     *
+     * @todo Rework into a template file.
+     *
+     * @param int                   $item_id
+     * @param WC_Order_Item_Product $item
+     * @param WC_Product_Simple     $product
+     */
+    public function showOrderedLicenses($item_id, $item, $product) {
+        // No license keys? Nothing to do...
+        if (!$license_keys = Database::getOrderedLicenseKeys($item->get_order_id(), $item->get_product_id())) {
+            return;
+        }
+
+        $html = __('<p>The following license keys have been sold by this order:</p>', 'lima');
+        $html .= '<ul class="lima-license-list">';
+
+        if (!Settings::hideLicenseKeys()) {
+            foreach ($license_keys as $license_key) {
+                $html .= sprintf(
+                    '<li></span> <code>%s</code></li>',
+                    $this->crypto->decrypt($license_key->license_key)
+                );
+            }
+            $html .= '</ul>';
+        } else {
+            foreach ($license_keys as $license_key) {
+                $html .= sprintf(
+                    '<li><code class="lima-placeholder empty" data-id="%d"></code></li>',
+                    $license_key->id
+                );
+            }
+
+            $html .= '</ul>';
+            $html .= '<p>';
+
+            $html .= sprintf(
+                '<a class="button lima-license-keys-toggle" data-order-id="%d">%s</a>',
+                $item->get_order_id(),
+                __('Show/Hide License Key(s)', 'lima')
+            );
+            $html .= sprintf(
+                '<img class="lima-spinner" data-id="%d" src="%s">',
+                $license_key->id, LicensesList::SPINNER_URL
+            );
+
+            $html .= '</p>';
+        }
+
+        echo $html;
     }
 
     /**
