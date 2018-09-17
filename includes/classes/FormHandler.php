@@ -30,9 +30,10 @@ class FormHandler
         $this->crypto = $crypto;
 
         // Admin POST requests.
-        add_action('admin_post_lima_save_generator',      array($this, 'saveGenerator' ), 10);
-        add_action('admin_post_lima_import_license_keys', array($this, 'importLicenses'), 10);
-        add_action('admin_post_lima_add_license_key',     array($this, 'addLicense'    ), 10);
+        add_action('admin_post_lima_save_generator',      array($this, 'saveGenerator'   ), 10);
+        add_action('admin_post_lima_update_generator',    array($this, 'updateGenerator' ), 10);
+        add_action('admin_post_lima_import_license_keys', array($this, 'importLicenses'  ), 10);
+        add_action('admin_post_lima_add_license_key',     array($this, 'addLicense'      ), 10);
 
         // AJAX calls.
         add_action('wp_ajax_lima_show_license_key',      array($this, 'showLicenseKey'    ), 10);
@@ -59,41 +60,91 @@ class FormHandler
      * @param string $args['suffis']       - License key suffix.
      * @param string $args['expires_in']   - Number of days for which the license is valid.
      */
-    public static function saveGenerator($args)
+    public function saveGenerator($args)
     {
-        global $wpdb;
+        $result = apply_filters('lima_save_generator', array(
+            'name'         => $_POST['name'],
+            'charset'      => $_POST['charset'],
+            'chunks'       => $_POST['chunks'],
+            'chunk_length' => $_POST['chunk_length'],
+            'separator'    => $_POST['separator'],
+            'prefix'       => $_POST['prefix'],
+            'suffix'       => $_POST['suffix'],
+            'expires_in'   => $_POST['expires_in']
+        ));
 
-        $wpdb->insert(
-            $wpdb->prefix . Setup::GENERATORS_TABLE_NAME,
-            array(
-                'name'         => $_POST['name'],
-                'charset'      => $_POST['charset'],
-                'chunks'       => $_POST['chunks'],
-                'chunk_length' => $_POST['chunk_length'],
-                'separator'    => $_POST['separator'],
-                'prefix'       => $_POST['prefix'],
-                'suffix'       => $_POST['suffix'],
-                'expires_in'   => $_POST['expires_in']
-            ),
-            array('%s', '%s', '%d', '%d', '%s', '%s', '%s')
-        );
-
-        wp_redirect(
-            admin_url(
-                sprintf(
-                    'admin.php?page=%s',
-                    AdminMenus::GENERATORS_PAGE
+        if ($result) {
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&action=edit&id=%d&status=true',
+                        AdminMenus::GENERATORS_PAGE,
+                        intval($_POST['id'])
+                    )
                 )
-            )
-        );
+            );
+        } else {
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&action=edit&id=%d&status=failed',
+                        AdminMenus::GENERATORS_PAGE,
+                        intval($_POST['id'])
+                    )
+                )
+            );
+        }
+    }
 
-        exit;
+    /**
+     * Update an existing generator.
+     *
+     * @since 1.0.0
+     *
+     */
+    public function updateGenerator()
+    {
+        $result = apply_filters('lima_update_generator', array(
+            'id'           => intval($_POST['id']),
+            'name'         => $_POST['name'],
+            'charset'      => $_POST['charset'],
+            'chunks'       => $_POST['chunks'],
+            'chunk_length' => $_POST['chunk_length'],
+            'separator'    => $_POST['separator'],
+            'prefix'       => $_POST['prefix'],
+            'suffix'       => $_POST['suffix'],
+            'expires_in'   => $_POST['expires_in']
+        ));
+
+        if ($result) {
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&action=edit&id=%d&status=true',
+                        AdminMenus::EDIT_GENERATOR_PAGE,
+                        intval($_POST['id'])
+                    )
+                )
+            );
+        } else {
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&action=edit&id=%d&status=failed',
+                        AdminMenus::EDIT_GENERATOR_PAGE,
+                        intval($_POST['id'])
+                    )
+                )
+            );
+        }
     }
 
     /**
      * Import licenses from a compatible CSV or TXT file into the database.
      *
      * @since 1.0.0
+     *
+     * @todo Delete tmp file after import.
      *
      */
     public function importLicenses()

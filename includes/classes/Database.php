@@ -36,6 +36,8 @@ class Database
         add_filter('lima_import_license_keys',           array($this, 'importLicenseKeys'        ), 10, 1);
         add_filter('lima_delete_license_keys',           array($this, 'deleteLicenseKeys'        ), 10, 1);
         add_filter('lima_toggle_license_key_status',     array($this, 'toggleLicenseKeyStatus'   ), 10, 1);
+        add_filter('lima_save_generator',                array($this, 'saveGenerator'            ), 10, 1);
+        add_filter('lima_update_generator',              array($this, 'updateGenerator'          ), 10, 1);
     }
 
     /**
@@ -262,6 +264,77 @@ class Database
         $sql   = "SELECT license_key FROM `{$table}` WHERE hash = '%s';";
 
         return $wpdb->get_var($wpdb->prepare($sql, $this->crypto->hash($license_key))) != null;
+    }
+
+    /**
+     * Save the generator to the database.
+     *
+     * @since 1.0.0
+     *
+     * @param string $args['name']         - Generator name.
+     * @param string $args['charset']      - Character map used for key generation.
+     * @param int    $args['chunks']       - Number of chunks.
+     * @param int    $args['chunk_length'] - Chunk length.
+     * @param string $args['separator']    - Separator used.
+     * @param string $args['prefix']       - License key prefix.
+     * @param string $args['suffis']       - License key suffix.
+     * @param string $args['expires_in']   - Number of days for which the license is valid.
+     */
+    public function saveGenerator($args)
+    {
+        global $wpdb;
+
+        return $wpdb->insert(
+            $wpdb->prefix . Setup::GENERATORS_TABLE_NAME,
+            array(
+                'name'         => sanitize_text_field($args['name']),
+                'charset'      => sanitize_text_field($args['charset']),
+                'chunks'       => intval($args['chunks']),
+                'chunk_length' => intval($args['chunk_length']),
+                'separator'    => sanitize_text_field($args['separator']),
+                'prefix'       => sanitize_text_field($args['prefix']),
+                'suffix'       => sanitize_text_field($args['suffix']),
+                'expires_in'   => sanitize_text_field($args['expires_in'])
+            ),
+            array('%s', '%s', '%d', '%d', '%s', '%s', '%s')
+        );
+    }
+
+    /**
+     * Update an existing generator.
+     *
+     * @since 1.0.0
+     *
+     * @param int    $args['id']           - Generator ID.
+     * @param string $args['name']         - Generator name.
+     * @param string $args['charset']      - Character map used for key generation.
+     * @param int    $args['chunks']       - Number of chunks.
+     * @param int    $args['chunk_length'] - Chunk length.
+     * @param string $args['separator']    - Separator used.
+     * @param string $args['prefix']       - License key prefix.
+     * @param string $args['suffis']       - License key suffix.
+     * @param string $args['expires_in']   - Number of days for which the license is valid.
+     */
+    public function updateGenerator($args)
+    {
+        global $wpdb;
+
+        return $wpdb->update(
+            $wpdb->prefix . Setup::GENERATORS_TABLE_NAME,
+            array(
+                'name'         => sanitize_text_field($args['name']),
+                'charset'      => sanitize_text_field($args['charset']),
+                'chunks'       => intval($args['chunks']),
+                'chunk_length' => intval($args['chunk_length']),
+                'separator'    => sanitize_text_field($args['separator']),
+                'prefix'       => sanitize_text_field($args['prefix']),
+                'suffix'       => sanitize_text_field($args['suffix']),
+                'expires_in'   => sanitize_text_field($args['expires_in'])
+            ),
+            array('id' => intval($args['id'])),
+            array('%s', '%s', '%d', '%d', '%s', '%s', '%s', '%s'),
+            array('%d')
+        );
     }
 
     /**

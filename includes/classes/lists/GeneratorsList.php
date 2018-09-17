@@ -70,19 +70,19 @@ class GeneratorsList extends \WP_List_Table
 
         $actions = [
             'delete' => sprintf(
-                '<a href="?page=%s&action=%s&generator_id=%s&_wpnonce=%s">%s</a>',
-                esc_attr($_REQUEST['page']),
+                '<a href="?page=%s&action=%s&id=%s&_wpnonce=%s">%s</a>',
+                AdminMenus::EDIT_GENERATOR_PAGE,
                 'delete',
                 absint($item['id']),
                 wp_create_nonce('lima_delete_generator'),
                 __('Delete', 'lima')
             ),
             'edit' => sprintf(
-                '<a href="?page=%s&action=%s&generator_id=%s&_wpnonce=%s">%s</a>',
+                '<a href="?page=%s&action=%s&id=%s&_wpnonce=%s">%s</a>',
                 AdminMenus::EDIT_GENERATOR_PAGE,
                 'edit',
                 absint($item['id']),
-                wp_create_nonce('lima_edit_generator'),
+                wp_create_nonce('edit'),
                 __('Edit', 'lima')
             )
         ];

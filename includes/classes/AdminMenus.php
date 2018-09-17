@@ -176,8 +176,19 @@ class AdminMenus
         include LM_TEMPLATES_DIR . 'generators_add_new.php';
     }
 
+    /**
+     * @todo Improve the two checks at the beginning.
+     */
     public function generatorsEditPage()
     {
+        if (!array_key_exists('edit', $_GET) && !array_key_exists('id', $_GET)) {
+            return;
+        }
+
+        if (!$generator = Database::getGenerator(intval($_GET['id']))) {
+           return;
+        }
+
         include LM_TEMPLATES_DIR . 'generators_edit.php';
     }
 
