@@ -2,8 +2,11 @@
 
 namespace LicenseManager\Classes\Lists;
 
-use \LicenseManager\Classes\Settings;
+use \LicenseManager\Classes\AdminMenus;
+use \LicenseManager\Classes\Database;
 use \LicenseManager\Classes\Logger;
+use \LicenseManager\Classes\Settings;
+use \LicenseManager\Classes\Setup;
 use \LicenseManager\Classes\Abstracts\LicenseStatusEnum;
 
 /**
@@ -40,7 +43,7 @@ class LicensesList extends \WP_List_Table
     public static function get_orders($per_page = 20, $page_number = 1)
     {
         global $wpdb;
-        $table = $wpdb->prefix . \LicenseManager\Classes\Setup::LICENSES_TABLE_NAME;
+        $table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
         $sql = "SELECT * FROM $table";
         $sql .= ' ORDER BY ' . (empty($_REQUEST['orderby']) ? 'id' : esc_sql($_REQUEST['orderby']));
         $sql .= ' '          . (empty($_REQUEST['order'])   ? 'DESC'  : esc_sql($_REQUEST['order']));
@@ -71,7 +74,8 @@ class LicensesList extends \WP_List_Table
             $title = '<code class="lima-placeholder empty"></code>';
             $title .= sprintf('<img class="lima-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
         } else {
-            $title = sprintf('<code>%s</code>', $this->crypto->decrypt($item['license_key']));
+            $title = sprintf('<code class="lima-placeholder">%s</code>', $this->crypto->decrypt($item['license_key']));
+            $title .= sprintf('<img class="lima-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
         }
 
         $actions = [
@@ -85,14 +89,40 @@ class LicensesList extends \WP_List_Table
                 $item['id'],
                 __('Hide', 'lima')
             ),
-            'deliver' => sprintf(
+            'activate' => sprintf(
                 '<a href="%s">%s</a>',
-                $item['id'],
-                __('Deliver', 'lima')
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&action=activate&id=%d&_wpnonce=%s',
+                        AdminMenus::LICENSES_PAGE,
+                        intval($item['id']),
+                        wp_create_nonce('activate')
+                    )
+                ),
+                __('Activate', 'lima')
+            ),
+            'deactivate' => sprintf(
+                '<a href="%s">%s</a>',
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&action=deactivate&id=%d&_wpnonce=%s',
+                        AdminMenus::LICENSES_PAGE,
+                        intval($item['id']),
+                        wp_create_nonce('deactivate')
+                    )
+                ),
+                __('Deactivate', 'lima')
             ),
             'delete' => sprintf(
                 '<a href="%s">%s</a>',
-                $item['id'],
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&action=delete&id=%d&_wpnonce=%s',
+                        AdminMenus::LICENSES_PAGE,
+                        intval($item['id']),
+                        wp_create_nonce('delete')
+                    )
+                ),
                 __('Delete', 'lima')
             ),
         ];
@@ -195,7 +225,7 @@ class LicensesList extends \WP_List_Table
 
     public function column_cb($item)
     {
-        return sprintf('<input type="checkbox" name="bulk[]" value="%s" />', $item['id']);
+        return sprintf('<input type="checkbox" name="id[]" value="%s" />', $item['id']);
     }
 
     public function get_columns()
@@ -233,7 +263,6 @@ class LicensesList extends \WP_List_Table
     public function get_bulk_actions()
     {
         $actions = [
-            'export'     => __('Export', 'lima'),
             'activate'   => __('Activate', 'lima'),
             'deactivate' => __('Deactivate', 'lima'),
             'delete'     => __('Delete', 'lima')
@@ -269,13 +298,81 @@ class LicensesList extends \WP_List_Table
         $action = $this->current_action();
         switch ($action) {
             case 'activate':
-                //$this->some_function();
+                $this->toggleLicenseKeyStatus(LicenseStatusEnum::ACTIVE);
                 break;
             case 'deactivate':
-                //$this->some_function();
+                $this->toggleLicenseKeyStatus(LicenseStatusEnum::INACTIVE);
+                break;
+            case 'delete':
+                $this->deleteLicenseKeys();
                 break;
             default:
                 break;
+        }
+    }
+
+    private function verifyNonce($nonce_action)
+    {
+        if (
+            !wp_verify_nonce($_REQUEST['_wpnonce'], $nonce_action) &&
+            !wp_verify_nonce($_REQUEST['_wpnonce'], 'bulk-' . $this->_args['plural'])
+        ) {
+            wp_redirect(admin_url(sprintf('admin.php?page=%s&lima_nonce_status=invalid', AdminMenus::LICENSES_PAGE)));
+        }
+    }
+
+    /**
+     * @todo Check if given ID's are linked to license keys with SOLD or DELIVERED status.
+     */
+    private function isValidRequest()
+    {
+        // *Tumbleweed rolls*
+    }
+
+    private function toggleLicenseKeyStatus($status)
+    {
+        ($status == LicenseStatusEnum::ACTIVE) ? $nonce_action = 'activate' : $nonce_action = 'deactivate';
+
+        $this->verifyNonce($nonce_action);
+        $this->isValidRequest();
+
+        $result = apply_filters('lima_toggle_license_key_status', array(
+            'ids' => (array)$_REQUEST['id'],
+            'status' => $status
+        ));
+    }
+
+    private function deleteLicenseKeys()
+    {
+
+        $this->verifyNonce('delete');
+        $this->isValidRequest();
+
+        $result = apply_filters(
+            'lima_delete_license_keys',
+            array(
+                'ids' => (array)($_REQUEST['id'])
+            )
+        );
+
+        if ($result) {
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&lima_delete_license_key=true',
+                        AdminMenus::LICENSES_PAGE
+                    )
+                )
+            );
+        } else {
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&lima_delete_license_key=error',
+                        AdminMenus::LICENSES_PAGE
+                    )
+                )
+            );
         }
     }
 }

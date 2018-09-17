@@ -108,11 +108,11 @@ table.wp-list-table.licenses td.source.column-source > span {
 }
 .lima-status:before {
 	content: '';
-	width: 8px;
+	width: 4px;
 	height: 100%;
 	position: absolute;
 	top: 0;
-	left: -8px;
+	left: -4px;
 	border-top-left-radius: 3px;
 	border-bottom-left-radius: 3px;
 }

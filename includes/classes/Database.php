@@ -3,6 +3,7 @@
 namespace LicenseManager\Classes;
 
 use \LicenseManager\Classes\Abstracts\LicenseStatusEnum;
+use \LicenseManager\Classes\Abstracts\SourceEnum;
 
 /**
  * LicenseManager Database.
@@ -33,6 +34,8 @@ class Database
         add_filter('lima_save_added_license_key',        array($this, 'saveAddedLicenseKey'      ), 10, 1);
         add_filter('lima_license_key_exists',            array($this, 'licenseKeyExists'         ), 10, 1);
         add_filter('lima_import_license_keys',           array($this, 'importLicenseKeys'        ), 10, 1);
+        add_filter('lima_delete_license_keys',           array($this, 'deleteLicenseKeys'        ), 10, 1);
+        add_filter('lima_toggle_license_key_status',     array($this, 'toggleLicenseKeyStatus'   ), 10, 1);
     }
 
     /**
@@ -87,7 +90,7 @@ class Database
                         'hash'        => $this->crypto->hash($license_key),
                         'created_at'  => $created_at,
                         'expires_at'  => $expires_at,
-                        'source'      => 1,
+                        'source'      => SourceEnum::GENERATOR,
                         'status'      => LicenseStatusEnum::SOLD
                     ),
                     array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
@@ -193,7 +196,7 @@ class Database
                         'hash'        => $this->crypto->hash($license_key),
                         'created_at'  => $created_at,
                         'expires_at'  => null,
-                        'source'      => 2,
+                        'source'      => SourceEnum::IMPORT,
                         'status'      => $status
                     ),
                     array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
@@ -235,7 +238,7 @@ class Database
                 'hash'        => $this->crypto->hash($args['license_key']),
                 'created_at'  => $created_at,
                 'expires_at'  => null,
-                'source'      => 3,
+                'source'      => SourceEnum::IMPORT,
                 'status'      => $status
             ),
             array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
@@ -365,5 +368,47 @@ class Database
         }
 
         return $license_key;
+    }
+
+    /**
+     * Deletes license keys.
+     *
+     * @since 1.0.0
+     *
+     * @param int $args['id']
+     *
+     * @return boolean
+     */
+    public static function deleteLicenseKeys($args)
+    {
+        global $wpdb;
+
+        return $wpdb->query(sprintf(
+            'DELETE FROM %s WHERE id IN (%s)',
+            $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
+            implode(', ', $args['ids'])
+        ));
+    }
+
+    /**
+     * Activates or Deactivates license keys.
+     *
+     * @since 1.0.0
+     *
+     * @param array $args['ids']
+     * @param int   $args['status']
+     *
+     * @return boolean
+     */
+    public static function toggleLicenseKeyStatus($args)
+    {
+        global $wpdb;
+
+        return $wpdb->query(sprintf(
+            'UPDATE %s SET status = %d WHERE id IN (%s)',
+            $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
+            $args['status'],
+            implode(', ', $args['ids'])
+        ));
     }
 }

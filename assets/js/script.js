@@ -135,7 +135,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
     if (showAll) {
         var licenseKeyIds = [];
         var codeList = showAll.parentNode.previousSibling.children;
-        var orderId = parseInt(showAll.dataset.orderId);
         var spinner = showAll.nextSibling.nextSibling;
 
         for(var i = 0, length = codeList.length; i < length; i++){

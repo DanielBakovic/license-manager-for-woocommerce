@@ -22,6 +22,13 @@ if (class_exists('AdminMenus', false)) {
  */
 class AdminMenus
 {
+    const LICENSES_PAGE       = 'license_manager';
+    const ADD_IMPORT_PAGE     = 'license_manager_add_import';
+    const GENERATORS_PAGE     = 'license_manager_generators';
+    const ADD_GENERATOR_PAGE  = 'license_manager_generators_add';
+    const EDIT_GENERATOR_PAGE = 'license_manager_generators_edit';
+    const SETTINGS_PAGE       = 'license_manager_settings';
+
     private $crypto;
 
     /**
@@ -46,41 +53,41 @@ class AdminMenus
             __('License Manager', 'lima'),
             __('License Manager', 'lima'),
             'manage_options',
-            'license_manager',
+            self::LICENSES_PAGE,
             array($this, 'licensesPage'),
             'dashicons-lock',
             10
         );
         add_submenu_page(
-            'license_manager',
+            self::LICENSES_PAGE,
             __('License Manager', 'lima'),
             __('Licenses', 'lima'),
             'manage_options',
-            'license_manager',
+            self::LICENSES_PAGE,
             array($this, 'licensesPage')
         );
         add_submenu_page(
-            'license_manager',
+            self::LICENSES_PAGE,
             __('License Manager - Import', 'lima'),
             __('Import', 'lima'),
             'manage_options',
-            'license_manager_add_import',
+            self::ADD_IMPORT_PAGE,
             array($this, 'licensesAddImportPage')
         );
         add_submenu_page(
-            'license_manager',
+            self::LICENSES_PAGE,
             __('License Manager - Generators', 'lima'),
             __('Generators', 'lima'),
             'manage_options',
-            'license_manager_generators',
+            self::GENERATORS_PAGE,
             array($this, 'generatorsPage')
         );
         add_submenu_page(
-            'license_manager',
+            self::LICENSES_PAGE,
             __('License Manager - Add New Generator', 'lima'),
             __('Add New Generator', 'lima'),
             'manage_options',
-            'license_manager_generators_add',
+            self::ADD_GENERATOR_PAGE,
             array($this, 'generatorsAddPage')
         );
         add_submenu_page(
@@ -88,15 +95,15 @@ class AdminMenus
             __('License Manager - Edit Generator', 'lima'),
             __('Edit Generator', 'lima'),
             'manage_options',
-            'license_manager_generators_edit',
+            self::EDIT_GENERATOR_PAGE,
             array($this, 'generatorsEditPage')
         );
         add_submenu_page(
-            'license_manager',
+            self::LICENSES_PAGE,
             __('License Manager - Settings', 'lima'),
             __('Settings', 'lima'),
             'manage_options',
-            'license_manager_settings',
+            self::SETTINGS_PAGE,
             array($this, 'settingsPage')
         );
     }
@@ -108,7 +115,7 @@ class AdminMenus
 
         // The edit product meta box.
         add_meta_box(
-            'lm-licenses-meta-box',
+            'lima-licenses-meta-box',
             __('License Manager - Product License Settings', 'lima'),
             array($this, 'productMetaBox'),
             'product'

@@ -64,7 +64,7 @@ class FormHandler
         global $wpdb;
 
         $wpdb->insert(
-            $wpdb->prefix . \LicenseManager\Classes\Setup::GENERATORS_TABLE_NAME,
+            $wpdb->prefix . Setup::GENERATORS_TABLE_NAME,
             array(
                 'name'         => $_POST['name'],
                 'charset'      => $_POST['charset'],
@@ -78,7 +78,15 @@ class FormHandler
             array('%s', '%s', '%d', '%d', '%s', '%s', '%s')
         );
 
-        wp_redirect(admin_url('admin.php?page=license_manager_generators'));
+        wp_redirect(
+            admin_url(
+                sprintf(
+                    'admin.php?page=%s',
+                    AdminMenus::GENERATORS_PAGE
+                )
+            )
+        );
+
         exit;
     }
 
@@ -118,27 +126,46 @@ class FormHandler
         );
 
         if ($result['failed'] == 0 && $result['added'] == 0) {
-            wp_redirect(admin_url('admin.php?page=license_manager_add_import&import=error'));
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&lima_import_license_keys=error',
+                        AdminMenus::ADD_IMPORT_PAGE
+                    )
+                )
+            );
         }
+
         if ($result['failed'] == 0 && $result['added'] > 0) {
             wp_redirect(
                 admin_url(
-                    sprintf('admin.php?page=license_manager_add_import&import=success&added=%d', $result['added'])
+                    sprintf(
+                        'admin.php?page=%s&lima_import_license_keys=true&added=%d',
+                        AdminMenus::ADD_IMPORT_PAGE,
+                        $result['added']
+                    )
                 )
             );
         }
+
         if ($result['failed'] > 0 && $result['added'] == 0) {
             wp_redirect(
                 admin_url(
-                    sprintf('admin.php?page=license_manager_add_import&import=failed&rejected=%d', $result['failed'])
+                    sprintf(
+                        'admin.php?page=%s&lima_import_license_keys=false&rejected=%d',
+                        AdminMenus::ADD_IMPORT_PAGE,
+                        $result['failed']
+                    )
                 )
             );
         }
+
         if ($result['failed'] > 0 && $result['added'] > 0) {
             wp_redirect(
                 admin_url(
                     sprintf(
-                        'admin.php?page=license_manager_add_import&import=mixed&added=%d&rejected=%d',
+                        'admin.php?page=%s&lima_import_license_keys=mixed&added=%d&rejected=%d',
+                        AdminMenus::ADD_IMPORT_PAGE,
                         $result['failed']
                     )
                 )
@@ -167,9 +194,23 @@ class FormHandler
         );
 
         if ($result) {
-            wp_redirect(admin_url('admin.php?page=license_manager_add_import&add=success'));
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&lima_add_license_key=true',
+                        AdminMenus::ADD_IMPORT_PAGE
+                    )
+                )
+            );
         } else {
-            wp_redirect(admin_url('admin.php?page=license_manager_add_import&add=failed'));
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&lima_add_license_key=false',
+                        AdminMenus::ADD_IMPORT_PAGE
+                    )
+                )
+            );
         }
     }
 
