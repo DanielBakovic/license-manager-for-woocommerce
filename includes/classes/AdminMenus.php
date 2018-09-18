@@ -49,6 +49,7 @@ class AdminMenus
 
     public function createPluginPages()
     {
+        // Licenses List Page
         add_menu_page(
             __('License Manager', 'lima'),
             __('License Manager', 'lima'),
@@ -66,6 +67,7 @@ class AdminMenus
             self::LICENSES_PAGE,
             array($this, 'licensesPage')
         );
+        // Add/Import Page
         add_submenu_page(
             self::LICENSES_PAGE,
             __('License Manager - Import', 'lima'),
@@ -74,6 +76,7 @@ class AdminMenus
             self::ADD_IMPORT_PAGE,
             array($this, 'licensesAddImportPage')
         );
+        // Generators List Page
         add_submenu_page(
             self::LICENSES_PAGE,
             __('License Manager - Generators', 'lima'),
@@ -82,6 +85,7 @@ class AdminMenus
             self::GENERATORS_PAGE,
             array($this, 'generatorsPage')
         );
+        // Add Generator Page
         add_submenu_page(
             self::LICENSES_PAGE,
             __('License Manager - Add New Generator', 'lima'),
@@ -90,6 +94,7 @@ class AdminMenus
             self::ADD_GENERATOR_PAGE,
             array($this, 'generatorsAddPage')
         );
+        // Edit Generator Page
         add_submenu_page(
             null,
             __('License Manager - Edit Generator', 'lima'),
@@ -98,6 +103,7 @@ class AdminMenus
             self::EDIT_GENERATOR_PAGE,
             array($this, 'generatorsEditPage')
         );
+        // Settings Page
         add_submenu_page(
             self::LICENSES_PAGE,
             __('License Manager - Settings', 'lima'),

@@ -19,4 +19,11 @@ abstract class LicenseStatusEnum
     const DELIVERED = 2;
     const ACTIVE    = 3;
     const INACTIVE  = 4;
+
+    public static $statuses = array(
+        self::SOLD,
+        self::DELIVERED,
+        self::ACTIVE,
+        self::INACTIVE
+    );
 }

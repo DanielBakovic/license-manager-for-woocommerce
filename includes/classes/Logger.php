@@ -244,4 +244,16 @@ class Logger
         }
     }
 
+    /**
+     * Perform a preformatted var_dump.
+     *
+     * @since 1.0.0
+     */
+    public static function var_dump_pre($variable)
+    {
+        echo '<pre>';
+        var_dump($variable);
+        echo '</pre>';
+    }
+
 }

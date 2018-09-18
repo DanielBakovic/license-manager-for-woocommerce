@@ -40,94 +40,67 @@ class LicensesList extends \WP_List_Table
         ]);
     }
 
-    public static function get_orders($per_page = 20, $page_number = 1)
+    protected function get_views()
     {
-        global $wpdb;
-        $table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
-        $sql = "SELECT * FROM $table";
-        $sql .= ' ORDER BY ' . (empty($_REQUEST['orderby']) ? 'id' : esc_sql($_REQUEST['orderby']));
-        $sql .= ' '          . (empty($_REQUEST['order'])   ? 'DESC'  : esc_sql($_REQUEST['order']));
-        $sql .= " LIMIT $per_page";
-        $sql .= ' OFFSET ' . ($page_number - 1) * $per_page;
+        $status_links   = array();
+        $current = (!empty($_REQUEST['status']) ? $_REQUEST['status'] : 'all');
 
-        $results = $wpdb->get_results($sql, ARRAY_A);
+        // All link
+        $class = ($current == 'all' ? ' class="current"' :'');
+        $all_url = remove_query_arg('status');
+        $status_links['all'] = sprintf(
+            '<a href="%s" %s>%s <span class="count">(%d)</span></a>',
+            $all_url,
+            $class,
+            __('All', 'lima'),
+            Database::getLicenseKeyCount()
+        );
 
-        return $results;
-    }
+        // Sold link
+        $class         = ($current == LicenseStatusEnum::SOLD ? ' class="current"' :'');
+        $sold_url      = esc_url(add_query_arg('status', LicenseStatusEnum::SOLD));
+        $status_links['sold'] = sprintf(
+            '<a href="%s" %s>%s <span class="count">(%d)</span></a>',
+            $sold_url,
+            $class,
+            __('Sold', 'lima'),
+            Database::getLicenseKeyCount(LicenseStatusEnum::SOLD)
+        );
 
-    public static function record_count()
-    {
-        global $wpdb;
-        $table = $wpdb->prefix . \LicenseManager\Classes\Setup::LICENSES_TABLE_NAME;
+        // Delivered link
+        $class         = ($current == LicenseStatusEnum::DELIVERED ? ' class="current"' :'');
+        $delivered_url = esc_url(add_query_arg('status', LicenseStatusEnum::DELIVERED));
+        $status_links['delivered'] = sprintf(
+            '<a href="%s" %s>%s <span class="count">(%d)</span></a>',
+            $delivered_url,
+            $class,
+            __('Delivered', 'lima'),
+            Database::getLicenseKeyCount(LicenseStatusEnum::DELIVERED)
+        );
 
-        return $wpdb->get_var("SELECT COUNT(*) FROM $table");
-    }
+        // Active link
+        $class      = ($current == LicenseStatusEnum::ACTIVE ? ' class="current"' :'');
+        $active_url = esc_url(add_query_arg('status', LicenseStatusEnum::ACTIVE));
+        $status_links['active'] = sprintf(
+            '<a href="%s" %s>%s <span class="count">(%d)</span></a>',
+            $active_url,
+            $class,
+            __('Active', 'lima'),
+            Database::getLicenseKeyCount(LicenseStatusEnum::ACTIVE)
+        );
 
-    public function no_items()
-    {
-        _e('No licenses found.', 'lima');
-    }
+        // Inactive link
+        $class        = ($current == LicenseStatusEnum::INACTIVE ? ' class="current"' :'');
+        $inactive_url = esc_url(add_query_arg('status', LicenseStatusEnum::INACTIVE));
+        $status_links['inactive'] = sprintf(
+            '<a href="%s" %s>%s <span class="count">(%d)</span></a>',
+            $inactive_url,
+            $class,
+            __('Inactive', 'lima'),
+            Database::getLicenseKeyCount(LicenseStatusEnum::INACTIVE)
+        );
 
-    public function column_license_key($item)
-    {
-        if (Settings::hideLicenseKeys()) {
-            $title = '<code class="lima-placeholder empty"></code>';
-            $title .= sprintf('<img class="lima-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
-        } else {
-            $title = sprintf('<code class="lima-placeholder">%s</code>', $this->crypto->decrypt($item['license_key']));
-            $title .= sprintf('<img class="lima-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
-        }
-
-        $actions = [
-            'show' => sprintf(
-                '<a class="lima-license-key-show" data-id="%d">%s</a>',
-                $item['id'],
-                __('Show', 'lima')
-            ),
-            'hide' => sprintf(
-                '<a class="lima-license-key-hide" data-id="%d">%s</a>',
-                $item['id'],
-                __('Hide', 'lima')
-            ),
-            'activate' => sprintf(
-                '<a href="%s">%s</a>',
-                admin_url(
-                    sprintf(
-                        'admin.php?page=%s&action=activate&id=%d&_wpnonce=%s',
-                        AdminMenus::LICENSES_PAGE,
-                        intval($item['id']),
-                        wp_create_nonce('activate')
-                    )
-                ),
-                __('Activate', 'lima')
-            ),
-            'deactivate' => sprintf(
-                '<a href="%s">%s</a>',
-                admin_url(
-                    sprintf(
-                        'admin.php?page=%s&action=deactivate&id=%d&_wpnonce=%s',
-                        AdminMenus::LICENSES_PAGE,
-                        intval($item['id']),
-                        wp_create_nonce('deactivate')
-                    )
-                ),
-                __('Deactivate', 'lima')
-            ),
-            'delete' => sprintf(
-                '<a href="%s">%s</a>',
-                admin_url(
-                    sprintf(
-                        'admin.php?page=%s&action=delete&id=%d&_wpnonce=%s',
-                        AdminMenus::LICENSES_PAGE,
-                        intval($item['id']),
-                        wp_create_nonce('delete')
-                    )
-                ),
-                __('Delete', 'lima')
-            ),
-        ];
-
-        return $title . $this->row_actions($actions);
+        return $status_links;
     }
 
     public function column_default($item, $column_name)
@@ -223,26 +196,71 @@ class LicensesList extends \WP_List_Table
         return $item[$column_name];
     }
 
+    public function column_license_key($item)
+    {
+        if (Settings::hideLicenseKeys()) {
+            $title = '<code class="lima-placeholder empty"></code>';
+            $title .= sprintf('<img class="lima-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
+        } else {
+            $title = sprintf('<code class="lima-placeholder">%s</code>', $this->crypto->decrypt($item['license_key']));
+            $title .= sprintf('<img class="lima-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
+        }
+
+        $actions = [
+            'show' => sprintf(
+                '<a class="lima-license-key-show" data-id="%d">%s</a>',
+                $item['id'],
+                __('Show', 'lima')
+            ),
+            'hide' => sprintf(
+                '<a class="lima-license-key-hide" data-id="%d">%s</a>',
+                $item['id'],
+                __('Hide', 'lima')
+            ),
+            'activate' => sprintf(
+                '<a href="%s">%s</a>',
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&action=activate&id=%d&_wpnonce=%s',
+                        AdminMenus::LICENSES_PAGE,
+                        intval($item['id']),
+                        wp_create_nonce('activate')
+                    )
+                ),
+                __('Activate', 'lima')
+            ),
+            'deactivate' => sprintf(
+                '<a href="%s">%s</a>',
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&action=deactivate&id=%d&_wpnonce=%s',
+                        AdminMenus::LICENSES_PAGE,
+                        intval($item['id']),
+                        wp_create_nonce('deactivate')
+                    )
+                ),
+                __('Deactivate', 'lima')
+            ),
+            'delete' => sprintf(
+                '<a href="%s">%s</a>',
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&action=delete&id=%d&_wpnonce=%s',
+                        AdminMenus::LICENSES_PAGE,
+                        intval($item['id']),
+                        wp_create_nonce('delete')
+                    )
+                ),
+                __('Delete', 'lima')
+            ),
+        ];
+
+        return $title . $this->row_actions($actions);
+    }
+
     public function column_cb($item)
     {
         return sprintf('<input type="checkbox" name="id[]" value="%s" />', $item['id']);
-    }
-
-    public function get_columns()
-    {
-        $columns = array(
-            'cb'          => '<input type="checkbox" />',
-            'id'          => __('ID', 'lima'),
-            'license_key' => __('License Key', 'lima'),
-            'order_id'    => __('Order', 'lima'),
-            'product_id'  => __('Product', 'lima'),
-            'created_at'  => __('Created at', 'lima'),
-            'expires_at'  => __('Expires at', 'lima'),
-            'source'      => __('Source', 'lima'),
-            'status'      => __('Status', 'lima')
-        );
-
-        return $columns;
     }
 
     public function get_sortable_columns()
@@ -271,6 +289,25 @@ class LicensesList extends \WP_List_Table
         return $actions;
     }
 
+    public function process_bulk_action()
+    {
+        $action = $this->current_action();
+
+        switch ($action) {
+            case 'activate':
+                $this->toggleLicenseKeyStatus(LicenseStatusEnum::ACTIVE);
+                break;
+            case 'deactivate':
+                $this->toggleLicenseKeyStatus(LicenseStatusEnum::INACTIVE);
+                break;
+            case 'delete':
+                $this->deleteLicenseKeys();
+                break;
+            default:
+                break;
+        }
+    }
+
     public function prepare_items()
     {
         $this->_column_headers = array(
@@ -287,28 +324,131 @@ class LicensesList extends \WP_List_Table
 
         $this->set_pagination_args([
             'total_items' => $total_items,
-            'per_page'    => $per_page
+            'per_page'    => $per_page,
+            'total_pages' => ceil($total_items / $per_page)
         ]);
+
+        if (array_key_exists('filter_action', (array)$_REQUEST)) {
+            $this->filterLicenses();
+        }
 
         $this->items = self::get_orders($per_page, $current_page);
     }
 
-    public function process_bulk_action()
-    {
-        $action = $this->current_action();
-        switch ($action) {
-            case 'activate':
-                $this->toggleLicenseKeyStatus(LicenseStatusEnum::ACTIVE);
-                break;
-            case 'deactivate':
-                $this->toggleLicenseKeyStatus(LicenseStatusEnum::INACTIVE);
-                break;
-            case 'delete':
-                $this->deleteLicenseKeys();
-                break;
-            default:
-                break;
+    protected function extra_tablenav($which) {
+        $html = '';
+
+        if ($which == "top") {
+            $html    .= '<div class="alignleft actions">';
+            $products = Database::getDistinct('product_id', Setup::LICENSES_TABLE_NAME);
+            $orders   = Database::getDistinct('order_id', Setup::LICENSES_TABLE_NAME);
+
+            if ($products) {
+                $html .= '<select id="products" class="filter-product" name="product-filter">';
+                $html .= sprintf('<option value="">%s</option>', __('Filter by Product', 'lima'));
+
+                foreach ($products as $product) {
+                    if ($product = wc_get_product($product->product_id)) {
+                        $html .= sprintf('<option value="%d">%s</option>', $product->get_id(), $product->get_title());
+                    }
+                }
+
+                $html .= '</select>';
+            }
+
+            if ($orders) {
+                $html .= '<select id="orders" class="filter-order" name="order-filter">';
+                $html .= sprintf('<option value="">%s</option>', __('Filter by Order', 'lima'));
+
+                foreach ($orders as $order) {
+                    if ($order = wc_get_order($order->order_id)) {
+                        if ($user = $order->get_user()) {
+                            $html .= sprintf(
+                                '<option value="%d">#%d - %s %s</option>',
+                                $order->get_id(),
+                                $user->first_name,
+                                $user->last_name
+                            );
+                        } else {
+                            $html .= sprintf(
+                                '<option value="%d">#%d</option>',
+                                $order->get_id(),
+                                $order->get_id()
+                            );
+                        }
+
+                    }
+                }
+
+                $html .= '</select>';
+            }
+
+            $html .= sprintf(
+                '<input type="submit" name="filter_action" id="post-query-submit" class="button" value="%s">',
+                __('Filter', 'lima')
+            );
+            $html .= '</div>';
+
+            echo $html;
         }
+    }
+
+
+
+
+    public static function get_orders($per_page = 20, $page_number = 1)
+    {
+        global $wpdb;
+
+        if (self::isViewFilterActive()) $where = $wpdb->prepare(' WHERE status = %d', intval($_GET['status']));
+
+        $table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
+
+        $sql = "SELECT * FROM $table";
+        if (isset($where)) $sql .= $where;
+        $sql .= ' ORDER BY ' . (empty($_REQUEST['orderby']) ? 'id' : esc_sql($_REQUEST['orderby']));
+        $sql .= ' '          . (empty($_REQUEST['order'])   ? 'DESC'  : esc_sql($_REQUEST['order']));
+        $sql .= " LIMIT $per_page";
+        $sql .= ' OFFSET ' . ($page_number - 1) * $per_page;
+
+        $results = $wpdb->get_results($sql, ARRAY_A);
+
+        return $results;
+    }
+
+    public static function record_count($status = null)
+    {
+        global $wpdb;
+
+        $table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
+
+        if (self::isViewFilterActive()) {
+            return $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table WHERE status = %d", intval($_GET['status'])));
+        } else {
+            return $wpdb->get_var("SELECT COUNT(*) FROM $table");
+        }
+    }
+
+    public function no_items()
+    {
+        _e('No licenses found.', 'lima');
+    }
+
+    public function get_columns()
+    {
+        $columns = array(
+            'cb'          => '<input type="checkbox" />',
+            'id'          => __('ID', 'lima'),
+            'license_key' => __('License Key', 'lima'),
+            'order_id'    => __('Order', 'lima'),
+            'product_id'  => __('Product', 'lima'),
+            'created_at'  => __('Created at', 'lima'),
+            'expires_at'  => __('Expires at', 'lima'),
+            'source'      => __('Source', 'lima'),
+            'status'      => __('Status', 'lima')
+        );
+
+        return $columns;
     }
 
     private function verifyNonce($nonce_action)
@@ -374,5 +514,34 @@ class LicensesList extends \WP_List_Table
                 )
             );
         }
+    }
+
+    public static function isViewFilterActive()
+    {
+        if (array_key_exists('status', $_GET) && in_array($_GET['status'], LicenseStatusEnum::$statuses)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    protected function filterLicenses()
+    {
+        $args = [];
+
+        remove_query_arg('product_id');
+        remove_query_arg('order_id');
+
+        if ($_REQUEST['product-filter']) {
+            $args['product_id'] = intval($_REQUEST['product-filter']);
+        }
+
+        if ($_REQUEST['order-filter']) {
+            $args['order_id'] = intval($_REQUEST['order-filter']);
+        }
+
+        $url .= add_query_arg($args);
+
+        wp_redirect($url);
     }
 }

@@ -484,4 +484,31 @@ class Database
             implode(', ', $args['ids'])
         ));
     }
+
+    public static function getLicenseKeyCount($status = 0)
+    {
+        global $wpdb;
+
+        $table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
+
+        if (!in_array($status, LicenseStatusEnum::$statuses) & $status != 0) {
+            return 0;
+        }
+
+        if ($status == 0) {
+            return $wpdb->get_var("SELECT COUNT(*) FROM $table");
+        } else {
+            return $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table WHERE status = %d", intval($status)));
+        }
+    }
+
+    public static function getDistinct($column, $table)
+    {
+        global $wpdb;
+
+        $table = $wpdb->prefix . $table;
+
+        return $wpdb->get_results("SELECT DISTINCT {$column} FROM {$table}", OBJECT);
+    }
+
 }

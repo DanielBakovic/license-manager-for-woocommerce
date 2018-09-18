@@ -3,10 +3,12 @@
 <div class="wrap">
 
     <h1 class="wp-heading-inline"><?=__('Licenses', 'lima'); ?></h1>
-    <a href="<?=admin_url(sprintf('admin.php?page=%s', \LicenseManager\Classes\AdminMenus::ADD_IMPORT_PAGE));?>" class="page-title-action">
+    <a class="page-title-action" href="<?=admin_url(sprintf('admin.php?page=%s', \LicenseManager\Classes\AdminMenus::ADD_IMPORT_PAGE));?>">
         <span><?=__('Add/Import', 'lima');?></span>
     </a>
+    <hr class="wp-header-end">
 
+    <?php $licenses->views(); ?>
     <form method="post">
         <?php
             $licenses->prepare_items();
