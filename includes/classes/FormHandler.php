@@ -240,7 +240,8 @@ class FormHandler
             array(
                 'license_key' => sanitize_text_field($_POST['license_key']),
                 'activate'    => array_key_exists('activate', $_POST) ? true : false,
-                'product_id'  => intval($_POST['product'])
+                'product_id'  => intval($_POST['product']),
+                'valid_for'   => ($_POST['valid_for']) ? intval($_POST['valid_for']) : null
             )
         );
 
@@ -307,6 +308,11 @@ class FormHandler
      * @param WC_Product_Simple     $product
      */
     public function showOrderedLicenses($item_id, $item, $product) {
+        // Not a WC_Order_Item_Product object? Nothing to do...
+        if (!($item instanceof \WC_Order_Item_Product)) {
+            return;
+        }
+
         // No license keys? Nothing to do...
         if (!$license_keys = Database::getOrderedLicenseKeys($item->get_order_id(), $item->get_product_id())) {
             return;
@@ -369,9 +375,11 @@ class FormHandler
             return;
         }
 
-        // The checkbox wasn't selected.
+        // Toggle licensed product status, according to checkbox.
         if (!array_key_exists('lima-sell-licenses', $_POST)) {
-            return;
+            update_post_meta($post_id, '_lima_licensed_product', 0);
+        } else {
+            update_post_meta($post_id, '_lima_licensed_product', 1);
         }
 
         // No generator was selected, return with error.

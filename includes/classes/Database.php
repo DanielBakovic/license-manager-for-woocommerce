@@ -126,7 +126,7 @@ class Database
             ));
         } else {
             // Keys have been generated and saved, this order is now complete.
-            update_post_meta($args['order_id'], '_lima_order_status', 'complete');
+            update_post_meta($args['order_id'], '_lima_order_complete', 1);
         }
     }
 
@@ -147,11 +147,12 @@ class Database
         global $wpdb;
 
         for ($i = 0; $i < $args['amount']; $i++) {
-            $valid_for  = null;
+            $date       = new \DateTime();
+            $valid_for  = $args['license_keys'][$i]->valid_for;
             $expires_at = null;
 
-            if (is_int($valid_for)) {
-                $expires_at = $date->add(new \DateInterval('P' . $valid_for . 'D'))->format('Y-m-d H:i:s');
+            if (is_numeric($valid_for)) {
+                $expires_at = $date->add(new \DateInterval('P' . intval($valid_for) . 'D'))->format('Y-m-d H:i:s');
             }
 
             $wpdb->update(
@@ -221,6 +222,7 @@ class Database
      * @param string  $args['license_key']
      * @param boolean $args['activate']
      * @param int     $args['product_id']
+     * @param int     $args['valid_for']
      *
      * @return array
      */
@@ -234,16 +236,17 @@ class Database
         return $wpdb->insert(
             $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
             array(
-                'order_id'    => null,
+                'order_id'    => null, // Because it's only added, not bought.
                 'product_id'  => $args['product_id'],
                 'license_key' => $this->crypto->encrypt($args['license_key']),
                 'hash'        => $this->crypto->hash($args['license_key']),
                 'created_at'  => $created_at,
-                'expires_at'  => null,
+                'expires_at'  => null, // Because it's only added, not bought.
+                'valid_for'   => $args['valid_for'],
                 'source'      => SourceEnum::IMPORT,
                 'status'      => $status
             ),
-            array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
+            array('%d', '%d', '%s', '%s', '%s', '%d', '%s', '%d')
         );
     }
 

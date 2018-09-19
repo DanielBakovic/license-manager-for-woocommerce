@@ -75,8 +75,16 @@
                     <th scope="row"><label><?=__('Licence Key', 'lima');?></label></th>
                     <td>
                         <input name="license_key" id="license_key" class="regular-text" type="text">
-                        <p class="description" id="tagline-description">
-                        </p>
+                        <p class="description" id="tagline-description"><?=__('The license key will be encrypted before saving to the database.', 'lima');?></p>
+                    </td>
+                </tr>
+
+                <!-- VALID FOR -->
+                <tr scope="row">
+                    <th scope="row"><label><?=__('Validity', 'lima');?></label></th>
+                    <td>
+                        <input name="valid_for" id="valid_for" class="regular-text" type="text">
+                        <p class="description" id="tagline-description"><?=__('Number of days for which the license key is valid. Leave blank if the license key does not expire.', 'lima');?></p>
                     </td>
                 </tr>
 

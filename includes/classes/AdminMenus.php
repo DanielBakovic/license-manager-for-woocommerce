@@ -202,15 +202,13 @@ class AdminMenus
     {
         global $post;
 
-        $generators = Database::getGenerators();
+        $licensed     = get_post_meta($post->ID, '_lima_licensed_product', true);
+        $gen_id       = get_post_meta($post->ID, '_lima_generator_id', true);
+        $generators   = Database::getGenerators();
         $license_keys = array(
             'available' => Database::getLicenseKeysByProductId($post->ID, LicenseStatusEnum::ACTIVE),
-            'inactive' => Database::getLicenseKeysByProductId($post->ID, LicenseStatusEnum::INACTIVE)
+            'inactive'  => Database::getLicenseKeysByProductId($post->ID, LicenseStatusEnum::INACTIVE)
         );
-
-        if (!$gen_id = get_post_meta($post->ID, '_lima_generator_id', true)) {
-            $gen_id = false;
-        }
 
         include LM_METABOX_DIR . 'edit-product.php';
     }

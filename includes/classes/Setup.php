@@ -89,27 +89,28 @@ class Setup
 
         $tables = "
             CREATE TABLE $table1 (
-                `id` bigint(20) NOT NULL AUTO_INCREMENT,
-                `order_id` bigint(20) NULL DEFAULT NULL,
-                `product_id` bigint(20) NULL DEFAULT NULL,
-                `license_key` varchar(256) NOT NULL,
-                `hash` varchar(256) NOT NULL,
-                `created_at` datetime NOT NULL,
-                `expires_at` datetime NULL,
-                `source` varchar(256) NOT NULL,
-                `status` tinyint(1) NOT NULL,
+                `id` BIGINT(20) NOT NULL COMMENT 'Primary Key' AUTO_INCREMENT,
+                `order_id` BIGINT(20) NULL DEFAULT NULL COMMENT 'WC_Order ID',
+                `product_id` BIGINT(20) NULL DEFAULT NULL COMMENT 'WC_Product ID',
+                `license_key` VARCHAR(256) NOT NULL COMMENT 'Encrypted License Key',
+                `hash` VARCHAR(256) NOT NULL COMMENT 'Hashed License Key ID',
+                `created_at` DATETIME NOT NULL COMMENT 'Creation Date',
+                `expires_at` DATETIME NULL COMMENT 'Expiration Date',
+                `valid_for` INT(32) NULL DEFAULT NULL COMMENT 'License Validity (in days)',
+                `source` VARCHAR(256) NOT NULL COMMENT 'Import or Generator',
+                `status` TINYINT(1) NOT NULL COMMENT 'Sold, Delivered, Active, Inactive',
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
             CREATE TABLE $table2 (
-                `id` int(20) NOT NULL AUTO_INCREMENT,
-                `name` varchar(256) NOT NULL,
-                `charset` varchar(256) NULL,
-                `chunks` int(10) NOT NULL,
-                `chunk_length` int(10) NOT NULL,
-                `separator` varchar(256) NOT NULL,
-                `prefix` varchar(256) NULL,
-                `suffix` varchar(256) NULL,
-                `expires_in` int(10) NULL DEFAULT NULL,
+                `id` INT(20) NOT NULL AUTO_INCREMENT,
+                `name` VARCHAR(256) NOT NULL,
+                `charset` VARCHAR(256) NULL,
+                `chunks` INT(10) NOT NULL,
+                `chunk_length` INT(10) NOT NULL,
+                `separator` VARCHAR(256) NOT NULL,
+                `prefix` VARCHAR(256) NULL,
+                `suffix` VARCHAR(256) NULL,
+                `expires_in` INT(10) NULL DEFAULT NULL,
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         ";

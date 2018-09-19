@@ -128,8 +128,13 @@ class LicensesList extends \WP_List_Table
                     $link = '';
                 }
                 return $link;
-            case 'license_key':
-                return sprintf('<code>%s</code>', $this->crypto->decrypt($item['license_key']));
+            case 'valid_for':
+                if ($item['valid_for']) {
+                    $link = sprintf(__('%d Day(s)', 'lima'), intval($item['valid_for']));
+                } else {
+                    $link = __('non-expiring', 'lima');
+                }
+                return $link;
             case 'source':
                 switch ($item['source']) {
                     case 1:
@@ -364,10 +369,10 @@ class LicensesList extends \WP_List_Table
                     if ($order = wc_get_order($order->order_id)) {
                         if ($user = $order->get_user()) {
                             $html .= sprintf(
-                                '<option value="%d">#%d - %s %s</option>',
+                                '<option value="%d">#%d - %s</option>',
                                 $order->get_id(),
-                                $user->first_name,
-                                $user->last_name
+                                $order->get_id(),
+                                $user->data->display_name
                             );
                         } else {
                             $html .= sprintf(
@@ -392,9 +397,6 @@ class LicensesList extends \WP_List_Table
             echo $html;
         }
     }
-
-
-
 
     public static function get_orders($per_page = 20, $page_number = 1)
     {
@@ -444,6 +446,7 @@ class LicensesList extends \WP_List_Table
             'product_id'  => __('Product', 'lima'),
             'created_at'  => __('Created at', 'lima'),
             'expires_at'  => __('Expires at', 'lima'),
+            'valid_for'   => __('Valid for', 'lima'),
             'source'      => __('Source', 'lima'),
             'status'      => __('Status', 'lima')
         );

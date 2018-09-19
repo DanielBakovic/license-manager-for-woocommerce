@@ -34,39 +34,39 @@ class OrderManager
      */
     public function generateOrderLicenses($order_id)
     {
-        // Keys have already been generated for this order, since there's a status for it.
-        if (get_post_meta($order_id, '_lima_order_status')) {
-            return;
-        }
+        // Keys have already been generated for this order.
+        if (get_post_meta($order_id, '_lima_order_complete')) return;
 
         $order    = new \WC_Order($order_id);
         $licenses = [];
 
         // Loop through the order items
         foreach ($order->get_items() as $item_data) {
-
-            // Get an instance of the corresponding WC_Product object
+            /**
+             * @var $product WC_Product
+             */
             $product = $item_data->get_product();
+
+            // Check if the product has been activated for selling.
+            if (!get_post_meta($product->get_id(), '_lima_licensed_product', true)) break;
 
             // Check if the product has active keys attached to it.
             if ($license_keys = Database::getLicenseKeysByProductId($product->get_id(), 3)) {
                 /**
-                 * @todo Improve quantity check.
+                 * @todo Improve quantity check. (If generator is also assigned quantity is not a problem, otherwise
+                 * more thorough checks are required).
                  */
-                if ($item_data->get_quantity() > count($license_keys)) {
-                    return;
-                }
+                if ($item_data->get_quantity() > count($license_keys)) return;
 
                 // Set the license keys as sold.
-                $sell_imported_args = array(
+                do_action('lima_sell_imported_license_keys', array(
                     'license_keys' => $license_keys,
                     'order_id'     => $order_id,
                     'amount'       => $item_data->get_quantity()
-                );
-                do_action('lima_sell_imported_license_keys', $sell_imported_args);
+                ));
 
                 // Set the order as complete.
-                update_post_meta($order_id, '_lima_order_status', 'complete');
+                update_post_meta($order_id, '_lima_order_complete', 1);
 
             // Check if the product has a generator assigned to it.
             } elseif ($gen_id = get_post_meta($product->get_id(), '_lima_generator_id', true)) {
