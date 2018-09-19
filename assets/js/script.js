@@ -84,31 +84,99 @@ function ajax(option)
 }
 
 document.addEventListener('DOMContentLoaded', function(event) {
-    var toggleShow = document.querySelectorAll('.lima-license-key-show');
-    var toggleHide = document.querySelectorAll('.lima-license-key-hide');
-    var showAll    = document.querySelector('.lima-license-keys-show-all');
-    var hideAll    = document.querySelector('.lima-license-keys-hide-all');
 
-    if (toggleShow) {
-        for(var i = 0; i < toggleShow.length; i++) {
-            toggleShow[i].addEventListener('click', function() {
-                var licenseKeyId = parseInt(this.dataset.id);
-                var spinner      = this.parentNode.parentNode.previousSibling;
-                var code         = spinner.previousSibling;
+    var licenseTable = {
+        btnHideLicense: document.querySelectorAll('.lima-license-key-hide'),
+        btnShowLicense: document.querySelectorAll('.lima-license-key-show'),
+        bindHideButtons: function() {
+            if (!this.btnHideLicense) return;
 
+            for(var i = 0; i < this.btnHideLicense.length; i++) {
+                this.btnHideLicense[i].addEventListener('click', function() {
+                    var code = this.parentNode.parentNode.previousSibling.previousSibling;
+
+                    code.innerText = '';
+                    code.classList.add('empty');
+                });
+            }
+        },
+        bindShowButtons: function() {
+            if (!this.btnShowLicense) return;
+
+            for(var i = 0; i < this.btnShowLicense.length; i++) {
+                this.btnShowLicense[i].addEventListener('click', function() {
+                    var licenseKeyId = parseInt(this.dataset.id);
+                    var spinner      = this.parentNode.parentNode.previousSibling;
+                    var code         = spinner.previousSibling;
+
+                    spinner.style.opacity = 1;
+
+                    ajax({
+                        url: ajaxurl,
+                        type: 'POST',
+                        data: {
+                            action: 'lima_show_license_key',
+                            show: license.show,
+                            id: licenseKeyId
+                        },
+                        success: function(response) {
+                            code.classList.remove('empty');
+                            code.innerText = JSON.parse(response);
+                        },
+                        error: function(response) {
+                            console.log(response);
+                        },
+                        complete: function() {
+                            spinner.style.opacity = 0;
+                        }
+                    });
+                });
+            }
+        },
+        init: function() {
+            this.bindShowButtons();
+            this.bindHideButtons();
+        }
+    }
+
+    var orderLicenses = {
+        btnShow: document.querySelector('.lima-license-keys-show-all'),
+        btnHide: document.querySelector('.lima-license-keys-hide-all'),
+        getLicenseKeyIds: function() {
+            var licenseKeyIds = [];
+            var codeList      = this.btnShow.parentNode.previousSibling.children;
+
+            for(var i = 0, length = codeList.length; i < length; i++){
+                licenseKeyIds.push(parseInt(codeList[i].children[0].dataset.id));
+            }
+
+            return licenseKeyIds;
+        },
+        bindShow: function() {
+            if (!this.btnShow) return;
+
+            var spinner = this.btnShow.nextSibling.nextSibling;
+            var licenseKeyIds = this.getLicenseKeyIds();
+
+            this.btnShow.addEventListener('click', function() {
                 spinner.style.opacity = 1;
 
                 ajax({
                     url: ajaxurl,
                     type: 'POST',
                     data: {
-                        action: 'lima_show_license_key',
-                        show: license.show,
-                        id: licenseKeyId
+                        action: 'lima_show_all_license_keys',
+                        show_all: license.show_all,
+                        ids: JSON.stringify(licenseKeyIds)
                     },
                     success: function(response) {
-                        code.classList.remove('empty');
-                        code.innerText = JSON.parse(response);
+                        var licenseKeys = JSON.parse(response);
+
+                        for (var id in licenseKeys) {
+                            var licenseKey = document.querySelector('.lima-placeholder[data-id="' + id +'"]');
+                            licenseKey.classList.remove('empty');
+                            licenseKey.innerText = licenseKeys[id];
+                        }
                     },
                     error: function(response) {
                         console.log(response);
@@ -118,64 +186,26 @@ document.addEventListener('DOMContentLoaded', function(event) {
                     }
                 });
             });
-        }
-    }
+        },
+        bindHide: function() {
+            if (!this.btnHide) return;
 
-    if (toggleHide) {
-        for(var i = 0; i < toggleHide.length; i++) {
-            toggleHide[i].addEventListener('click', function() {
-                var code = this.parentNode.parentNode.previousSibling.previousSibling;
+            var licenseKeyIds = this.getLicenseKeyIds();
 
-                code.innerText = '';
-                code.classList.add('empty');
-            });
-        }
-    }
-
-    if (showAll) {
-        var licenseKeyIds = [];
-        var codeList = showAll.parentNode.previousSibling.children;
-        var spinner = showAll.nextSibling.nextSibling;
-
-        for(var i = 0, length = codeList.length; i < length; i++){
-            licenseKeyIds.push(parseInt(codeList[i].children[0].dataset.id));
-        }
-
-        showAll.addEventListener('click', function() {
-            spinner.style.opacity = 1;
-
-            ajax({
-                url: ajaxurl,
-                type: 'POST',
-                data: {
-                    action: 'lima_show_all_license_keys',
-                    show_all: license.show_all,
-                    ids: JSON.stringify(licenseKeyIds)
-                },
-                success: function(response) {
-                    var licenseKeys = JSON.parse(response);
-
-                    for (var id in licenseKeys) {
-                        var licenseKey = document.querySelector('.lima-placeholder[data-id="' + id +'"]');
-                        licenseKey.classList.remove('empty');
-                        licenseKey.innerText = licenseKeys[id];
-                    }
-                },
-                error: function(response) {
-                    console.log(response);
-                },
-                complete: function() {
-                    spinner.style.opacity = 0;
+            this.btnHide.addEventListener('click', function() {
+                for (var id in licenseKeyIds) {
+                    var licenseKey = document.querySelector('.lima-placeholder[data-id="' + licenseKeyIds[id] +'"]');
+                    licenseKey.classList.add('empty');
+                    licenseKey.innerText = '';
                 }
             });
-        });
-
-        hideAll.addEventListener('click', function() {
-            for (var id in licenseKeyIds) {
-                var licenseKey = document.querySelector('.lima-placeholder[data-id="' + licenseKeyIds[id] +'"]');
-                licenseKey.classList.add('empty');
-                licenseKey.innerText = '';
-            }
-        });
+        },
+        init: function() {
+            this.bindShow();
+            this.bindHide();
+        }
     }
+
+    licenseTable.init();
+    orderLicenses.init();
 });
