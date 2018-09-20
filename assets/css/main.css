@@ -10,6 +10,13 @@
 	--color-dark: #343a40;
 }
 
+@font-face {
+	font-family: 'Roboto Mono';
+	src: url('./fonts/Roboto_Mono/RobotoMono-Regular.ttf') format('truetype');
+	font-weight: 400;
+	font-style: normal;
+}
+
 /* Text colors */
 .text-primary {
 	color: var(--color-primary);
@@ -56,7 +63,11 @@ table.wp-list-table.licenses td.source.column-source > span {
 .lima-license-key-hide {
 	cursor: pointer;
 }
+
+/** License Key Placeholder */
 .lima-placeholder {
+	font-family: 'Roboto Mono';
+	font-weight: 400;
 	display: inline-block;
 	min-width: 150px;
 	height: 20px;
@@ -131,4 +142,10 @@ table.wp-list-table.licenses td.source.column-source > span {
 .lima-status.available-deactivated:before {
 	background: var(--color-dark);
 	color: var(--color-light);
+}
+
+/** My Account **/
+.lima-myaccount-license-key {
+	font-family: 'Roboto Mono', 'Consolas', sans-serif;
+	font-size: 13px;
 }

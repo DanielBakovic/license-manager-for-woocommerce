@@ -11,6 +11,7 @@
                         <th class="td" scope="col" style="text-align:<?php echo esc_attr( $text_align ); ?>;">
                             <span><?=$row['name']?></span>
                         </th>
+                    </tr>
                 </thead>
                 <?php foreach ($row['keys'] as $entry): ?>
                     <tr>

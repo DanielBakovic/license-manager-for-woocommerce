@@ -33,6 +33,7 @@ class OrderManager
 
         add_action('woocommerce_order_status_completed', array($this, 'generateOrderLicenses'));
         add_action('woocommerce_email_after_order_table', array($this, 'deliverLicenseKeys'), 10, 2);
+        add_action('woocommerce_order_details_after_order_table', array($this, 'showBoughtLicenses'), 10, 1);
     }
 
     /**
@@ -148,6 +149,40 @@ class OrderManager
         } else {
             include LM_TEMPLATES_DIR . 'emails/email-order-license-notice.php';
         }
+    }
+
+    /**
+     * Displays the bought licenses in the order view inside "My Account" -> "Orders".
+     *
+     * @since 1.0.0
+     *
+     * @param int $order - WC_Order
+     *
+     */
+    public function showBoughtLicenses($order)
+    {
+        // Add missing style.
+        if (!wp_style_is('lima_admin_css', $list = 'enqueued' )) {
+            wp_enqueue_style('lima_admin_css', LM_CSS_URL . 'main.css');
+        }
+
+        /**
+         * @var $item_data WC_Order_Item_Product
+         */
+        foreach ($order->get_items() as $item_data) {
+            /**
+             * @var $product WC_Product_Simple
+             */
+            $product = $item_data->get_product();
+
+            // Check if the product has been activated for selling.
+            if (!get_post_meta($product->get_id(), '_lima_licensed_product', true)) break;
+
+            $data[$product->get_id()]['name'] = $product->get_name();
+            $data[$product->get_id()]['keys'] = Database::getLicenseKeysByOrderId($order->get_id(), LicenseStatusEnum::SOLD);
+        }
+
+        include LM_TEMPLATES_DIR . 'order-view-license-keys.php';
     }
 
 }
