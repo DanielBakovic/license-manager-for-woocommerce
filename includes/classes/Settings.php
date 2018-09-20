@@ -48,6 +48,13 @@ class Settings
             '_lima',
             '_lima_security'
         );
+        add_settings_field(
+            '_lima_auto_delivery',
+            __('Automatic Delivery', 'lima'),
+            array($this, 'limaFieldAutoDelivery'),
+            '_lima',
+            '_lima_security'
+        );
     }
 
     /**
@@ -90,18 +97,40 @@ class Settings
         echo $html;
     }
 
+    public function limaFieldAutoDelivery()
+    {
+        $field = '_lima_auto_delivery';
+        (array_key_exists('_lima_auto_delivery', $this->settings)) ? $value = true : $value = false;
+
+        $html = '<fieldset>';
+        $html .= sprintf('<label for="%s">', $field);
+        $html .= sprintf(
+            '<input id="%s" type="checkbox" name="_lima_settings[%s]" value="1"' . checked(true, $value, false) . '/>',
+            $field,
+            $field
+        );
+        $html .= sprintf('<span>%s</span>', __('Automatically send license keys when an order is set to \'Complete\'.', 'lima'));
+        $html .= '</label>';
+        $html .= sprintf(
+            '<p class="description" id="tagline-description">%s</p>',
+            __('If this setting is off, you must manually send out all license keys for completed orders.', 'lima')
+        );
+        $html .= '</fieldset>';
+
+        echo $html;
+    }
+
     /**
-     * Helper function which determines whether license keys in the admin dashboard are hidden or not.
+     * Helper function to get a setting by name.
      *
      * @since 1.0.0
      *
      * @return boolean
      */
-    public static function hideLicenseKeys()
+    public static function get($field)
     {
         $settings = (array)get_option('_lima_settings');
-        $field    = "_lima_hide_license_keys";
-        (array_key_exists('_lima_hide_license_keys', $settings)) ? $value = true : $value = false;
+        (array_key_exists($field, $settings)) ? $value = true : $value = false;
 
         return $value;
     }

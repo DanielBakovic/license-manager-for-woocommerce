@@ -38,7 +38,9 @@ class GeneratorsList extends \WP_List_Table
     public static function get_orders($per_page = 20, $page_number = 1)
     {
         global $wpdb;
+
         $table = $wpdb->prefix . Setup::GENERATORS_TABLE_NAME;
+
         $sql = "SELECT * FROM $table";
         $sql .= ' ORDER BY ' . (empty($_REQUEST['orderby']) ? 'id' : esc_sql($_REQUEST['orderby']));
         $sql .= ' '          . (empty($_REQUEST['order'])   ? 'ASC'  : esc_sql($_REQUEST['order']));
@@ -53,6 +55,7 @@ class GeneratorsList extends \WP_List_Table
     public static function record_count()
     {
         global $wpdb;
+
         $table = $wpdb->prefix . Setup::GENERATORS_TABLE_NAME;
 
         return $wpdb->get_var("SELECT COUNT(*) FROM $table");

@@ -29,6 +29,9 @@ class AdminMenus
     const EDIT_GENERATOR_PAGE = 'license_manager_generators_edit';
     const SETTINGS_PAGE       = 'license_manager_settings';
 
+    /**
+     * @var \LicenseManager\Classes\Crypto
+     */
     private $crypto;
 
     /**

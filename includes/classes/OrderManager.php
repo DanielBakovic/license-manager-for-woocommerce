@@ -2,6 +2,9 @@
 
 namespace LicenseManager\Classes;
 
+use \LicenseManager\Classes\Database;
+use \LicenseManager\Classes\Abstracts\LicenseStatusEnum;
+
 /**
  * LicenseManager OrderManager.
  *
@@ -16,11 +19,20 @@ defined('ABSPATH') || exit;
 class OrderManager
 {
     /**
+     * @var \LicenseManager\Classes\Crypto
+     */
+    protected $crypto;
+
+    /**
      * Class constructor.
      */
-    public function __construct()
-    {
+    public function __construct(
+        \LicenseManager\Classes\Crypto $crypto
+    ) {
+        $this->crypto = $crypto;
+
         add_action('woocommerce_order_status_completed', array($this, 'generateOrderLicenses'));
+        add_action('woocommerce_email_after_order_table', array($this, 'deliverLicenseKeys'), 10, 2);
     }
 
     /**
@@ -51,7 +63,7 @@ class OrderManager
             if (!get_post_meta($product->get_id(), '_lima_licensed_product', true)) break;
 
             // Check if the product has active keys attached to it.
-            if ($license_keys = Database::getLicenseKeysByProductId($product->get_id(), 3)) {
+            if ($license_keys = Database::getLicenseKeysByProductId($product->get_id(), LicenseStatusEnum::ACTIVE)) {
                 /**
                  * @todo Improve quantity check. (If generator is also assigned quantity is not a problem, otherwise
                  * more thorough checks are required).
@@ -97,4 +109,45 @@ class OrderManager
             }
         }
     }
+
+    /**
+     * Adds the bought license keys to the "Order complete" email, or displays a notice - depending on the settings.
+     *
+     * @since 1.0.0
+     *
+     * @param int $order          - WC_Order
+     * @param int $is_admin_email - boolean
+     *
+     * @todo Implement a second check (after the setting) to see if the admin manually sent out the keys.
+     */
+    public function deliverLicenseKeys($order, $is_admin_email)
+    {
+        // Send the keys out if the setting is active.
+        if (Settings::get('_lima_auto_delivery')) {
+            $data = [];
+
+            /**
+             * @var $item_data WC_Order_Item_Product
+             */
+            foreach ($order->get_items() as $item_data) {
+                /**
+                 * @var $product WC_Product_Simple
+                 */
+                $product = $item_data->get_product();
+
+                // Check if the product has been activated for selling.
+                if (!get_post_meta($product->get_id(), '_lima_licensed_product', true)) break;
+
+                $data[$product->get_id()]['name'] = $product->get_name();
+                $data[$product->get_id()]['keys'] = Database::getLicenseKeysByOrderId($order->get_id(), LicenseStatusEnum::SOLD);
+            }
+
+            include LM_TEMPLATES_DIR . 'emails/email-order-license-keys.php';
+
+        // Only display a notice.
+        } else {
+            include LM_TEMPLATES_DIR . 'emails/email-order-license-notice.php';
+        }
+    }
+
 }

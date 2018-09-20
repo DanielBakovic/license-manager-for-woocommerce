@@ -19,6 +19,9 @@ class FormHandler
 {
     const TEMP_TXT_FILE = 'import.tmp.txt';
 
+    /**
+     * @var \LicenseManager\Classes\Crypto
+     */
     private $crypto;
 
     /**
@@ -321,7 +324,7 @@ class FormHandler
         $html = __('<p>The following license keys have been sold by this order:</p>', 'lima');
         $html .= '<ul class="lima-license-list">';
 
-        if (!Settings::hideLicenseKeys()) {
+        if (!Settings::get('_lima_hide_license_keys')) {
             foreach ($license_keys as $license_key) {
                 $html .= sprintf(
                     '<li></span> <code class="lima-placeholder">%s</code></li>',

@@ -18,6 +18,9 @@ defined('ABSPATH') || exit;
  */
 class Database
 {
+    /**
+     * @var \LicenseManager\Classes\Crypto
+     */
     private $crpyto;
 
     /**
@@ -349,15 +352,16 @@ class Database
      *
      * @return array
      */
-    public static function getLicenseKeysByOrderId($order_id)
+    public static function getLicenseKeysByOrderId($order_id, $status)
     {
         global $wpdb;
         $table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
 
         return $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT * FROM $table WHERE order_id = %d",
-                intval($order_id)
+                "SELECT * FROM $table WHERE order_id = %d AND status = %d",
+                intval($order_id),
+                intval($status)
             ),
             OBJECT
         );

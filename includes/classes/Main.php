@@ -140,7 +140,7 @@ final class Main
         new AdminMenus($crypto);
         new AdminNotice();
         new Generator();
-        new OrderManager();
+        new OrderManager($crypto);
         new Database($crypto);
         new FormHandler($crypto);
     }

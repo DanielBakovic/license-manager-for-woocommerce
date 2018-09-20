@@ -122,7 +122,8 @@ class Setup
     {
         // The defaults for the Setting API.
         $defaults = array(
-            '_lima_hide_license_keys' => 1
+            '_lima_hide_license_keys' => 1,
+            '_lima_auto_delivery' => 1
         );
 
         update_option('_lima_settings', $defaults, '', 'yes');

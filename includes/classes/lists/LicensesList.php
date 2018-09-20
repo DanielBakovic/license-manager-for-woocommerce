@@ -26,8 +26,14 @@ class LicensesList extends \WP_List_Table
 {
     const SPINNER_URL = '/wp-admin/images/loading.gif';
 
+    /**
+     * @var \LicenseManager\Classes\Crypto
+     */
     private $crypto;
 
+    /**
+     * Class constructor.
+     */
     public function __construct(
         \LicenseManager\Classes\Crypto $crypto
     ) {
@@ -203,7 +209,7 @@ class LicensesList extends \WP_List_Table
 
     public function column_license_key($item)
     {
-        if (Settings::hideLicenseKeys()) {
+        if (Settings::get('_lima_hide_license_keys')) {
             $title = '<code class="lima-placeholder empty"></code>';
             $title .= sprintf('<img class="lima-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
         } else {
