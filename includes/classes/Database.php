@@ -475,21 +475,40 @@ class Database
      *
      * @since 1.0.0
      *
-     * @param array $args['ids']
-     * @param int   $args['status']
+     * @param int    $args['status']
+     * @param string $args['column_name']
+     * @param string $args['operator']
+     * @param array  $args['value']
      *
      * @return boolean
      */
-    public static function toggleLicenseKeyStatus($args)
+    public function toggleLicenseKeyStatus($args)
     {
         global $wpdb;
 
-        return $wpdb->query(sprintf(
-            'UPDATE %s SET status = %d WHERE id IN (%s)',
-            $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
-            $args['status'],
-            implode(', ', $args['ids'])
-        ));
+        if ($args['operator'] == 'in') {
+            $result = $wpdb->query(
+                sprintf(
+                    'UPDATE %s SET status = %d WHERE %s IN (%s)',
+                    $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
+                    intval($args['status']),
+                    sanitize_text_field($args['column_name']),
+                    implode(', ', $args['value'])
+                )
+            );
+        } elseif ($args['operator'] == 'eq') {
+            $result = $wpdb->query(
+                sprintf(
+                    'UPDATE %s SET status = %d WHERE %s = %d',
+                    $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
+                    intval($args['status']),
+                    sanitize_text_field($args['column_name']),
+                    intval($args['value'])
+                )
+            );
+        }
+
+        return $result;
     }
 
     public static function getLicenseKeyCount($status = 0)

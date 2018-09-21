@@ -108,6 +108,19 @@ class OrderManager
                 );
                 do_action('lima_save_generated_license_keys', $save_license_args);
             }
+
+            // Set status to delivered if the setting is on.
+            if (Settings::get('_lima_auto_delivery')) {
+                $result = apply_filters(
+                    'lima_toggle_license_key_status',
+                    array(
+                        'column_name' => 'order_id',
+                        'operator' => 'eq',
+                        'value' => $order_id,
+                        'status' => LicenseStatusEnum::DELIVERED
+                    )
+                );
+            }
         }
     }
 
@@ -123,6 +136,9 @@ class OrderManager
      */
     public function deliverLicenseKeys($order, $is_admin_email)
     {
+        // Return if the order isn't complete.
+        if ($order->get_status() != 'completed' && !get_post_meta($order->get_id(), '_lima_order_complete')) return;
+
         // Send the keys out if the setting is active.
         if (Settings::get('_lima_auto_delivery')) {
             $data = [];
@@ -140,7 +156,10 @@ class OrderManager
                 if (!get_post_meta($product->get_id(), '_lima_licensed_product', true)) break;
 
                 $data[$product->get_id()]['name'] = $product->get_name();
-                $data[$product->get_id()]['keys'] = Database::getLicenseKeysByOrderId($order->get_id(), LicenseStatusEnum::SOLD);
+                $data[$product->get_id()]['keys'] = Database::getOrderedLicenseKeys(
+                    $order->get_id(),
+                    $product->get_id()
+                );
             }
 
             include LM_TEMPLATES_DIR . 'emails/email-order-license-keys.php';
@@ -161,6 +180,9 @@ class OrderManager
      */
     public function showBoughtLicenses($order)
     {
+        // Return if the order isn't complete.
+        if ($order->get_status() != 'completed' && !get_post_meta($order->get_id(), '_lima_order_complete')) return;
+
         // Add missing style.
         if (!wp_style_is('lima_admin_css', $list = 'enqueued' )) {
             wp_enqueue_style('lima_admin_css', LM_CSS_URL . 'main.css');
@@ -179,7 +201,10 @@ class OrderManager
             if (!get_post_meta($product->get_id(), '_lima_licensed_product', true)) break;
 
             $data[$product->get_id()]['name'] = $product->get_name();
-            $data[$product->get_id()]['keys'] = Database::getLicenseKeysByOrderId($order->get_id(), LicenseStatusEnum::SOLD);
+            $data[$product->get_id()]['keys'] = Database::getOrderedLicenseKeys(
+                $order->get_id(),
+                $product->get_id()
+            );
         }
 
         include LM_TEMPLATES_DIR . 'order-view-license-keys.php';

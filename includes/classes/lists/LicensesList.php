@@ -485,10 +485,15 @@ class LicensesList extends \WP_List_Table
         $this->verifyNonce($nonce_action);
         $this->isValidRequest();
 
-        $result = apply_filters('lima_toggle_license_key_status', array(
-            'ids' => (array)$_REQUEST['id'],
-            'status' => $status
-        ));
+        $result = apply_filters(
+            'lima_toggle_license_key_status',
+            array(
+                'column_name' => 'id',
+                'operator' => 'in',
+                'value' => (array)$_REQUEST['id'],
+                'status' => $status
+            )
+        );
     }
 
     private function deleteLicenseKeys()

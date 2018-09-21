@@ -139,12 +139,12 @@ class AdminMenus
             'per_page',
             array(
                 'label'   => 'Licenses per page',
-                'default' => 5,
+                'default' => 20,
                 'option'  => 'licenses_per_page'
             )
         );
 
-        include LM_TEMPLATES_DIR . 'licenses_page.php';
+        include LM_TEMPLATES_DIR . 'licenses-page.php';
     }
 
     public function licensesAddImportPage()
@@ -156,12 +156,12 @@ class AdminMenus
             )
         );
 
-        include LM_TEMPLATES_DIR . 'licenses_add_import_page.php';
+        include LM_TEMPLATES_DIR . 'licenses-add-import-page.php';
     }
 
     public function settingsPage()
     {
-        include LM_TEMPLATES_DIR . 'settings_page.php';
+        include LM_TEMPLATES_DIR . 'settings-page.php';
     }
 
     public function generatorsPage()
@@ -177,12 +177,12 @@ class AdminMenus
             )
         );
 
-        include LM_TEMPLATES_DIR . 'generators_page.php';
+        include LM_TEMPLATES_DIR . 'generators-page.php';
     }
 
     public function generatorsAddPage()
     {
-        include LM_TEMPLATES_DIR . 'generators_add_new.php';
+        include LM_TEMPLATES_DIR . 'generators-add-new.php';
     }
 
     /**
@@ -198,7 +198,7 @@ class AdminMenus
            return;
         }
 
-        include LM_TEMPLATES_DIR . 'generators_edit.php';
+        include LM_TEMPLATES_DIR . 'generators-edit.php';
     }
 
     public function productMetaBox()
