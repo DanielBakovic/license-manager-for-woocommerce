@@ -42,6 +42,7 @@ class Database
         add_filter('lima_save_generator',                array($this, 'saveGenerator'            ), 10, 1);
         add_filter('lima_update_generator',              array($this, 'updateGenerator'          ), 10, 1);
         add_filter('lima_delete_generators',             array($this, 'deleteGenerators'         ), 10, 1);
+        add_filter('lima_get_assigned_products',         array($this, 'getAssignedProducts'      ), 10, 1);
     }
 
     /**
@@ -364,6 +365,41 @@ class Database
                 implode(', ', $args['ids'])
             )
         );
+    }
+
+    /**
+     * Retrieve assigned products for a specific generator.
+     *
+     * @since 1.0.0
+     *
+     * @param int $args['generator_id']
+     *
+     * @return boolean
+     */
+    public function getAssignedProducts($args)
+    {
+        global $wpdb;
+
+        $results = $wpdb->get_results(
+            sprintf(
+                'SELECT post_id FROM %s WHERE meta_key = \'_lima_generator_id\' AND meta_value = %d',
+                $wpdb->postmeta,
+                $args['generator_id']
+            ),
+            OBJECT
+        );
+
+        if ($results) {
+            $products = [];
+
+            foreach ($results as $row) {
+                $products[] = wc_get_product($row->post_id);
+            }
+        } else {
+            $products = null;
+        }
+
+        return $products;
     }
 
     /**

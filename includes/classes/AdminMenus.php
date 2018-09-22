@@ -194,9 +194,11 @@ class AdminMenus
             return;
         }
 
-        if (!$generator = Database::getGenerator(intval($_GET['id']))) {
+        if (!$generator = Database::getGenerator(absint($_GET['id']))) {
            return;
         }
+
+        $products = apply_filters('lima_get_assigned_products', array('generator_id' => absint($_GET['id'])));
 
         include LM_TEMPLATES_DIR . 'generators-edit.php';
     }

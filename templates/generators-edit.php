@@ -112,4 +112,22 @@
 
     </form>
 
+    <h2><?=__('Assigned Products', 'lima');?></h2>
+
+    <?php if ($products): ?>
+        <p><?=__('The generator is assigned to the following product(s):', 'lima');?></p>
+
+        <ul>
+            <?php foreach ($products as $product): ?>
+                <li>
+                    <a href="<?=esc_html_e(get_edit_post_link($product->get_id()));?>">
+                        <span><?=esc_html_e($product->get_name());?></span>
+                    </a>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php else: ?>
+        <p><?=__('The generator does not have any products assigned to it.', 'lima');?></p>
+    <?php endif; ?>
+
 </div>
