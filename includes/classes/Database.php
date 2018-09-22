@@ -41,6 +41,7 @@ class Database
         add_filter('lima_toggle_license_key_status',     array($this, 'toggleLicenseKeyStatus'   ), 10, 1);
         add_filter('lima_save_generator',                array($this, 'saveGenerator'            ), 10, 1);
         add_filter('lima_update_generator',              array($this, 'updateGenerator'          ), 10, 1);
+        add_filter('lima_delete_generators',             array($this, 'deleteGenerators'         ), 10, 1);
     }
 
     /**
@@ -340,6 +341,28 @@ class Database
             array('id' => intval($args['id'])),
             array('%s', '%s', '%d', '%d', '%s', '%s', '%s', '%s'),
             array('%d')
+        );
+    }
+
+    /**
+     * Deletes license keys.
+     *
+     * @since 1.0.0
+     *
+     * @param int $args['id']
+     *
+     * @return boolean
+     */
+    public function deleteGenerators($args)
+    {
+        global $wpdb;
+
+        return $wpdb->query(
+            sprintf(
+                'DELETE FROM %s WHERE id IN (%s)',
+                $wpdb->prefix . Setup::GENERATORS_TABLE_NAME,
+                implode(', ', $args['ids'])
+            )
         );
     }
 

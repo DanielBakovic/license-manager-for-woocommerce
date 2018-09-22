@@ -43,7 +43,7 @@ class FormHandler
         add_action('wp_ajax_lima_show_all_license_keys', array($this, 'showAllLicenseKeys'), 10);
 
         // Meta box handlers
-        add_action('save_post', array($this, 'assignGeneratorToProduct'), 10);
+        add_action('save_post', array($this, 'updateProduct'), 10);
 
         // WooCommerce
         add_action('woocommerce_after_order_itemmeta', array($this, 'showOrderedLicenses'), 10, 3);
@@ -65,6 +65,33 @@ class FormHandler
      */
     public function saveGenerator($args)
     {
+        // Verify the nonce.
+        check_admin_referer('lima_save_generator');
+
+        // Validate request.
+        $redirect_url = 'admin.php?page=%s&validation_error=%s"';
+
+        if ($_POST['name'] == '' || !is_string($_POST['name'])) {
+            wp_redirect(sprintf($redirect_url, AdminMenus::ADD_GENERATOR_PAGE, 'invalid_name'));
+            exit();
+        }
+
+        if ($_POST['charset'] == '' || !is_string($_POST['charset'])) {
+            wp_redirect(sprintf($redirect_url, AdminMenus::ADD_GENERATOR_PAGE, 'invalid_charset'));
+            exit();
+        }
+
+        if ($_POST['chunks'] == '' || !is_numeric($_POST['chunks'])) {
+            wp_redirect(sprintf($redirect_url, AdminMenus::ADD_GENERATOR_PAGE, 'invalid_chunks'));
+            exit();
+        }
+
+        if ($_POST['chunk_length'] == '' || !is_numeric($_POST['chunk_length'])) {
+            wp_redirect(sprintf($redirect_url, AdminMenus::ADD_GENERATOR_PAGE, 'invalid_chunk_length'));
+            exit();
+        }
+
+        // Save the generator.
         $result = apply_filters('lima_save_generator', array(
             'name'         => $_POST['name'],
             'charset'      => $_POST['charset'],
@@ -76,27 +103,16 @@ class FormHandler
             'expires_in'   => $_POST['expires_in']
         ));
 
+        // Redirect according to $result.
+        $redirect_url = 'admin.php?page=%s&action=edit&id=%d&status=%s';
+
         if ($result) {
-            wp_redirect(
-                admin_url(
-                    sprintf(
-                        'admin.php?page=%s&action=edit&id=%d&status=true',
-                        AdminMenus::GENERATORS_PAGE,
-                        intval($_POST['id'])
-                    )
-                )
-            );
+            wp_redirect(sprintf($redirect_url, AdminMenus::GENERATORS_PAGE, absint($_POST['id']), 'true'));
         } else {
-            wp_redirect(
-                admin_url(
-                    sprintf(
-                        'admin.php?page=%s&action=edit&id=%d&status=failed',
-                        AdminMenus::GENERATORS_PAGE,
-                        intval($_POST['id'])
-                    )
-                )
-            );
+            wp_redirect(sprintf($redirect_url, AdminMenus::GENERATORS_PAGE, absint($_POST['id']), 'failed'));
         }
+
+        exit();
     }
 
     /**
@@ -107,8 +123,35 @@ class FormHandler
      */
     public function updateGenerator()
     {
+        // Verify the nonce.
+        check_admin_referer('lima_update_generator');
+
+        // Validate request.
+        $redirect_url = 'admin.php?page=%s&action=edit&id=%d&validation_error=%s"';
+
+        if ($_POST['name'] == '' || !is_string($_POST['name'])) {
+            wp_redirect(sprintf($redirect_url, AdminMenus::EDIT_GENERATOR_PAGE, absint($_POST['id']), 'invalid_name'));
+            exit();
+        }
+
+        if ($_POST['charset'] == '' || !is_string($_POST['charset'])) {
+            wp_redirect(sprintf($redirect_url, AdminMenus::EDIT_GENERATOR_PAGE, absint($_POST['id']), 'invalid_charset'));
+            exit();
+        }
+
+        if ($_POST['chunks'] == '' || !is_numeric($_POST['chunks'])) {
+            wp_redirect(sprintf($redirect_url, AdminMenus::EDIT_GENERATOR_PAGE, absint($_POST['id']), 'invalid_chunks'));
+            exit();
+        }
+
+        if ($_POST['chunk_length'] == '' || !is_numeric($_POST['chunk_length'])) {
+            wp_redirect(sprintf($redirect_url, AdminMenus::EDIT_GENERATOR_PAGE, absint($_POST['id']), 'invalid_chunk_length'));
+            exit();
+        }
+
+        // Update the generator.
         $result = apply_filters('lima_update_generator', array(
-            'id'           => intval($_POST['id']),
+            'id'           => $_POST['id'],
             'name'         => $_POST['name'],
             'charset'      => $_POST['charset'],
             'chunks'       => $_POST['chunks'],
@@ -119,27 +162,16 @@ class FormHandler
             'expires_in'   => $_POST['expires_in']
         ));
 
+        // Redirect according to $result.
+        $redirect_url = 'admin.php?page=%s&action=edit&id=%d&status=%s';
+
         if ($result) {
-            wp_redirect(
-                admin_url(
-                    sprintf(
-                        'admin.php?page=%s&action=edit&id=%d&status=true',
-                        AdminMenus::EDIT_GENERATOR_PAGE,
-                        intval($_POST['id'])
-                    )
-                )
-            );
+            wp_redirect(sprintf($redirect_url, AdminMenus::EDIT_GENERATOR_PAGE, absint($_POST['id']), 'true'));
         } else {
-            wp_redirect(
-                admin_url(
-                    sprintf(
-                        'admin.php?page=%s&action=edit&id=%d&status=failed',
-                        AdminMenus::EDIT_GENERATOR_PAGE,
-                        intval($_POST['id'])
-                    )
-                )
-            );
+            wp_redirect(sprintf($redirect_url, AdminMenus::EDIT_GENERATOR_PAGE, absint($_POST['id']), 'failed'));
         }
+
+        exit();
     }
 
     /**
@@ -170,6 +202,7 @@ class FormHandler
             return null;
         }
 
+        // Save the imported keys.
         $result = apply_filters(
             'lima_save_imported_license_keys',
             array(
@@ -179,51 +212,43 @@ class FormHandler
             )
         );
 
+        // Redirect according to $result.
         if ($result['failed'] == 0 && $result['added'] == 0) {
-            wp_redirect(
-                admin_url(
-                    sprintf(
-                        'admin.php?page=%s&lima_import_license_keys=error',
-                        AdminMenus::ADD_IMPORT_PAGE
-                    )
-                )
-            );
+            wp_redirect(sprintf('admin.php?page=%s&lima_import_license_keys=error', AdminMenus::ADD_IMPORT_PAGE));
+            exit();
         }
 
         if ($result['failed'] == 0 && $result['added'] > 0) {
             wp_redirect(
-                admin_url(
-                    sprintf(
-                        'admin.php?page=%s&lima_import_license_keys=true&added=%d',
-                        AdminMenus::ADD_IMPORT_PAGE,
-                        $result['added']
-                    )
+                sprintf(
+                    'admin.php?page=%s&lima_import_license_keys=true&added=%d',
+                    AdminMenus::ADD_IMPORT_PAGE,
+                    $result['added']
                 )
             );
+            exit();
         }
 
         if ($result['failed'] > 0 && $result['added'] == 0) {
             wp_redirect(
-                admin_url(
-                    sprintf(
-                        'admin.php?page=%s&lima_import_license_keys=false&rejected=%d',
-                        AdminMenus::ADD_IMPORT_PAGE,
-                        $result['failed']
-                    )
+                sprintf(
+                    'admin.php?page=%s&lima_import_license_keys=false&rejected=%d',
+                    AdminMenus::ADD_IMPORT_PAGE,
+                    $result['failed']
                 )
             );
+            exit();
         }
 
         if ($result['failed'] > 0 && $result['added'] > 0) {
             wp_redirect(
-                admin_url(
-                    sprintf(
-                        'admin.php?page=%s&lima_import_license_keys=mixed&added=%d&rejected=%d',
-                        AdminMenus::ADD_IMPORT_PAGE,
-                        $result['failed']
-                    )
+                sprintf(
+                    'admin.php?page=%s&lima_import_license_keys=mixed&added=%d&rejected=%d',
+                    AdminMenus::ADD_IMPORT_PAGE,
+                    $result['failed']
                 )
             );
+            exit();
         }
     }
 
@@ -238,6 +263,7 @@ class FormHandler
         // Check the nonce.
         check_admin_referer('lima-add');
 
+        // Save the license key.
         $result = apply_filters(
             'lima_save_added_license_key',
             array(
@@ -248,32 +274,23 @@ class FormHandler
             )
         );
 
+        // Redirect according to $result.
+        $redirect_url = 'admin.php?page=%s&lima_add_license_key=%s';
+
         if ($result) {
-            wp_redirect(
-                admin_url(
-                    sprintf(
-                        'admin.php?page=%s&lima_add_license_key=true',
-                        AdminMenus::ADD_IMPORT_PAGE
-                    )
-                )
-            );
+            wp_redirect(sprintf($redirect_url, AdminMenus::ADD_IMPORT_PAGE, 'true'));
         } else {
-            wp_redirect(
-                admin_url(
-                    sprintf(
-                        'admin.php?page=%s&lima_add_license_key=false',
-                        AdminMenus::ADD_IMPORT_PAGE
-                    )
-                )
-            );
+            wp_redirect(sprintf($redirect_url, AdminMenus::ADD_IMPORT_PAGE, 'false'));
         }
+
+        exit();
     }
 
     public function showLicenseKey()
     {
         // Validate request.
         check_ajax_referer('lima_show_license_key', 'show');
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') wp_die('Invalid request.');
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') wp_die(__('Invalid request.', 'lima'));
 
         $license_key = Database::getLicenseKey(intval($_POST['id']));
 
@@ -286,7 +303,7 @@ class FormHandler
     {
         // Validate request.
         check_ajax_referer('lima_show_all_license_keys', 'show_all');
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') wp_die('Invalid request.');
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') wp_die(__('Invalid request.', 'lima'));
 
         $license_keys = array();
 
@@ -312,14 +329,10 @@ class FormHandler
      */
     public function showOrderedLicenses($item_id, $item, $product) {
         // Not a WC_Order_Item_Product object? Nothing to do...
-        if (!($item instanceof \WC_Order_Item_Product)) {
-            return;
-        }
+        if (!($item instanceof \WC_Order_Item_Product)) return;
 
         // No license keys? Nothing to do...
-        if (!$license_keys = Database::getOrderedLicenseKeys($item->get_order_id(), $item->get_product_id())) {
-            return;
-        }
+        if (!$license_keys = Database::getOrderedLicenseKeys($item->get_order_id(), $item->get_product_id())) return;
 
         $html = __('<p>The following license keys have been sold by this order:</p>', 'lima');
         $html .= '<ul class="lima-license-list">';
@@ -331,6 +344,7 @@ class FormHandler
                     $this->crypto->decrypt($license_key->license_key)
                 );
             }
+
             $html .= '</ul>';
         } else {
             foreach ($license_keys as $license_key) {
@@ -348,11 +362,13 @@ class FormHandler
                 $item->get_order_id(),
                 __('Show License Key(s)', 'lima')
             );
+
             $html .= sprintf(
                 '<a class="button lima-license-keys-hide-all" data-order-id="%d">%s</a>',
                 $item->get_order_id(),
                 __('Hide License Key(s)', 'lima')
             );
+
             $html .= sprintf(
                 '<img class="lima-spinner" data-id="%d" src="%s">',
                 $license_key->id, LicensesList::SPINNER_URL
@@ -371,12 +387,13 @@ class FormHandler
      *
      * @param int $post_id - WordPress Post ID.
      */
-    public static function assignGeneratorToProduct($post_id)
+    public function updateProduct($post_id)
     {
         // This is not a product.
-        if (!array_key_exists('post_type', $_POST) || $_POST['post_type'] != 'product') {
-            return;
-        }
+        if (!array_key_exists('post_type', $_POST) || $_POST['post_type'] != 'product') return;
+
+        // Assign the selected generator to this product.
+        update_post_meta($post_id, '_lima_generator_id', intval($_POST['lima-generator']));
 
         // Toggle licensed product status, according to checkbox.
         if (!array_key_exists('lima-sell-licenses', $_POST)) {
@@ -384,19 +401,5 @@ class FormHandler
         } else {
             update_post_meta($post_id, '_lima_licensed_product', 1);
         }
-
-        // No generator was selected, return with error.
-        if ($_POST['lima-generator'] == '') {
-            $error = new \WP_Error(3, 'You did not select a generator.');
-            return;
-        }
-
-        // Generator already exists.
-        if (get_post_meta($post_id, '_lima_generator_id', true)) {
-            # code...
-        }
-
-        // Assign the selected generator to this product.
-        update_post_meta($post_id, '_lima_generator_id', $_POST['lima-generator']);
     }
 }

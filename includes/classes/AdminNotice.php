@@ -34,9 +34,9 @@ class AdminNotice
     {
         $this->importLicenseKeys();
         $this->addLicenseKey();
-        //$this->activateLicenseKey();
-        //$this->deleteLicenseKey();
-        //$this->invalidNonce();
+        $this->activateLicenseKey();
+        $this->deleteLicenseKey();
+        $this->invalidNonce();
     }
 
     private function importLicenseKeys()

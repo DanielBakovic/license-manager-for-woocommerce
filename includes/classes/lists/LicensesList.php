@@ -498,7 +498,6 @@ class LicensesList extends \WP_List_Table
 
     private function deleteLicenseKeys()
     {
-
         $this->verifyNonce('delete');
         $this->isValidRequest();
 

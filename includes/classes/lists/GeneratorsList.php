@@ -3,6 +3,7 @@
 namespace LicenseManager\Classes\Lists;
 
 use \LicenseManager\Classes\AdminMenus;
+use \LicenseManager\Classes\Logger;
 use \LicenseManager\Classes\Setup;
 
 /**
@@ -74,10 +75,10 @@ class GeneratorsList extends \WP_List_Table
         $actions = [
             'delete' => sprintf(
                 '<a href="?page=%s&action=%s&id=%s&_wpnonce=%s">%s</a>',
-                AdminMenus::EDIT_GENERATOR_PAGE,
+                AdminMenus::GENERATORS_PAGE,
                 'delete',
                 absint($item['id']),
-                wp_create_nonce('lima_delete_generator'),
+                wp_create_nonce('delete'),
                 __('Delete', 'lima')
             ),
             'edit' => sprintf(
@@ -109,7 +110,7 @@ class GeneratorsList extends \WP_List_Table
                 ($item['suffix'] == '') ? $suffix = '' : $suffix = sprintf('<code>%s</code>', $item['suffix']);
                 return $suffix;
             case 'expires_in':
-                ($item['expires_in'] == '') ? $expires_in = __('never', 'lima') : $expires_in = sprintf('%d %s', $item['expires_in'], __('day(s)', 'lima'));
+                (!$item['expires_in']) ? $expires_in = __('non-expiring', 'lima') : $expires_in = sprintf('%d %s', $item['expires_in'], __('day(s)', 'lima'));
                 return $expires_in;
             default:
                 return $item[$column_name];
@@ -120,7 +121,7 @@ class GeneratorsList extends \WP_List_Table
 
     public function column_cb($item)
     {
-        return sprintf('<input type="checkbox" name="bulk[]" value="%s" />', $item['id']);
+        return sprintf('<input type="checkbox" name="id[]" value="%s" />', $item['id']);
     }
 
     public function get_columns()
@@ -165,20 +166,8 @@ class GeneratorsList extends \WP_List_Table
 
         switch ($action) {
             case 'delete':
-                // Handle the bulk delete request.
-                if (isset($_REQUEST['bulk'])) {
-                    $this->delete_generators($_REQUEST['bulk']);
-                // Handle the single delete request.
-                } elseif (isset($_REQUEST['generator_id'])) {
-                    // Check nonce.
-                    if (!wp_verify_nonce(esc_attr($_REQUEST['_wpnonce']), 'lima_delete_generator')) {
-                        die('Go get a life script kiddies');
-                    } else {
-                        $this->delete_generators($_REQUEST['generator_id']);
-                    }
-                }
-                // Redirect to URL.
-                wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::GENERATORS_PAGE)));
+                $this->verifyNonce('delete');
+                $this->deleteGenerators();
                 break;
             default:
                 break;
@@ -207,25 +196,50 @@ class GeneratorsList extends \WP_List_Table
         $this->items = self::get_orders($per_page, $current_page);
     }
 
+    private function verifyNonce($nonce_action)
+    {
+        if (
+            !wp_verify_nonce($_REQUEST['_wpnonce'], $nonce_action) &&
+            !wp_verify_nonce($_REQUEST['_wpnonce'], 'bulk-' . $this->_args['plural'])
+        ) {
+            wp_redirect(admin_url(sprintf('admin.php?page=%s&lima_nonce_status=invalid', AdminMenus::GENERATORS_PAGE)));
+        }
+    }
+
     /**
-     * Bulk deletes the generators from the table by an array of ID's.
+     * Bulk deletes the generators from the table by a single ID or an array of ID's.
      *
      * @since 1.0.0
      *
-     * @param array $ids - ID's corresponding to the "id" field in the custom table.
-     *
-     * @todo Retrieve the default parameters from the user settings.
-     *
      * @return string
      */
-    public function delete_generators($ids)
+    public function deleteGenerators()
     {
-        global $wpdb;
+        $result = apply_filters(
+            'lima_delete_generators',
+            array(
+                'ids' => (array)($_REQUEST['id'])
+            )
+        );
 
-        if (!is_array($ids)) $ids = (array)$ids;
-
-        foreach ($ids as $id) {
-            $wpdb->delete($this->table, array('id' => $id));
+        if ($result) {
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&lima_delete_generators=true',
+                        AdminMenus::GENERATORS_PAGE
+                    )
+                )
+            );
+        } else {
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&lima_delete_generators=error',
+                        AdminMenus::GENERATORS_PAGE
+                    )
+                )
+            );
         }
     }
 }
