@@ -1,8 +1,8 @@
 <?php
 
-namespace LicenseManager\Classes;
+namespace LicenseManager;
 
-use \LicenseManager\Classes\Lists\LicensesList;
+use \LicenseManager\Lists\LicensesList;
 
 /**
  * LicenseManager FormHandler.
@@ -20,7 +20,7 @@ class FormHandler
     const TEMP_TXT_FILE = 'import.tmp.txt';
 
     /**
-     * @var \LicenseManager\Classes\Crypto
+     * @var \LicenseManager\Crypto
      */
     private $crypto;
 
@@ -28,7 +28,7 @@ class FormHandler
      * FormHandler Constructor.
      */
     public function __construct(
-        \LicenseManager\Classes\Crypto $crypto
+        \LicenseManager\Crypto $crypto
     ) {
         $this->crypto = $crypto;
 

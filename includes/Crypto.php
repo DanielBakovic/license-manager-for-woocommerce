@@ -1,6 +1,6 @@
 <?php
 
-namespace LicenseManager\Classes;
+namespace LicenseManager;
 
 use Defuse\Crypto\Key;
 use Defuse\Crypto\Crypto as DefuseCrypto;

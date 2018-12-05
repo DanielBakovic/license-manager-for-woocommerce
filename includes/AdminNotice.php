@@ -1,6 +1,6 @@
 <?php
 
-namespace LicenseManager\Classes;
+namespace LicenseManager;
 
 /**
  * Set up WordPress Admin Notices.

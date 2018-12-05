@@ -1,6 +1,6 @@
 <?php
 
-namespace LicenseManager\Classes;
+namespace LicenseManager;
 
 /**
  * LicenseManager Settings.

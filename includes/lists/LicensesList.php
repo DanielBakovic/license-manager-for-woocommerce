@@ -1,13 +1,13 @@
 <?php
 
-namespace LicenseManager\Classes\Lists;
+namespace LicenseManager\Lists;
 
-use \LicenseManager\Classes\AdminMenus;
-use \LicenseManager\Classes\Database;
-use \LicenseManager\Classes\Logger;
-use \LicenseManager\Classes\Settings;
-use \LicenseManager\Classes\Setup;
-use \LicenseManager\Classes\Abstracts\LicenseStatusEnum;
+use \LicenseManager\AdminMenus;
+use \LicenseManager\Database;
+use \LicenseManager\Logger;
+use \LicenseManager\Settings;
+use \LicenseManager\Setup;
+use \LicenseManager\Abstracts\LicenseStatusEnum;
 
 /**
  * Create the Licenses list
@@ -27,7 +27,7 @@ class LicensesList extends \WP_List_Table
     const SPINNER_URL = '/wp-admin/images/loading.gif';
 
     /**
-     * @var \LicenseManager\Classes\Crypto
+     * @var \LicenseManager\Crypto
      */
     private $crypto;
 
@@ -35,7 +35,7 @@ class LicensesList extends \WP_List_Table
      * Class constructor.
      */
     public function __construct(
-        \LicenseManager\Classes\Crypto $crypto
+        \LicenseManager\Crypto $crypto
     ) {
         $this->crypto = $crypto;
 

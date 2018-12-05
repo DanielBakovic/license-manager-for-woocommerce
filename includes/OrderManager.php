@@ -1,9 +1,9 @@
 <?php
 
-namespace LicenseManager\Classes;
+namespace LicenseManager;
 
-use \LicenseManager\Classes\Database;
-use \LicenseManager\Classes\Abstracts\LicenseStatusEnum;
+use \LicenseManager\Database;
+use \LicenseManager\Abstracts\LicenseStatusEnum;
 
 /**
  * LicenseManager OrderManager.
@@ -19,7 +19,7 @@ defined('ABSPATH') || exit;
 class OrderManager
 {
     /**
-     * @var \LicenseManager\Classes\Crypto
+     * @var \LicenseManager\Crypto
      */
     protected $crypto;
 
@@ -27,7 +27,7 @@ class OrderManager
      * Class constructor.
      */
     public function __construct(
-        \LicenseManager\Classes\Crypto $crypto
+        \LicenseManager\Crypto $crypto
     ) {
         $this->crypto = $crypto;
 

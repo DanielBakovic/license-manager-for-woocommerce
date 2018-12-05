@@ -1,9 +1,9 @@
 <?php
 
-namespace LicenseManager\Classes;
+namespace LicenseManager;
 
-use \LicenseManager\Classes\Abstracts\LicenseStatusEnum;
-use \LicenseManager\Classes\Abstracts\SourceEnum;
+use \LicenseManager\Abstracts\LicenseStatusEnum;
+use \LicenseManager\Abstracts\SourceEnum;
 
 /**
  * LicenseManager Database.
@@ -19,7 +19,7 @@ defined('ABSPATH') || exit;
 class Database
 {
     /**
-     * @var \LicenseManager\Classes\Crypto
+     * @var \LicenseManager\Crypto
      */
     private $crpyto;
 
@@ -27,7 +27,7 @@ class Database
      * Database Constructor.
      */
     public function __construct(
-        \LicenseManager\Classes\Crypto $crypto
+        \LicenseManager\Crypto $crypto
     ) {
         $this->crypto = $crypto;
 

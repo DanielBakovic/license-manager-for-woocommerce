@@ -9,9 +9,9 @@ class ComposerStaticInit1e498426c3516c7c6bd12ace14395786
     public static $prefixLengthsPsr4 = array (
         'L' => 
         array (
-            'LicenseManager\\Classes\\Lists\\' => 29,
-            'LicenseManager\\Classes\\Enums\\' => 29,
-            'LicenseManager\\Classes\\' => 23,
+            'LicenseManager\\Lists\\' => 21,
+            'LicenseManager\\Abstracts\\' => 25,
+            'LicenseManager\\' => 15,
         ),
         'D' => 
         array (
@@ -20,17 +20,17 @@ class ComposerStaticInit1e498426c3516c7c6bd12ace14395786
     );
 
     public static $prefixDirsPsr4 = array (
-        'LicenseManager\\Classes\\Lists\\' => 
+        'LicenseManager\\Lists\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/includes/classes/lists',
+            0 => __DIR__ . '/../..' . '/includes/lists',
         ),
-        'LicenseManager\\Classes\\Enums\\' => 
+        'LicenseManager\\Abstracts\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/includes/classes/enums',
+            0 => __DIR__ . '/../..' . '/includes/abstracts',
         ),
-        'LicenseManager\\Classes\\' => 
+        'LicenseManager\\' => 
         array (
-            0 => __DIR__ . '/../..' . '/includes/classes',
+            0 => __DIR__ . '/../..' . '/includes',
         ),
         'Defuse\\Crypto\\' => 
         array (

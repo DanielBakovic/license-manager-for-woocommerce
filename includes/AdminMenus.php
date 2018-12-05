@@ -1,8 +1,8 @@
 <?php
 
-namespace LicenseManager\Classes;
+namespace LicenseManager;
 
-use \LicenseManager\Classes\Abstracts\LicenseStatusEnum;
+use \LicenseManager\Abstracts\LicenseStatusEnum;
 
 /**
  * Setup menus in WP admin.
@@ -30,7 +30,7 @@ class AdminMenus
     const SETTINGS_PAGE       = 'license_manager_settings';
 
     /**
-     * @var \LicenseManager\Classes\Crypto
+     * @var \LicenseManager\Crypto
      */
     private $crypto;
 
@@ -38,7 +38,7 @@ class AdminMenus
      * Class constructor.
      */
     public function __construct(
-        \LicenseManager\Classes\Crypto $crypto
+        \LicenseManager\Crypto $crypto
     ) {
         $this->crypto = $crypto;
 
@@ -133,7 +133,7 @@ class AdminMenus
 
     public function licensesPage()
     {
-        $licenses = new \LicenseManager\Classes\Lists\LicensesList($this->crypto);
+        $licenses = new \LicenseManager\Lists\LicensesList($this->crypto);
 
         add_screen_option(
             'per_page',
@@ -166,7 +166,7 @@ class AdminMenus
 
     public function generatorsPage()
     {
-        $generators = new \LicenseManager\Classes\Lists\GeneratorsList();
+        $generators = new \LicenseManager\Lists\GeneratorsList();
 
         add_screen_option(
             'per_page',

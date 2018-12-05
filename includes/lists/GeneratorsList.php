@@ -1,10 +1,10 @@
 <?php
 
-namespace LicenseManager\Classes\Lists;
+namespace LicenseManager\Lists;
 
-use \LicenseManager\Classes\AdminMenus;
-use \LicenseManager\Classes\Logger;
-use \LicenseManager\Classes\Setup;
+use \LicenseManager\AdminMenus;
+use \LicenseManager\Logger;
+use \LicenseManager\Setup;
 
 /**
  * Create the Generators list

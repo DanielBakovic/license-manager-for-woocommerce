@@ -1,6 +1,6 @@
 <?php
 
-namespace LicenseManager\Classes;
+namespace LicenseManager;
 
 /**
  * LicenseManager setup
@@ -124,8 +124,8 @@ final class Main
      */
     private function initHooks()
     {
-        register_activation_hook(LM_PLUGIN_FILE, array('\LicenseManager\Classes\Setup', 'install'));
-        register_deactivation_hook(LM_PLUGIN_FILE, array('\LicenseManager\Classes\Setup', 'uninstall'));
+        register_activation_hook(LM_PLUGIN_FILE, array('\LicenseManager\Setup', 'install'));
+        register_deactivation_hook(LM_PLUGIN_FILE, array('\LicenseManager\Setup', 'uninstall'));
 
         add_action('admin_enqueue_scripts', array($this, 'adminEnqueueScripts'));
     }

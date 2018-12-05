@@ -35,7 +35,7 @@ if (!defined('LM_PLUGIN_URL')) {
  * @return LicenseManager
  */
 function licensemanager() {
-    return \LicenseManager\Classes\Main::instance();
+    return \LicenseManager\Main::instance();
 }
 
 // Global for backwards compatibility.

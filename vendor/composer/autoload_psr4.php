@@ -6,8 +6,8 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'LicenseManager\\Classes\\Lists\\' => array($baseDir . '/includes/classes/lists'),
-    'LicenseManager\\Classes\\Enums\\' => array($baseDir . '/includes/classes/enums'),
-    'LicenseManager\\Classes\\' => array($baseDir . '/includes/classes'),
+    'LicenseManager\\Lists\\' => array($baseDir . '/includes/lists'),
+    'LicenseManager\\Abstracts\\' => array($baseDir . '/includes/abstracts'),
+    'LicenseManager\\' => array($baseDir . '/includes'),
     'Defuse\\Crypto\\' => array($vendorDir . '/defuse/php-encryption/src'),
 );
