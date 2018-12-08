@@ -1,14 +1,41 @@
-Backlog:
-  ☐ License cipher solution
-  ☐ Trashed products solution (What should happen when a product gets trashed/deleted?)
-  ☐ Filters & pagination: The filter functionality is almost complete, only thing left to do is let the users filter by orders and products via the two dropdown menus and the custom pagination.
-  ☐ License Table Bulk Actions: When doing Bulk Actions, verify that all the selected keys aren't already sold or delivered before performing ANY actions on them.
-  ☐ Logger Support: Add a Setting which turns the logger on or off, Place logger where it makes sense, Add delete log/send log functionality (for bug reporting).
-  ☐ Licence Keys Usage: When an order is completed, the following needs to happen: 1.) Check if there are licensed products. 2.) If so, are there any available keys present? 3.) If so, are there enough? 4.) If so, send them.
-  ☐ lima_license_key_exists Rework: Hashes solved the comparison problem. This function should check if the same key already exists for the given product, not for all products. Perhaps a setting to turn it off?
-  ☐ Auto-Send Licenses: Add a setting which allows the admin to determine if he wants shop orders to automatically send the license keys to the customers when the order is complete.
-  ☐ Generator Table Rework: 1.) Add Admin Notices (Add, Edit, Validation), 2.) Users must remove Generator from Products before deletion, 3.) In "Edit Generator" show assigned products.
-  ☐ Generator Table "Expires in" Row Fix: If there is no value, the keys do not expire.
-
 Tasks:
 
+    Cipher:
+      ☐ Plugin: Automatically generate a cipher on plugin activation
+
+    Product:
+
+    Generator:
+      ☐ Rework: Admin Notices (Add, Edit, Validation)
+      ☐ Users must remove Generator from Products before deletion.
+      ☐ In "Edit Generator" show assigned products.
+
+    Licenses:
+      ☐ Table: Only display actions relevant for the current license key status.
+      ☐ Table: Single and bulk actions need to perform background checks (on the status) before performing the action.
+
+    Settings:
+      ☐ Enable/Disable plugin access to shop_manager role.
+
+    Stock:
+      ☐ Settings: Allow the user to enable or disable stock management for products.
+      ☐ Settings: Set the low stock warning quantity.
+      ☐ Product: Activating a product for sale will also enable plugin stock management (setting dependent).
+      ☐ Product: A product can not be sold any more if the stock is out (i.e. no active generator and no active license keys)
+      ☐ Notification: A low stock warning.
+
+    Logger:
+      ☐ WC_Logger: Rewrite the plugin so it uses the WC_Logger class @see https://docs.woocommerce.com/document/create-a-plugin/#section-20
+
+    Workflows:
+      ☐ Order is completed (either via backend or shop).
+
+    Fuzzy:
+      ☐ Product: Find a solution as to what happens when a product is trashed.
+      ☐ Licenses: Find a solution as to what happens when there are duplicate keys (all scenarios).
+      ☐ Order: Find a solution for resending already sent license keys (possibly resend order complete email or wc_mail).
+
+
+
+V2:
+  ☐ Filters & pagination: The filter functionality is almost complete, only thing left to do is let the users filter by orders and products via the two dropdown menus and the custom pagination.

@@ -2,8 +2,9 @@
     "autoload": {
         "psr-4": {
             "LicenseManager\\": "includes/",
-            "LicenseManager\\Lists\\": "includes/lists",
-            "LicenseManager\\Abstracts\\": "includes/abstracts"
+            "LicenseManager\\Abstracts\\": "includes/abstracts",
+            "LicenseManager\\Enums\\": "includes/enums",
+            "LicenseManager\\Lists\\": "includes/lists"
         }
     },
     "require": {

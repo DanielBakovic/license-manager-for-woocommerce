@@ -33,7 +33,7 @@
                         <input name="charset" id="charset" class="regular-text" type="text" value="<?=$generator->charset;?>">
                         <p class="description" id="tagline-description">
                             <b><?=__('Required.', 'lima');?></b>
-                            <span><?=__('i.e. for "12-AB-34-CD" the character map is <kbd>ABCD1234</kbd>.', 'lima');?></span>
+                            <span><?=__('The characters which will be used for generating a license key, i.e. for <code>12-AB-34-CD</code> the character map is <code>ABCD1234</code>.', 'lima');?></span>
                         </p>
                     </td>
                 </tr>
@@ -46,7 +46,7 @@
                         <input name="chunks" id="chunks" class="regular-text" type="text" value="<?=$generator->chunks;?>">
                         <p class="description" id="tagline-description">
                             <b><?=__('Required.', 'lima');?></b>
-                            <span><?=__('i.e. for "12-AB-34-CD" the number of chunks is <kbd>4</kbd>.', 'lima');?></span>
+                            <span><?=__('The number of separated character sets, i.e. for <code>12-AB-34-CD</code> the number of chunks is <code>4</code>.', 'lima');?></span>
                         </p>
                     </td>
                 </tr>
@@ -59,7 +59,7 @@
                         <input name="chunk_length" id="chunk_length" class="regular-text" type="text" value="<?=$generator->chunk_length;?>">
                         <p class="description" id="tagline-description">
                             <b><?=__('Required.', 'lima');?></b>
-                            <span><?=__('i.e. for "12-AB-34-CD" the chunk length is <kbd>2</kbd>.', 'lima');?></span>
+                            <span><?=__('The character length of an individual chunk, i.e. for <code>12-AB-34-CD</code> the chunk length is <code>2</code>.', 'lima');?></span>
                         </p>
                     </td>
                 </tr>
@@ -69,7 +69,7 @@
                         <input name="separator" id="separator" class="regular-text" type="text" value="<?=$generator->separator;?>">
                         <p class="description" id="tagline-description">
                             <b><?=__('Optional.', 'lima');?></b>
-                            <span><?=__('i.e. for "12-AB-34-CD" the separator is <kbd>-</kbd>.', 'lima');?></span>
+                            <span><?=__('The special character separating the individual chunks, i.e. for <code>12-AB-34-CD</code> the separator is <code>-</code>.', 'lima');?></span>
                         </p>
                     </td>
                 </tr>
@@ -79,7 +79,7 @@
                         <input name="prefix" id="prefix" class="regular-text" type="text" value="<?=$generator->prefix;?>">
                         <p class="description" id="tagline-description">
                             <b><?=__('Optional.', 'lima');?></b>
-                            <span><?=__('Adds a word at the start (separator <b>not</b> included), i.e. <kbd><b>PRE-</b>12-AB-34-CD</kbd>.', 'lima');?></span>
+                            <span><?=__('Adds a character set at the start of a license key (separator <b>not</b> included), i.e. for <code>PRE-12-AB-34-CD</code> the prefix is <code>PRE-</code>.', 'lima');?></span>
                         </p>
                     </td>
                 </tr>
@@ -89,7 +89,7 @@
                         <input name="suffix" id="suffix" class="regular-text" type="text" value="<?=$generator->suffix;?>">
                         <p class="description" id="tagline-description">
                             <b><?=__('Optional.', 'lima');?></b>
-                            <span><?=__('Adds a word at the end (separator <b>not</b> included), i.e. <kbd>12-AB-34-CD<b>-SUF</b></kbd>.', 'lima');?></span>
+                            <span><?=__('Adds a character set at the end of a license key (separator <b>not</b> included), i.e. for <code>12-AB-34-CD-SUF</code> the suffix is <code>-SUF</code>.', 'lima');?></span>
                         </p>
                     </td>
                 </tr>

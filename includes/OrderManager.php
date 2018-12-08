@@ -3,7 +3,7 @@
 namespace LicenseManager;
 
 use \LicenseManager\Database;
-use \LicenseManager\Abstracts\LicenseStatusEnum;
+use \LicenseManager\Enums\LicenseStatusEnum;
 
 /**
  * LicenseManager OrderManager.
@@ -31,8 +31,8 @@ class OrderManager
     ) {
         $this->crypto = $crypto;
 
-        add_action('woocommerce_order_status_completed', array($this, 'generateOrderLicenses'));
-        add_action('woocommerce_email_after_order_table', array($this, 'deliverLicenseKeys'), 10, 2);
+        add_action('woocommerce_order_status_completed',          array($this, 'generateOrderLicenses'));
+        add_action('woocommerce_email_after_order_table',         array($this, 'deliverLicenseKeys'), 10, 2);
         add_action('woocommerce_order_details_after_order_table', array($this, 'showBoughtLicenses'), 10, 1);
     }
 
@@ -60,10 +60,10 @@ class OrderManager
              */
             $product = $item_data->get_product();
 
-            // Check if the product has been activated for selling.
-            if (!get_post_meta($product->get_id(), '_lima_licensed_product', true)) break;
+            // Switch to the next product in loop if this is not a licensed product.
+            if (!get_post_meta($product->get_id(), '_lima_licensed_product', true)) continue;
 
-            // Check if the product has active keys attached to it.
+            // First: Check if there are still available licenses for this product to be sold.
             if ($license_keys = Database::getLicenseKeysByProductId($product->get_id(), LicenseStatusEnum::ACTIVE)) {
                 /**
                  * @todo Improve quantity check. (If generator is also assigned quantity is not a problem, otherwise
@@ -81,13 +81,13 @@ class OrderManager
                 // Set the order as complete.
                 update_post_meta($order_id, '_lima_order_complete', 1);
 
-            // Check if the product has a generator assigned to it.
-            } elseif ($gen_id = get_post_meta($product->get_id(), '_lima_generator_id', true)) {
+            // Second: Check if the product has a generator assigned to it.
+            } elseif ($generator_id = get_post_meta($product->get_id(), '_lima_generator_id', true)) {
 
                 // Obtain the generator details from the database and set up the args.
-                $generator = Database::getGenerator($gen_id);
+                $generator = Database::getGenerator($generator_id);
 
-                $create_license_args = array(
+                $licenses = apply_filters('lima_create_license_keys', array(
                     'amount'       => $item_data->get_quantity(),
                     'charset'      => $generator->charset,
                     'chunks'       => $generator->chunks,
@@ -96,30 +96,26 @@ class OrderManager
                     'prefix'       => $generator->prefix,
                     'suffix'       => $generator->suffix,
                     'expires_in'   => $generator->expires_in
-                );
-                $licenses = apply_filters('lima_create_license_keys', $create_license_args);
+                ));
 
                 // Save the license keys.
-                $save_license_args = array(
+                do_action('lima_insert_generated_license_keys', array(
                     'order_id'   => $order_id,
                     'product_id' => $product->get_id(),
                     'licenses'   => $licenses['licenses'],
-                    'expires_in' => $licenses['expires_in']
-                );
-                do_action('lima_save_generated_license_keys', $save_license_args);
+                    'expires_in' => $licenses['expires_in'],
+                    'status'     => LicenseStatusEnum::SOLD
+                ));
             }
 
             // Set status to delivered if the setting is on.
             if (Settings::get('_lima_auto_delivery')) {
-                $result = apply_filters(
-                    'lima_toggle_license_key_status',
-                    array(
-                        'column_name' => 'order_id',
-                        'operator' => 'eq',
-                        'value' => $order_id,
-                        'status' => LicenseStatusEnum::DELIVERED
-                    )
-                );
+                apply_filters('lima_toggle_license_key_status', array(
+                    'column_name' => 'order_id',
+                    'operator' => 'eq',
+                    'value' => $order_id,
+                    'status' => LicenseStatusEnum::DELIVERED
+                ));
             }
         }
     }

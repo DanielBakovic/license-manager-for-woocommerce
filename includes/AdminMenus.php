@@ -2,7 +2,7 @@
 
 namespace LicenseManager;
 
-use \LicenseManager\Abstracts\LicenseStatusEnum;
+use \LicenseManager\Enums\LicenseStatusEnum;
 
 /**
  * Setup menus in WP admin.

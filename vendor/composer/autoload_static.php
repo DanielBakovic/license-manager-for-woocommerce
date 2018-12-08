@@ -10,6 +10,7 @@ class ComposerStaticInit1e498426c3516c7c6bd12ace14395786
         'L' => 
         array (
             'LicenseManager\\Lists\\' => 21,
+            'LicenseManager\\Enums\\' => 21,
             'LicenseManager\\Abstracts\\' => 25,
             'LicenseManager\\' => 15,
         ),
@@ -23,6 +24,10 @@ class ComposerStaticInit1e498426c3516c7c6bd12ace14395786
         'LicenseManager\\Lists\\' => 
         array (
             0 => __DIR__ . '/../..' . '/includes/lists',
+        ),
+        'LicenseManager\\Enums\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/includes/enums',
         ),
         'LicenseManager\\Abstracts\\' => 
         array (

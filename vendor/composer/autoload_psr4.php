@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'LicenseManager\\Lists\\' => array($baseDir . '/includes/lists'),
+    'LicenseManager\\Enums\\' => array($baseDir . '/includes/enums'),
     'LicenseManager\\Abstracts\\' => array($baseDir . '/includes/abstracts'),
     'LicenseManager\\' => array($baseDir . '/includes'),
     'Defuse\\Crypto\\' => array($vendorDir . '/defuse/php-encryption/src'),

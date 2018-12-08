@@ -69,7 +69,7 @@ class FormHandler
         check_admin_referer('lima_save_generator');
 
         // Validate request.
-        $redirect_url = 'admin.php?page=%s&validation_error=%s"';
+        $redirect_url = 'admin.php?page=%s&validation_error=%s';
 
         if ($_POST['name'] == '' || !is_string($_POST['name'])) {
             wp_redirect(sprintf($redirect_url, AdminMenus::ADD_GENERATOR_PAGE, 'invalid_name'));
@@ -92,7 +92,7 @@ class FormHandler
         }
 
         // Save the generator.
-        $result = apply_filters('lima_save_generator', array(
+        $result = apply_filters('lima_insert_generator', array(
             'name'         => $_POST['name'],
             'charset'      => $_POST['charset'],
             'chunks'       => $_POST['chunks'],
@@ -203,14 +203,11 @@ class FormHandler
         }
 
         // Save the imported keys.
-        $result = apply_filters(
-            'lima_save_imported_license_keys',
-            array(
-                'license_keys' => $license_keys,
-                'activate'     => array_key_exists('activate', $_POST) ? true : false,
-                'product_id'   => intval($_POST['product'])
-            )
-        );
+        $result = apply_filters('lima_insert_imported_license_keys', array(
+            'license_keys' => $license_keys,
+            'activate'     => array_key_exists('activate', $_POST) ? true : false,
+            'product_id'   => intval($_POST['product'])
+        ));
 
         // Redirect according to $result.
         if ($result['failed'] == 0 && $result['added'] == 0) {
@@ -264,15 +261,12 @@ class FormHandler
         check_admin_referer('lima-add');
 
         // Save the license key.
-        $result = apply_filters(
-            'lima_save_added_license_key',
-            array(
-                'license_key' => sanitize_text_field($_POST['license_key']),
-                'activate'    => array_key_exists('activate', $_POST) ? true : false,
-                'product_id'  => intval($_POST['product']),
-                'valid_for'   => ($_POST['valid_for']) ? intval($_POST['valid_for']) : null
-            )
-        );
+        $result = apply_filters('lima_insert_added_license_key', array(
+            'license_key' => sanitize_text_field($_POST['license_key']),
+            'activate'    => array_key_exists('activate', $_POST) ? true : false,
+            'product_id'  => intval($_POST['product']),
+            'valid_for'   => ($_POST['valid_for']) ? intval($_POST['valid_for']) : null
+        ));
 
         // Redirect according to $result.
         $redirect_url = 'admin.php?page=%s&lima_add_license_key=%s';

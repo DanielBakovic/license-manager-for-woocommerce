@@ -7,7 +7,7 @@ use \LicenseManager\Database;
 use \LicenseManager\Logger;
 use \LicenseManager\Settings;
 use \LicenseManager\Setup;
-use \LicenseManager\Abstracts\LicenseStatusEnum;
+use \LicenseManager\Enums\LicenseStatusEnum;
 
 /**
  * Create the Licenses list

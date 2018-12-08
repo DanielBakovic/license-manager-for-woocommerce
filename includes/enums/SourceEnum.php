@@ -1,6 +1,6 @@
 <?php
 
-namespace LicenseManager\Abstracts;
+namespace LicenseManager\Enums;
 
 /**
  * Source Enumerator.

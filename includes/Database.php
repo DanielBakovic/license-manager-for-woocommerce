@@ -2,8 +2,8 @@
 
 namespace LicenseManager;
 
-use \LicenseManager\Abstracts\LicenseStatusEnum;
-use \LicenseManager\Abstracts\SourceEnum;
+use \LicenseManager\Enums\LicenseStatusEnum;
+use \LicenseManager\Enums\SourceEnum;
 
 /**
  * LicenseManager Database.
@@ -31,26 +31,80 @@ class Database
     ) {
         $this->crypto = $crypto;
 
-        add_action('lima_save_generated_license_keys',   array($this, 'saveGeneratedLicenseKeys' ), 10, 1);
-        add_action('lima_sell_imported_license_keys',    array($this, 'sellImportedLicenseKeys'  ), 10, 1);
-        add_filter('lima_save_imported_license_keys',    array($this, 'saveImportedLicenseKeys'  ), 10, 1);
-        add_filter('lima_save_added_license_key',        array($this, 'saveAddedLicenseKey'      ), 10, 1);
-        add_filter('lima_license_key_exists',            array($this, 'licenseKeyExists'         ), 10, 1);
-        add_filter('lima_import_license_keys',           array($this, 'importLicenseKeys'        ), 10, 1);
+        // Get
+        add_filter('lima_get_assigned_products',         array($this, 'getAssignedProducts'), 10, 1);
+
+        // Insert
+        add_action('lima_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 1);
+        add_filter('lima_insert_imported_license_keys',  array($this, 'insertImportedLicenseKeys'),  10, 1);
+        add_filter('lima_insert_added_license_key',      array($this, 'insertAddedLicenseKey'),      10, 1);
+        add_filter('lima_insert_generator',              array($this, 'insertGenerator'),            10, 1);
+        //add_filter('lima_import_license_keys',           array($this, 'importLicenseKeys'        ), 10, 1);
+
+        // Update
+        add_action('lima_sell_imported_license_keys',    array($this, 'sellImportedLicenseKeys'), 10, 1);
+        add_filter('lima_toggle_license_key_status',     array($this, 'toggleLicenseKeyStatus'),  10, 1);
+        add_filter('lima_update_generator',              array($this, 'updateGenerator'),         10, 1);
+
+        // Delete
         add_filter('lima_delete_license_keys',           array($this, 'deleteLicenseKeys'        ), 10, 1);
-        add_filter('lima_toggle_license_key_status',     array($this, 'toggleLicenseKeyStatus'   ), 10, 1);
-        add_filter('lima_save_generator',                array($this, 'saveGenerator'            ), 10, 1);
-        add_filter('lima_update_generator',              array($this, 'updateGenerator'          ), 10, 1);
         add_filter('lima_delete_generators',             array($this, 'deleteGenerators'         ), 10, 1);
-        add_filter('lima_get_assigned_products',         array($this, 'getAssignedProducts'      ), 10, 1);
+
+        // Misc.
+        add_filter('lima_license_key_exists',            array($this, 'licenseKeyExists'         ), 10, 1);
     }
+
+    // GET
+
+    /**
+     * Retrieve assigned products for a specific generator.
+     *
+     * @since 1.0.0
+     *
+     * @param int $args['generator_id']
+     *
+     * @return boolean
+     */
+    public function getAssignedProducts($args)
+    {
+        global $wpdb;
+
+        $results = $wpdb->get_results(
+            $wpdb->prepare("
+                SELECT
+                    post_id
+                FROM
+                    {$wpdb->postmeta}
+                WHERE
+                    1 = 1
+                    AND meta_key = %s
+                    AND meta_value = %d
+                ",
+                '_lima_generator_id',
+                absint($args['generator_id'])
+            ),
+            OBJECT
+        );
+
+        if ($results) {
+            $products = [];
+
+            foreach ($results as $row) {
+                $products[] = wc_get_product($row->post_id);
+            }
+        } else {
+            $products = null;
+        }
+
+        return $products;
+    }
+
+    // INSERT
 
     /**
      * Save the license keys for a given product to the database.
      *
      * @since 1.0.0
-     *
-     * @todo Convert to filter, return array of added licenses.
      *
      * @param int    $args['order_id']
      * @param int    $args['product_id']
@@ -62,29 +116,27 @@ class Database
      * @param string $args['prefix']
      * @param string $args['separator']
      * @param string $args['suffix']
+     * @param int    $args['status']
      */
-    public function saveGeneratedLicenseKeys($args)
+    public function insertGeneratedLicenseKeys($args)
     {
         global $wpdb;
 
-        $date         = new \DateTime();
-        $created_at   = $date->format('Y-m-d H:i:s');
-        $expires_at   = null;
-        $invalid_keys = 0;
+        $date                = new \DateTime();
+        $created_at          = $date->format('Y-m-d H:i:s');
+        $expires_at          = null;
+        $invalid_keys_amount = 0;
 
         // Set the expiration date if specified.
         if ($args['expires_in'] != null && is_numeric($args['expires_in'])) {
             $expires_at = $date->add(new \DateInterval('P' . $args['expires_in'] . 'D'))->format('Y-m-d H:i:s');
         }
 
-        /**
-         * @todo Update with proper status handling.
-         */
         // Add the keys to the database table.
         foreach ($args['licenses'] as $license_key) {
             // Key exists, up the invalid keys count.
             if (apply_filters('lima_license_key_exists', $license_key)) {
-                $invalid_keys++;
+                $invalid_keys_amount++;
             // Key doesn't exist, add it to the database table.
             } else {
                 // Save to database.
@@ -98,7 +150,7 @@ class Database
                         'created_at'  => $created_at,
                         'expires_at'  => $expires_at,
                         'source'      => SourceEnum::GENERATOR,
-                        'status'      => LicenseStatusEnum::SOLD
+                        'status'      => $args['status']
                     ),
                     array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
                 );
@@ -106,9 +158,9 @@ class Database
         }
 
         // There have been duplicate keys, regenerate and add them.
-        if ($invalid_keys > 0) {
+        if ($invalid_keys_amount > 0) {
             $new_keys = apply_filters('lima_create_license_keys', array(
-                'amount'       => $invalid_keys,
+                'amount'       => $invalid_keys_amount,
                 'charset'      => $args['charset'],
                 'chunks'       => $args['chunks'],
                 'chunk_length' => $args['chunk_length'],
@@ -117,7 +169,7 @@ class Database
                 'suffix'       => $args['suffix'],
                 'expires_in'   => $args['expires_in']
             ));
-            $this->saveGeneratedLicenseKeys(array(
+            $this->insertGeneratedLicenseKeys(array(
                 'order_id'     => $args['order_id'],
                 'product_id'   => $args['product_id'],
                 'licenses'     => $new_keys['licenses'],
@@ -127,13 +179,132 @@ class Database
                 'chunks'       => $args['chunks'],
                 'prefix'       => $args['prefix'],
                 'separator'    => $args['separator'],
-                'suffix'       => $args['suffix']
+                'suffix'       => $args['suffix'],
+                'status'       => $args['status']
             ));
         } else {
             // Keys have been generated and saved, this order is now complete.
             update_post_meta($args['order_id'], '_lima_order_complete', 1);
         }
     }
+
+    /**
+     * Imports an array of un-encrypted license keys into the database.
+     *
+     * @since 1.0.0
+     *
+     * @param array   $args['license_keys']
+     * @param boolean $args['activate'] 
+     * @param int     $args['product_id']
+     *
+     * @return array
+     */
+    public function insertImportedLicenseKeys($args)
+    {
+        global $wpdb;
+
+        $created_at       = date('Y-m-d H:i:s');
+        $result['added']  = 0;
+        $result['failed'] = 0;
+        $args['activate'] ? $status = LicenseStatusEnum::ACTIVE : $status = LicenseStatusEnum::INACTIVE;
+
+        // Add the keys to the database table.
+        foreach ($args['license_keys'] as $license_key) {
+            if ($wpdb->insert(
+                    $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
+                    array(
+                        'order_id'    => null,
+                        'product_id'  => $args['product_id'],
+                        'license_key' => $this->crypto->encrypt($license_key),
+                        'hash'        => $this->crypto->hash($license_key),
+                        'created_at'  => $created_at,
+                        'expires_at'  => null,
+                        'source'      => SourceEnum::IMPORT,
+                        'status'      => $status
+                    ),
+                    array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
+                )
+            ) {
+                $result['added']++;
+            } else {
+                $result['failed']++;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Saves an un-encrypted license keys into the database.
+     *
+     * @since 1.0.0
+     *
+     * @param string  $args['license_key']
+     * @param boolean $args['activate']
+     * @param int     $args['product_id']
+     * @param int     $args['valid_for']
+     *
+     * @return array
+     */
+    public function insertAddedLicenseKey($args)
+    {
+        global $wpdb;
+
+        $created_at = date('Y-m-d H:i:s');
+        $args['activate'] ? $status = LicenseStatusEnum::ACTIVE : $status = LicenseStatusEnum::INACTIVE;
+
+        return $wpdb->insert(
+            $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
+            array(
+                'order_id'    => null, // Because it's only added, not bought.
+                'product_id'  => $args['product_id'],
+                'license_key' => $this->crypto->encrypt($args['license_key']),
+                'hash'        => $this->crypto->hash($args['license_key']),
+                'created_at'  => $created_at,
+                'expires_at'  => null, // Because it's only added, not bought.
+                'valid_for'   => $args['valid_for'],
+                'source'      => SourceEnum::IMPORT,
+                'status'      => $status
+            ),
+            array('%d', '%d', '%s', '%s', '%s', '%d', '%s', '%d')
+        );
+    }
+
+    /**
+     * Save the generator to the database.
+     *
+     * @since 1.0.0
+     *
+     * @param string $args['name']         - Generator name.
+     * @param string $args['charset']      - Character map used for key generation.
+     * @param int    $args['chunks']       - Number of chunks.
+     * @param int    $args['chunk_length'] - Chunk length.
+     * @param string $args['separator']    - Separator used.
+     * @param string $args['prefix']       - License key prefix.
+     * @param string $args['suffis']       - License key suffix.
+     * @param string $args['expires_in']   - Number of days for which the license is valid.
+     */
+    public function insertGenerator($args)
+    {
+        global $wpdb;
+
+        return $wpdb->insert(
+            $wpdb->prefix . Setup::GENERATORS_TABLE_NAME,
+            array(
+                'name'         => sanitize_text_field($args['name']),
+                'charset'      => sanitize_text_field($args['charset']),
+                'chunks'       => intval($args['chunks']),
+                'chunk_length' => intval($args['chunk_length']),
+                'separator'    => sanitize_text_field($args['separator']),
+                'prefix'       => sanitize_text_field($args['prefix']),
+                'suffix'       => sanitize_text_field($args['suffix']),
+                'expires_in'   => sanitize_text_field($args['expires_in'])
+            ),
+            array('%s', '%s', '%d', '%d', '%s', '%s', '%s')
+        );
+    }
+
+    // UPDATE
 
     /**
      * Sell license keys already present in the database.
@@ -175,87 +346,6 @@ class Database
     }
 
     /**
-     * Imports an array of un-encrypted license keys into the database.
-     *
-     * @since 1.0.0
-     *
-     * @param array   $args['license_keys']
-     * @param boolean $args['activate'] 
-     * @param int     $args['product_id']
-     *
-     * @return array
-     */
-    public function saveImportedLicenseKeys($args)
-    {
-        global $wpdb;
-
-        $created_at = date('Y-m-d H:i:s');
-        $result['added'] = $result['failed'] = 0;
-        $args['activate'] ? $status = LicenseStatusEnum::ACTIVE : $status = LicenseStatusEnum::INACTIVE;
-
-        // Add the keys to the database table.
-        foreach ($args['license_keys'] as $license_key) {
-            if ($wpdb->insert(
-                    $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
-                    array(
-                        'order_id'    => null,
-                        'product_id'  => $args['product_id'],
-                        'license_key' => $this->crypto->encrypt($license_key),
-                        'hash'        => $this->crypto->hash($license_key),
-                        'created_at'  => $created_at,
-                        'expires_at'  => null,
-                        'source'      => SourceEnum::IMPORT,
-                        'status'      => $status
-                    ),
-                    array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
-                )
-            ) {
-                $result['added']++;
-            } else {
-                $result['failed']++;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Saves an un-encrypted license keys into the database.
-     *
-     * @since 1.0.0
-     *
-     * @param string  $args['license_key']
-     * @param boolean $args['activate']
-     * @param int     $args['product_id']
-     * @param int     $args['valid_for']
-     *
-     * @return array
-     */
-    public function saveAddedLicenseKey($args)
-    {
-        global $wpdb;
-
-        $created_at = date('Y-m-d H:i:s');
-        $args['activate'] ? $status = LicenseStatusEnum::ACTIVE : $status = LicenseStatusEnum::INACTIVE;
-
-        return $wpdb->insert(
-            $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
-            array(
-                'order_id'    => null, // Because it's only added, not bought.
-                'product_id'  => $args['product_id'],
-                'license_key' => $this->crypto->encrypt($args['license_key']),
-                'hash'        => $this->crypto->hash($args['license_key']),
-                'created_at'  => $created_at,
-                'expires_at'  => null, // Because it's only added, not bought.
-                'valid_for'   => $args['valid_for'],
-                'source'      => SourceEnum::IMPORT,
-                'status'      => $status
-            ),
-            array('%d', '%d', '%s', '%s', '%s', '%d', '%s', '%d')
-        );
-    }
-
-    /**
      * Check if the license key already exists in the database.
      *
      * @since 1.0.0
@@ -272,40 +362,6 @@ class Database
         $sql   = "SELECT license_key FROM `{$table}` WHERE hash = '%s';";
 
         return $wpdb->get_var($wpdb->prepare($sql, $this->crypto->hash($license_key))) != null;
-    }
-
-    /**
-     * Save the generator to the database.
-     *
-     * @since 1.0.0
-     *
-     * @param string $args['name']         - Generator name.
-     * @param string $args['charset']      - Character map used for key generation.
-     * @param int    $args['chunks']       - Number of chunks.
-     * @param int    $args['chunk_length'] - Chunk length.
-     * @param string $args['separator']    - Separator used.
-     * @param string $args['prefix']       - License key prefix.
-     * @param string $args['suffis']       - License key suffix.
-     * @param string $args['expires_in']   - Number of days for which the license is valid.
-     */
-    public function saveGenerator($args)
-    {
-        global $wpdb;
-
-        return $wpdb->insert(
-            $wpdb->prefix . Setup::GENERATORS_TABLE_NAME,
-            array(
-                'name'         => sanitize_text_field($args['name']),
-                'charset'      => sanitize_text_field($args['charset']),
-                'chunks'       => intval($args['chunks']),
-                'chunk_length' => intval($args['chunk_length']),
-                'separator'    => sanitize_text_field($args['separator']),
-                'prefix'       => sanitize_text_field($args['prefix']),
-                'suffix'       => sanitize_text_field($args['suffix']),
-                'expires_in'   => sanitize_text_field($args['expires_in'])
-            ),
-            array('%s', '%s', '%d', '%d', '%s', '%s', '%s')
-        );
     }
 
     /**
@@ -365,41 +421,6 @@ class Database
                 implode(', ', $args['ids'])
             )
         );
-    }
-
-    /**
-     * Retrieve assigned products for a specific generator.
-     *
-     * @since 1.0.0
-     *
-     * @param int $args['generator_id']
-     *
-     * @return boolean
-     */
-    public function getAssignedProducts($args)
-    {
-        global $wpdb;
-
-        $results = $wpdb->get_results(
-            sprintf(
-                'SELECT post_id FROM %s WHERE meta_key = \'_lima_generator_id\' AND meta_value = %d',
-                $wpdb->postmeta,
-                $args['generator_id']
-            ),
-            OBJECT
-        );
-
-        if ($results) {
-            $products = [];
-
-            foreach ($results as $row) {
-                $products[] = wc_get_product($row->post_id);
-            }
-        } else {
-            $products = null;
-        }
-
-        return $products;
     }
 
     /**

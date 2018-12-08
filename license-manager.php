@@ -9,6 +9,9 @@
  * Domain Path: /lang
  * Requires at least: 4.7
  * Tested up to: 4.9
+ *
+ * WC requires at least: 2.7
+ * WC tested up to: 3.5
  */
 
 namespace LicenseManager;
@@ -21,6 +24,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 if (!defined('LM_PLUGIN_FILE')) {
     define('LM_PLUGIN_FILE', __FILE__);
 }
+
 // Define LM_PLUGIN_URL.
 if (!defined('LM_PLUGIN_URL')) {
     define('LM_PLUGIN_URL', plugins_url('', __FILE__) . '/');
