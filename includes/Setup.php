@@ -2,16 +2,13 @@
 
 namespace LicenseManager;
 
+defined('ABSPATH') || exit;
+
 /**
  * LicenseManager Setup.
  *
  * @version 1.0.0
- */
-
-defined('ABSPATH') || exit;
-
-/**
- * Setup class.
+ * @since 1.0.0
  */
 class Setup
 {
@@ -35,13 +32,6 @@ class Setup
      * @since 1.0.0
      */
     const DB_VERSION = 100;
-
-    /**
-     * Setup Constructor.
-     */
-    public function __construct()
-    {
-    }
 
     /**
      * Installation script.
@@ -92,24 +82,24 @@ class Setup
                 `id` BIGINT(20) NOT NULL COMMENT 'Primary Key' AUTO_INCREMENT,
                 `order_id` BIGINT(20) NULL DEFAULT NULL COMMENT 'WC_Order ID',
                 `product_id` BIGINT(20) NULL DEFAULT NULL COMMENT 'WC_Product ID',
-                `license_key` VARCHAR(256) NOT NULL COMMENT 'Encrypted License Key',
-                `hash` VARCHAR(256) NOT NULL COMMENT 'Hashed License Key ID',
+                `license_key` VARCHAR(255) NOT NULL COMMENT 'Encrypted License Key',
+                `hash` VARCHAR(255) NOT NULL COMMENT 'Hashed License Key ID',
                 `created_at` DATETIME NOT NULL COMMENT 'Creation Date',
                 `expires_at` DATETIME NULL COMMENT 'Expiration Date',
                 `valid_for` INT(32) NULL DEFAULT NULL COMMENT 'License Validity (in days)',
-                `source` VARCHAR(256) NOT NULL COMMENT 'Import or Generator',
+                `source` VARCHAR(255) NOT NULL COMMENT 'Import or Generator',
                 `status` TINYINT(1) NOT NULL COMMENT 'Sold, Delivered, Active, Inactive',
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
             CREATE TABLE $table2 (
                 `id` INT(20) NOT NULL AUTO_INCREMENT,
-                `name` VARCHAR(256) NOT NULL,
-                `charset` VARCHAR(256) NULL,
+                `name` VARCHAR(255) NOT NULL,
+                `charset` VARCHAR(255) NULL,
                 `chunks` INT(10) NOT NULL,
                 `chunk_length` INT(10) NOT NULL,
-                `separator` VARCHAR(256) NOT NULL,
-                `prefix` VARCHAR(256) NULL,
-                `suffix` VARCHAR(256) NULL,
+                `separator` VARCHAR(255) NULL DEFAULT NULL,
+                `prefix` VARCHAR(255) NULL DEFAULT NULL,
+                `suffix` VARCHAR(255) NULL DEFAULT NULL,
                 `expires_in` INT(10) NULL DEFAULT NULL,
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -126,9 +116,15 @@ class Setup
             '_lima_auto_delivery' => 1
         );
 
-        update_option('_lima_settings', $defaults, '', 'yes');
+        update_option('_lima_settings', $defaults);
+        update_option('_lima_db_version', self::DB_VERSION);
 
         // Cryptographic secrets.
+        if (!file_exists(LM_ETC_DIR . 'defuse.txt')) {
+            $defuse = \Defuse\Crypto\Key::createNewRandomKey();
+            file_put_contents(LM_ETC_DIR . 'defuse.txt', $defuse->saveToAsciiSafeString());
+        }
+
         if (!file_exists(LM_ETC_DIR . 'secret.txt')) {
             file_put_contents(LM_ETC_DIR . 'secret.txt', bin2hex(random_bytes(16)));
         }

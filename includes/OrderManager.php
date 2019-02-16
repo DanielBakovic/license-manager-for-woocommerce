@@ -5,16 +5,13 @@ namespace LicenseManager;
 use \LicenseManager\Database;
 use \LicenseManager\Enums\LicenseStatusEnum;
 
+defined('ABSPATH') || exit;
+
 /**
  * LicenseManager OrderManager.
  *
  * @version 1.0.0
- */
-
-defined('ABSPATH') || exit;
-
-/**
- * OrderManager class.
+ * @since 1.0.0
  */
 class OrderManager
 {
@@ -42,8 +39,6 @@ class OrderManager
      * @since 1.0.0
      *
      * @param int $order_id - WooCommerce Order ID
-     *
-     * @todo Implement sending licenses from other sources (imported or manually added lists for now).
      */
     public function generateOrderLicenses($order_id)
     {
@@ -60,31 +55,84 @@ class OrderManager
              */
             $product = $item_data->get_product();
 
-            // Switch to the next product in loop if this is not a licensed product.
+            // Skip this product because it's not a licensed product.
             if (!get_post_meta($product->get_id(), '_lima_licensed_product', true)) continue;
 
-            // First: Check if there are still available licenses for this product to be sold.
-            if ($license_keys = Database::getLicenseKeysByProductId($product->get_id(), LicenseStatusEnum::ACTIVE)) {
-                /**
-                 * @todo Improve quantity check. (If generator is also assigned quantity is not a problem, otherwise
-                 * more thorough checks are required).
-                 */
-                if ($item_data->get_quantity() > count($license_keys)) return;
+            $use_stock = get_post_meta($product->get_id(), '_lima_licensed_product_use_stock', true);
+            $use_generator = get_post_meta($product->get_id(), '_lima_licensed_product_use_generator', true);
 
-                // Set the license keys as sold.
-                do_action('lima_sell_imported_license_keys', array(
-                    'license_keys' => $license_keys,
-                    'order_id'     => $order_id,
-                    'amount'       => $item_data->get_quantity()
-                ));
+            // Skip this product because neither selling from stock or from generators is active.
+            if (!$use_stock && !$use_generator) {
+                continue;
+            }
 
-                // Set the order as complete.
-                update_post_meta($order_id, '_lima_order_complete', 1);
+            // Sell license keys through available stock.
+            if ($use_stock) {
+                // Retrieve the available license keys.
+                $license_keys = Database::getLicenseKeysByProductId(
+                    $product->get_id(),
+                    LicenseStatusEnum::ACTIVE
+                );
 
-            // Second: Check if the product has a generator assigned to it.
-            } elseif ($generator_id = get_post_meta($product->get_id(), '_lima_generator_id', true)) {
+                $available_stock = count($license_keys);
 
-                // Obtain the generator details from the database and set up the args.
+                // There are enough keys.
+                if ($item_data->get_quantity() <= $available_stock) {
+                    // Set the retrieved license keys as sold.
+                    do_action('lima_sell_imported_license_keys', array(
+                        'license_keys' => $license_keys,
+                        'order_id'     => $order_id,
+                        'amount'       => $item_data->get_quantity()
+                    ));
+                // There aren not enough keys.
+                } else {
+
+                    // Set the available license keys as sold.
+                    do_action('lima_sell_imported_license_keys', array(
+                        'license_keys' => $license_keys,
+                        'order_id'     => $order_id,
+                        'amount'       => $available_stock
+                    ));
+
+                    // The "use generator" option is active, generate them
+                    if ($use_generator) {
+                        $amount_to_generate = intval($item_data->get_quantity()) - intval($available_stock);
+                        $generator_id = get_post_meta(
+                            $product->get_id(),
+                            '_lima_licensed_product_assigned_generator',
+                            true
+                        );
+
+                        // Retrieve the generator from the database and set up the args.
+                        $generator = Database::getGenerator($generator_id);
+
+                        $licenses = apply_filters('lima_create_license_keys', array(
+                            'amount'       => $amount_to_generate,
+                            'charset'      => $generator->charset,
+                            'chunks'       => $generator->chunks,
+                            'chunk_length' => $generator->chunk_length,
+                            'separator'    => $generator->separator,
+                            'prefix'       => $generator->prefix,
+                            'suffix'       => $generator->suffix,
+                            'expires_in'   => $generator->expires_in
+                        ));
+
+                        // Save the license keys.
+                        do_action('lima_insert_generated_license_keys', array(
+                            'order_id'   => $order_id,
+                            'product_id' => $product->get_id(),
+                            'licenses'   => $licenses['licenses'],
+                            'expires_in' => $licenses['expires_in'],
+                            'status'     => LicenseStatusEnum::SOLD
+                        ));
+                    }
+                }
+
+            // Scenario 3 - Use generator.
+            } else if (!$use_stock && $use_generator) {
+                $generator_id = get_post_meta($product->get_id(), '_lima_licensed_product_assigned_generator', true);
+
+                // Retrieve the generator from the database and set up the args.
                 $generator = Database::getGenerator($generator_id);
 
                 $licenses = apply_filters('lima_create_license_keys', array(
@@ -108,6 +156,9 @@ class OrderManager
                 ));
             }
 
+            // Set the order as complete.
+            update_post_meta($order_id, '_lima_order_complete', 1);
+
             // Set status to delivered if the setting is on.
             if (Settings::get('_lima_auto_delivery')) {
                 apply_filters('lima_toggle_license_key_status', array(
@@ -127,8 +178,6 @@ class OrderManager
      *
      * @param int $order          - WC_Order
      * @param int $is_admin_email - boolean
-     *
-     * @todo Implement a second check (after the setting) to see if the admin manually sent out the keys.
      */
     public function deliverLicenseKeys($order, $is_admin_email)
     {
@@ -172,7 +221,6 @@ class OrderManager
      * @since 1.0.0
      *
      * @param int $order - WC_Order
-     *
      */
     public function showBoughtLicenses($order)
     {

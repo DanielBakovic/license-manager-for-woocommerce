@@ -6,16 +6,13 @@ use Defuse\Crypto\Key;
 use Defuse\Crypto\Crypto as DefuseCrypto;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 
-/**
- * LicenseManager Crypto.
- *
- * @version 1.0.0
- */
-
 defined('ABSPATH') || exit;
 
 /**
- * Crypto class.
+ * LicenseManager Crypto class.
+ *
+ * @version 1.0.0
+ * @since 1.0.0
  */
 class Crypto
 {
@@ -25,6 +22,13 @@ class Crypto
      * @since 1.0.0
      */
     const DEFUSE_FILE = 'defuse.txt';
+
+    /**
+     * The secret file name.
+     *
+     * @since 1.0.0
+     */
+    const SECRET_FILE = 'secret.txt';
 
     /**
      * The defuse key file content.
@@ -88,6 +92,6 @@ class Crypto
 
     public function hash($value)
     {
-        return hash_hmac('sha256', $value, file_get_contents(LM_ETC_DIR . 'secret.txt'));
+        return hash_hmac('sha256', $value, file_get_contents(LM_ETC_DIR . self::SECRET_FILE));
     }
 }

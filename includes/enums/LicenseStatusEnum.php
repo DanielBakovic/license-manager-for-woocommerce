@@ -2,18 +2,17 @@
 
 namespace LicenseManager\Enums;
 
+defined('ABSPATH') || exit;
+
 /**
  * License Status Enumerator.
  *
- * @since 1.0.0
  * @version 1.0.0
+ * @since 1.0.0
  */
-
-defined('ABSPATH') || exit;
-
 abstract class LicenseStatusEnum
 {
-    const __default = null;
+    const __default = -1;
 
     const SOLD      = 1;
     const DELIVERED = 2;

@@ -2,16 +2,13 @@
 
 namespace LicenseManager;
 
+defined('ABSPATH') || exit;
+
 /**
  * LicenseManager Logger.
  *
  * @version 1.0.0
- */
-
-defined('ABSPATH') || exit;
-
-/**
- * Logger class.
+ * @since 1.0.0
  */
 class Logger
 {

@@ -2,19 +2,15 @@
 
 namespace LicenseManager;
 
-/**
- * LicenseManager setup
- *
- * @package LicenseManager
- * @since   1.0.0
- */
-
 defined('ABSPATH') || exit;
 
 /**
- * Main LicenseManager Class.
+ * LicenseManager
  *
- * @class LicenseManager
+ * @package LicenseManager
+ * @since 1.0.0
+ * @author Dražen Bebić
+ * @link https://www.bebic.at/license-manager-for-woocommerce
  */
 final class Main
 {
@@ -39,8 +35,9 @@ final class Main
     private function __construct()
     {
         $this->defineConstants();
-        $this->init();
         $this->initHooks();
+
+        add_action('init', array($this, 'init'));
     }
 
     /**
@@ -106,6 +103,37 @@ final class Main
     }
 
     /**
+     * Add additional links to the plugin row meta.
+     */
+    public function pluginRowMeta($links, $file)
+    {
+
+        if (strpos($file, 'license-manager.php' ) !== false ) {
+            $new_links = array(
+                'github' => sprintf(
+                    '<a href="%s" target="_blank">%s</a>',
+                    'https://github.com/drazenbebic/license-manager',
+                    'GitHub'
+                ),
+                'docs' => sprintf(
+                    '<a href="%s" target="_blank">%s</a>',
+                    'https://www.bebic.at/license-manager-for-woocommerce/docs',
+                    __('Documentation', 'lima')
+                ),
+                'donate' => sprintf(
+                    '<a href="%s" target="_blank">%s</a>',
+                    'https://www.bebic.at/license-manager-for-woocommerce/donate',
+                    __('Donate', 'lima')
+                )
+            );
+            
+            $links = array_merge( $links, $new_links );
+        }
+
+        return $links;
+    }
+
+    /**
      * Define constant if not already set.
      *
      * @param string      $name  Constant name.
@@ -125,9 +153,10 @@ final class Main
     private function initHooks()
     {
         register_activation_hook(LM_PLUGIN_FILE, array('\LicenseManager\Setup', 'install'));
-        register_deactivation_hook(LM_PLUGIN_FILE, array('\LicenseManager\Setup', 'uninstall'));
+        register_uninstall_hook(LM_PLUGIN_FILE, array('\LicenseManager\Setup', 'uninstall'));
 
         add_action('admin_enqueue_scripts', array($this, 'adminEnqueueScripts'));
+        add_filter('plugin_row_meta', array($this, 'pluginRowMeta'), 10, 2);
     }
 
     /**
@@ -137,6 +166,7 @@ final class Main
     {
         $crypto = new Crypto();
 
+        new ProductManager();
         new AdminMenus($crypto);
         new AdminNotice();
         new Generator();

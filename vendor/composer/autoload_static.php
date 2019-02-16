@@ -43,11 +43,45 @@ class ComposerStaticInit1e498426c3516c7c6bd12ace14395786
         ),
     );
 
+    public static $classMap = array (
+        'Defuse\\Crypto\\Core' => __DIR__ . '/..' . '/defuse/php-encryption/src/Core.php',
+        'Defuse\\Crypto\\Crypto' => __DIR__ . '/..' . '/defuse/php-encryption/src/Crypto.php',
+        'Defuse\\Crypto\\DerivedKeys' => __DIR__ . '/..' . '/defuse/php-encryption/src/DerivedKeys.php',
+        'Defuse\\Crypto\\Encoding' => __DIR__ . '/..' . '/defuse/php-encryption/src/Encoding.php',
+        'Defuse\\Crypto\\Exception\\BadFormatException' => __DIR__ . '/..' . '/defuse/php-encryption/src/Exception/BadFormatException.php',
+        'Defuse\\Crypto\\Exception\\CryptoException' => __DIR__ . '/..' . '/defuse/php-encryption/src/Exception/CryptoException.php',
+        'Defuse\\Crypto\\Exception\\EnvironmentIsBrokenException' => __DIR__ . '/..' . '/defuse/php-encryption/src/Exception/EnvironmentIsBrokenException.php',
+        'Defuse\\Crypto\\Exception\\IOException' => __DIR__ . '/..' . '/defuse/php-encryption/src/Exception/IOException.php',
+        'Defuse\\Crypto\\Exception\\WrongKeyOrModifiedCiphertextException' => __DIR__ . '/..' . '/defuse/php-encryption/src/Exception/WrongKeyOrModifiedCiphertextException.php',
+        'Defuse\\Crypto\\File' => __DIR__ . '/..' . '/defuse/php-encryption/src/File.php',
+        'Defuse\\Crypto\\Key' => __DIR__ . '/..' . '/defuse/php-encryption/src/Key.php',
+        'Defuse\\Crypto\\KeyOrPassword' => __DIR__ . '/..' . '/defuse/php-encryption/src/KeyOrPassword.php',
+        'Defuse\\Crypto\\KeyProtectedByPassword' => __DIR__ . '/..' . '/defuse/php-encryption/src/KeyProtectedByPassword.php',
+        'Defuse\\Crypto\\RuntimeTests' => __DIR__ . '/..' . '/defuse/php-encryption/src/RuntimeTests.php',
+        'LicenseManager\\AdminMenus' => __DIR__ . '/../..' . '/includes/AdminMenus.php',
+        'LicenseManager\\AdminNotice' => __DIR__ . '/../..' . '/includes/AdminNotice.php',
+        'LicenseManager\\Crypto' => __DIR__ . '/../..' . '/includes/Crypto.php',
+        'LicenseManager\\Database' => __DIR__ . '/../..' . '/includes/Database.php',
+        'LicenseManager\\Enums\\LicenseStatusEnum' => __DIR__ . '/../..' . '/includes/enums/LicenseStatusEnum.php',
+        'LicenseManager\\Enums\\SourceEnum' => __DIR__ . '/../..' . '/includes/enums/SourceEnum.php',
+        'LicenseManager\\FormHandler' => __DIR__ . '/../..' . '/includes/FormHandler.php',
+        'LicenseManager\\Generator' => __DIR__ . '/../..' . '/includes/Generator.php',
+        'LicenseManager\\Lists\\GeneratorsList' => __DIR__ . '/../..' . '/includes/lists/GeneratorsList.php',
+        'LicenseManager\\Lists\\LicensesList' => __DIR__ . '/../..' . '/includes/lists/LicensesList.php',
+        'LicenseManager\\Logger' => __DIR__ . '/../..' . '/includes/Logger.php',
+        'LicenseManager\\Main' => __DIR__ . '/../..' . '/includes/Main.php',
+        'LicenseManager\\OrderManager' => __DIR__ . '/../..' . '/includes/OrderManager.php',
+        'LicenseManager\\ProductManager' => __DIR__ . '/../..' . '/includes/ProductManager.php',
+        'LicenseManager\\Settings' => __DIR__ . '/../..' . '/includes/Settings.php',
+        'LicenseManager\\Setup' => __DIR__ . '/../..' . '/includes/Setup.php',
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit1e498426c3516c7c6bd12ace14395786::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit1e498426c3516c7c6bd12ace14395786::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit1e498426c3516c7c6bd12ace14395786::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -2,16 +2,13 @@
 
 namespace LicenseManager;
 
+defined('ABSPATH') || exit;
+
 /**
  * LicenseManager Settings.
  *
  * @version 1.0.0
- */
-
-defined('ABSPATH') || exit;
-
-/**
- * Settings class.
+ * @since 1.0.0
  */
 class Settings
 {
@@ -30,7 +27,6 @@ class Settings
      * Initialize the WordPress Settings API.
      *
      * @since 1.0.0
-     *
      */
     private function init()
     {
@@ -43,7 +39,7 @@ class Settings
         // _lima_security section fields.
         add_settings_field(
             '_lima_hide_license_keys',
-            __('Hide or Show Licenses', 'lima'),
+            __('Obscure Licenses', 'lima'),
             array($this, 'limaFieldHideLicenseKeys'),
             '_lima',
             '_lima_security'
@@ -61,18 +57,16 @@ class Settings
      * Callback for the "_lima_security" section.
      *
      * @since 1.0.0
-     *
      */
     public function limaSecurityHeader()
     {
-        _e('Please do not change any settings before carefully reading the comments under each field.', 'lima');
+        _e('Please read the description of each field before making any changes.', 'lima');
     }
 
     /**
      * Callback for the "_lima_hide_license_keys" field.
      *
      * @since 1.0.0
-     *
      */
     public function limaFieldHideLicenseKeys()
     {

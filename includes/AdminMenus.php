@@ -4,13 +4,6 @@ namespace LicenseManager;
 
 use \LicenseManager\Enums\LicenseStatusEnum;
 
-/**
- * Setup menus in WP admin.
- *
- * @since 1.0.0
- * @version 1.0.0
- */
-
 defined('ABSPATH') || exit;
 
 if (class_exists('AdminMenus', false)) {
@@ -18,7 +11,10 @@ if (class_exists('AdminMenus', false)) {
 }
 
 /**
- * AdminMenus Class.
+ * Setup menus in WP admin.
+ *
+ * @version 1.0.0
+ * @since 1.0.0
  */
 class AdminMenus
 {
@@ -45,9 +41,6 @@ class AdminMenus
         // Plugin pages.
         add_action('admin_menu', array($this, 'createPluginPages'), 9);
         add_action('admin_init', array($this, 'initSettingsAPI'));
-
-        // Meta Boxes.
-        add_action('add_meta_boxes', array($this, 'createMetaBoxes'));
     }
 
     public function createPluginPages()
@@ -117,20 +110,6 @@ class AdminMenus
         );
     }
 
-    public function createMetaBoxes($post_type)
-    {
-        // Not relevant for post types other than product and shop_order.
-        if ($post_type != 'product') return;
-
-        // The edit product meta box.
-        add_meta_box(
-            'lima-licenses-meta-box',
-            __('License Manager - Product License Settings', 'lima'),
-            array($this, 'productMetaBox'),
-            'product'
-        );
-    }
-
     public function licensesPage()
     {
         $licenses = new \LicenseManager\Lists\LicensesList($this->crypto);
@@ -185,9 +164,6 @@ class AdminMenus
         include LM_TEMPLATES_DIR . 'generators-add-new.php';
     }
 
-    /**
-     * @todo Improve the two checks at the beginning.
-     */
     public function generatorsEditPage()
     {
         if (!array_key_exists('edit', $_GET) && !array_key_exists('id', $_GET)) {
@@ -201,21 +177,6 @@ class AdminMenus
         $products = apply_filters('lima_get_assigned_products', array('generator_id' => absint($_GET['id'])));
 
         include LM_TEMPLATES_DIR . 'generators-edit.php';
-    }
-
-    public function productMetaBox()
-    {
-        global $post;
-
-        $licensed     = get_post_meta($post->ID, '_lima_licensed_product', true);
-        $gen_id       = get_post_meta($post->ID, '_lima_generator_id', true);
-        $generators   = Database::getGenerators();
-        $license_keys = array(
-            'available' => Database::getLicenseKeysByProductId($post->ID, LicenseStatusEnum::ACTIVE),
-            'inactive'  => Database::getLicenseKeysByProductId($post->ID, LicenseStatusEnum::INACTIVE)
-        );
-
-        include LM_METABOX_DIR . 'edit-product.php';
     }
 
     public function initSettingsAPI()

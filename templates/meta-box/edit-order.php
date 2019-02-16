@@ -1,4 +1,4 @@
-<p>This order has the following license keys attached to it</p>
+<p><?=__('This order has the following license keys attached to it', 'lima'); ?></p>
 
 <?php foreach ($licenses as $license): ?>
 	<div>
@@ -7,4 +7,4 @@
 	</div>
 <?php endforeach; ?>
 
-<p>The customer has NOT yet received these keys per email. you can <u>send them now</u> or let the plugin do this automatically for you.</p>
+<p><?=__('The customer has NOT yet received these keys per email. you can <u>send them now</u> or let the plugin do this automatically for you.', 'lima') ;?></p>

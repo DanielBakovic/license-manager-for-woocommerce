@@ -2,21 +2,17 @@
 
 namespace LicenseManager;
 
-/**
- * Set up WordPress Admin Notices.
- *
- * @since 1.0.0
- * @version 1.0.0
- */
-
 defined('ABSPATH') || exit;
 
 /**
- * AdminNotice Class.
+ * Set up WordPress Admin Notices.
+ *
+ * @version 1.0.0
+ * @since 1.0.0
  */
 class AdminNotice
 {
-    const MESSAGE_DISMISSIBLE = '<div class="notice %s is-dismissible"><p>%s</p></div>';
+    const MESSAGE_DISMISSIBLE = '<div class="notice %s is-dismissible"><p><b>License Manager</b>: %s</p></div>';
     const MESSAGE_PERMANENT   = '<div class="notice %s"><p>%s</p></div>';
 
     const NOTICE_ERROR   = 'notice-error';
@@ -32,11 +28,25 @@ class AdminNotice
 
     public function initAdminNotices()
     {
+        $this->transients();
         $this->importLicenseKeys();
         $this->addLicenseKey();
         $this->activateLicenseKey();
         $this->deleteLicenseKey();
         $this->invalidNonce();
+    }
+
+    private function transients()
+    {
+        if ($error = get_transient('_lima_error')) {
+            echo sprintf(
+                self::MESSAGE_DISMISSIBLE,
+                self::NOTICE_ERROR,
+                $error->get_error_message()
+            );
+
+            delete_transient('_lima_error');
+        }
     }
 
     private function importLicenseKeys()

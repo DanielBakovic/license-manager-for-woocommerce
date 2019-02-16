@@ -8,7 +8,7 @@
             <tbody>
                 <thead>
                     <tr>
-                        <th class="td" scope="col" style="text-align:<?php echo esc_attr( $text_align ); ?>;">
+                        <th class="td" scope="col" style="text-align: left;">
                             <span><?=$row['name']?></span>
                         </th>
                     </tr>

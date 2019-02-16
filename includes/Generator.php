@@ -2,16 +2,13 @@
 
 namespace LicenseManager;
 
+defined('ABSPATH') || exit;
+
 /**
  * LicenseManager Generator.
  *
  * @version 1.0.0
- */
-
-defined('ABSPATH') || exit;
-
-/**
- * Generator class.
+ * @since 1.0.0
  */
 class Generator
 {
@@ -78,8 +75,6 @@ class Generator
      * @param string $args['prefix']       - Prefix used
      * @param string $args['suffix']       - Suffix used
      * @param int    $args['expires_in']   - Number of days in which the license key expires
-     *
-     * @todo Retrieve the default parameters from the user settings.
      *
      * @return string
      */
@@ -150,8 +145,6 @@ class Generator
             Logger::exception($e);
             Logger::exception($args);
             throw $e;
-
-            return;
         }
 
         // Generate the license strings

@@ -6,19 +6,18 @@ use \LicenseManager\AdminMenus;
 use \LicenseManager\Logger;
 use \LicenseManager\Setup;
 
-/**
- * Create the Generators list
- *
- * @since 1.0.0
- * @version 1.0.0
- */
-
 defined('ABSPATH') || exit;
 
 if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
+/**
+ * Create the Generators list
+ *
+ * @version 1.0.0
+ * @since 1.0.0
+ */
 class GeneratorsList extends \WP_List_Table
 {
     protected $table;
@@ -215,12 +214,20 @@ class GeneratorsList extends \WP_List_Table
      */
     public function deleteGenerators()
     {
-        $result = apply_filters(
-            'lima_delete_generators',
-            array(
-                'ids' => (array)($_REQUEST['id'])
-            )
-        );
+        $selected_generators = (array)$_REQUEST['id'];
+
+        foreach ($selected_generators as $generator_id) {
+            if ($products = apply_filters('lima_get_assigned_products', array('generator_id' => absint($generator_id)))) {
+                continue;
+            } else {
+                $result = apply_filters(
+                    'lima_delete_generators',
+                    array(
+                        'ids' => (array)$generator_id
+                    )
+                );
+            }
+        }
 
         if ($result) {
             wp_redirect(

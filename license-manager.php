@@ -1,15 +1,15 @@
 <?php
 /**
  * Plugin Name: License Manager
- * Description: Sell software licenses through WooCommerce products.
+ * Plugin URI: https://www.bebic.at/license-manager-for-woocommerce
+ * Description: Sell software licenses through your WooCommerce shop.
  * Version: 1.0.0
  * Author: Dražen Bebić
  * Author URI: https://www.bebic.at/
  * Text Domain: lima
- * Domain Path: /lang
+ * Domain Path: /i18n
  * Requires at least: 4.7
- * Tested up to: 4.9
- *
+ * Tested up to: 5.0
  * WC requires at least: 2.7
  * WC tested up to: 3.5
  */

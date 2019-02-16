@@ -9,19 +9,18 @@ use \LicenseManager\Settings;
 use \LicenseManager\Setup;
 use \LicenseManager\Enums\LicenseStatusEnum;
 
-/**
- * Create the Licenses list
- *
- * @since 1.0.0
- * @version 1.0.0
- */
-
 defined('ABSPATH') || exit;
 
 if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
+/**
+ * Create the Licenses list
+ *
+ * @version 1.0.0
+ * @since 1.0.0
+ */
 class LicensesList extends \WP_List_Table
 {
     const SPINNER_URL = '/wp-admin/images/loading.gif';
@@ -346,64 +345,6 @@ class LicensesList extends \WP_List_Table
         $this->items = self::get_orders($per_page, $current_page);
     }
 
-    protected function extra_tablenav($which) {
-        $html = '';
-
-        if ($which == "top") {
-            $html    .= '<div class="alignleft actions">';
-            $products = Database::getDistinct('product_id', Setup::LICENSES_TABLE_NAME);
-            $orders   = Database::getDistinct('order_id', Setup::LICENSES_TABLE_NAME);
-
-            if ($products) {
-                $html .= '<select id="products" class="filter-product" name="product-filter">';
-                $html .= sprintf('<option value="">%s</option>', __('Filter by Product', 'lima'));
-
-                foreach ($products as $product) {
-                    if ($product = wc_get_product($product->product_id)) {
-                        $html .= sprintf('<option value="%d">%s</option>', $product->get_id(), $product->get_title());
-                    }
-                }
-
-                $html .= '</select>';
-            }
-
-            if ($orders) {
-                $html .= '<select id="orders" class="filter-order" name="order-filter">';
-                $html .= sprintf('<option value="">%s</option>', __('Filter by Order', 'lima'));
-
-                foreach ($orders as $order) {
-                    if ($order = wc_get_order($order->order_id)) {
-                        if ($user = $order->get_user()) {
-                            $html .= sprintf(
-                                '<option value="%d">#%d - %s</option>',
-                                $order->get_id(),
-                                $order->get_id(),
-                                $user->data->display_name
-                            );
-                        } else {
-                            $html .= sprintf(
-                                '<option value="%d">#%d</option>',
-                                $order->get_id(),
-                                $order->get_id()
-                            );
-                        }
-
-                    }
-                }
-
-                $html .= '</select>';
-            }
-
-            $html .= sprintf(
-                '<input type="submit" name="filter_action" id="post-query-submit" class="button" value="%s">',
-                __('Filter', 'lima')
-            );
-            $html .= '</div>';
-
-            echo $html;
-        }
-    }
-
     public static function get_orders($per_page = 20, $page_number = 1)
     {
         global $wpdb;
@@ -469,21 +410,11 @@ class LicensesList extends \WP_List_Table
             wp_redirect(admin_url(sprintf('admin.php?page=%s&lima_nonce_status=invalid', AdminMenus::LICENSES_PAGE)));
         }
     }
-
-    /**
-     * @todo Check if given ID's are linked to license keys with SOLD or DELIVERED status.
-     */
-    private function isValidRequest()
-    {
-        // *Tumbleweed rolls*
-    }
-
     private function toggleLicenseKeyStatus($status)
     {
         ($status == LicenseStatusEnum::ACTIVE) ? $nonce_action = 'activate' : $nonce_action = 'deactivate';
 
         $this->verifyNonce($nonce_action);
-        $this->isValidRequest();
 
         $result = apply_filters(
             'lima_toggle_license_key_status',
@@ -499,7 +430,6 @@ class LicensesList extends \WP_List_Table
     private function deleteLicenseKeys()
     {
         $this->verifyNonce('delete');
-        $this->isValidRequest();
 
         $result = apply_filters(
             'lima_delete_license_keys',

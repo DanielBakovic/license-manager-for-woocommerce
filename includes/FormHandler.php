@@ -4,16 +4,13 @@ namespace LicenseManager;
 
 use \LicenseManager\Lists\LicensesList;
 
+defined('ABSPATH') || exit;
+
 /**
  * LicenseManager FormHandler.
  *
  * @version 1.0.0
- */
-
-defined('ABSPATH') || exit;
-
-/**
- * FormHandler class.
+ * @since 1.0.0
  */
 class FormHandler
 {
@@ -41,9 +38,6 @@ class FormHandler
         // AJAX calls.
         add_action('wp_ajax_lima_show_license_key',      array($this, 'showLicenseKey'    ), 10);
         add_action('wp_ajax_lima_show_all_license_keys', array($this, 'showAllLicenseKeys'), 10);
-
-        // Meta box handlers
-        add_action('save_post', array($this, 'updateProduct'), 10);
 
         // WooCommerce
         add_action('woocommerce_after_order_itemmeta', array($this, 'showOrderedLicenses'), 10, 3);
@@ -119,7 +113,6 @@ class FormHandler
      * Update an existing generator.
      *
      * @since 1.0.0
-     *
      */
     public function updateGenerator()
     {
@@ -178,9 +171,6 @@ class FormHandler
      * Import licenses from a compatible CSV or TXT file into the database.
      *
      * @since 1.0.0
-     *
-     * @todo Delete tmp file after import.
-     *
      */
     public function importLicenses()
     {
@@ -208,6 +198,9 @@ class FormHandler
             'activate'     => array_key_exists('activate', $_POST) ? true : false,
             'product_id'   => intval($_POST['product'])
         ));
+
+        // Delete the temporary file now that we're done.
+        unlink(LM_ETC_DIR . self::TEMP_TXT_FILE);
 
         // Redirect according to $result.
         if ($result['failed'] == 0 && $result['added'] == 0) {
@@ -253,7 +246,6 @@ class FormHandler
      * Add a single license key to the database.
      *
      * @since 1.0.0
-     *
      */
     public function addLicense()
     {
@@ -315,8 +307,6 @@ class FormHandler
      *
      * @since 1.0.0
      *
-     * @todo Rework into a template file.
-     *
      * @param int                   $item_id
      * @param WC_Order_Item_Product $item
      * @param WC_Product_Simple     $product
@@ -372,28 +362,5 @@ class FormHandler
         }
 
         echo $html;
-    }
-
-    /**
-     * Hook into 'save_post' and assign a generator to the product (if  selected).
-     *
-     * @since 1.0.0
-     *
-     * @param int $post_id - WordPress Post ID.
-     */
-    public function updateProduct($post_id)
-    {
-        // This is not a product.
-        if (!array_key_exists('post_type', $_POST) || $_POST['post_type'] != 'product') return;
-
-        // Assign the selected generator to this product.
-        update_post_meta($post_id, '_lima_generator_id', intval($_POST['lima-generator']));
-
-        // Toggle licensed product status, according to checkbox.
-        if (!array_key_exists('lima-sell-licenses', $_POST)) {
-            update_post_meta($post_id, '_lima_licensed_product', 0);
-        } else {
-            update_post_meta($post_id, '_lima_licensed_product', 1);
-        }
     }
 }
