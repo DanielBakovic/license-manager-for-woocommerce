@@ -108,7 +108,7 @@ final class Main
     public function pluginRowMeta($links, $file)
     {
 
-        if (strpos($file, 'license-manager.php' ) !== false ) {
+        if (strpos($file, 'license-manager-for-woocommerce.php' ) !== false ) {
             $new_links = array(
                 'github' => sprintf(
                     '<a href="%s" target="_blank">%s</a>',
