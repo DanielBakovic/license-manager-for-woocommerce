@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: License Manager
+ * Plugin Name: License Manager for WooCommerce
  * Plugin URI: https://www.bebic.at/license-manager-for-woocommerce
  * Description: Sell software licenses through your WooCommerce shop.
  * Version: 1.0.0
