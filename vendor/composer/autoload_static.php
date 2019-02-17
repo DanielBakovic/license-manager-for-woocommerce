@@ -9,10 +9,10 @@ class ComposerStaticInit1e498426c3516c7c6bd12ace14395786
     public static $prefixLengthsPsr4 = array (
         'L' => 
         array (
-            'LicenseManager\\Lists\\' => 21,
-            'LicenseManager\\Enums\\' => 21,
-            'LicenseManager\\Abstracts\\' => 25,
-            'LicenseManager\\' => 15,
+            'LicenseManagerForWooCommerce\\Lists\\' => 35,
+            'LicenseManagerForWooCommerce\\Enums\\' => 35,
+            'LicenseManagerForWooCommerce\\Abstracts\\' => 39,
+            'LicenseManagerForWooCommerce\\' => 29,
         ),
         'D' => 
         array (
@@ -21,19 +21,19 @@ class ComposerStaticInit1e498426c3516c7c6bd12ace14395786
     );
 
     public static $prefixDirsPsr4 = array (
-        'LicenseManager\\Lists\\' => 
+        'LicenseManagerForWooCommerce\\Lists\\' => 
         array (
             0 => __DIR__ . '/../..' . '/includes/lists',
         ),
-        'LicenseManager\\Enums\\' => 
+        'LicenseManagerForWooCommerce\\Enums\\' => 
         array (
             0 => __DIR__ . '/../..' . '/includes/enums',
         ),
-        'LicenseManager\\Abstracts\\' => 
+        'LicenseManagerForWooCommerce\\Abstracts\\' => 
         array (
             0 => __DIR__ . '/../..' . '/includes/abstracts',
         ),
-        'LicenseManager\\' => 
+        'LicenseManagerForWooCommerce\\' => 
         array (
             0 => __DIR__ . '/../..' . '/includes',
         ),
@@ -58,22 +58,22 @@ class ComposerStaticInit1e498426c3516c7c6bd12ace14395786
         'Defuse\\Crypto\\KeyOrPassword' => __DIR__ . '/..' . '/defuse/php-encryption/src/KeyOrPassword.php',
         'Defuse\\Crypto\\KeyProtectedByPassword' => __DIR__ . '/..' . '/defuse/php-encryption/src/KeyProtectedByPassword.php',
         'Defuse\\Crypto\\RuntimeTests' => __DIR__ . '/..' . '/defuse/php-encryption/src/RuntimeTests.php',
-        'LicenseManager\\AdminMenus' => __DIR__ . '/../..' . '/includes/AdminMenus.php',
-        'LicenseManager\\AdminNotice' => __DIR__ . '/../..' . '/includes/AdminNotice.php',
-        'LicenseManager\\Crypto' => __DIR__ . '/../..' . '/includes/Crypto.php',
-        'LicenseManager\\Database' => __DIR__ . '/../..' . '/includes/Database.php',
-        'LicenseManager\\Enums\\LicenseStatusEnum' => __DIR__ . '/../..' . '/includes/enums/LicenseStatusEnum.php',
-        'LicenseManager\\Enums\\SourceEnum' => __DIR__ . '/../..' . '/includes/enums/SourceEnum.php',
-        'LicenseManager\\FormHandler' => __DIR__ . '/../..' . '/includes/FormHandler.php',
-        'LicenseManager\\Generator' => __DIR__ . '/../..' . '/includes/Generator.php',
-        'LicenseManager\\Lists\\GeneratorsList' => __DIR__ . '/../..' . '/includes/lists/GeneratorsList.php',
-        'LicenseManager\\Lists\\LicensesList' => __DIR__ . '/../..' . '/includes/lists/LicensesList.php',
-        'LicenseManager\\Logger' => __DIR__ . '/../..' . '/includes/Logger.php',
-        'LicenseManager\\Main' => __DIR__ . '/../..' . '/includes/Main.php',
-        'LicenseManager\\OrderManager' => __DIR__ . '/../..' . '/includes/OrderManager.php',
-        'LicenseManager\\ProductManager' => __DIR__ . '/../..' . '/includes/ProductManager.php',
-        'LicenseManager\\Settings' => __DIR__ . '/../..' . '/includes/Settings.php',
-        'LicenseManager\\Setup' => __DIR__ . '/../..' . '/includes/Setup.php',
+        'LicenseManagerForWooCommerce\\AdminMenus' => __DIR__ . '/../..' . '/includes/AdminMenus.php',
+        'LicenseManagerForWooCommerce\\AdminNotice' => __DIR__ . '/../..' . '/includes/AdminNotice.php',
+        'LicenseManagerForWooCommerce\\Crypto' => __DIR__ . '/../..' . '/includes/Crypto.php',
+        'LicenseManagerForWooCommerce\\Database' => __DIR__ . '/../..' . '/includes/Database.php',
+        'LicenseManagerForWooCommerce\\Enums\\LicenseStatusEnum' => __DIR__ . '/../..' . '/includes/enums/LicenseStatusEnum.php',
+        'LicenseManagerForWooCommerce\\Enums\\SourceEnum' => __DIR__ . '/../..' . '/includes/enums/SourceEnum.php',
+        'LicenseManagerForWooCommerce\\FormHandler' => __DIR__ . '/../..' . '/includes/FormHandler.php',
+        'LicenseManagerForWooCommerce\\Generator' => __DIR__ . '/../..' . '/includes/Generator.php',
+        'LicenseManagerForWooCommerce\\Lists\\GeneratorsList' => __DIR__ . '/../..' . '/includes/lists/GeneratorsList.php',
+        'LicenseManagerForWooCommerce\\Lists\\LicensesList' => __DIR__ . '/../..' . '/includes/lists/LicensesList.php',
+        'LicenseManagerForWooCommerce\\Logger' => __DIR__ . '/../..' . '/includes/Logger.php',
+        'LicenseManagerForWooCommerce\\Main' => __DIR__ . '/../..' . '/includes/Main.php',
+        'LicenseManagerForWooCommerce\\OrderManager' => __DIR__ . '/../..' . '/includes/OrderManager.php',
+        'LicenseManagerForWooCommerce\\ProductManager' => __DIR__ . '/../..' . '/includes/ProductManager.php',
+        'LicenseManagerForWooCommerce\\Settings' => __DIR__ . '/../..' . '/includes/Settings.php',
+        'LicenseManagerForWooCommerce\\Setup' => __DIR__ . '/../..' . '/includes/Setup.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

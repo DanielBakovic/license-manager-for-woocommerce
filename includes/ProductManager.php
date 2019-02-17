@@ -1,11 +1,11 @@
 <?php
 
-namespace LicenseManager;
+namespace LicenseManagerForWooCommerce;
 
-use \LicenseManager\Enums\LicenseStatusEnum;
+use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
 
 /**
- * LicenseManager ProductManager.
+ * LicenseManagerForWooCommerce ProductManager.
  *
  * @version 1.0.0
  */
@@ -41,12 +41,12 @@ class ProductManager
     {
         global $post;
 
-        if (get_post_meta($post->ID, '_lima_licensed_product', true)) {
+        if (get_post_meta($post->ID, 'lmfwc_licensed_product', true)) {
 
         }
 
         $tabs[self::ADMIN_TAB_NAME] = array(
-            'label' => __('Licenses', 'lima'),
+            'label' => __('Licenses', 'lmfwc'),
             'target' => self::ADMIN_TAB_TARGET,
             'class' => array('show_if_simple'),
             'priority' => 21
@@ -59,12 +59,12 @@ class ProductManager
     {
         global $post;
 
-        $licensed          = get_post_meta($post->ID, '_lima_licensed_product',                    true);
-        $generator_id      = get_post_meta($post->ID, '_lima_licensed_product_assigned_generator', true);
-        $use_generator     = get_post_meta($post->ID, '_lima_licensed_product_use_generator',      true);
-        $use_stock         = get_post_meta($post->ID, '_lima_licensed_product_use_stock',          true);
+        $licensed          = get_post_meta($post->ID, 'lmfwc_licensed_product',                    true);
+        $generator_id      = get_post_meta($post->ID, 'lmfwc_licensed_product_assigned_generator', true);
+        $use_generator     = get_post_meta($post->ID, 'lmfwc_licensed_product_use_generator',      true);
+        $use_stock         = get_post_meta($post->ID, 'lmfwc_licensed_product_use_stock',          true);
 
-        $generator_options = array('' => __('Please select a generator', 'lima'));
+        $generator_options = array('' => __('Please select a generator', 'lmfwc'));
         $license_keys      = array(
             'available' => Database::getLicenseKeysByProductId($post->ID, LicenseStatusEnum::ACTIVE),
             'inactive'  => Database::getLicenseKeysByProductId($post->ID, LicenseStatusEnum::INACTIVE)
@@ -79,12 +79,12 @@ class ProductManager
             self::ADMIN_TAB_TARGET
         );
 
-        // Checkbox "_lima_licensed_product"
+        // Checkbox "lmfwc_licensed_product"
         woocommerce_wp_checkbox(
             array(
-                'id'          => '_lima_licensed_product',
-                'label'       => __('Sell licenses', 'lima'),
-                'description' => __('Sell license keys for this product', 'lima'),
+                'id'          => 'lmfwc_licensed_product',
+                'label'       => __('Sell licenses', 'lmfwc'),
+                'description' => __('Sell license keys for this product', 'lmfwc'),
                 'value'       => $licensed,
                 'cbvalue'     => 1,
                 'desc_tip'    => false
@@ -93,35 +93,35 @@ class ProductManager
 
         echo '</div><div class="options_group">';
 
-        // Checkbox "_lima_licensed_product_use_generator"
+        // Checkbox "lmfwc_licensed_product_use_generator"
         woocommerce_wp_checkbox(
             array(
-                'id'          => '_lima_licensed_product_use_generator',
-                'label'       => __('Generate licenses', 'lima'),
-                'description' => __('Automatically generate license keys with each sold product.', 'lima'),
+                'id'          => 'lmfwc_licensed_product_use_generator',
+                'label'       => __('Generate licenses', 'lmfwc'),
+                'description' => __('Automatically generate license keys with each sold product.', 'lmfwc'),
                 'value'       => $use_generator,
                 'cbvalue'     => 1,
                 'desc_tip'    => false
             )
         );
 
-        // Dropdown "_lima_licensed_product_assigned_generator"
+        // Dropdown "lmfwc_licensed_product_assigned_generator"
         woocommerce_wp_select(
             array(
-                'id' => '_lima_licensed_product_assigned_generator',
-                'label' => __('Assign generator', 'lima'),
+                'id' => 'lmfwc_licensed_product_assigned_generator',
+                'label' => __('Assign generator', 'lmfwc'),
                 'options' => $generator_options
             )
         );
 
         echo '</div><div class="options_group">';
 
-        // Checkbox "_lima_licensed_product_use_stock"
+        // Checkbox "lmfwc_licensed_product_use_stock"
         woocommerce_wp_checkbox(
             array(
-                'id'          => '_lima_licensed_product_use_stock',
-                'label'       => __('Sell from stock', 'lima'),
-                'description' => __('Sell added/imported license keys.', 'lima'),
+                'id'          => 'lmfwc_licensed_product_use_stock',
+                'label'       => __('Sell from stock', 'lmfwc'),
+                'description' => __('Sell added/imported license keys.', 'lmfwc'),
                 'value'       => $use_stock,
                 'cbvalue'     => 1,
                 'desc_tip'    => false
@@ -130,8 +130,8 @@ class ProductManager
 
         echo sprintf(
             '<p class="form-field"><label>%s</label><span class="description">%d %s</span></p>',
-            __('Available', 'lima'),
-            apply_filters('lima_get_available_stock', array('product_id' => $post->ID)),
+            __('Available', 'lmfwc'),
+            apply_filters('lmfwc_get_available_stock', array('product_id' => $post->ID)),
             __('License key(s) in stock and available for sale.')
         );
 
@@ -158,45 +158,45 @@ class ProductManager
         if (!array_key_exists('post_type', $_POST) || $_POST['post_type'] != 'product') return;
 
         // Update licensed product flag, according to checkbox.
-        if (array_key_exists('_lima_licensed_product', $_POST)) {
-            update_post_meta($post_id, '_lima_licensed_product', 1);
+        if (array_key_exists('lmfwc_licensed_product', $_POST)) {
+            update_post_meta($post_id, 'lmfwc_licensed_product', 1);
         } else {
-            update_post_meta($post_id, '_lima_licensed_product', 0);
+            update_post_meta($post_id, 'lmfwc_licensed_product', 0);
         }
 
         // Update the use stock flag, according to checkbox.
-        if (array_key_exists('_lima_licensed_product_use_stock', $_POST)) {
-            update_post_meta($post_id, '_lima_licensed_product_use_stock', 1);
+        if (array_key_exists('lmfwc_licensed_product_use_stock', $_POST)) {
+            update_post_meta($post_id, 'lmfwc_licensed_product_use_stock', 1);
         } else {
-            update_post_meta($post_id, '_lima_licensed_product_use_stock', 0);
+            update_post_meta($post_id, 'lmfwc_licensed_product_use_stock', 0);
         }
 
         // Update the use generator flag, according to checkbox.
-        if (array_key_exists('_lima_licensed_product_use_generator', $_POST)) {
+        if (array_key_exists('lmfwc_licensed_product_use_generator', $_POST)) {
             // You must select a generator if you wish to assign it to the product.
-            if (!$_POST['_lima_licensed_product_assigned_generator']) {
+            if (!$_POST['lmfwc_licensed_product_assigned_generator']) {
                 $error = new \WP_Error(
                     2,
                     __(
                         'Assign a generator if you wish to sell automatically generated licenses for this product.',
-                        'lima'
+                        'lmfwc'
                     )
                 );
 
-                set_transient('_lima_error', $error, 45);
-                update_post_meta($post_id, '_lima_licensed_product_use_generator', 0);
+                set_transient('lmfwc_error', $error, 45);
+                update_post_meta($post_id, 'lmfwc_licensed_product_use_generator', 0);
             } else {
-                update_post_meta($post_id, '_lima_licensed_product_use_generator', 1);
+                update_post_meta($post_id, 'lmfwc_licensed_product_use_generator', 1);
             }
         } else {
-            update_post_meta($post_id, '_lima_licensed_product_use_generator', 0);
+            update_post_meta($post_id, 'lmfwc_licensed_product_use_generator', 0);
         }
 
         // Update the assigned generator id, according to checkbox.
         update_post_meta(
             $post_id,
-            '_lima_licensed_product_assigned_generator',
-            intval($_POST['_lima_licensed_product_assigned_generator'])
+            'lmfwc_licensed_product_assigned_generator',
+            intval($_POST['lmfwc_licensed_product_assigned_generator'])
         );
     }
 }

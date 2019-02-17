@@ -49,23 +49,17 @@ table.wp-list-table.licenses {
 	table-layout: auto !important;
 }
 
-/* Table vertical-align fix */
-table.wp-list-table.generators td,
-table.wp-list-table.licenses td {
-	vertical-align: middle;
-}
-
 /* Licence table */
 table.wp-list-table.licenses td.source.column-source > span {
 	font-size: 2em;
 }
-.lima-license-key-show,
-.lima-license-key-hide {
+.lmfwc-license-key-show,
+.lmfwc-license-key-hide {
 	cursor: pointer;
 }
 
 /** License Key Placeholder */
-.lima-placeholder {
+.lmfwc-placeholder {
 	font-family: 'Roboto Mono';
 	font-weight: 400;
 	display: inline-block;
@@ -79,7 +73,7 @@ table.wp-list-table.licenses td.source.column-source > span {
 	border-top-right-radius: 3px;
 	border-bottom-right-radius: 3px;
 }
-.lima-placeholder:before {
+.lmfwc-placeholder:before {
 	font-family: 'dashicons';
 	content: "\f112";
 	position: absolute;
@@ -93,7 +87,7 @@ table.wp-list-table.licenses td.source.column-source > span {
 	border-top-left-radius: 3px;
 	border-bottom-left-radius: 3px;
 }
-.lima-placeholder.empty:after {
+.lmfwc-placeholder.empty:after {
 	position: absolute;
 	top: 0;
 	right: 0;
@@ -103,49 +97,39 @@ table.wp-list-table.licenses td.source.column-source > span {
 	color: rgba(0,0,0,.4);
 	line-height: 25px;
 }
-.lima-spinner {
+.lmfwc-spinner {
 	opacity: 0;
 	margin-left: 5px;
 }
 
 /* Custom status */
-.lima-status {
-	padding: 5px 10px;
+.lmfwc-status {
+	padding: 3px 6px;
 	background: #e7e7e7;
 	position: relative;
 	font-weight: 600;
-	border-top-right-radius: 3px;
-	border-bottom-right-radius: 3px;
+	border-radius: 3px;
+	font-size: 0.75em;
 }
-.lima-status:before {
-	content: '';
-	width: 4px;
-	height: 100%;
-	position: absolute;
-	top: 0;
-	left: -4px;
-	border-top-left-radius: 3px;
-	border-bottom-left-radius: 3px;
-}
-.lima-status.sold-pending:before {
-	background: var(--color-warning);
+.lmfwc-status.sold {
+	background: var(--color-info);
 	color: var(--color-light);
 }
-.lima-status.sold-delivered:before {
+.lmfwc-status.delivered {
 	background: var(--color-success);
 	color: var(--color-light);
 }
-.lima-status.available-ready:before {
+.lmfwc-status.active {
 	background: var(--color-primary);
 	color: var(--color-light);
 }
-.lima-status.available-deactivated:before {
+.lmfwc-status.inactive {
 	background: var(--color-dark);
 	color: var(--color-light);
 }
 
 /** My Account **/
-.lima-myaccount-license-key {
+.lmfwc-myaccount-license-key {
 	font-family: 'Roboto Mono', 'Consolas', sans-serif;
 	font-size: 13px;
 }

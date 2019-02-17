@@ -1,13 +1,13 @@
 <?php
 
-namespace LicenseManager;
+namespace LicenseManagerForWooCommerce;
 
 defined('ABSPATH') || exit;
 
 /**
- * LicenseManager
+ * LicenseManagerForWooCommerce
  *
- * @package LicenseManager
+ * @package LicenseManagerForWooCommerce
  * @since 1.0.0
  * @author Dražen Bebić
  * @link https://www.bebic.at/license-manager-for-woocommerce
@@ -15,7 +15,7 @@ defined('ABSPATH') || exit;
 final class Main
 {
     /**
-     * LicenseManager version.
+     * LicenseManagerForWooCommerce version.
      *
      * @var string
      */
@@ -24,13 +24,13 @@ final class Main
     /**
      * The single instance of the class.
      *
-     * @var LicenseManager
+     * @var LicenseManagerForWooCommerce
      * @since 1.0.0
      */
     protected static $_instance = null;
 
     /**
-     * LicenseManager Constructor.
+     * LicenseManagerForWooCommerce Constructor.
      */
     private function __construct()
     {
@@ -41,13 +41,13 @@ final class Main
     }
 
     /**
-     * Main LicenseManager Instance.
+     * Main LicenseManagerForWooCommerce Instance.
      *
-     * Ensures only one instance of LicenseManager is loaded or can be loaded.
+     * Ensures only one instance of LicenseManagerForWooCommerce is loaded or can be loaded.
      *
      * @since 1.0.0
      * @static
-     * @return LicenseManager - Main instance.
+     * @return LicenseManagerForWooCommerce - Main instance.
      */
     public static function instance()
     {
@@ -63,24 +63,24 @@ final class Main
      */
     private function defineConstants()
     {
-        $this->define('ABSPATH_LENGTH',     strlen(ABSPATH));
-        $this->define('LM_VERSION',         $this->version);
-        $this->define('LM_ABSPATH',         dirname(LM_PLUGIN_FILE) . '/' );
-        $this->define('LM_PLUGIN_BASENAME', plugin_basename(LM_PLUGIN_FILE));
+        $this->define('ABSPATH_LENGTH',        strlen(ABSPATH));
+        $this->define('LMFWC_VERSION',         $this->version);
+        $this->define('LMFWC_ABSPATH',         dirname(LMFWC_PLUGIN_FILE) . '/' );
+        $this->define('LMFWC_PLUGIN_BASENAME', plugin_basename(LMFWC_PLUGIN_FILE));
 
         // Directories
-        $this->define('LM_ASSETS_DIR',    LM_ABSPATH       . 'assets/');
-        $this->define('LM_LOG_DIR',       LM_ABSPATH       . 'logs/');
-        $this->define('LM_TEMPLATES_DIR', LM_ABSPATH       . 'templates/');
-        $this->define('LM_ETC_DIR',       LM_ASSETS_DIR    . 'etc/');
-        $this->define('LM_METABOX_DIR',   LM_TEMPLATES_DIR . 'meta-box/');
+        $this->define('LMFWC_ASSETS_DIR',    LMFWC_ABSPATH       . 'assets/');
+        $this->define('LMFWC_LOG_DIR',       LMFWC_ABSPATH       . 'logs/');
+        $this->define('LMFWC_TEMPLATES_DIR', LMFWC_ABSPATH       . 'templates/');
+        $this->define('LMFWC_ETC_DIR',       LMFWC_ASSETS_DIR    . 'etc/');
+        $this->define('LMFWC_METABOX_DIR',   LMFWC_TEMPLATES_DIR . 'meta-box/');
 
         // URL's
-        $this->define('LM_ASSETS_URL', LM_PLUGIN_URL . 'assets/');
-        $this->define('LM_ETC_URL',    LM_ASSETS_URL . 'etc/');
-        $this->define('LM_CSS_URL',    LM_ASSETS_URL . 'css/');
-        $this->define('LM_JS_URL',     LM_ASSETS_URL . 'js/');
-        $this->define('LM_IMG_URL',    LM_ASSETS_URL . 'img/');
+        $this->define('LMFWC_ASSETS_URL', LMFWC_PLUGIN_URL . 'assets/');
+        $this->define('LMFWC_ETC_URL',    LMFWC_ASSETS_URL . 'etc/');
+        $this->define('LMFWC_CSS_URL',    LMFWC_ASSETS_URL . 'css/');
+        $this->define('LMFWC_JS_URL',     LMFWC_ASSETS_URL . 'js/');
+        $this->define('LMFWC_IMG_URL',    LMFWC_ASSETS_URL . 'img/');
     }
 
 
@@ -90,15 +90,15 @@ final class Main
     public function adminEnqueueScripts()
     {
         // CSS
-        wp_enqueue_style('lima_admin_css', LM_CSS_URL . 'main.css');
+        wp_enqueue_style('lmfwc_admin_css', LMFWC_CSS_URL . 'main.css');
 
         // JavaScript
-        wp_enqueue_script('lima_admin_js', LM_JS_URL  . 'script.js');
+        wp_enqueue_script('lmfwc_admin_js', LMFWC_JS_URL  . 'script.js');
 
         // Script localization
-        wp_localize_script('lima_admin_js', 'license', array(
-            'show'     => wp_create_nonce('lima_show_license_key'),
-            'show_all' => wp_create_nonce('lima_show_all_license_keys'),
+        wp_localize_script('lmfwc_admin_js', 'license', array(
+            'show'     => wp_create_nonce('lmfwc_show_license_key'),
+            'show_all' => wp_create_nonce('lmfwc_show_all_license_keys'),
         ));
     }
 
@@ -107,7 +107,6 @@ final class Main
      */
     public function pluginRowMeta($links, $file)
     {
-
         if (strpos($file, 'license-manager-for-woocommerce.php' ) !== false ) {
             $new_links = array(
                 'github' => sprintf(
@@ -118,12 +117,12 @@ final class Main
                 'docs' => sprintf(
                     '<a href="%s" target="_blank">%s</a>',
                     'https://www.bebic.at/license-manager-for-woocommerce/docs',
-                    __('Documentation', 'lima')
+                    __('Documentation', 'lmfwc')
                 ),
                 'donate' => sprintf(
                     '<a href="%s" target="_blank">%s</a>',
                     'https://www.bebic.at/license-manager-for-woocommerce/donate',
-                    __('Donate', 'lima')
+                    __('Donate', 'lmfwc')
                 )
             );
             
@@ -152,15 +151,15 @@ final class Main
      */
     private function initHooks()
     {
-        register_activation_hook(LM_PLUGIN_FILE, array('\LicenseManager\Setup', 'install'));
-        register_uninstall_hook(LM_PLUGIN_FILE, array('\LicenseManager\Setup', 'uninstall'));
+        register_activation_hook(LMFWC_PLUGIN_FILE, array('\LicenseManagerForWooCommerce\Setup', 'install'));
+        register_uninstall_hook(LMFWC_PLUGIN_FILE, array('\LicenseManagerForWooCommerce\Setup', 'uninstall'));
 
         add_action('admin_enqueue_scripts', array($this, 'adminEnqueueScripts'));
         add_filter('plugin_row_meta', array($this, 'pluginRowMeta'), 10, 2);
     }
 
     /**
-     * Init LicenseManager when WordPress Initialises.
+     * Init LicenseManagerForWooCommerce when WordPress Initialises.
      */
     public function init()
     {

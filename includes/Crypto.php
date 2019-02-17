@@ -1,6 +1,6 @@
 <?php
 
-namespace LicenseManager;
+namespace LicenseManagerForWooCommerce;
 
 use Defuse\Crypto\Key;
 use Defuse\Crypto\Crypto as DefuseCrypto;
@@ -9,7 +9,7 @@ use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 defined('ABSPATH') || exit;
 
 /**
- * LicenseManager Crypto class.
+ * LicenseManagerForWooCommerce Crypto class.
  *
  * @version 1.0.0
  * @since 1.0.0
@@ -42,7 +42,7 @@ class Crypto
      */
     public function __construct()
     {
-        $this->keyAscii = file_get_contents(LM_ETC_DIR . self::DEFUSE_FILE);
+        $this->keyAscii = file_get_contents(LMFWC_ETC_DIR . self::DEFUSE_FILE);
     }
 
     /**
@@ -92,6 +92,6 @@ class Crypto
 
     public function hash($value)
     {
-        return hash_hmac('sha256', $value, file_get_contents(LM_ETC_DIR . self::SECRET_FILE));
+        return hash_hmac('sha256', $value, file_get_contents(LMFWC_ETC_DIR . self::SECRET_FILE));
     }
 }

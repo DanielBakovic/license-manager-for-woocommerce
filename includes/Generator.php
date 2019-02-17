@@ -1,11 +1,11 @@
 <?php
 
-namespace LicenseManager;
+namespace LicenseManagerForWooCommerce;
 
 defined('ABSPATH') || exit;
 
 /**
- * LicenseManager Generator.
+ * LicenseManagerForWooCommerce Generator.
  *
  * @version 1.0.0
  * @since 1.0.0
@@ -59,8 +59,8 @@ class Generator
      */
     public function __construct()
     {
-        add_filter('lima_create_license_keys',     array($this, 'createLicenseKeys'    ), 10);
-        add_filter('lima_generate_license_string', array($this, 'generateLicenseString'), 10);
+        add_filter('lmfwc_create_license_keys',     array($this, 'createLicenseKeys'    ), 10);
+        add_filter('lmfwc_generate_license_string', array($this, 'generateLicenseString'), 10);
     }
 
     /**
@@ -139,7 +139,7 @@ class Generator
 
         if ($amount > $max_possible_keys) {
             $e = new \Exception(
-                __('It\'s not possible to generate that many keys with the given parameters, there are not enough combinations. Please review your inputs.', 'lima'),
+                __('It\'s not possible to generate that many keys with the given parameters, there are not enough combinations. Please review your inputs.', 'lmfwc'),
                 1
             );
             Logger::exception($e);
@@ -150,7 +150,7 @@ class Generator
         // Generate the license strings
         for ($i=0; $i < $amount; $i++) { 
             $args['licenses'][] = apply_filters(
-                'lima_generate_license_string',
+                'lmfwc_generate_license_string',
                 array(
                     'charset'      => $args['charset'],
                     'chunks'       => $args['chunks'],

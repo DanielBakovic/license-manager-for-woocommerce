@@ -86,8 +86,8 @@ function ajax(option)
 document.addEventListener('DOMContentLoaded', function(event) {
 
     var licenseTable = {
-        btnHideLicense: document.querySelectorAll('.lima-license-key-hide'),
-        btnShowLicense: document.querySelectorAll('.lima-license-key-show'),
+        btnHideLicense: document.querySelectorAll('.lmfwc-license-key-hide'),
+        btnShowLicense: document.querySelectorAll('.lmfwc-license-key-show'),
         bindHideButtons: function() {
             if (!this.btnHideLicense) return;
 
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
                         url: ajaxurl,
                         type: 'POST',
                         data: {
-                            action: 'lima_show_license_key',
+                            action: 'lmfwc_show_license_key',
                             show: license.show,
                             id: licenseKeyId
                         },
@@ -140,8 +140,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
     }
 
     var orderLicenses = {
-        btnShow: document.querySelector('.lima-license-keys-show-all'),
-        btnHide: document.querySelector('.lima-license-keys-hide-all'),
+        btnShow: document.querySelector('.lmfwc-license-keys-show-all'),
+        btnHide: document.querySelector('.lmfwc-license-keys-hide-all'),
         getLicenseKeyIds: function() {
             var licenseKeyIds = [];
             var codeList      = this.btnShow.parentNode.previousSibling.children;
@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
                     url: ajaxurl,
                     type: 'POST',
                     data: {
-                        action: 'lima_show_all_license_keys',
+                        action: 'lmfwc_show_all_license_keys',
                         show_all: license.show_all,
                         ids: JSON.stringify(licenseKeyIds)
                     },
@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
                         var licenseKeys = JSON.parse(response);
 
                         for (var id in licenseKeys) {
-                            var licenseKey = document.querySelector('.lima-placeholder[data-id="' + id +'"]');
+                            var licenseKey = document.querySelector('.lmfwc-placeholder[data-id="' + id +'"]');
                             licenseKey.classList.remove('empty');
                             licenseKey.innerText = licenseKeys[id];
                         }
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
             this.btnHide.addEventListener('click', function() {
                 for (var id in licenseKeyIds) {
-                    var licenseKey = document.querySelector('.lima-placeholder[data-id="' + licenseKeyIds[id] +'"]');
+                    var licenseKey = document.querySelector('.lmfwc-placeholder[data-id="' + licenseKeyIds[id] +'"]');
                     licenseKey.classList.add('empty');
                     licenseKey.innerText = '';
                 }

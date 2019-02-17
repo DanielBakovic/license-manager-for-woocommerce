@@ -1,11 +1,11 @@
 <?php
 
-namespace LicenseManager;
+namespace LicenseManagerForWooCommerce;
 
 defined('ABSPATH') || exit;
 
 /**
- * LicenseManager Settings.
+ * LicenseManagerForWooCommerce Settings.
  *
  * @version 1.0.0
  * @since 1.0.0
@@ -20,7 +20,7 @@ class Settings
     public function __construct()
     {
         $this->init();
-        $this->settings = (array)get_option('_lima_settings');
+        $this->settings = (array)get_option('lmfwc_settings');
     }
 
     /**
@@ -31,83 +31,83 @@ class Settings
     private function init()
     {
         // Register the initial settings group.
-        register_setting('_lima_settings_group', '_lima_settings');
+        register_setting('lmfwc_settings_group', 'lmfwc_settings');
 
         // Add the settings sections.
-        add_settings_section('_lima_security', __('Security', 'lima'), array($this, 'limaSecurityHeader'), '_lima');
+        add_settings_section('lmfwc_security', __('Security', 'lmfwc'), array($this, 'lmfwcSecurityHeader'), 'lmfwc');
 
-        // _lima_security section fields.
+        // lmfwc_security section fields.
         add_settings_field(
-            '_lima_hide_license_keys',
-            __('Obscure Licenses', 'lima'),
-            array($this, 'limaFieldHideLicenseKeys'),
-            '_lima',
-            '_lima_security'
+            'lmfwc_hide_license_keys',
+            __('Obscure Licenses', 'lmfwc'),
+            array($this, 'lmfwcFieldHideLicenseKeys'),
+            'lmfwc',
+            'lmfwc_security'
         );
         add_settings_field(
-            '_lima_auto_delivery',
-            __('Automatic Delivery', 'lima'),
-            array($this, 'limaFieldAutoDelivery'),
-            '_lima',
-            '_lima_security'
+            'lmfwc_auto_delivery',
+            __('Automatic Delivery', 'lmfwc'),
+            array($this, 'lmfwcFieldAutoDelivery'),
+            'lmfwc',
+            'lmfwc_security'
         );
     }
 
     /**
-     * Callback for the "_lima_security" section.
+     * Callback for the "lmfwc_security" section.
      *
      * @since 1.0.0
      */
-    public function limaSecurityHeader()
+    public function lmfwcSecurityHeader()
     {
-        _e('Please read the description of each field before making any changes.', 'lima');
+        _e('Please read the description of each field before making any changes.', 'lmfwc');
     }
 
     /**
-     * Callback for the "_lima_hide_license_keys" field.
+     * Callback for the "lmfwc_hide_license_keys" field.
      *
      * @since 1.0.0
      */
-    public function limaFieldHideLicenseKeys()
+    public function lmfwcFieldHideLicenseKeys()
     {
-        $field = '_lima_hide_license_keys';
-        (array_key_exists('_lima_hide_license_keys', $this->settings)) ? $value = true : $value = false;
+        $field = 'lmfwc_hide_license_keys';
+        (array_key_exists('lmfwc_hide_license_keys', $this->settings)) ? $value = true : $value = false;
 
         $html = '<fieldset>';
         $html .= sprintf('<label for="%s">', $field);
         $html .= sprintf(
-            '<input id="%s" type="checkbox" name="_lima_settings[%s]" value="1"' . checked(true, $value, false) . '/>',
+            '<input id="%s" type="checkbox" name="lmfwc_settings[%s]" value="1"' . checked(true, $value, false) . '/>',
             $field,
             $field
         );
-        $html .= sprintf('<span>%s</span>', __('Hide license keys in the admin dashboard.', 'lima'));
+        $html .= sprintf('<span>%s</span>', __('Hide license keys in the admin dashboard.', 'lmfwc'));
         $html .= '</label>';
         $html .= sprintf(
             '<p class="description" id="tagline-description">%s</p>',
-            __('All licenses will be hidden and only displayed when the \'Show\' action is clicked.', 'lima')
+            __('All licenses will be hidden and only displayed when the \'Show\' action is clicked.', 'lmfwc')
         );
         $html .= '</fieldset>';
 
         echo $html;
     }
 
-    public function limaFieldAutoDelivery()
+    public function lmfwcFieldAutoDelivery()
     {
-        $field = '_lima_auto_delivery';
-        (array_key_exists('_lima_auto_delivery', $this->settings)) ? $value = true : $value = false;
+        $field = 'lmfwc_auto_delivery';
+        (array_key_exists('lmfwc_auto_delivery', $this->settings)) ? $value = true : $value = false;
 
         $html = '<fieldset>';
         $html .= sprintf('<label for="%s">', $field);
         $html .= sprintf(
-            '<input id="%s" type="checkbox" name="_lima_settings[%s]" value="1"' . checked(true, $value, false) . '/>',
+            '<input id="%s" type="checkbox" name="lmfwc_settings[%s]" value="1"' . checked(true, $value, false) . '/>',
             $field,
             $field
         );
-        $html .= sprintf('<span>%s</span>', __('Automatically send license keys when an order is set to \'Complete\'.', 'lima'));
+        $html .= sprintf('<span>%s</span>', __('Automatically send license keys when an order is set to \'Complete\'.', 'lmfwc'));
         $html .= '</label>';
         $html .= sprintf(
             '<p class="description" id="tagline-description">%s</p>',
-            __('If this setting is off, you must manually send out all license keys for completed orders.', 'lima')
+            __('If this setting is off, you must manually send out all license keys for completed orders.', 'lmfwc')
         );
         $html .= '</fieldset>';
 
@@ -123,7 +123,7 @@ class Settings
      */
     public static function get($field)
     {
-        $settings = (array)get_option('_lima_settings');
+        $settings = (array)get_option('lmfwc_settings');
         (array_key_exists($field, $settings)) ? $value = true : $value = false;
 
         return $value;

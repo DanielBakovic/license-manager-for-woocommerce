@@ -1,11 +1,11 @@
 <?php
 
-namespace LicenseManager;
+namespace LicenseManagerForWooCommerce;
 
 defined('ABSPATH') || exit;
 
 /**
- * LicenseManager Setup.
+ * LicenseManagerForWooCommerce Setup.
  *
  * @version 1.0.0
  * @since 1.0.0
@@ -17,14 +17,14 @@ class Setup
      *
      * @since 1.0.0
      */
-    const LICENSES_TABLE_NAME = 'licensemanager_licenses';
+    const LICENSES_TABLE_NAME = 'lmfwc_licenses';
 
     /**
      * Generators table name.
      *
      * @since 1.0.0
      */
-    const GENERATORS_TABLE_NAME = 'licensemanager_generators';
+    const GENERATORS_TABLE_NAME = 'lmfwc_generators';
 
     /**
      * Database version.
@@ -112,21 +112,21 @@ class Setup
     {
         // The defaults for the Setting API.
         $defaults = array(
-            '_lima_hide_license_keys' => 1,
-            '_lima_auto_delivery' => 1
+            'lmfwc_hide_license_keys' => 1,
+            'lmfwc_auto_delivery' => 1
         );
 
-        update_option('_lima_settings', $defaults);
-        update_option('_lima_db_version', self::DB_VERSION);
+        update_option('lmfwc_settings', $defaults);
+        update_option('lmfwc_db_version', self::DB_VERSION);
 
         // Cryptographic secrets.
-        if (!file_exists(LM_ETC_DIR . 'defuse.txt')) {
+        if (!file_exists(LMFWC_ETC_DIR . 'defuse.txt')) {
             $defuse = \Defuse\Crypto\Key::createNewRandomKey();
-            file_put_contents(LM_ETC_DIR . 'defuse.txt', $defuse->saveToAsciiSafeString());
+            file_put_contents(LMFWC_ETC_DIR . 'defuse.txt', $defuse->saveToAsciiSafeString());
         }
 
-        if (!file_exists(LM_ETC_DIR . 'secret.txt')) {
-            file_put_contents(LM_ETC_DIR . 'secret.txt', bin2hex(random_bytes(16)));
+        if (!file_exists(LMFWC_ETC_DIR . 'secret.txt')) {
+            file_put_contents(LMFWC_ETC_DIR . 'secret.txt', bin2hex(random_bytes(16)));
         }
     }
 }

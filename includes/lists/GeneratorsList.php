@@ -1,10 +1,10 @@
 <?php
 
-namespace LicenseManager\Lists;
+namespace LicenseManagerForWooCommerce\Lists;
 
-use \LicenseManager\AdminMenus;
-use \LicenseManager\Logger;
-use \LicenseManager\Setup;
+use \LicenseManagerForWooCommerce\AdminMenus;
+use \LicenseManagerForWooCommerce\Logger;
+use \LicenseManagerForWooCommerce\Setup;
 
 defined('ABSPATH') || exit;
 
@@ -27,8 +27,8 @@ class GeneratorsList extends \WP_List_Table
         global $wpdb;
 
         parent::__construct([
-            'singular' => __('Generator', 'lima'),
-            'plural'   => __('Generators', 'lima'),
+            'singular' => __('Generator', 'lmfwc'),
+            'plural'   => __('Generators', 'lmfwc'),
             'ajax'     => false
         ]);
 
@@ -63,7 +63,7 @@ class GeneratorsList extends \WP_List_Table
 
     public function no_items()
     {
-        _e('No generators found.', 'lima');
+        _e('No generators found.', 'lmfwc');
     }
 
 
@@ -78,7 +78,7 @@ class GeneratorsList extends \WP_List_Table
                 'delete',
                 absint($item['id']),
                 wp_create_nonce('delete'),
-                __('Delete', 'lima')
+                __('Delete', 'lmfwc')
             ),
             'edit' => sprintf(
                 '<a href="?page=%s&action=%s&id=%s&_wpnonce=%s">%s</a>',
@@ -86,7 +86,7 @@ class GeneratorsList extends \WP_List_Table
                 'edit',
                 absint($item['id']),
                 wp_create_nonce('edit'),
-                __('Edit', 'lima')
+                __('Edit', 'lmfwc')
             )
         ];
 
@@ -109,7 +109,7 @@ class GeneratorsList extends \WP_List_Table
                 ($item['suffix'] == '') ? $suffix = '' : $suffix = sprintf('<code>%s</code>', $item['suffix']);
                 return $suffix;
             case 'expires_in':
-                (!$item['expires_in']) ? $expires_in = __('non-expiring', 'lima') : $expires_in = sprintf('%d %s', $item['expires_in'], __('day(s)', 'lima'));
+                (!$item['expires_in']) ? $expires_in = __('non-expiring', 'lmfwc') : $expires_in = sprintf('%d %s', $item['expires_in'], __('day(s)', 'lmfwc'));
                 return $expires_in;
             default:
                 return $item[$column_name];
@@ -127,15 +127,15 @@ class GeneratorsList extends \WP_List_Table
     {
         $columns = array(
             'cb'           => '<input type="checkbox" />',
-            'id'           => __('ID', 'lima'),
-            'name'         => __('Name', 'lima'),
-            'charset'      => __('Character map', 'lima'),
-            'chunks'       => __('Number of chunks', 'lima'),
-            'chunk_length' => __('Chunk length', 'lima'),
-            'separator'    => __('Separator', 'lima'),
-            'prefix'       => __('Prefix', 'lima'),
-            'suffix'       => __('Suffix', 'lima'),
-            'expires_in'   => __('Expires in', 'lima'),
+            'id'           => __('ID', 'lmfwc'),
+            'name'         => __('Name', 'lmfwc'),
+            'charset'      => __('Character map', 'lmfwc'),
+            'chunks'       => __('Number of chunks', 'lmfwc'),
+            'chunk_length' => __('Chunk length', 'lmfwc'),
+            'separator'    => __('Separator', 'lmfwc'),
+            'prefix'       => __('Prefix', 'lmfwc'),
+            'suffix'       => __('Suffix', 'lmfwc'),
+            'expires_in'   => __('Expires in', 'lmfwc'),
         );
 
         return $columns;
@@ -153,7 +153,7 @@ class GeneratorsList extends \WP_List_Table
     public function get_bulk_actions()
     {
         $actions = [
-            'delete' => __('Delete', 'lima'),
+            'delete' => __('Delete', 'lmfwc'),
         ];
 
         return $actions;
@@ -201,7 +201,7 @@ class GeneratorsList extends \WP_List_Table
             !wp_verify_nonce($_REQUEST['_wpnonce'], $nonce_action) &&
             !wp_verify_nonce($_REQUEST['_wpnonce'], 'bulk-' . $this->_args['plural'])
         ) {
-            wp_redirect(admin_url(sprintf('admin.php?page=%s&lima_nonce_status=invalid', AdminMenus::GENERATORS_PAGE)));
+            wp_redirect(admin_url(sprintf('admin.php?page=%s&lmfwc_nonce_status=invalid', AdminMenus::GENERATORS_PAGE)));
         }
     }
 
@@ -217,11 +217,11 @@ class GeneratorsList extends \WP_List_Table
         $selected_generators = (array)$_REQUEST['id'];
 
         foreach ($selected_generators as $generator_id) {
-            if ($products = apply_filters('lima_get_assigned_products', array('generator_id' => absint($generator_id)))) {
+            if ($products = apply_filters('lmfwc_get_assigned_products', array('generator_id' => absint($generator_id)))) {
                 continue;
             } else {
                 $result = apply_filters(
-                    'lima_delete_generators',
+                    'lmfwc_delete_generators',
                     array(
                         'ids' => (array)$generator_id
                     )
@@ -233,7 +233,7 @@ class GeneratorsList extends \WP_List_Table
             wp_redirect(
                 admin_url(
                     sprintf(
-                        'admin.php?page=%s&lima_delete_generators=true',
+                        'admin.php?page=%s&lmfwc_delete_generators=true',
                         AdminMenus::GENERATORS_PAGE
                     )
                 )
@@ -242,7 +242,7 @@ class GeneratorsList extends \WP_List_Table
             wp_redirect(
                 admin_url(
                     sprintf(
-                        'admin.php?page=%s&lima_delete_generators=error',
+                        'admin.php?page=%s&lmfwc_delete_generators=error',
                         AdminMenus::GENERATORS_PAGE
                     )
                 )

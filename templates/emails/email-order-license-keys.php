@@ -1,6 +1,6 @@
 <?php defined('ABSPATH') || exit(); ?>
 
-<h2><?=esc_html_e('Your License Key(s)', 'lima');?></h2>
+<h2><?=esc_html_e('Your License Key(s)', 'lmfwc');?></h2>
 
 <div style="margin-bottom: 40px;">
     <?php foreach ($data as $row): ?>

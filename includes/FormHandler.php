@@ -1,13 +1,13 @@
 <?php
 
-namespace LicenseManager;
+namespace LicenseManagerForWooCommerce;
 
-use \LicenseManager\Lists\LicensesList;
+use \LicenseManagerForWooCommerce\Lists\LicensesList;
 
 defined('ABSPATH') || exit;
 
 /**
- * LicenseManager FormHandler.
+ * LicenseManagerForWooCommerce FormHandler.
  *
  * @version 1.0.0
  * @since 1.0.0
@@ -17,7 +17,7 @@ class FormHandler
     const TEMP_TXT_FILE = 'import.tmp.txt';
 
     /**
-     * @var \LicenseManager\Crypto
+     * @var \LicenseManagerForWooCommerce\Crypto
      */
     private $crypto;
 
@@ -25,19 +25,19 @@ class FormHandler
      * FormHandler Constructor.
      */
     public function __construct(
-        \LicenseManager\Crypto $crypto
+        \LicenseManagerForWooCommerce\Crypto $crypto
     ) {
         $this->crypto = $crypto;
 
         // Admin POST requests.
-        add_action('admin_post_lima_save_generator',      array($this, 'saveGenerator'   ), 10);
-        add_action('admin_post_lima_update_generator',    array($this, 'updateGenerator' ), 10);
-        add_action('admin_post_lima_import_license_keys', array($this, 'importLicenses'  ), 10);
-        add_action('admin_post_lima_add_license_key',     array($this, 'addLicense'      ), 10);
+        add_action('admin_post_lmfwc_save_generator',      array($this, 'saveGenerator'   ), 10);
+        add_action('admin_post_lmfwc_update_generator',    array($this, 'updateGenerator' ), 10);
+        add_action('admin_post_lmfwc_import_license_keys', array($this, 'importLicenses'  ), 10);
+        add_action('admin_post_lmfwc_add_license_key',     array($this, 'addLicense'      ), 10);
 
         // AJAX calls.
-        add_action('wp_ajax_lima_show_license_key',      array($this, 'showLicenseKey'    ), 10);
-        add_action('wp_ajax_lima_show_all_license_keys', array($this, 'showAllLicenseKeys'), 10);
+        add_action('wp_ajax_lmfwc_show_license_key',      array($this, 'showLicenseKey'    ), 10);
+        add_action('wp_ajax_lmfwc_show_all_license_keys', array($this, 'showAllLicenseKeys'), 10);
 
         // WooCommerce
         add_action('woocommerce_after_order_itemmeta', array($this, 'showOrderedLicenses'), 10, 3);
@@ -60,7 +60,7 @@ class FormHandler
     public function saveGenerator($args)
     {
         // Verify the nonce.
-        check_admin_referer('lima_save_generator');
+        check_admin_referer('lmfwc_save_generator');
 
         // Validate request.
         $redirect_url = 'admin.php?page=%s&validation_error=%s';
@@ -86,15 +86,15 @@ class FormHandler
         }
 
         // Save the generator.
-        $result = apply_filters('lima_insert_generator', array(
-            'name'         => $_POST['name'],
-            'charset'      => $_POST['charset'],
-            'chunks'       => $_POST['chunks'],
-            'chunk_length' => $_POST['chunk_length'],
-            'separator'    => $_POST['separator'],
-            'prefix'       => $_POST['prefix'],
-            'suffix'       => $_POST['suffix'],
-            'expires_in'   => $_POST['expires_in']
+        $result = apply_filters('lmfwc_insert_generator', array(
+            'name'         => sanitize_text_field($_POST['name']),
+            'charset'      => sanitize_text_field($_POST['charset']),
+            'chunks'       => absint($_POST['chunks']),
+            'chunk_length' => absint($_POST['chunk_length']),
+            'separator'    => sanitize_text_field($_POST['separator']),
+            'prefix'       => sanitize_text_field($_POST['prefix']),
+            'suffix'       => sanitize_text_field($_POST['suffix']),
+            'expires_in'   => absint($_POST['expires_in'])
         ));
 
         // Redirect according to $result.
@@ -117,7 +117,7 @@ class FormHandler
     public function updateGenerator()
     {
         // Verify the nonce.
-        check_admin_referer('lima_update_generator');
+        check_admin_referer('lmfwc_update_generator');
 
         // Validate request.
         $redirect_url = 'admin.php?page=%s&action=edit&id=%d&validation_error=%s"';
@@ -143,16 +143,16 @@ class FormHandler
         }
 
         // Update the generator.
-        $result = apply_filters('lima_update_generator', array(
-            'id'           => $_POST['id'],
-            'name'         => $_POST['name'],
-            'charset'      => $_POST['charset'],
-            'chunks'       => $_POST['chunks'],
-            'chunk_length' => $_POST['chunk_length'],
-            'separator'    => $_POST['separator'],
-            'prefix'       => $_POST['prefix'],
-            'suffix'       => $_POST['suffix'],
-            'expires_in'   => $_POST['expires_in']
+        $result = apply_filters('lmfwc_update_generator', array(
+            'id'           => absint($_POST['id']),
+            'name'         => sanitize_text_field($_POST['name']),
+            'charset'      => sanitize_text_field($_POST['charset']),
+            'chunks'       => absint($_POST['chunks']),
+            'chunk_length' => absint($_POST['chunk_length']),
+            'separator'    => sanitize_text_field($_POST['separator']),
+            'prefix'       => sanitize_text_field($_POST['prefix']),
+            'suffix'       => sanitize_text_field($_POST['suffix']),
+            'expires_in'   => absint($_POST['expires_in'])
         ));
 
         // Redirect according to $result.
@@ -175,7 +175,7 @@ class FormHandler
     public function importLicenses()
     {
         // Check the nonce.
-        check_admin_referer('lima-import');
+        check_admin_referer('lmfwc-import');
 
         // Check the file extension, return if not .txt
         if (!pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION) == 'txt' || $_FILES['file']['type'] != 'text/plain') {
@@ -183,35 +183,35 @@ class FormHandler
         }
 
         // File upload file, return with error.
-        if (!move_uploaded_file($_FILES['file']['tmp_name'], LM_ETC_DIR . self::TEMP_TXT_FILE)) {
+        if (!move_uploaded_file($_FILES['file']['tmp_name'], LMFWC_ETC_DIR . self::TEMP_TXT_FILE)) {
             return null;
         }
 
         // Check for invalid file contents.
-        if (!is_array($license_keys = file(LM_ETC_DIR . self::TEMP_TXT_FILE, FILE_IGNORE_NEW_LINES))) {
+        if (!is_array($license_keys = file(LMFWC_ETC_DIR . self::TEMP_TXT_FILE, FILE_IGNORE_NEW_LINES))) {
             return null;
         }
 
         // Save the imported keys.
-        $result = apply_filters('lima_insert_imported_license_keys', array(
+        $result = apply_filters('lmfwc_insert_imported_license_keys', array(
             'license_keys' => $license_keys,
             'activate'     => array_key_exists('activate', $_POST) ? true : false,
             'product_id'   => intval($_POST['product'])
         ));
 
         // Delete the temporary file now that we're done.
-        unlink(LM_ETC_DIR . self::TEMP_TXT_FILE);
+        unlink(LMFWC_ETC_DIR . self::TEMP_TXT_FILE);
 
         // Redirect according to $result.
         if ($result['failed'] == 0 && $result['added'] == 0) {
-            wp_redirect(sprintf('admin.php?page=%s&lima_import_license_keys=error', AdminMenus::ADD_IMPORT_PAGE));
+            wp_redirect(sprintf('admin.php?page=%s&lmfwc_import_license_keys=error', AdminMenus::ADD_IMPORT_PAGE));
             exit();
         }
 
         if ($result['failed'] == 0 && $result['added'] > 0) {
             wp_redirect(
                 sprintf(
-                    'admin.php?page=%s&lima_import_license_keys=true&added=%d',
+                    'admin.php?page=%s&lmfwc_import_license_keys=true&added=%d',
                     AdminMenus::ADD_IMPORT_PAGE,
                     $result['added']
                 )
@@ -222,7 +222,7 @@ class FormHandler
         if ($result['failed'] > 0 && $result['added'] == 0) {
             wp_redirect(
                 sprintf(
-                    'admin.php?page=%s&lima_import_license_keys=false&rejected=%d',
+                    'admin.php?page=%s&lmfwc_import_license_keys=false&rejected=%d',
                     AdminMenus::ADD_IMPORT_PAGE,
                     $result['failed']
                 )
@@ -233,7 +233,7 @@ class FormHandler
         if ($result['failed'] > 0 && $result['added'] > 0) {
             wp_redirect(
                 sprintf(
-                    'admin.php?page=%s&lima_import_license_keys=mixed&added=%d&rejected=%d',
+                    'admin.php?page=%s&lmfwc_import_license_keys=mixed&added=%d&rejected=%d',
                     AdminMenus::ADD_IMPORT_PAGE,
                     $result['failed']
                 )
@@ -250,10 +250,10 @@ class FormHandler
     public function addLicense()
     {
         // Check the nonce.
-        check_admin_referer('lima-add');
+        check_admin_referer('lmfwc-add');
 
         // Save the license key.
-        $result = apply_filters('lima_insert_added_license_key', array(
+        $result = apply_filters('lmfwc_insert_added_license_key', array(
             'license_key' => sanitize_text_field($_POST['license_key']),
             'activate'    => array_key_exists('activate', $_POST) ? true : false,
             'product_id'  => intval($_POST['product']),
@@ -261,7 +261,7 @@ class FormHandler
         ));
 
         // Redirect according to $result.
-        $redirect_url = 'admin.php?page=%s&lima_add_license_key=%s';
+        $redirect_url = 'admin.php?page=%s&lmfwc_add_license_key=%s';
 
         if ($result) {
             wp_redirect(sprintf($redirect_url, AdminMenus::ADD_IMPORT_PAGE, 'true'));
@@ -275,8 +275,8 @@ class FormHandler
     public function showLicenseKey()
     {
         // Validate request.
-        check_ajax_referer('lima_show_license_key', 'show');
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') wp_die(__('Invalid request.', 'lima'));
+        check_ajax_referer('lmfwc_show_license_key', 'show');
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') wp_die(__('Invalid request.', 'lmfwc'));
 
         $license_key = Database::getLicenseKey(intval($_POST['id']));
 
@@ -288,8 +288,8 @@ class FormHandler
     public function showAllLicenseKeys()
     {
         // Validate request.
-        check_ajax_referer('lima_show_all_license_keys', 'show_all');
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') wp_die(__('Invalid request.', 'lima'));
+        check_ajax_referer('lmfwc_show_all_license_keys', 'show_all');
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') wp_die(__('Invalid request.', 'lmfwc'));
 
         $license_keys = array();
 
@@ -318,13 +318,13 @@ class FormHandler
         // No license keys? Nothing to do...
         if (!$license_keys = Database::getOrderedLicenseKeys($item->get_order_id(), $item->get_product_id())) return;
 
-        $html = __('<p>The following license keys have been sold by this order:</p>', 'lima');
-        $html .= '<ul class="lima-license-list">';
+        $html = __('<p>The following license keys have been sold by this order:</p>', 'lmfwc');
+        $html .= '<ul class="lmfwc-license-list">';
 
-        if (!Settings::get('_lima_hide_license_keys')) {
+        if (!Settings::get('lmfwc_hide_license_keys')) {
             foreach ($license_keys as $license_key) {
                 $html .= sprintf(
-                    '<li></span> <code class="lima-placeholder">%s</code></li>',
+                    '<li></span> <code class="lmfwc-placeholder">%s</code></li>',
                     $this->crypto->decrypt($license_key->license_key)
                 );
             }
@@ -333,7 +333,7 @@ class FormHandler
         } else {
             foreach ($license_keys as $license_key) {
                 $html .= sprintf(
-                    '<li><code class="lima-placeholder empty" data-id="%d"></code></li>',
+                    '<li><code class="lmfwc-placeholder empty" data-id="%d"></code></li>',
                     $license_key->id
                 );
             }
@@ -342,19 +342,19 @@ class FormHandler
             $html .= '<p>';
 
             $html .= sprintf(
-                '<a class="button lima-license-keys-show-all" data-order-id="%d">%s</a>',
+                '<a class="button lmfwc-license-keys-show-all" data-order-id="%d">%s</a>',
                 $item->get_order_id(),
-                __('Show License Key(s)', 'lima')
+                __('Show License Key(s)', 'lmfwc')
             );
 
             $html .= sprintf(
-                '<a class="button lima-license-keys-hide-all" data-order-id="%d">%s</a>',
+                '<a class="button lmfwc-license-keys-hide-all" data-order-id="%d">%s</a>',
                 $item->get_order_id(),
-                __('Hide License Key(s)', 'lima')
+                __('Hide License Key(s)', 'lmfwc')
             );
 
             $html .= sprintf(
-                '<img class="lima-spinner" data-id="%d" src="%s">',
+                '<img class="lmfwc-spinner" data-id="%d" src="%s">',
                 $license_key->id, LicensesList::SPINNER_URL
             );
 

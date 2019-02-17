@@ -1,10 +1,10 @@
 {
     "autoload": {
         "psr-4": {
-            "LicenseManager\\": "includes/",
-            "LicenseManager\\Abstracts\\": "includes/abstracts",
-            "LicenseManager\\Enums\\": "includes/enums",
-            "LicenseManager\\Lists\\": "includes/lists"
+            "LicenseManagerForWooCommerce\\": "includes/",
+            "LicenseManagerForWooCommerce\\Abstracts\\": "includes/abstracts",
+            "LicenseManagerForWooCommerce\\Enums\\": "includes/enums",
+            "LicenseManagerForWooCommerce\\Lists\\": "includes/lists"
         }
     },
     "require": {

@@ -1,14 +1,14 @@
 <?php
 
-namespace LicenseManager;
+namespace LicenseManagerForWooCommerce;
 
-use \LicenseManager\Enums\LicenseStatusEnum;
-use \LicenseManager\Enums\SourceEnum;
+use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
+use \LicenseManagerForWooCommerce\Enums\SourceEnum;
 
 defined('ABSPATH') || exit;
 
 /**
- * LicenseManager Database connector.
+ * LicenseManagerForWooCommerce Database connector.
  *
  * @version 1.0.0
  * @since 1.0.0
@@ -16,7 +16,7 @@ defined('ABSPATH') || exit;
 class Database
 {
     /**
-     * @var \LicenseManager\Crypto
+     * @var \LicenseManagerForWooCommerce\Crypto
      */
     private $crpyto;
 
@@ -24,31 +24,31 @@ class Database
      * Database Constructor.
      */
     public function __construct(
-        \LicenseManager\Crypto $crypto
+        \LicenseManagerForWooCommerce\Crypto $crypto
     ) {
         $this->crypto = $crypto;
 
         // Get
-        add_filter('lima_get_assigned_products',         array($this, 'getAssignedProducts'), 10, 1);
-        add_filter('lima_get_available_stock',           array($this, 'getAvailableStock'),   10, 1);
+        add_filter('lmfwc_get_assigned_products',         array($this, 'getAssignedProducts'), 10, 1);
+        add_filter('lmfwc_get_available_stock',           array($this, 'getAvailableStock'),   10, 1);
 
         // Insert
-        add_action('lima_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 1);
-        add_filter('lima_insert_imported_license_keys',  array($this, 'insertImportedLicenseKeys'),  10, 1);
-        add_filter('lima_insert_added_license_key',      array($this, 'insertAddedLicenseKey'),      10, 1);
-        add_filter('lima_insert_generator',              array($this, 'insertGenerator'),            10, 1);
+        add_action('lmfwc_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 1);
+        add_filter('lmfwc_insert_imported_license_keys',  array($this, 'insertImportedLicenseKeys'),  10, 1);
+        add_filter('lmfwc_insert_added_license_key',      array($this, 'insertAddedLicenseKey'),      10, 1);
+        add_filter('lmfwc_insert_generator',              array($this, 'insertGenerator'),            10, 1);
 
         // Update
-        add_action('lima_sell_imported_license_keys',    array($this, 'sellImportedLicenseKeys'), 10, 1);
-        add_filter('lima_toggle_license_key_status',     array($this, 'toggleLicenseKeyStatus'),  10, 1);
-        add_filter('lima_update_generator',              array($this, 'updateGenerator'),         10, 1);
+        add_action('lmfwc_sell_imported_license_keys',    array($this, 'sellImportedLicenseKeys'), 10, 1);
+        add_filter('lmfwc_toggle_license_key_status',     array($this, 'toggleLicenseKeyStatus'),  10, 1);
+        add_filter('lmfwc_update_generator',              array($this, 'updateGenerator'),         10, 1);
 
         // Delete
-        add_filter('lima_delete_license_keys',           array($this, 'deleteLicenseKeys'        ), 10, 1);
-        add_filter('lima_delete_generators',             array($this, 'deleteGenerators'         ), 10, 1);
+        add_filter('lmfwc_delete_license_keys',           array($this, 'deleteLicenseKeys'        ), 10, 1);
+        add_filter('lmfwc_delete_generators',             array($this, 'deleteGenerators'         ), 10, 1);
 
         // Misc.
-        add_filter('lima_license_key_exists',            array($this, 'licenseKeyExists'         ), 10, 1);
+        add_filter('lmfwc_license_key_exists',            array($this, 'licenseKeyExists'         ), 10, 1);
     }
 
     // GET
@@ -77,7 +77,7 @@ class Database
                     AND meta_key = %s
                     AND meta_value = %d
                 ",
-                '_lima_licensed_product_assigned_generator',
+                'lmfwc_licensed_product_assigned_generator',
                 absint($args['generator_id'])
             ),
             OBJECT
@@ -164,7 +164,7 @@ class Database
         // Add the keys to the database table.
         foreach ($args['licenses'] as $license_key) {
             // Key exists, up the invalid keys count.
-            if (apply_filters('lima_license_key_exists', $license_key)) {
+            if (apply_filters('lmfwc_license_key_exists', $license_key)) {
                 $invalid_keys_amount++;
             // Key doesn't exist, add it to the database table.
             } else {
@@ -188,7 +188,7 @@ class Database
 
         // There have been duplicate keys, regenerate and add them.
         if ($invalid_keys_amount > 0) {
-            $new_keys = apply_filters('lima_create_license_keys', array(
+            $new_keys = apply_filters('lmfwc_create_license_keys', array(
                 'amount'       => $invalid_keys_amount,
                 'charset'      => $args['charset'],
                 'chunks'       => $args['chunks'],
@@ -213,7 +213,7 @@ class Database
             ));
         } else {
             // Keys have been generated and saved, this order is now complete.
-            update_post_meta($args['order_id'], '_lima_order_complete', 1);
+            update_post_meta($args['order_id'], 'lmfwc_order_complete', 1);
         }
     }
 
@@ -620,7 +620,7 @@ class Database
     /**
      * Returns the number of license keys available.
      *
-     * @param $status \LicenseManager\Enums\LicenseStatusEnum
+     * @param $status \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum
      *
      * @return int
      */

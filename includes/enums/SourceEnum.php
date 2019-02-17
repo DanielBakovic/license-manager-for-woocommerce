@@ -1,6 +1,6 @@
 <?php
 
-namespace LicenseManager\Enums;
+namespace LicenseManagerForWooCommerce\Enums;
 
 defined('ABSPATH') || exit;
 

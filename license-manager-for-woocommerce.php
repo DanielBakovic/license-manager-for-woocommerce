@@ -6,7 +6,7 @@
  * Version: 1.0.0
  * Author: Dražen Bebić
  * Author URI: https://www.bebic.at/
- * Text Domain: lima
+ * Text Domain: lmfwc
  * Domain Path: /i18n
  * Requires at least: 4.7
  * Tested up to: 5.0
@@ -14,33 +14,33 @@
  * WC tested up to: 3.5
  */
 
-namespace LicenseManager;
+namespace LicenseManagerForWooCommerce;
 
 defined('ABSPATH') || exit;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-// Define LM_PLUGIN_FILE.
-if (!defined('LM_PLUGIN_FILE')) {
-    define('LM_PLUGIN_FILE', __FILE__);
+// Define LMFWC_PLUGIN_FILE.
+if (!defined('LMFWC_PLUGIN_FILE')) {
+    define('LMFWC_PLUGIN_FILE', __FILE__);
 }
 
-// Define LM_PLUGIN_URL.
-if (!defined('LM_PLUGIN_URL')) {
-    define('LM_PLUGIN_URL', plugins_url('', __FILE__) . '/');
+// Define LMFWC_PLUGIN_URL.
+if (!defined('LMFWC_PLUGIN_URL')) {
+    define('LMFWC_PLUGIN_URL', plugins_url('', __FILE__) . '/');
 }
 
 /**
- * Main instance of LicenseManager.
+ * Main instance of LicenseManagerForWooCommerce.
  *
  * Returns the main instance of SN to prevent the need to use globals.
  *
  * @since  1.0.0
- * @return LicenseManager
+ * @return LicenseManagerForWooCommerce
  */
-function licensemanager() {
-    return \LicenseManager\Main::instance();
+function lmfwc() {
+    return \LicenseManagerForWooCommerce\Main::instance();
 }
 
 // Global for backwards compatibility.
-$GLOBALS['licensemanager'] = licensemanager();
+$GLOBALS['lmfwc'] = lmfwc();

@@ -1,14 +1,14 @@
 <?php
 
-namespace LicenseManager;
+namespace LicenseManagerForWooCommerce;
 
-use \LicenseManager\Database;
-use \LicenseManager\Enums\LicenseStatusEnum;
+use \LicenseManagerForWooCommerce\Database;
+use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
 
 defined('ABSPATH') || exit;
 
 /**
- * LicenseManager OrderManager.
+ * LicenseManagerForWooCommerce OrderManager.
  *
  * @version 1.0.0
  * @since 1.0.0
@@ -16,7 +16,7 @@ defined('ABSPATH') || exit;
 class OrderManager
 {
     /**
-     * @var \LicenseManager\Crypto
+     * @var \LicenseManagerForWooCommerce\Crypto
      */
     protected $crypto;
 
@@ -24,7 +24,7 @@ class OrderManager
      * Class constructor.
      */
     public function __construct(
-        \LicenseManager\Crypto $crypto
+        \LicenseManagerForWooCommerce\Crypto $crypto
     ) {
         $this->crypto = $crypto;
 
@@ -43,7 +43,7 @@ class OrderManager
     public function generateOrderLicenses($order_id)
     {
         // Keys have already been generated for this order.
-        if (get_post_meta($order_id, '_lima_order_complete')) return;
+        if (get_post_meta($order_id, 'lmfwc_order_complete')) return;
 
         $order    = new \WC_Order($order_id);
         $licenses = [];
@@ -56,10 +56,10 @@ class OrderManager
             $product = $item_data->get_product();
 
             // Skip this product because it's not a licensed product.
-            if (!get_post_meta($product->get_id(), '_lima_licensed_product', true)) continue;
+            if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)) continue;
 
-            $use_stock = get_post_meta($product->get_id(), '_lima_licensed_product_use_stock', true);
-            $use_generator = get_post_meta($product->get_id(), '_lima_licensed_product_use_generator', true);
+            $use_stock = get_post_meta($product->get_id(), 'lmfwc_licensed_product_use_stock', true);
+            $use_generator = get_post_meta($product->get_id(), 'lmfwc_licensed_product_use_generator', true);
 
             // Skip this product because neither selling from stock or from generators is active.
             if (!$use_stock && !$use_generator) {
@@ -79,7 +79,7 @@ class OrderManager
                 // There are enough keys.
                 if ($item_data->get_quantity() <= $available_stock) {
                     // Set the retrieved license keys as sold.
-                    do_action('lima_sell_imported_license_keys', array(
+                    do_action('lmfwc_sell_imported_license_keys', array(
                         'license_keys' => $license_keys,
                         'order_id'     => $order_id,
                         'amount'       => $item_data->get_quantity()
@@ -88,7 +88,7 @@ class OrderManager
                 } else {
 
                     // Set the available license keys as sold.
-                    do_action('lima_sell_imported_license_keys', array(
+                    do_action('lmfwc_sell_imported_license_keys', array(
                         'license_keys' => $license_keys,
                         'order_id'     => $order_id,
                         'amount'       => $available_stock
@@ -99,14 +99,14 @@ class OrderManager
                         $amount_to_generate = intval($item_data->get_quantity()) - intval($available_stock);
                         $generator_id = get_post_meta(
                             $product->get_id(),
-                            '_lima_licensed_product_assigned_generator',
+                            'lmfwc_licensed_product_assigned_generator',
                             true
                         );
 
                         // Retrieve the generator from the database and set up the args.
                         $generator = Database::getGenerator($generator_id);
 
-                        $licenses = apply_filters('lima_create_license_keys', array(
+                        $licenses = apply_filters('lmfwc_create_license_keys', array(
                             'amount'       => $amount_to_generate,
                             'charset'      => $generator->charset,
                             'chunks'       => $generator->chunks,
@@ -118,7 +118,7 @@ class OrderManager
                         ));
 
                         // Save the license keys.
-                        do_action('lima_insert_generated_license_keys', array(
+                        do_action('lmfwc_insert_generated_license_keys', array(
                             'order_id'   => $order_id,
                             'product_id' => $product->get_id(),
                             'licenses'   => $licenses['licenses'],
@@ -130,12 +130,12 @@ class OrderManager
 
             // Scenario 3 - Use generator.
             } else if (!$use_stock && $use_generator) {
-                $generator_id = get_post_meta($product->get_id(), '_lima_licensed_product_assigned_generator', true);
+                $generator_id = get_post_meta($product->get_id(), 'lmfwc_licensed_product_assigned_generator', true);
 
                 // Retrieve the generator from the database and set up the args.
                 $generator = Database::getGenerator($generator_id);
 
-                $licenses = apply_filters('lima_create_license_keys', array(
+                $licenses = apply_filters('lmfwc_create_license_keys', array(
                     'amount'       => $item_data->get_quantity(),
                     'charset'      => $generator->charset,
                     'chunks'       => $generator->chunks,
@@ -147,7 +147,7 @@ class OrderManager
                 ));
 
                 // Save the license keys.
-                do_action('lima_insert_generated_license_keys', array(
+                do_action('lmfwc_insert_generated_license_keys', array(
                     'order_id'   => $order_id,
                     'product_id' => $product->get_id(),
                     'licenses'   => $licenses['licenses'],
@@ -157,11 +157,11 @@ class OrderManager
             }
 
             // Set the order as complete.
-            update_post_meta($order_id, '_lima_order_complete', 1);
+            update_post_meta($order_id, 'lmfwc_order_complete', 1);
 
             // Set status to delivered if the setting is on.
-            if (Settings::get('_lima_auto_delivery')) {
-                apply_filters('lima_toggle_license_key_status', array(
+            if (Settings::get('lmfwc_auto_delivery')) {
+                apply_filters('lmfwc_toggle_license_key_status', array(
                     'column_name' => 'order_id',
                     'operator' => 'eq',
                     'value' => $order_id,
@@ -182,10 +182,10 @@ class OrderManager
     public function deliverLicenseKeys($order, $is_admin_email)
     {
         // Return if the order isn't complete.
-        if ($order->get_status() != 'completed' && !get_post_meta($order->get_id(), '_lima_order_complete')) return;
+        if ($order->get_status() != 'completed' && !get_post_meta($order->get_id(), 'lmfwc_order_complete')) return;
 
         // Send the keys out if the setting is active.
-        if (Settings::get('_lima_auto_delivery')) {
+        if (Settings::get('lmfwc_auto_delivery')) {
             $data = [];
 
             /**
@@ -198,7 +198,7 @@ class OrderManager
                 $product = $item_data->get_product();
 
                 // Check if the product has been activated for selling.
-                if (!get_post_meta($product->get_id(), '_lima_licensed_product', true)) break;
+                if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)) break;
 
                 $data[$product->get_id()]['name'] = $product->get_name();
                 $data[$product->get_id()]['keys'] = Database::getOrderedLicenseKeys(
@@ -207,11 +207,11 @@ class OrderManager
                 );
             }
 
-            include LM_TEMPLATES_DIR . 'emails/email-order-license-keys.php';
+            include LMFWC_TEMPLATES_DIR . 'emails/email-order-license-keys.php';
 
         // Only display a notice.
         } else {
-            include LM_TEMPLATES_DIR . 'emails/email-order-license-notice.php';
+            include LMFWC_TEMPLATES_DIR . 'emails/email-order-license-notice.php';
         }
     }
 
@@ -225,11 +225,11 @@ class OrderManager
     public function showBoughtLicenses($order)
     {
         // Return if the order isn't complete.
-        if ($order->get_status() != 'completed' && !get_post_meta($order->get_id(), '_lima_order_complete')) return;
+        if ($order->get_status() != 'completed' && !get_post_meta($order->get_id(), 'lmfwc_order_complete')) return;
 
         // Add missing style.
-        if (!wp_style_is('lima_admin_css', $list = 'enqueued' )) {
-            wp_enqueue_style('lima_admin_css', LM_CSS_URL . 'main.css');
+        if (!wp_style_is('lmfwc_admin_css', $list = 'enqueued' )) {
+            wp_enqueue_style('lmfwc_admin_css', LMFWC_CSS_URL . 'main.css');
         }
 
         /**
@@ -242,7 +242,7 @@ class OrderManager
             $product = $item_data->get_product();
 
             // Check if the product has been activated for selling.
-            if (!get_post_meta($product->get_id(), '_lima_licensed_product', true)) break;
+            if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)) break;
 
             $data[$product->get_id()]['name'] = $product->get_name();
             $data[$product->get_id()]['keys'] = Database::getOrderedLicenseKeys(
@@ -251,7 +251,7 @@ class OrderManager
             );
         }
 
-        include LM_TEMPLATES_DIR . 'order-view-license-keys.php';
+        include LMFWC_TEMPLATES_DIR . 'order-view-license-keys.php';
     }
 
 }

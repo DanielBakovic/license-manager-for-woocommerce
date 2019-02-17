@@ -1,6 +1,6 @@
 <?php defined('ABSPATH') || exit(); ?>
 
-<h2><?=esc_html_e('Your License Key(s)', 'lima');?></h2>
+<h2><?=esc_html_e('Your License Key(s)', 'lmfwc');?></h2>
 
 <?php foreach ($data as $row): ?>
     <table class="shop_table">
@@ -13,7 +13,7 @@
             <?php foreach ($row['keys'] as $entry): ?>
                 <tr>
                     <td>
-                        <span class="lima-myaccount-license-key"><?=$this->crypto->decrypt($entry->license_key);?></span>
+                        <span class="lmfwc-myaccount-license-key"><?=$this->crypto->decrypt($entry->license_key);?></span>
                     </td>
                 </tr>
             <?php endforeach; ?>

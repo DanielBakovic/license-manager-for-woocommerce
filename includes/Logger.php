@@ -1,11 +1,11 @@
 <?php
 
-namespace LicenseManager;
+namespace LicenseManagerForWooCommerce;
 
 defined('ABSPATH') || exit;
 
 /**
- * LicenseManager Logger.
+ * LicenseManagerForWooCommerce Logger.
  *
  * @version 1.0.0
  * @since 1.0.0
@@ -161,7 +161,7 @@ class Logger
         }
 
         if (!isset($log_files[$filename])) {
-            $log_files[$filename] = fopen(LM_LOG_DIR . $filename, 'ab');
+            $log_files[$filename] = fopen(LMFWC_LOG_DIR . $filename, 'ab');
 
             register_shutdown_function(function () use (&$log_files, &$filename) {
                 fclose($log_files[$filename]);

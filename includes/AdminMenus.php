@@ -1,8 +1,8 @@
 <?php
 
-namespace LicenseManager;
+namespace LicenseManagerForWooCommerce;
 
-use \LicenseManager\Enums\LicenseStatusEnum;
+use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
 
 defined('ABSPATH') || exit;
 
@@ -26,7 +26,7 @@ class AdminMenus
     const SETTINGS_PAGE       = 'license_manager_settings';
 
     /**
-     * @var \LicenseManager\Crypto
+     * @var \LicenseManagerForWooCommerce\Crypto
      */
     private $crypto;
 
@@ -34,58 +34,63 @@ class AdminMenus
      * Class constructor.
      */
     public function __construct(
-        \LicenseManager\Crypto $crypto
+        \LicenseManagerForWooCommerce\Crypto $crypto
     ) {
         $this->crypto = $crypto;
 
         // Plugin pages.
         add_action('admin_menu', array($this, 'createPluginPages'), 9);
         add_action('admin_init', array($this, 'initSettingsAPI'));
+
+        // Screen options
+        add_filter('set-screen-option', array($this, 'setScreenOption'), 10, 3);
     }
 
     public function createPluginPages()
     {
         // Licenses List Page
         add_menu_page(
-            __('License Manager', 'lima'),
-            __('License Manager', 'lima'),
+            __('License Manager', 'lmfwc'),
+            __('License Manager', 'lmfwc'),
             'manage_options',
             self::LICENSES_PAGE,
             array($this, 'licensesPage'),
             'dashicons-lock',
             10
         );
-        add_submenu_page(
+        $licenses_hook = add_submenu_page(
             self::LICENSES_PAGE,
-            __('License Manager', 'lima'),
-            __('Licenses', 'lima'),
+            __('License Manager', 'lmfwc'),
+            __('Licenses', 'lmfwc'),
             'manage_options',
             self::LICENSES_PAGE,
             array($this, 'licensesPage')
         );
+        add_action('load-' . $licenses_hook, array($this, 'licensesPageScreenOptions'));
         // Add/Import Page
         add_submenu_page(
             self::LICENSES_PAGE,
-            __('License Manager - Import', 'lima'),
-            __('Import', 'lima'),
+            __('License Manager - Import', 'lmfwc'),
+            __('Import', 'lmfwc'),
             'manage_options',
             self::ADD_IMPORT_PAGE,
             array($this, 'licensesAddImportPage')
         );
         // Generators List Page
-        add_submenu_page(
+        $generators_hook = add_submenu_page(
             self::LICENSES_PAGE,
-            __('License Manager - Generators', 'lima'),
-            __('Generators', 'lima'),
+            __('License Manager - Generators', 'lmfwc'),
+            __('Generators', 'lmfwc'),
             'manage_options',
             self::GENERATORS_PAGE,
             array($this, 'generatorsPage')
         );
+        add_action('load-' . $generators_hook, array($this, 'generatorsPageScreenOptions'));
         // Add Generator Page
         add_submenu_page(
             self::LICENSES_PAGE,
-            __('License Manager - Add New Generator', 'lima'),
-            __('Add New Generator', 'lima'),
+            __('License Manager - Add New Generator', 'lmfwc'),
+            __('Add New Generator', 'lmfwc'),
             'manage_options',
             self::ADD_GENERATOR_PAGE,
             array($this, 'generatorsAddPage')
@@ -93,8 +98,8 @@ class AdminMenus
         // Edit Generator Page
         add_submenu_page(
             null,
-            __('License Manager - Edit Generator', 'lima'),
-            __('Edit Generator', 'lima'),
+            __('License Manager - Edit Generator', 'lmfwc'),
+            __('Edit Generator', 'lmfwc'),
             'manage_options',
             self::EDIT_GENERATOR_PAGE,
             array($this, 'generatorsEditPage')
@@ -102,28 +107,31 @@ class AdminMenus
         // Settings Page
         add_submenu_page(
             self::LICENSES_PAGE,
-            __('License Manager - Settings', 'lima'),
-            __('Settings', 'lima'),
+            __('License Manager - Settings', 'lmfwc'),
+            __('Settings', 'lmfwc'),
             'manage_options',
             self::SETTINGS_PAGE,
             array($this, 'settingsPage')
         );
     }
 
-    public function licensesPage()
+    public function licensesPageScreenOptions()
     {
-        $licenses = new \LicenseManager\Lists\LicensesList($this->crypto);
-
-        add_screen_option(
-            'per_page',
-            array(
-                'label'   => 'Licenses per page',
-                'default' => 20,
-                'option'  => 'licenses_per_page'
-            )
+        $option = 'per_page';
+        $args = array(
+            'label' => 'Licenses per page',
+            'default' => 10,
+            'option' => 'licenses_per_page'
         );
 
-        include LM_TEMPLATES_DIR . 'licenses-page.php';
+        add_screen_option($option, $args);
+    }
+
+    public function licensesPage()
+    {
+        $licenses = new \LicenseManagerForWooCommerce\Lists\LicensesList($this->crypto);
+
+        include LMFWC_TEMPLATES_DIR . 'licenses-page.php';
     }
 
     public function licensesAddImportPage()
@@ -135,33 +143,36 @@ class AdminMenus
             )
         );
 
-        include LM_TEMPLATES_DIR . 'licenses-add-import-page.php';
+        include LMFWC_TEMPLATES_DIR . 'licenses-add-import-page.php';
     }
 
     public function settingsPage()
     {
-        include LM_TEMPLATES_DIR . 'settings-page.php';
+        include LMFWC_TEMPLATES_DIR . 'settings-page.php';
     }
 
     public function generatorsPage()
     {
-        $generators = new \LicenseManager\Lists\GeneratorsList();
+        $generators = new \LicenseManagerForWooCommerce\Lists\GeneratorsList();
 
-        add_screen_option(
-            'per_page',
-            array(
-                'label'   => 'Generators per page',
-                'default' => 5,
-                'option'  => 'generators_per_page'
-            )
+        include LMFWC_TEMPLATES_DIR . 'generators-page.php';
+    }
+
+    public function generatorsPageScreenOptions()
+    {
+        $option = 'per_page';
+        $args = array(
+            'label' => 'Generators per page',
+            'default' => 10,
+            'option' => 'generators_per_page'
         );
 
-        include LM_TEMPLATES_DIR . 'generators-page.php';
+        add_screen_option($option, $args);
     }
 
     public function generatorsAddPage()
     {
-        include LM_TEMPLATES_DIR . 'generators-add-new.php';
+        include LMFWC_TEMPLATES_DIR . 'generators-add-new.php';
     }
 
     public function generatorsEditPage()
@@ -174,14 +185,19 @@ class AdminMenus
            return;
         }
 
-        $products = apply_filters('lima_get_assigned_products', array('generator_id' => absint($_GET['id'])));
+        $products = apply_filters('lmfwc_get_assigned_products', array('generator_id' => absint($_GET['id'])));
 
-        include LM_TEMPLATES_DIR . 'generators-edit.php';
+        include LMFWC_TEMPLATES_DIR . 'generators-edit.php';
     }
 
     public function initSettingsAPI()
     {
         new Settings();
+    }
+
+    public function setScreenOption($status, $option, $value)
+    {
+        return $value;
     }
 
 }

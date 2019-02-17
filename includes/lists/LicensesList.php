@@ -1,13 +1,13 @@
 <?php
 
-namespace LicenseManager\Lists;
+namespace LicenseManagerForWooCommerce\Lists;
 
-use \LicenseManager\AdminMenus;
-use \LicenseManager\Database;
-use \LicenseManager\Logger;
-use \LicenseManager\Settings;
-use \LicenseManager\Setup;
-use \LicenseManager\Enums\LicenseStatusEnum;
+use \LicenseManagerForWooCommerce\AdminMenus;
+use \LicenseManagerForWooCommerce\Database;
+use \LicenseManagerForWooCommerce\Logger;
+use \LicenseManagerForWooCommerce\Settings;
+use \LicenseManagerForWooCommerce\Setup;
+use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
 
 defined('ABSPATH') || exit;
 
@@ -26,23 +26,36 @@ class LicensesList extends \WP_List_Table
     const SPINNER_URL = '/wp-admin/images/loading.gif';
 
     /**
-     * @var \LicenseManager\Crypto
+     * @var \LicenseManagerForWooCommerce\Crypto
      */
     private $crypto;
+
+    /**
+     * @string
+     */
+    private $date_format;
+
+    /**
+     * @string
+     */
+    private $time_format;
 
     /**
      * Class constructor.
      */
     public function __construct(
-        \LicenseManager\Crypto $crypto
+        \LicenseManagerForWooCommerce\Crypto $crypto
     ) {
         $this->crypto = $crypto;
 
         parent::__construct([
-            'singular' => __('License', 'lima'),
-            'plural'   => __('Licenses', 'lima'),
+            'singular' => __('License', 'lmfwc'),
+            'plural'   => __('Licenses', 'lmfwc'),
             'ajax'     => false
         ]);
+
+        $this->date_format = get_option('date_format');
+        $this->time_format = get_option('time_format');
     }
 
     protected function get_views()
@@ -57,7 +70,7 @@ class LicensesList extends \WP_List_Table
             '<a href="%s" %s>%s <span class="count">(%d)</span></a>',
             $all_url,
             $class,
-            __('All', 'lima'),
+            __('All', 'lmfwc'),
             Database::getLicenseKeyCount()
         );
 
@@ -68,7 +81,7 @@ class LicensesList extends \WP_List_Table
             '<a href="%s" %s>%s <span class="count">(%d)</span></a>',
             $sold_url,
             $class,
-            __('Sold', 'lima'),
+            __('Sold', 'lmfwc'),
             Database::getLicenseKeyCount(LicenseStatusEnum::SOLD)
         );
 
@@ -79,7 +92,7 @@ class LicensesList extends \WP_List_Table
             '<a href="%s" %s>%s <span class="count">(%d)</span></a>',
             $delivered_url,
             $class,
-            __('Delivered', 'lima'),
+            __('Delivered', 'lmfwc'),
             Database::getLicenseKeyCount(LicenseStatusEnum::DELIVERED)
         );
 
@@ -90,7 +103,7 @@ class LicensesList extends \WP_List_Table
             '<a href="%s" %s>%s <span class="count">(%d)</span></a>',
             $active_url,
             $class,
-            __('Active', 'lima'),
+            __('Active', 'lmfwc'),
             Database::getLicenseKeyCount(LicenseStatusEnum::ACTIVE)
         );
 
@@ -101,7 +114,7 @@ class LicensesList extends \WP_List_Table
             '<a href="%s" %s>%s <span class="count">(%d)</span></a>',
             $inactive_url,
             $class,
-            __('Inactive', 'lima'),
+            __('Inactive', 'lmfwc'),
             Database::getLicenseKeyCount(LicenseStatusEnum::INACTIVE)
         );
 
@@ -133,11 +146,39 @@ class LicensesList extends \WP_List_Table
                     $link = '';
                 }
                 return $link;
+            case 'created_at':
+                if ($item['created_at']) {
+                    $date_time = new \DateTime($item['created_at']);
+
+                    $created_at = sprintf(
+                        '%s<br>%s',
+                        $date_time->format($this->date_format),
+                        $date_time->format($this->time_format)
+                    );
+                } else {
+                    $created_at = '';
+                }
+
+                return $created_at;
+            case 'expires_at':
+                if ($item['expires_at']) {
+                    $date_time = new \DateTime($item['expires_at']);
+
+                    $expires_at = sprintf(
+                        '%s <br> %s',
+                        $date_time->format($this->date_format),
+                        $date_time->format($this->time_format)
+                    );
+                } else {
+                    $expires_at = '';
+                }
+
+                return $expires_at;
             case 'valid_for':
                 if ($item['valid_for']) {
-                    $link = sprintf(__('%d Day(s)', 'lima'), intval($item['valid_for']));
+                    $link = sprintf(__('%d Day(s)', 'lmfwc'), intval($item['valid_for']));
                 } else {
-                    $link = __('non-expiring', 'lima');
+                    $link = '';
                 }
                 return $link;
             case 'source':
@@ -145,13 +186,13 @@ class LicensesList extends \WP_List_Table
                     case 1:
                         $status = sprintf(
                             '<span class="dashicons dashicons-admin-generic" title="%s"></span>',
-                            __('Generator', 'lima')
+                            __('Generator', 'lmfwc')
                         );
                         break;
                     case 2:
                         $status = sprintf(
                             '<span class="dashicons dashicons-download" title="%s"></span>',
-                            __('Import', 'lima')
+                            __('Import', 'lmfwc')
                         );
                         break;
 
@@ -165,34 +206,34 @@ class LicensesList extends \WP_List_Table
                 switch ($item['status']) {
                     case LicenseStatusEnum::SOLD:
                         $status = sprintf(
-                            '<span class="lima-status sold-pending">%s</span>',
-                            __('Sold', 'lima')
+                            '<span class="lmfwc-status sold">%s</span>',
+                            __('Sold', 'lmfwc')
                         );
                         break;
                     case LicenseStatusEnum::DELIVERED:
                         $status = sprintf(
-                            '<span class="lima-status sold-delivered">%s</span>',
-                            __('Delivered', 'lima')
+                            '<span class="lmfwc-status delivered">%s</span>',
+                            __('Delivered', 'lmfwc')
                         );
                         break;
                     case LicenseStatusEnum::ACTIVE:
                         $status = sprintf(
-                            '<span class="lima-status available-ready">%s</span>',
-                            __('Active', 'lima')
+                            '<span class="lmfwc-status active">%s</span>',
+                            __('Active', 'lmfwc')
                         );
                         break;
                     case LicenseStatusEnum::INACTIVE:
                         $status = sprintf(
-                            '<span class="lima-status available-deactivated">%s</span>',
-                            __('Inactive', 'lima')
+                            '<span class="lmfwc-status inactive">%s</span>',
+                            __('Inactive', 'lmfwc')
                         );
                         break;
 
                     // Default switch case
                     default:
                         $status = sprintf(
-                            '<div class="lima-status unknown">%s</div>',
-                            __('Unknown', 'lima')
+                            '<div class="lmfwc-status unknown">%s</div>',
+                            __('Unknown', 'lmfwc')
                         );
                         break;
                 }
@@ -208,24 +249,24 @@ class LicensesList extends \WP_List_Table
 
     public function column_license_key($item)
     {
-        if (Settings::get('_lima_hide_license_keys')) {
-            $title = '<code class="lima-placeholder empty"></code>';
-            $title .= sprintf('<img class="lima-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
+        if (Settings::get('lmfwc_hide_license_keys')) {
+            $title = '<code class="lmfwc-placeholder empty"></code>';
+            $title .= sprintf('<img class="lmfwc-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
         } else {
-            $title = sprintf('<code class="lima-placeholder">%s</code>', $this->crypto->decrypt($item['license_key']));
-            $title .= sprintf('<img class="lima-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
+            $title = sprintf('<code class="lmfwc-placeholder">%s</code>', $this->crypto->decrypt($item['license_key']));
+            $title .= sprintf('<img class="lmfwc-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
         }
 
         $actions = [
             'show' => sprintf(
-                '<a class="lima-license-key-show" data-id="%d">%s</a>',
+                '<a class="lmfwc-license-key-show" data-id="%d">%s</a>',
                 $item['id'],
-                __('Show', 'lima')
+                __('Show', 'lmfwc')
             ),
             'hide' => sprintf(
-                '<a class="lima-license-key-hide" data-id="%d">%s</a>',
+                '<a class="lmfwc-license-key-hide" data-id="%d">%s</a>',
                 $item['id'],
-                __('Hide', 'lima')
+                __('Hide', 'lmfwc')
             ),
             'activate' => sprintf(
                 '<a href="%s">%s</a>',
@@ -237,7 +278,7 @@ class LicensesList extends \WP_List_Table
                         wp_create_nonce('activate')
                     )
                 ),
-                __('Activate', 'lima')
+                __('Activate', 'lmfwc')
             ),
             'deactivate' => sprintf(
                 '<a href="%s">%s</a>',
@@ -249,7 +290,7 @@ class LicensesList extends \WP_List_Table
                         wp_create_nonce('deactivate')
                     )
                 ),
-                __('Deactivate', 'lima')
+                __('Deactivate', 'lmfwc')
             ),
             'delete' => sprintf(
                 '<a href="%s">%s</a>',
@@ -261,7 +302,7 @@ class LicensesList extends \WP_List_Table
                         wp_create_nonce('delete')
                     )
                 ),
-                __('Delete', 'lima')
+                __('Delete', 'lmfwc')
             ),
         ];
 
@@ -291,9 +332,9 @@ class LicensesList extends \WP_List_Table
     public function get_bulk_actions()
     {
         $actions = [
-            'activate'   => __('Activate', 'lima'),
-            'deactivate' => __('Deactivate', 'lima'),
-            'delete'     => __('Delete', 'lima')
+            'activate'   => __('Activate', 'lmfwc'),
+            'deactivate' => __('Deactivate', 'lmfwc'),
+            'delete'     => __('Delete', 'lmfwc')
         ];
 
         return $actions;
@@ -380,22 +421,22 @@ class LicensesList extends \WP_List_Table
 
     public function no_items()
     {
-        _e('No licenses found.', 'lima');
+        _e('No licenses found.', 'lmfwc');
     }
 
     public function get_columns()
     {
         $columns = array(
             'cb'          => '<input type="checkbox" />',
-            'id'          => __('ID', 'lima'),
-            'license_key' => __('License Key', 'lima'),
-            'order_id'    => __('Order', 'lima'),
-            'product_id'  => __('Product', 'lima'),
-            'created_at'  => __('Created at', 'lima'),
-            'expires_at'  => __('Expires at', 'lima'),
-            'valid_for'   => __('Valid for', 'lima'),
-            'source'      => __('Source', 'lima'),
-            'status'      => __('Status', 'lima')
+            'id'          => __('ID', 'lmfwc'),
+            'license_key' => __('License Key', 'lmfwc'),
+            'order_id'    => __('Order', 'lmfwc'),
+            'product_id'  => __('Product', 'lmfwc'),
+            'created_at'  => __('Created at', 'lmfwc'),
+            'expires_at'  => __('Expires at', 'lmfwc'),
+            'valid_for'   => __('Valid for', 'lmfwc'),
+            'source'      => __('Source', 'lmfwc'),
+            'status'      => __('Status', 'lmfwc')
         );
 
         return $columns;
@@ -407,7 +448,7 @@ class LicensesList extends \WP_List_Table
             !wp_verify_nonce($_REQUEST['_wpnonce'], $nonce_action) &&
             !wp_verify_nonce($_REQUEST['_wpnonce'], 'bulk-' . $this->_args['plural'])
         ) {
-            wp_redirect(admin_url(sprintf('admin.php?page=%s&lima_nonce_status=invalid', AdminMenus::LICENSES_PAGE)));
+            wp_redirect(admin_url(sprintf('admin.php?page=%s&lmfwc_nonce_status=invalid', AdminMenus::LICENSES_PAGE)));
         }
     }
     private function toggleLicenseKeyStatus($status)
@@ -417,7 +458,7 @@ class LicensesList extends \WP_List_Table
         $this->verifyNonce($nonce_action);
 
         $result = apply_filters(
-            'lima_toggle_license_key_status',
+            'lmfwc_toggle_license_key_status',
             array(
                 'column_name' => 'id',
                 'operator' => 'in',
@@ -432,7 +473,7 @@ class LicensesList extends \WP_List_Table
         $this->verifyNonce('delete');
 
         $result = apply_filters(
-            'lima_delete_license_keys',
+            'lmfwc_delete_license_keys',
             array(
                 'ids' => (array)($_REQUEST['id'])
             )
@@ -442,7 +483,7 @@ class LicensesList extends \WP_List_Table
             wp_redirect(
                 admin_url(
                     sprintf(
-                        'admin.php?page=%s&lima_delete_license_key=true',
+                        'admin.php?page=%s&lmfwc_delete_license_key=true',
                         AdminMenus::LICENSES_PAGE
                     )
                 )
@@ -451,7 +492,7 @@ class LicensesList extends \WP_List_Table
             wp_redirect(
                 admin_url(
                     sprintf(
-                        'admin.php?page=%s&lima_delete_license_key=error',
+                        'admin.php?page=%s&lmfwc_delete_license_key=error',
                         AdminMenus::LICENSES_PAGE
                     )
                 )
