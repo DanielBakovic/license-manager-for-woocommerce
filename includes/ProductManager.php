@@ -4,16 +4,13 @@ namespace LicenseManagerForWooCommerce;
 
 use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
 
+defined('ABSPATH') || exit;
+
 /**
  * LicenseManagerForWooCommerce ProductManager.
  *
  * @version 1.0.0
- */
-
-defined('ABSPATH') || exit;
-
-/**
- * ProductManager class.
+ * @since 1.0.0
  */
 class ProductManager
 {
@@ -175,13 +172,7 @@ class ProductManager
         if (array_key_exists('lmfwc_licensed_product_use_generator', $_POST)) {
             // You must select a generator if you wish to assign it to the product.
             if (!$_POST['lmfwc_licensed_product_assigned_generator']) {
-                $error = new \WP_Error(
-                    2,
-                    __(
-                        'Assign a generator if you wish to sell automatically generated licenses for this product.',
-                        'lmfwc'
-                    )
-                );
+                $error = new \WP_Error(2, __('Assign a generator if you wish to sell automatically generated licenses for this product.', 'lmfwc'));
 
                 set_transient('lmfwc_error', $error, 45);
                 update_post_meta($post_id, 'lmfwc_licensed_product_use_generator', 0);

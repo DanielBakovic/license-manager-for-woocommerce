@@ -8,6 +8,7 @@ defined('ABSPATH') || exit;
  * LicenseManagerForWooCommerce
  *
  * @package LicenseManagerForWooCommerce
+ * @version 1.0.0
  * @since 1.0.0
  * @author Dražen Bebić
  * @link https://www.bebic.at/license-manager-for-woocommerce
