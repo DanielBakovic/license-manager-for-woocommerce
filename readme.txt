@@ -19,9 +19,22 @@ If you have any feature requests, need more hooks, or maybe have even found a bu
 
 This section describes how to install the plugin and get it working.
 
+### Manual installation
+
 1. Upload the plugin files to the `/wp-content/plugins/license-manager-for-woocommerce` directory, or install the plugin through the WordPress *Plugins* page directly.
 1. Activate the plugin through the *Plugins* page in WordPress.
 1. Use the *License Manager* → *Settings* page to configure the plugin.
+
+### Installation through WordPress
+
+1. Open up your WordPress Dashboard and navigate to the *Plugins* page.
+1. Click on *Add new*
+1. In the search bar type "License Manager for WooCommerce"
+1. Select this plugin and click on *Install now"
+
+### Important
+
+The plugin will create two files inside its own `assets/etc` folder. These files (`defuse.txt` and `secret.txt`) contain cryptographic secrets which are automatically generated if they don't exist. These cryptographic secrets are used to encrypt, decrypt and hash your license keys. Once they are generated please **back them up somewhere safe**. In case you lose these two files your encrypted license keys inside the database will remain forever lost!
 
 == Changelog ==
 
