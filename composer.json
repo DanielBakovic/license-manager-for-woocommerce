@@ -3,11 +3,14 @@
         "psr-4": {
             "LicenseManagerForWooCommerce\\": "includes/",
             "LicenseManagerForWooCommerce\\Abstracts\\": "includes/abstracts",
+            "LicenseManagerForWooCommerce\\API\\": "includes/api",
+            "LicenseManagerForWooCommerce\\API\\v1\\": "includes/api/v1",
             "LicenseManagerForWooCommerce\\Enums\\": "includes/enums",
             "LicenseManagerForWooCommerce\\Lists\\": "includes/lists"
         }
     },
     "require": {
-        "defuse/php-encryption": "^2.2"
+        "defuse/php-encryption": "^2.2",
+        "setasign/fpdf": "^1.8"
     }
 }

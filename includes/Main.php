@@ -167,12 +167,12 @@ final class Main
         $crypto = new Crypto();
 
         new ProductManager();
-        new AdminMenus($crypto);
+        new AdminMenus();
         new AdminNotice();
         new Generator();
-        new OrderManager($crypto);
-        new Database($crypto);
-        new FormHandler($crypto);
+        new OrderManager();
+        new Database();
+        new FormHandler();
     }
 
 }

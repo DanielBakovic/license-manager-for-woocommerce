@@ -17,18 +17,9 @@ class FormHandler
     const TEMP_TXT_FILE = 'import.tmp.txt';
 
     /**
-     * @var \LicenseManagerForWooCommerce\Crypto
-     */
-    private $crypto;
-
-    /**
      * FormHandler Constructor.
      */
-    public function __construct(
-        \LicenseManagerForWooCommerce\Crypto $crypto
-    ) {
-        $this->crypto = $crypto;
-
+    public function __construct() {
         // Admin POST requests.
         add_action('admin_post_lmfwc_save_generator',      array($this, 'saveGenerator'   ), 10);
         add_action('admin_post_lmfwc_update_generator',    array($this, 'updateGenerator' ), 10);
@@ -269,8 +260,6 @@ class FormHandler
         }
 
         wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
-
-        wp_die();
     }
 
     public function showLicenseKey()
@@ -326,7 +315,7 @@ class FormHandler
             foreach ($license_keys as $license_key) {
                 $html .= sprintf(
                     '<li></span> <code class="lmfwc-placeholder">%s</code></li>',
-                    $this->crypto->decrypt($license_key->license_key)
+                    apply_filters('lmfwc_decrypt', $license_key->license_key)
                 );
             }
 

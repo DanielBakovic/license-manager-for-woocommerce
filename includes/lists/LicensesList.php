@@ -27,11 +27,6 @@ class LicensesList extends \WP_List_Table
     const SPINNER_URL = '/wp-admin/images/loading.gif';
 
     /**
-     * @var \LicenseManagerForWooCommerce\Crypto
-     */
-    private $crypto;
-
-    /**
      * @string
      */
     private $date_format;
@@ -44,11 +39,7 @@ class LicensesList extends \WP_List_Table
     /**
      * Class constructor.
      */
-    public function __construct(
-        \LicenseManagerForWooCommerce\Crypto $crypto
-    ) {
-        $this->crypto = $crypto;
-
+    public function __construct() {
         parent::__construct([
             'singular' => __('License', 'lmfwc'),
             'plural'   => __('Licenses', 'lmfwc'),
@@ -254,7 +245,7 @@ class LicensesList extends \WP_List_Table
             $title = '<code class="lmfwc-placeholder empty"></code>';
             $title .= sprintf('<img class="lmfwc-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
         } else {
-            $title = sprintf('<code class="lmfwc-placeholder">%s</code>', $this->crypto->decrypt($item['license_key']));
+            $title = sprintf('<code class="lmfwc-placeholder">%s</code>', apply_filters('lmfwc_decrypt', $item['license_key']));
             $title .= sprintf('<img class="lmfwc-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
         }
 

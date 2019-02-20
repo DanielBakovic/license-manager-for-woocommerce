@@ -26,18 +26,9 @@ class AdminMenus
     const SETTINGS_PAGE       = 'license_manager_settings';
 
     /**
-     * @var \LicenseManagerForWooCommerce\Crypto
-     */
-    private $crypto;
-
-    /**
      * Class constructor.
      */
-    public function __construct(
-        \LicenseManagerForWooCommerce\Crypto $crypto
-    ) {
-        $this->crypto = $crypto;
-
+    public function __construct() {
         // Plugin pages.
         add_action('admin_menu', array($this, 'createPluginPages'), 9);
         add_action('admin_init', array($this, 'initSettingsAPI'));
@@ -129,7 +120,7 @@ class AdminMenus
 
     public function licensesPage()
     {
-        $licenses = new \LicenseManagerForWooCommerce\Lists\LicensesList($this->crypto);
+        $licenses = new \LicenseManagerForWooCommerce\Lists\LicensesList();
 
         include LMFWC_TEMPLATES_DIR . 'licenses-page.php';
     }

@@ -16,18 +16,9 @@ defined('ABSPATH') || exit;
 class Database
 {
     /**
-     * @var \LicenseManagerForWooCommerce\Crypto
-     */
-    private $crpyto;
-
-    /**
      * Database Constructor.
      */
-    public function __construct(
-        \LicenseManagerForWooCommerce\Crypto $crypto
-    ) {
-        $this->crypto = $crypto;
-
+    public function __construct() {
         // Get
         add_filter('lmfwc_get_assigned_products',         array($this, 'getAssignedProducts'), 10, 1);
         add_filter('lmfwc_get_available_stock',           array($this, 'getAvailableStock'),   10, 1);
@@ -174,8 +165,8 @@ class Database
                     array(
                         'order_id'    => $args['order_id'],
                         'product_id'  => $args['product_id'],
-                        'license_key' => $this->crypto->encrypt($license_key),
-                        'hash'        => $this->crypto->hash($license_key),
+                        'license_key' => apply_filters('lmfwc_encrypt', $license_key),
+                        'hash'        => apply_filters('lmfwc_hash', $license_key),
                         'created_at'  => $created_at,
                         'expires_at'  => $expires_at,
                         'source'      => SourceEnum::GENERATOR,
@@ -244,8 +235,8 @@ class Database
                     array(
                         'order_id'    => null,
                         'product_id'  => $args['product_id'],
-                        'license_key' => $this->crypto->encrypt($license_key),
-                        'hash'        => $this->crypto->hash($license_key),
+                        'license_key' => apply_filters('lmfwc_encrypt', $license_key),
+                        'hash'        => apply_filters('lmfwc_hash', $license_key),
                         'created_at'  => $created_at,
                         'expires_at'  => null,
                         'source'      => SourceEnum::IMPORT,
@@ -287,8 +278,8 @@ class Database
             array(
                 'order_id'    => null, // Because it's only added, not bought.
                 'product_id'  => $args['product_id'],
-                'license_key' => $this->crypto->encrypt($args['license_key']),
-                'hash'        => $this->crypto->hash($args['license_key']),
+                'license_key' => apply_filters('lmfwc_encrypt', $args['license_key']),
+                'hash'        => apply_filters('lmfwc_hash', $args['license_key']),
                 'created_at'  => $created_at,
                 'expires_at'  => null, // Because it's only added, not bought.
                 'valid_for'   => $args['valid_for'],
@@ -387,7 +378,7 @@ class Database
         $table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
         $sql   = "SELECT license_key FROM `{$table}` WHERE hash = '%s';";
 
-        return $wpdb->get_var($wpdb->prepare($sql, $this->crypto->hash($license_key))) != null;
+        return $wpdb->get_var($wpdb->prepare($sql, apply_filters('lmfwc_hash', $license_key))) != null;
     }
 
     /**
@@ -544,11 +535,10 @@ class Database
         global $wpdb;
 
         $table       = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
-        $crypto      = new Crypto();
         $license_key = $wpdb->get_var($wpdb->prepare("SELECT license_key FROM $table WHERE id = %d", $id));
 
         if ($license_key) {
-            return $crypto->decrypt($license_key);
+            return apply_filters('lmfwc_decrypt', $license_key);
         } else {
             return $license_key;
         }

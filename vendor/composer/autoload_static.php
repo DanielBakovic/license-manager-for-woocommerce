@@ -12,6 +12,8 @@ class ComposerStaticInit1e498426c3516c7c6bd12ace14395786
             'LicenseManagerForWooCommerce\\Lists\\' => 35,
             'LicenseManagerForWooCommerce\\Enums\\' => 35,
             'LicenseManagerForWooCommerce\\Abstracts\\' => 39,
+            'LicenseManagerForWooCommerce\\API\\v1\\' => 36,
+            'LicenseManagerForWooCommerce\\API\\' => 33,
             'LicenseManagerForWooCommerce\\' => 29,
         ),
         'D' => 
@@ -33,6 +35,14 @@ class ComposerStaticInit1e498426c3516c7c6bd12ace14395786
         array (
             0 => __DIR__ . '/../..' . '/includes/abstracts',
         ),
+        'LicenseManagerForWooCommerce\\API\\v1\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/includes/api/v1',
+        ),
+        'LicenseManagerForWooCommerce\\API\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/includes/api',
+        ),
         'LicenseManagerForWooCommerce\\' => 
         array (
             0 => __DIR__ . '/../..' . '/includes',
@@ -44,36 +54,7 @@ class ComposerStaticInit1e498426c3516c7c6bd12ace14395786
     );
 
     public static $classMap = array (
-        'Defuse\\Crypto\\Core' => __DIR__ . '/..' . '/defuse/php-encryption/src/Core.php',
-        'Defuse\\Crypto\\Crypto' => __DIR__ . '/..' . '/defuse/php-encryption/src/Crypto.php',
-        'Defuse\\Crypto\\DerivedKeys' => __DIR__ . '/..' . '/defuse/php-encryption/src/DerivedKeys.php',
-        'Defuse\\Crypto\\Encoding' => __DIR__ . '/..' . '/defuse/php-encryption/src/Encoding.php',
-        'Defuse\\Crypto\\Exception\\BadFormatException' => __DIR__ . '/..' . '/defuse/php-encryption/src/Exception/BadFormatException.php',
-        'Defuse\\Crypto\\Exception\\CryptoException' => __DIR__ . '/..' . '/defuse/php-encryption/src/Exception/CryptoException.php',
-        'Defuse\\Crypto\\Exception\\EnvironmentIsBrokenException' => __DIR__ . '/..' . '/defuse/php-encryption/src/Exception/EnvironmentIsBrokenException.php',
-        'Defuse\\Crypto\\Exception\\IOException' => __DIR__ . '/..' . '/defuse/php-encryption/src/Exception/IOException.php',
-        'Defuse\\Crypto\\Exception\\WrongKeyOrModifiedCiphertextException' => __DIR__ . '/..' . '/defuse/php-encryption/src/Exception/WrongKeyOrModifiedCiphertextException.php',
-        'Defuse\\Crypto\\File' => __DIR__ . '/..' . '/defuse/php-encryption/src/File.php',
-        'Defuse\\Crypto\\Key' => __DIR__ . '/..' . '/defuse/php-encryption/src/Key.php',
-        'Defuse\\Crypto\\KeyOrPassword' => __DIR__ . '/..' . '/defuse/php-encryption/src/KeyOrPassword.php',
-        'Defuse\\Crypto\\KeyProtectedByPassword' => __DIR__ . '/..' . '/defuse/php-encryption/src/KeyProtectedByPassword.php',
-        'Defuse\\Crypto\\RuntimeTests' => __DIR__ . '/..' . '/defuse/php-encryption/src/RuntimeTests.php',
-        'LicenseManagerForWooCommerce\\AdminMenus' => __DIR__ . '/../..' . '/includes/AdminMenus.php',
-        'LicenseManagerForWooCommerce\\AdminNotice' => __DIR__ . '/../..' . '/includes/AdminNotice.php',
-        'LicenseManagerForWooCommerce\\Crypto' => __DIR__ . '/../..' . '/includes/Crypto.php',
-        'LicenseManagerForWooCommerce\\Database' => __DIR__ . '/../..' . '/includes/Database.php',
-        'LicenseManagerForWooCommerce\\Enums\\LicenseStatusEnum' => __DIR__ . '/../..' . '/includes/enums/LicenseStatusEnum.php',
-        'LicenseManagerForWooCommerce\\Enums\\SourceEnum' => __DIR__ . '/../..' . '/includes/enums/SourceEnum.php',
-        'LicenseManagerForWooCommerce\\FormHandler' => __DIR__ . '/../..' . '/includes/FormHandler.php',
-        'LicenseManagerForWooCommerce\\Generator' => __DIR__ . '/../..' . '/includes/Generator.php',
-        'LicenseManagerForWooCommerce\\Lists\\GeneratorsList' => __DIR__ . '/../..' . '/includes/lists/GeneratorsList.php',
-        'LicenseManagerForWooCommerce\\Lists\\LicensesList' => __DIR__ . '/../..' . '/includes/lists/LicensesList.php',
-        'LicenseManagerForWooCommerce\\Logger' => __DIR__ . '/../..' . '/includes/Logger.php',
-        'LicenseManagerForWooCommerce\\Main' => __DIR__ . '/../..' . '/includes/Main.php',
-        'LicenseManagerForWooCommerce\\OrderManager' => __DIR__ . '/../..' . '/includes/OrderManager.php',
-        'LicenseManagerForWooCommerce\\ProductManager' => __DIR__ . '/../..' . '/includes/ProductManager.php',
-        'LicenseManagerForWooCommerce\\Settings' => __DIR__ . '/../..' . '/includes/Settings.php',
-        'LicenseManagerForWooCommerce\\Setup' => __DIR__ . '/../..' . '/includes/Setup.php',
+        'FPDF' => __DIR__ . '/..' . '/setasign/fpdf/fpdf.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

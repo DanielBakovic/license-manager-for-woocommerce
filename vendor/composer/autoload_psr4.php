@@ -9,6 +9,8 @@ return array(
     'LicenseManagerForWooCommerce\\Lists\\' => array($baseDir . '/includes/lists'),
     'LicenseManagerForWooCommerce\\Enums\\' => array($baseDir . '/includes/enums'),
     'LicenseManagerForWooCommerce\\Abstracts\\' => array($baseDir . '/includes/abstracts'),
+    'LicenseManagerForWooCommerce\\API\\v1\\' => array($baseDir . '/includes/api/v1'),
+    'LicenseManagerForWooCommerce\\API\\' => array($baseDir . '/includes/api'),
     'LicenseManagerForWooCommerce\\' => array($baseDir . '/includes'),
     'Defuse\\Crypto\\' => array($vendorDir . '/defuse/php-encryption/src'),
 );

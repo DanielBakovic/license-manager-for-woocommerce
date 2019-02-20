@@ -43,6 +43,10 @@ class Crypto
     public function __construct()
     {
         $this->keyAscii = file_get_contents(LMFWC_ETC_DIR . self::DEFUSE_FILE);
+
+        add_filter('lmfwc_encrypt', array($this, 'encrypt'), 10, 1);
+        add_filter('lmfwc_decrypt', array($this, 'decrypt'), 10, 1);
+        add_filter('lmfwc_hash',    array($this, 'hash'),    10, 1);
     }
 
     /**
