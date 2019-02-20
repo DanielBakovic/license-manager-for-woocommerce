@@ -204,40 +204,46 @@ class FormHandler
 
         // Redirect according to $result.
         if ($result['failed'] == 0 && $result['added'] == 0) {
-            wp_redirect(sprintf('admin.php?page=%s&lmfwc_import_license_keys=error', AdminMenus::ADD_IMPORT_PAGE));
+            AdminNotice::add('error', __('Something went wrong, no keys were added. Please try again.', 'lmfwc'), 3);
+            wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
             exit();
         }
 
         if ($result['failed'] == 0 && $result['added'] > 0) {
-            wp_redirect(
+            AdminNotice::add(
+                'success',
                 sprintf(
-                    'admin.php?page=%s&lmfwc_import_license_keys=true&added=%d',
-                    AdminMenus::ADD_IMPORT_PAGE,
-                    $result['added']
+                    __('%d key(s) have been imported successfully.', 'lmfwc'),
+                    intval($result['added'])
                 )
             );
+            wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
             exit();
         }
 
         if ($result['failed'] > 0 && $result['added'] == 0) {
-            wp_redirect(
+            AdminNotice::add(
+                'error',
                 sprintf(
-                    'admin.php?page=%s&lmfwc_import_license_keys=false&rejected=%d',
-                    AdminMenus::ADD_IMPORT_PAGE,
-                    $result['failed']
-                )
+                    __('Import failed. %d key(s) were not added.', 'lmfwc'),
+                    intval($result['failed'])
+                ),
+                4
             );
+            wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
             exit();
         }
 
         if ($result['failed'] > 0 && $result['added'] > 0) {
-            wp_redirect(
+            AdminNotice::add(
+                'warning',
                 sprintf(
-                    'admin.php?page=%s&lmfwc_import_license_keys=mixed&added=%d&rejected=%d',
-                    AdminMenus::ADD_IMPORT_PAGE,
-                    $result['failed']
+                    __('%d key(s) have been imported and %d key(s) were not imported.', 'lmfwc'),
+                    intval($result['added']),
+                    intval($result['failed'])
                 )
             );
+            wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
             exit();
         }
     }

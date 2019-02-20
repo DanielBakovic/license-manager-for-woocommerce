@@ -30,7 +30,7 @@ This section describes how to install the plugin and get it working.
 1. Open up your WordPress Dashboard and navigate to the *Plugins* page.
 1. Click on *Add new*
 1. In the search bar type "License Manager for WooCommerce"
-1. Select this plugin and click on *Install now"
+1. Select this plugin and click on *Install now*
 
 ### Important
 

@@ -7,7 +7,7 @@ defined('ABSPATH') || exit;
 /**
  * Set up WordPress Admin Notices.
  *
- * @version 1.0.0
+ * @version 1.1.0
  * @since 1.0.0
  */
 class AdminNotice
@@ -18,6 +18,7 @@ class AdminNotice
     const NOTICE_ERROR   = 'notice-error';
     const NOTICE_SUCCESS = 'notice-success';
     const NOTICE_WARNING = 'notice-warning';
+    const NOTICE_INFO    = 'notice-info';
 
     /**
      * Class constructor.
@@ -29,7 +30,7 @@ class AdminNotice
     public function initAdminNotices()
     {
         $this->transients();
-        $this->importLicenseKeys();
+        //$this->importLicenseKeys();
         $this->addLicenseKey();
         $this->activateLicenseKey();
         $this->deleteLicenseKey();
@@ -38,7 +39,7 @@ class AdminNotice
 
     private function transients()
     {
-        if ($error = get_transient('lmfwc_error')) {
+        if ($error = get_transient('lmfwc_notice_error')) {
             echo sprintf(
                 self::MESSAGE_DISMISSIBLE,
                 self::NOTICE_ERROR,
@@ -46,6 +47,30 @@ class AdminNotice
             );
 
             delete_transient('lmfwc_error');
+        } elseif ($success = get_transient('lmfwc_notice_success')) {
+            echo sprintf(
+                self::MESSAGE_DISMISSIBLE,
+                self::NOTICE_SUCCESS,
+                $success
+            );
+
+            delete_transient('lmfwc_notice_success');
+        } elseif ($warning = get_transient('lmfwc_notice_warning')) {
+            echo sprintf(
+                self::MESSAGE_DISMISSIBLE,
+                self::NOTICE_WARNING,
+                $warning
+            );
+
+            delete_transient('lmfwc_notice_warning');
+        } elseif ($info = get_transient('lmfwc_notice_info')) {
+            echo sprintf(
+                self::MESSAGE_DISMISSIBLE,
+                self::NOTICE_INFO,
+                $info
+            );
+
+            delete_transient('lmfwc_notice_info');
         }
     }
 
@@ -164,5 +189,31 @@ class AdminNotice
             );
         }
     }
-
+    /**
+     * Adds a dashboard notice to be displayed on the next page reload.
+     *
+     * @since 1.1.0
+     *
+     * @param string $level
+     * @param string $message
+     * @param int $code
+     * @param int $duration
+     */
+    public static function add($level, $message, $code = -1, $duration = 60)
+    {
+        switch ($level) {
+            case 'error':
+                set_transient('lmfwc_notice_error', new \WP_Error($code, $message), $duration);
+                break;
+            case 'success':
+                set_transient('lmfwc_notice_success', $message, $duration);
+                break;
+            case 'warning':
+                set_transient('lmfwc_notice_warning', $message, $duration);
+                break;
+            case 'info':
+                set_transient('lmfwc_notice_info', $message, $duration);
+                break;
+        }
+    }
 }

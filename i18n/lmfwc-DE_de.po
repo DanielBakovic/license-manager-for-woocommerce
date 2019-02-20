@@ -1,0 +1,583 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: License Manager for WooCommerce\n"
+"POT-Creation-Date: 2019-02-20 20:01+0100\n"
+"PO-Revision-Date: 2019-02-20 20:04+0100\n"
+"Last-Translator: \n"
+"Language-Team: https://www.bebic.at\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2.1\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-SearchPath-0: includes\n"
+"X-Poedit-SearchPath-1: templates\n"
+
+#: includes/AdminMenus.php:53 includes/AdminMenus.php:54
+#: includes/AdminMenus.php:63
+msgid "License Manager"
+msgstr "Lizenz-Manager"
+
+#: includes/AdminMenus.php:64 includes/ProductManager.php:46
+#: includes/lists/LicensesList.php:53 templates/licenses-page.php:5
+msgid "Licenses"
+msgstr "Lizenzen"
+
+#: includes/AdminMenus.php:73
+msgid "License Manager - Import"
+msgstr "Lizenz-Manager - Import"
+
+#: includes/AdminMenus.php:74 includes/lists/LicensesList.php:195
+#: templates/licenses-add-import-page.php:60
+msgid "Import"
+msgstr "Importieren"
+
+#: includes/AdminMenus.php:82
+msgid "License Manager - Generators"
+msgstr "Lizenz-Manager - Generatoren"
+
+#: includes/AdminMenus.php:83 includes/lists/GeneratorsList.php:31
+#: templates/generators-page.php:5
+msgid "Generators"
+msgstr "Generatoren"
+
+#: includes/AdminMenus.php:92
+msgid "License Manager - Add New Generator"
+msgstr "Lizenz-Manager - Neuen Generator Hinzufügen"
+
+#: includes/AdminMenus.php:93 templates/generators-add-new.php:5
+msgid "Add New Generator"
+msgstr "Neuen Generator Hinzufügen"
+
+#: includes/AdminMenus.php:101
+msgid "License Manager - Edit Generator"
+msgstr "Lizenz-Manager - Generator Editieren"
+
+#: includes/AdminMenus.php:102 templates/generators-edit.php:5
+msgid "Edit Generator"
+msgstr "Generator Editieren"
+
+#: includes/AdminMenus.php:110
+msgid "License Manager - Settings"
+msgstr "Lizenz-Manager - Einstellungen"
+
+#: includes/AdminMenus.php:111 templates/settings-page.php:5
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: includes/AdminNotice.php:61
+msgid "Something went wrong, no keys were added. Please try again."
+msgstr ""
+
+#: includes/AdminNotice.php:68
+#, php-format
+msgid "%d key(s) have been imported successfully."
+msgstr ""
+
+#: includes/AdminNotice.php:77
+#, php-format
+msgid "Import failed. %d key(s) were not added."
+msgstr ""
+
+#: includes/AdminNotice.php:86
+#, php-format
+msgid "%d key(s) have been imported and %d key(s) were not imported."
+msgstr ""
+
+#: includes/AdminNotice.php:103
+msgid "Your license key has been added successfully."
+msgstr ""
+
+#: includes/AdminNotice.php:109
+msgid "Something went wrong, your key was not added. Please try again."
+msgstr ""
+
+#: includes/AdminNotice.php:123 includes/AdminNotice.php:143
+msgid "Your license key has been activated successfully."
+msgstr ""
+
+#: includes/AdminNotice.php:129 includes/AdminNotice.php:149
+msgid ""
+"Something went wrong, your license key was not deactivate. Please try again."
+msgstr ""
+
+#: includes/AdminNotice.php:163
+msgid "Invalid nonce! Your action was not completed."
+msgstr ""
+
+#: includes/FormHandler.php:279 includes/FormHandler.php:292
+msgid "Invalid request."
+msgstr ""
+
+#: includes/FormHandler.php:321
+msgid "<p>The following license keys have been sold by this order:</p>"
+msgstr ""
+
+#: includes/FormHandler.php:347
+msgid "Show License Key(s)"
+msgstr ""
+
+#: includes/FormHandler.php:353
+msgid "Hide License Key(s)"
+msgstr ""
+
+#: includes/Generator.php:142
+msgid ""
+"It's not possible to generate that many keys with the given parameters, "
+"there are not enough combinations. Please review your inputs."
+msgstr ""
+
+#: includes/Main.php:121
+msgid "Documentation"
+msgstr ""
+
+#: includes/Main.php:126
+msgid "Donate"
+msgstr ""
+
+#: includes/ProductManager.php:64
+msgid "Please select a generator"
+msgstr ""
+
+#: includes/ProductManager.php:83
+msgid "Sell licenses"
+msgstr ""
+
+#: includes/ProductManager.php:84
+msgid "Sell license keys for this product"
+msgstr ""
+
+#: includes/ProductManager.php:97
+msgid "Generate licenses"
+msgstr ""
+
+#: includes/ProductManager.php:98
+msgid "Automatically generate license keys with each sold product."
+msgstr ""
+
+#: includes/ProductManager.php:109
+msgid "Assign generator"
+msgstr ""
+
+#: includes/ProductManager.php:120
+msgid "Sell from stock"
+msgstr ""
+
+#: includes/ProductManager.php:121
+msgid "Sell added/imported license keys."
+msgstr ""
+
+#: includes/ProductManager.php:130
+msgid "Available"
+msgstr "Verfügbar"
+
+#: includes/ProductManager.php:132
+msgid "License key(s) in stock and available for sale."
+msgstr ""
+
+#: includes/ProductManager.php:175
+msgid ""
+"Assign a generator if you wish to sell automatically generated licenses for "
+"this product."
+msgstr ""
+
+#: includes/Settings.php:37
+msgid "Security"
+msgstr "Sicherheit"
+
+#: includes/Settings.php:42
+msgid "Obscure Licenses"
+msgstr ""
+
+#: includes/Settings.php:49
+msgid "Automatic Delivery"
+msgstr ""
+
+#: includes/Settings.php:63
+msgid "Please read the description of each field before making any changes."
+msgstr ""
+
+#: includes/Settings.php:83
+msgid "Hide license keys in the admin dashboard."
+msgstr ""
+
+#: includes/Settings.php:87
+msgid ""
+"All licenses will be hidden and only displayed when the 'Show' action is "
+"clicked."
+msgstr ""
+
+#: includes/Settings.php:106
+msgid "Automatically send license keys when an order is set to 'Complete'."
+msgstr ""
+
+#: includes/Settings.php:110
+msgid ""
+"If this setting is off, you must manually send out all license keys for "
+"completed orders."
+msgstr ""
+
+#: includes/lists/GeneratorsList.php:30 includes/lists/LicensesList.php:189
+msgid "Generator"
+msgstr ""
+
+#: includes/lists/GeneratorsList.php:66
+msgid "No generators found."
+msgstr ""
+
+#: includes/lists/GeneratorsList.php:81 includes/lists/GeneratorsList.php:156
+#: includes/lists/LicensesList.php:305 includes/lists/LicensesList.php:337
+msgid "Delete"
+msgstr ""
+
+#: includes/lists/GeneratorsList.php:89
+msgid "Edit"
+msgstr ""
+
+#: includes/lists/GeneratorsList.php:112
+msgid "non-expiring"
+msgstr ""
+
+#: includes/lists/GeneratorsList.php:112
+msgid "day(s)"
+msgstr ""
+
+#: includes/lists/GeneratorsList.php:130 includes/lists/LicensesList.php:431
+msgid "ID"
+msgstr ""
+
+#: includes/lists/GeneratorsList.php:131 templates/generators-add-new.php:15
+#: templates/generators-edit.php:16
+msgid "Name"
+msgstr ""
+
+#: includes/lists/GeneratorsList.php:132 templates/generators-add-new.php:28
+#: templates/generators-edit.php:29
+msgid "Character map"
+msgstr ""
+
+#: includes/lists/GeneratorsList.php:133 templates/generators-add-new.php:41
+#: templates/generators-edit.php:42
+msgid "Number of chunks"
+msgstr ""
+
+#: includes/lists/GeneratorsList.php:134 templates/generators-add-new.php:54
+#: templates/generators-edit.php:55
+msgid "Chunk length"
+msgstr ""
+
+#: includes/lists/GeneratorsList.php:135 templates/generators-add-new.php:66
+#: templates/generators-edit.php:67
+msgid "Separator"
+msgstr ""
+
+#: includes/lists/GeneratorsList.php:136 templates/generators-add-new.php:76
+#: templates/generators-edit.php:77
+msgid "Prefix"
+msgstr ""
+
+#: includes/lists/GeneratorsList.php:137 templates/generators-add-new.php:86
+#: templates/generators-edit.php:87
+msgid "Suffix"
+msgstr ""
+
+#: includes/lists/GeneratorsList.php:138 templates/generators-add-new.php:96
+#: templates/generators-edit.php:97
+msgid "Expires in"
+msgstr ""
+
+#: includes/lists/LicensesList.php:52
+msgid "License"
+msgstr ""
+
+#: includes/lists/LicensesList.php:73
+msgid "All"
+msgstr ""
+
+#: includes/lists/LicensesList.php:84 includes/lists/LicensesList.php:210
+msgid "Sold"
+msgstr ""
+
+#: includes/lists/LicensesList.php:95 includes/lists/LicensesList.php:216
+msgid "Delivered"
+msgstr ""
+
+#: includes/lists/LicensesList.php:106 includes/lists/LicensesList.php:222
+msgid "Active"
+msgstr ""
+
+#: includes/lists/LicensesList.php:117 includes/lists/LicensesList.php:228
+msgid "Inactive"
+msgstr ""
+
+#: includes/lists/LicensesList.php:179
+#, php-format
+msgid "%d Day(s)"
+msgstr ""
+
+#: includes/lists/LicensesList.php:236
+msgid "Unknown"
+msgstr ""
+
+#: includes/lists/LicensesList.php:264
+msgid "Show"
+msgstr ""
+
+#: includes/lists/LicensesList.php:269
+msgid "Hide"
+msgstr ""
+
+#: includes/lists/LicensesList.php:281 includes/lists/LicensesList.php:335
+msgid "Activate"
+msgstr ""
+
+#: includes/lists/LicensesList.php:293 includes/lists/LicensesList.php:336
+msgid "Deactivate"
+msgstr ""
+
+#: includes/lists/LicensesList.php:424
+msgid "No licenses found."
+msgstr ""
+
+#: includes/lists/LicensesList.php:432
+msgid "License Key"
+msgstr ""
+
+#: includes/lists/LicensesList.php:433
+msgid "Order"
+msgstr ""
+
+#: includes/lists/LicensesList.php:434
+#: templates/licenses-add-import-page.php:41
+#: templates/licenses-add-import-page.php:107
+msgid "Product"
+msgstr ""
+
+#: includes/lists/LicensesList.php:435
+msgid "Created at"
+msgstr ""
+
+#: includes/lists/LicensesList.php:436
+msgid "Expires at"
+msgstr ""
+
+#: includes/lists/LicensesList.php:437
+msgid "Valid for"
+msgstr ""
+
+#: includes/lists/LicensesList.php:438
+msgid "Source"
+msgstr ""
+
+#: includes/lists/LicensesList.php:439
+msgid "Status"
+msgstr ""
+
+#: templates/generators-add-new.php:21 templates/generators-add-new.php:34
+#: templates/generators-add-new.php:47 templates/generators-add-new.php:60
+#: templates/generators-edit.php:22 templates/generators-edit.php:35
+#: templates/generators-edit.php:48 templates/generators-edit.php:61
+msgid "Required."
+msgstr ""
+
+#: templates/generators-add-new.php:22 templates/generators-edit.php:23
+msgid "A short name to describe the generator."
+msgstr ""
+
+#: templates/generators-add-new.php:35
+msgid "i.e. for \"12-AB-34-CD\" the character map is <kbd>ABCD1234</kbd>."
+msgstr ""
+
+#: templates/generators-add-new.php:48
+msgid "i.e. for \"12-AB-34-CD\" the number of chunks is <kbd>4</kbd>."
+msgstr ""
+
+#: templates/generators-add-new.php:61
+msgid "i.e. for \"12-AB-34-CD\" the chunk length is <kbd>2</kbd>."
+msgstr ""
+
+#: templates/generators-add-new.php:70 templates/generators-add-new.php:80
+#: templates/generators-add-new.php:90 templates/generators-add-new.php:100
+#: templates/generators-edit.php:71 templates/generators-edit.php:81
+#: templates/generators-edit.php:91 templates/generators-edit.php:101
+msgid "Optional."
+msgstr ""
+
+#: templates/generators-add-new.php:71
+msgid "i.e. for \"12-AB-34-CD\" the separator is <kbd>-</kbd>."
+msgstr ""
+
+#: templates/generators-add-new.php:81
+msgid ""
+"Adds a word at the start (separator <b>not</b> included), i.e. <kbd><b>PRE-</"
+"b>12-AB-34-CD</kbd>."
+msgstr ""
+
+#: templates/generators-add-new.php:91
+msgid ""
+"Adds a word at the end (separator <b>not</b> included), i.e. <kbd>12-AB-34-"
+"CD<b>-SUF</b></kbd>."
+msgstr ""
+
+#: templates/generators-add-new.php:101 templates/generators-edit.php:102
+msgid ""
+"Number of days for which the license is valid after generation. Leave blank "
+"if it doesn't expire."
+msgstr ""
+
+#: templates/generators-add-new.php:108
+msgid "Save"
+msgstr ""
+
+#: templates/generators-edit.php:36
+msgid ""
+"The characters which will be used for generating a license key, i.e. for "
+"<code>12-AB-34-CD</code> the character map is <code>ABCD1234</code>."
+msgstr ""
+
+#: templates/generators-edit.php:49
+msgid ""
+"The number of separated character sets, i.e. for <code>12-AB-34-CD</code> "
+"the number of chunks is <code>4</code>."
+msgstr ""
+
+#: templates/generators-edit.php:62
+msgid ""
+"The character length of an individual chunk, i.e. for <code>12-AB-34-CD</"
+"code> the chunk length is <code>2</code>."
+msgstr ""
+
+#: templates/generators-edit.php:72
+msgid ""
+"The special character separating the individual chunks, i.e. for <code>12-"
+"AB-34-CD</code> the separator is <code>-</code>."
+msgstr ""
+
+#: templates/generators-edit.php:82
+msgid ""
+"Adds a character set at the start of a license key (separator <b>not</b> "
+"included), i.e. for <code>PRE-12-AB-34-CD</code> the prefix is <code>PRE-</"
+"code>."
+msgstr ""
+
+#: templates/generators-edit.php:92
+msgid ""
+"Adds a character set at the end of a license key (separator <b>not</b> "
+"included), i.e. for <code>12-AB-34-CD-SUF</code> the suffix is <code>-SUF</"
+"code>."
+msgstr ""
+
+#: templates/generators-edit.php:110
+msgid "Update"
+msgstr ""
+
+#: templates/generators-edit.php:115
+msgid "Assigned Products"
+msgstr ""
+
+#: templates/generators-edit.php:118
+msgid "The generator is assigned to the following product(s):"
+msgstr ""
+
+#: templates/generators-edit.php:130
+msgid "The generator does not have any products assigned to it."
+msgstr ""
+
+#: templates/generators-page.php:6
+msgid "Add new"
+msgstr ""
+
+#: templates/generators-page.php:8
+msgid "Important:"
+msgstr ""
+
+#: templates/generators-page.php:9
+msgid ""
+"You can not delete generators which are still assigned to active products! "
+"To delete those, please remove the generator from all of its assigned "
+"products first."
+msgstr ""
+
+#: templates/licenses-add-import-page.php:5
+msgid "Import Licence Keys"
+msgstr ""
+
+#: templates/licenses-add-import-page.php:16
+msgid "File (CSV/TXT)"
+msgstr ""
+
+#: templates/licenses-add-import-page.php:20
+msgid ""
+"<b class=\"text-danger\">Important:</b> One line per key. Keys must be un-"
+"encrypted."
+msgstr ""
+
+#: templates/licenses-add-import-page.php:27
+#: templates/licenses-add-import-page.php:93
+msgid "Activate licenses"
+msgstr ""
+
+#: templates/licenses-add-import-page.php:31
+msgid "Activate licenses immediatelly after import."
+msgstr ""
+
+#: templates/licenses-add-import-page.php:34
+#: templates/licenses-add-import-page.php:100
+msgid ""
+"Activated licenses are immediatelly availabale for sale, while inactive "
+"licenses must be activated manually."
+msgstr ""
+
+#: templates/licenses-add-import-page.php:45
+#: templates/licenses-add-import-page.php:111
+msgid "Select a product..."
+msgstr ""
+
+#: templates/licenses-add-import-page.php:51
+#: templates/licenses-add-import-page.php:117
+msgid "You do not have any products defined."
+msgstr ""
+
+#: templates/licenses-add-import-page.php:53
+#: templates/licenses-add-import-page.php:119
+msgid ""
+"The product to which the keys will be assigned. You can also leave this "
+"blank to manually assign them later."
+msgstr ""
+
+#: templates/licenses-add-import-page.php:64
+msgid "Add Licence Key"
+msgstr ""
+
+#: templates/licenses-add-import-page.php:75
+msgid "Licence Key"
+msgstr ""
+
+#: templates/licenses-add-import-page.php:78
+msgid "The license key will be encrypted before saving to the database."
+msgstr ""
+
+#: templates/licenses-add-import-page.php:84
+msgid "Validity"
+msgstr ""
+
+#: templates/licenses-add-import-page.php:87
+msgid ""
+"Number of days for which the license key is valid. Leave blank if the "
+"license key does not expire."
+msgstr ""
+
+#: templates/licenses-add-import-page.php:97
+msgid "Activate license immediatelly after import."
+msgstr ""
+
+#: templates/licenses-add-import-page.php:126
+msgid "Add"
+msgstr ""
+
+#: templates/licenses-page.php:7
+msgid "Add/Import"
+msgstr ""
