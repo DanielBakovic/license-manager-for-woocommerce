@@ -24,20 +24,15 @@ class AdminNotice
      * Class constructor.
      */
     public function __construct() {
-        add_action('admin_notices', array($this, 'initAdminNotices'));
+        add_action('admin_notices', array($this, 'init'));
     }
 
-    public function initAdminNotices()
-    {
-        $this->transients();
-        //$this->importLicenseKeys();
-        $this->addLicenseKey();
-        $this->activateLicenseKey();
-        $this->deleteLicenseKey();
-        $this->invalidNonce();
-    }
-
-    private function transients()
+    /**
+     * Retrieves the notice message from the transients, displays it and finally deletes the transient itself.
+     * 
+     * @since 1.1.0
+     */
+    public function init()
     {
         if ($error = get_transient('lmfwc_notice_error')) {
             echo sprintf(
@@ -74,121 +69,6 @@ class AdminNotice
         }
     }
 
-    private function importLicenseKeys()
-    {
-        // Return if this is not related.
-        if (!isset($_GET['lmfwc_import_license_keys'])) return;
-
-        if ($_GET['lmfwc_import_license_keys'] == 'error') {
-            echo sprintf(
-                self::MESSAGE_DISMISSIBLE,
-                self::NOTICE_ERROR,
-                __('Something went wrong, no keys were added. Please try again.', 'lmfwc')
-            );
-        } elseif ($_GET['lmfwc_import_license_keys'] == 'true' && isset($_GET['added'])) {
-            echo sprintf(
-                self::MESSAGE_DISMISSIBLE,
-                self::NOTICE_SUCCESS,
-                sprintf(
-                    __('%d key(s) have been imported successfully.', 'lmfwc'),
-                    intval($_GET['added'])
-                )
-            );
-        } elseif ($_GET['lmfwc_import_license_keys'] == 'false' && isset($_GET['rejected'])) {
-            echo sprintf(
-                self::MESSAGE_DISMISSIBLE,
-                self::NOTICE_ERROR,
-                sprintf(
-                    __('Import failed. %d key(s) were not added.', 'lmfwc'),
-                    intval($_GET['rejected'])
-                )
-            );
-        } elseif ($_GET['lmfwc_import_license_keys'] == 'mixed' && isset($_GET['added']) && isset($_GET['rejected'])) {
-            echo sprintf(
-                self::MESSAGE_DISMISSIBLE,
-                self::NOTICE_WARNING,
-                sprintf(
-                    __('%d key(s) have been imported and %d key(s) were not imported.', 'lmfwc'),
-                    intval($_GET['added']),
-                    intval($_GET['rejected'])
-                )
-            );
-        }
-    }
-
-    private function addLicenseKey()
-    {
-        // Return if this is not related.
-        if (!isset($_GET['lmfwc_add_license_key'])) return;
-
-        if ($_GET['lmfwc_add_license_key'] == 'true') {
-            echo sprintf(
-                self::MESSAGE_DISMISSIBLE,
-                self::NOTICE_SUCCESS,
-                __('Your license key has been added successfully.', 'lmfwc')
-            );
-        } else {
-            echo sprintf(
-                self::MESSAGE_DISMISSIBLE,
-                self::NOTICE_ERROR,
-                __('Something went wrong, your key was not added. Please try again.', 'lmfwc')
-            );
-        }
-    }
-
-    private function activateLicenseKey()
-    {
-        // Return if this is not related.
-        if (!isset($_GET['lmfwc_activate_license_key'])) return;
-
-        if ($_GET['lmfwc_activate_license_key'] == 'true') {
-            echo sprintf(
-                self::MESSAGE_DISMISSIBLE,
-                self::NOTICE_SUCCESS,
-                __('Your license key has been activated successfully.', 'lmfwc')
-            );
-        } else {
-            echo sprintf(
-                self::MESSAGE_DISMISSIBLE,
-                self::NOTICE_ERROR,
-                __('Something went wrong, your license key was not deactivate. Please try again.', 'lmfwc')
-            );
-        }
-    }
-
-    private function deleteLicenseKey()
-    {
-        // Return if this is not related.
-        if (!isset($_GET['lmfwc_delete_license_key'])) return;
-
-        if ($_GET['lmfwc_delete_license_key'] == 'true') {
-            echo sprintf(
-                self::MESSAGE_DISMISSIBLE,
-                self::NOTICE_SUCCESS,
-                __('Your license key has been activated successfully.', 'lmfwc')
-            );
-        } else {
-            echo sprintf(
-                self::MESSAGE_DISMISSIBLE,
-                self::NOTICE_ERROR,
-                __('Something went wrong, your license key was not deactivate. Please try again.', 'lmfwc')
-            );
-        }
-    }
-
-    private function invalidNonce()
-    {
-        // Return if this is not related.
-        if (!isset($_GET['lmfwc_nonce_status'])) return;
-
-        if ($_GET['lmfwc_nonce_status'] == 'invalid') {
-            echo sprintf(
-                self::MESSAGE_DISMISSIBLE,
-                self::NOTICE_ERROR,
-                __('Invalid nonce! Your action was not completed.', 'lmfwc')
-            );
-        }
-    }
     /**
      * Adds a dashboard notice to be displayed on the next page reload.
      *
@@ -215,5 +95,29 @@ class AdminNotice
                 set_transient('lmfwc_notice_info', $message, $duration);
                 break;
         }
+    }
+
+    /**
+     * Adds a generic error notice to the dashboard which is then displayed on the next page reload.
+     *
+     * @since 1.1.0
+     *
+     * @param int $code
+     * @param int $duration
+     */
+    public static function addErrorSupportForum($code = -1, $duration = 60)
+    {
+        self::add(
+            'error',
+            sprintf(
+                __(
+                    'Oops! Something went wrong. Let us know by sending an error report <a href="%s" target="_blank" rel="noopener">in the support forum</a>.',
+                    'lmfwc'
+                ),
+                'https://wordpress.org/support/plugin/license-manager-for-woocommerce/'
+            ),
+            $code,
+            $duration
+        );
     }
 }

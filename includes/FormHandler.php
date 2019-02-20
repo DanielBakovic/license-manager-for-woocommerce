@@ -67,22 +67,22 @@ class FormHandler
 
         if ($_POST['name'] == '' || !is_string($_POST['name'])) {
             wp_redirect(sprintf($redirect_url, AdminMenus::ADD_GENERATOR_PAGE, 'invalid_name'));
-            exit();
+            wp_die();
         }
 
         if ($_POST['charset'] == '' || !is_string($_POST['charset'])) {
             wp_redirect(sprintf($redirect_url, AdminMenus::ADD_GENERATOR_PAGE, 'invalid_charset'));
-            exit();
+            wp_die();
         }
 
         if ($_POST['chunks'] == '' || !is_numeric($_POST['chunks'])) {
             wp_redirect(sprintf($redirect_url, AdminMenus::ADD_GENERATOR_PAGE, 'invalid_chunks'));
-            exit();
+            wp_die();
         }
 
         if ($_POST['chunk_length'] == '' || !is_numeric($_POST['chunk_length'])) {
             wp_redirect(sprintf($redirect_url, AdminMenus::ADD_GENERATOR_PAGE, 'invalid_chunk_length'));
-            exit();
+            wp_die();
         }
 
         // Save the generator.
@@ -106,7 +106,7 @@ class FormHandler
             wp_redirect(sprintf($redirect_url, AdminMenus::GENERATORS_PAGE, absint($_POST['id']), 'failed'));
         }
 
-        exit();
+        wp_die();
     }
 
     /**
@@ -124,22 +124,22 @@ class FormHandler
 
         if ($_POST['name'] == '' || !is_string($_POST['name'])) {
             wp_redirect(sprintf($redirect_url, AdminMenus::EDIT_GENERATOR_PAGE, absint($_POST['id']), 'invalid_name'));
-            exit();
+            wp_die();
         }
 
         if ($_POST['charset'] == '' || !is_string($_POST['charset'])) {
             wp_redirect(sprintf($redirect_url, AdminMenus::EDIT_GENERATOR_PAGE, absint($_POST['id']), 'invalid_charset'));
-            exit();
+            wp_die();
         }
 
         if ($_POST['chunks'] == '' || !is_numeric($_POST['chunks'])) {
             wp_redirect(sprintf($redirect_url, AdminMenus::EDIT_GENERATOR_PAGE, absint($_POST['id']), 'invalid_chunks'));
-            exit();
+            wp_die();
         }
 
         if ($_POST['chunk_length'] == '' || !is_numeric($_POST['chunk_length'])) {
             wp_redirect(sprintf($redirect_url, AdminMenus::EDIT_GENERATOR_PAGE, absint($_POST['id']), 'invalid_chunk_length'));
-            exit();
+            wp_die();
         }
 
         // Update the generator.
@@ -164,7 +164,7 @@ class FormHandler
             wp_redirect(sprintf($redirect_url, AdminMenus::EDIT_GENERATOR_PAGE, absint($_POST['id']), 'failed'));
         }
 
-        exit();
+        wp_die();
     }
 
     /**
@@ -204,9 +204,9 @@ class FormHandler
 
         // Redirect according to $result.
         if ($result['failed'] == 0 && $result['added'] == 0) {
-            AdminNotice::add('error', __('Something went wrong, no keys were added. Please try again.', 'lmfwc'), 3);
+            AdminNotice::addErrorSupportForum(3);
             wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
-            exit();
+            wp_die();
         }
 
         if ($result['failed'] == 0 && $result['added'] > 0) {
@@ -218,20 +218,13 @@ class FormHandler
                 )
             );
             wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
-            exit();
+            wp_die();
         }
 
         if ($result['failed'] > 0 && $result['added'] == 0) {
-            AdminNotice::add(
-                'error',
-                sprintf(
-                    __('Import failed. %d key(s) were not added.', 'lmfwc'),
-                    intval($result['failed'])
-                ),
-                4
-            );
+            AdminNotice::addErrorSupportForum(4);
             wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
-            exit();
+            wp_die();
         }
 
         if ($result['failed'] > 0 && $result['added'] > 0) {
@@ -244,7 +237,7 @@ class FormHandler
                 )
             );
             wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
-            exit();
+            wp_die();
         }
     }
 
@@ -266,16 +259,18 @@ class FormHandler
             'valid_for'   => ($_POST['valid_for']) ? intval($_POST['valid_for']) : null
         ));
 
-        // Redirect according to $result.
-        $redirect_url = 'admin.php?page=%s&lmfwc_add_license_key=%s';
-
         if ($result) {
-            wp_redirect(sprintf($redirect_url, AdminMenus::ADD_IMPORT_PAGE, 'true'));
+            AdminNotice::add(
+                'success',
+                __('Your license key has been added successfully.', 'lmfwc')
+            );
         } else {
-            wp_redirect(sprintf($redirect_url, AdminMenus::ADD_IMPORT_PAGE, 'false'));
+            AdminNotice::addErrorSupportForum(5);
         }
 
-        exit();
+        wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
+
+        wp_die();
     }
 
     public function showLicenseKey()

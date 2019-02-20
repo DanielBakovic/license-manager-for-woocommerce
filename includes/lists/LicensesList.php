@@ -3,6 +3,7 @@
 namespace LicenseManagerForWooCommerce\Lists;
 
 use \LicenseManagerForWooCommerce\AdminMenus;
+use \LicenseManagerForWooCommerce\AdminNotice;
 use \LicenseManagerForWooCommerce\Database;
 use \LicenseManagerForWooCommerce\Logger;
 use \LicenseManagerForWooCommerce\Settings;
@@ -448,7 +449,9 @@ class LicensesList extends \WP_List_Table
             !wp_verify_nonce($_REQUEST['_wpnonce'], $nonce_action) &&
             !wp_verify_nonce($_REQUEST['_wpnonce'], 'bulk-' . $this->_args['plural'])
         ) {
-            wp_redirect(admin_url(sprintf('admin.php?page=%s&lmfwc_nonce_status=invalid', AdminMenus::LICENSES_PAGE)));
+            AdminNotice::addErrorSupportForum(9);
+            wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::LICENSES_PAGE)));
+            wp_die();
         }
     }
     private function toggleLicenseKeyStatus($status)
@@ -466,6 +469,15 @@ class LicensesList extends \WP_List_Table
                 'status' => $status
             )
         );
+
+        if ($result) {
+            AdminNotice::add(
+                'success',
+                __('Your license key(s) have been altered successfully.', 'lmfwc')
+            );
+        } else {
+            AdminNotice::addErrorSupportForum(6);
+        }
     }
 
     private function deleteLicenseKeys()
@@ -480,24 +492,17 @@ class LicensesList extends \WP_List_Table
         );
 
         if ($result) {
-            wp_redirect(
-                admin_url(
-                    sprintf(
-                        'admin.php?page=%s&lmfwc_delete_license_key=true',
-                        AdminMenus::LICENSES_PAGE
-                    )
-                )
+            AdminNotice::add(
+                'success',
+                __('Your license key(s) have been deleted successfully.', 'lmfwc')
             );
+            wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::LICENSES_PAGE)));
         } else {
-            wp_redirect(
-                admin_url(
-                    sprintf(
-                        'admin.php?page=%s&lmfwc_delete_license_key=error',
-                        AdminMenus::LICENSES_PAGE
-                    )
-                )
-            );
+            AdminNotice::addErrorSupportForum(7);
+            wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::LICENSES_PAGE)));
         }
+
+        wp_die();
     }
 
     public static function isViewFilterActive()

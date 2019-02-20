@@ -1,4 +1,4 @@
-<?php defined('ABSPATH') || exit(); ?>
+<?php defined('ABSPATH') || exit; ?>
 
 <h2><?=esc_html_e('Your License Key(s)', 'lmfwc');?></h2>
 

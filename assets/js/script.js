@@ -5,7 +5,7 @@
  * 
  * @return {Void}
  */
-function ajax(option)
+function lmfwcAjax(option)
 {
     if (typeof(option.url) == 'undefined') {
         try {
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
                     spinner.style.opacity = 1;
 
-                    ajax({
+                    lmfwcAjax({
                         url: ajaxurl,
                         type: 'POST',
                         data: {
@@ -161,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
             this.btnShow.addEventListener('click', function() {
                 spinner.style.opacity = 1;
 
-                ajax({
+                lmfwcAjax({
                     url: ajaxurl,
                     type: 'POST',
                     data: {

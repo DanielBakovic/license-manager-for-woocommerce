@@ -3,6 +3,7 @@
 namespace LicenseManagerForWooCommerce\Lists;
 
 use \LicenseManagerForWooCommerce\AdminMenus;
+use \LicenseManagerForWooCommerce\AdminNotice;
 use \LicenseManagerForWooCommerce\Logger;
 use \LicenseManagerForWooCommerce\Setup;
 
@@ -201,7 +202,9 @@ class GeneratorsList extends \WP_List_Table
             !wp_verify_nonce($_REQUEST['_wpnonce'], $nonce_action) &&
             !wp_verify_nonce($_REQUEST['_wpnonce'], 'bulk-' . $this->_args['plural'])
         ) {
-            wp_redirect(admin_url(sprintf('admin.php?page=%s&lmfwc_nonce_status=invalid', AdminMenus::GENERATORS_PAGE)));
+            AdminNotice::addErrorSupportForum(8);
+            wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::GENERATORS_PAGE)));
+            wp_die();
         }
     }
 
