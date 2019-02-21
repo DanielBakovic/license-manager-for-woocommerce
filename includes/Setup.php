@@ -7,7 +7,7 @@ defined('ABSPATH') || exit;
 /**
  * LicenseManagerForWooCommerce Setup.
  *
- * @version 1.0.0
+ * @version 1.1.0
  * @since 1.0.0
  */
 class Setup
@@ -25,6 +25,13 @@ class Setup
      * @since 1.0.0
      */
     const GENERATORS_TABLE_NAME = 'lmfwc_generators';
+
+    /**
+     * REST API keys table name.
+     *
+     * @since 1.0.0
+     */
+    const API_KEYS_TABLE_NAME = 'lmfwc_api_keys';
 
     /**
      * Database version.
@@ -55,7 +62,8 @@ class Setup
 
         $tables = array(
             $wpdb->prefix . self::LICENSES_TABLE_NAME,
-            $wpdb->prefix . self::GENERATORS_TABLE_NAME
+            $wpdb->prefix . self::GENERATORS_TABLE_NAME,
+            $wpdb->prefix . self::API_KEYS_TABLE_NAME
         );
 
         foreach ($tables as $table) {
@@ -76,6 +84,7 @@ class Setup
 
         $table1 = $wpdb->prefix . self::LICENSES_TABLE_NAME;
         $table2 = $wpdb->prefix . self::GENERATORS_TABLE_NAME;
+        $table3 = $wpdb->prefix . self::API_KEYS_TABLE_NAME;
 
         $tables = "
             CREATE TABLE $table1 (
@@ -102,6 +111,20 @@ class Setup
                 `suffix` VARCHAR(255) NULL DEFAULT NULL,
                 `expires_in` INT(10) NULL DEFAULT NULL,
                 PRIMARY KEY (`id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+            CREATE TABLE $table3 (
+                `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+                `user_id` BIGINT(20) UNSIGNED NOT NULL,
+                `description` VARCHAR(200) NULL DEFAULT NULL,
+                `permissions` VARCHAR(10) NOT NULL,
+                `consumer_key` CHAR(64) NOT NULL,
+                `consumer_secret` CHAR(43) NOT NULL,
+                `nonces` LONGTEXT NULL,
+                `truncated_key` CHAR(7) NOT NULL,
+                `last_access` DATETIME NULL DEFAULT NULL,
+                PRIMARY KEY (`id`),
+                INDEX `consumer_key` (`consumer_key`),
+                INDEX `consumer_secret` (`consumer_secret`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         ";
 

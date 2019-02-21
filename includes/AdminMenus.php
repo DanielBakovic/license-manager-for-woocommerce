@@ -18,12 +18,12 @@ if (class_exists('AdminMenus', false)) {
  */
 class AdminMenus
 {
-    const LICENSES_PAGE       = 'license_manager';
-    const ADD_IMPORT_PAGE     = 'license_manager_add_import';
-    const GENERATORS_PAGE     = 'license_manager_generators';
-    const ADD_GENERATOR_PAGE  = 'license_manager_generators_add';
-    const EDIT_GENERATOR_PAGE = 'license_manager_generators_edit';
-    const SETTINGS_PAGE       = 'license_manager_settings';
+    const LICENSES_PAGE       = 'lmfwc';
+    const ADD_IMPORT_PAGE     = 'lmfwc_add_import';
+    const GENERATORS_PAGE     = 'lmfwc_generators';
+    const ADD_GENERATOR_PAGE  = 'lmfwc_generators_add';
+    const EDIT_GENERATOR_PAGE = 'lmfwc_generators_edit';
+    const SETTINGS_PAGE       = 'lmfwc_settings';
 
     /**
      * Class constructor.
@@ -139,6 +139,7 @@ class AdminMenus
 
     public function settingsPage()
     {
+
         include LMFWC_TEMPLATES_DIR . 'settings-page.php';
     }
 
@@ -189,6 +190,14 @@ class AdminMenus
     public function setScreenOption($status, $option, $value)
     {
         return $value;
+    }
+
+    protected function getSettingsNavigation()
+    {
+        if (!isset($_GET['page']) && $_GET['page'] != self::SETTINGS_PAGE) {
+            return;
+        }
+
     }
 
 }
