@@ -164,8 +164,7 @@ final class Main
      */
     public function init()
     {
-        $crypto = new Crypto();
-
+        new Crypto();
         new ProductManager();
         new AdminMenus();
         new AdminNotice();
@@ -173,6 +172,20 @@ final class Main
         new OrderManager();
         new Database();
         new FormHandler();
+
+        add_action('rest_api_init', array($this, 'restApiInit'));
+    }
+
+    public function restApiInit()
+    {
+        $controllers = array(
+            '\LicenseManagerForWooCommerce\API\v1\LicenseKey'
+        );
+
+        foreach ($controllers as $controller) {
+            $init = new $controller();
+            $init->register_routes();
+        }
     }
 
 }
