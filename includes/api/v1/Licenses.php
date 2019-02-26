@@ -2,6 +2,8 @@
 
 namespace LicenseManagerForWooCommerce\API\v1;
 
+use \LicenseManagerForWooCommerce\Logger;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -27,27 +29,63 @@ class Licenses extends \WP_REST_Controller
      */
     protected $base = 'licenses';
 
+    /**
+     * Register all the needed routes for this resource.
+     */
     public function register_routes()
     {
+        // GET license
         register_rest_route(
             $this->namespace, '/' . $this->base, array(
                 array(
-                    'methods'             => 'GET',
-                    'callback'            => array($this, 'getAll'),
-                    'permission_callback' => array($this, 'getItemsPermissionsCheck'),
+                    'methods'             => \WP_REST_Server::READABLE,
+                    'callback'            => array($this, 'getLicenses'),
+                    'permission_callback' => array($this, 'getLicensesPermissionCheck'),
                 ),
                 'schema' => array($this, 'get_public_item_schema'),
             )
         );
+
+        // POST license
         register_rest_route(
-            $this->namespace, '/' . $this->base . '/(?P<license_key>[\w-]+)', array(
+            $this->namespace, '/' . $this->base, array(
                 array(
-                    'methods'             => 'GET',
-                    'callback'            => array($this, 'getItems'),
-                    'permission_callback' => array($this, 'getItemsPermissionsCheck'),
+                    'methods'             => \WP_REST_Server::CREATABLE,
+                    'callback'            => array($this, 'postLicenses'),
+                    'permission_callback' => array($this, 'postLicensesPermissionCheck'),
+                ),
+                'schema' => array($this, 'get_public_item_schema'),
+            )
+        );
+
+        // GET license/{id}
+        register_rest_route(
+            $this->namespace, '/' . $this->base . '/(?P<key>[\w-]+)', array(
+                array(
+                    'methods'             => \WP_REST_Server::READABLE,
+                    'callback'            => array($this, 'getLicense'),
+                    'permission_callback' => array($this, 'getLicensePermissionsCheck'),
                     'args'                => array(
-                        'license_key' => array(
-                            'description' => __('Hashed license key.', 'lmfwc'),
+                        'key' => array(
+                            'description' => __('License key ID.', 'lmfwc'),
+                            'type'        => 'string',
+                        ),
+                    ),
+                ),
+                'schema' => array($this, 'get_public_item_schema'),
+            )
+        );
+
+        // POST license/{id}
+        register_rest_route(
+            $this->namespace, '/' . $this->base . '/(?P<key_id>[\w-]+)', array(
+                array(
+                    'methods'             => \WP_REST_Server::CREATABLE,
+                    'callback'            => array($this, 'postLicense'),
+                    'permission_callback' => array($this, 'postLicensePermissionsCheck'),
+                    'args'                => array(
+                        'key_id' => array(
+                            'description' => __('License key ID.', 'lmfwc'),
                             'type'        => 'string',
                         ),
                     ),
@@ -57,18 +95,44 @@ class Licenses extends \WP_REST_Controller
         );
     }
 
-    public function getItems($request)
+    public function getLicenses($request)
     {
-        return new \WP_REST_Response('getItems', 200);
+        return new \WP_REST_Response('getLicenses', 200);
     }
 
-    public function getAll($request)
-    {
-        return new \WP_REST_Response('getAll!', 200);
-    }
-
-    public function getItemsPermissionsCheck($request)
+    public function getLicensesPermissionCheck($request)
     {
         return true;
     }
+
+    public function postLicenses($request)
+    {
+        return new \WP_REST_Response('postLicenses', 200);
+    }
+
+    public function postLicensesPermissionCheck($request)
+    {
+        return true;
+    }
+
+    public function getLicense($request)
+    {
+        return new \WP_REST_Response('getLicense', 200);
+    }
+
+    public function getLicensePermissionsCheck($request)
+    {
+        return true;
+    }
+
+    public function postLicense($request)
+    {
+        return new \WP_REST_Response('postLicense', 200);
+    }
+
+    public function postLicensePermissionsCheck($request)
+    {
+        return true;
+    }
+
 }
