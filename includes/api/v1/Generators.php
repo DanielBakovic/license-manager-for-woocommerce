@@ -5,12 +5,12 @@ namespace LicenseManagerForWooCommerce\API\v1;
 defined('ABSPATH') || exit;
 
 /**
- * Create the License endpoint.
+ * Create the Generator endpoint.
  *
  * @version 1.0.0
  * @since 1.1.0
  */
-class Licenses extends \WP_REST_Controller
+class Generators extends \WP_REST_Controller
 {
 
     /**
@@ -25,7 +25,7 @@ class Licenses extends \WP_REST_Controller
      *
      * @var string
      */
-    protected $base = 'licenses';
+    protected $base = 'generators';
 
     public function register_routes()
     {
@@ -33,20 +33,20 @@ class Licenses extends \WP_REST_Controller
             $this->namespace, '/' . $this->base, array(
                 array(
                     'methods'             => 'GET',
-                    'callback'            => array($this, 'getAll'),
+                    'callback'            => array($this, 'getItems'),
                     'permission_callback' => array($this, 'getItemsPermissionsCheck'),
                 ),
                 'schema' => array($this, 'get_public_item_schema'),
             )
         );
         register_rest_route(
-            $this->namespace, '/' . $this->base . '/(?P<license_key>[\w-]+)', array(
+            $this->namespace, '/' . $this->base . '/(?P<generator_id>[\w-]+)', array(
                 array(
                     'methods'             => 'GET',
                     'callback'            => array($this, 'getItems'),
                     'permission_callback' => array($this, 'getItemsPermissionsCheck'),
                     'args'                => array(
-                        'license_key' => array(
+                        'generator_id' => array(
                             'description' => __('Hashed license key.', 'lmfwc'),
                             'type'        => 'string',
                         ),
@@ -59,10 +59,12 @@ class Licenses extends \WP_REST_Controller
 
     public function getItems($request)
     {
-        return new \WP_REST_Response('getItems', 200);
+        print_r(get_class_methods($request));
+        print_r(($request->get_param('license_key')));
+        return new \WP_REST_Response('', 200);
     }
 
-    public function getAll($request)
+    public function getAll()
     {
         return new \WP_REST_Response('getAll!', 200);
     }

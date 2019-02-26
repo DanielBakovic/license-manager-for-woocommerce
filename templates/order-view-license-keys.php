@@ -13,7 +13,7 @@
             <?php foreach ($row['keys'] as $entry): ?>
                 <tr>
                     <td>
-                        <span class="lmfwc-myaccount-license-key"><?=$this->crypto->decrypt($entry->license_key);?></span>
+                        <span class="lmfwc-myaccount-license-key"><?=apply_filters('lmfwc_decrypt', $entry->license_key);?></span>
                     </td>
                 </tr>
             <?php endforeach; ?>

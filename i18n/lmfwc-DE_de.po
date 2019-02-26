@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: License Manager for WooCommerce\n"
-"POT-Creation-Date: 2019-02-20 20:01+0100\n"
-"PO-Revision-Date: 2019-02-20 20:04+0100\n"
+"POT-Creation-Date: 2019-02-24 23:47+0100\n"
+"PO-Revision-Date: 2019-02-24 23:49+0100\n"
 "Last-Translator: \n"
 "Language-Team: https://www.bebic.at\n"
 "Language: de\n"
@@ -12,115 +12,143 @@ msgstr ""
 "X-Generator: Poedit 2.2.1\n"
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-KeywordsList: __;_e;esc_html_e;esc_html__\n"
 "X-Poedit-SearchPath-0: includes\n"
 "X-Poedit-SearchPath-1: templates\n"
 
-#: includes/AdminMenus.php:53 includes/AdminMenus.php:54
-#: includes/AdminMenus.php:63
+#: includes/AdminMenus.php:70 includes/AdminMenus.php:71
+#: includes/AdminMenus.php:80
 msgid "License Manager"
 msgstr "Lizenz-Manager"
 
-#: includes/AdminMenus.php:64 includes/ProductManager.php:46
-#: includes/lists/LicensesList.php:53 templates/licenses-page.php:5
+#: includes/AdminMenus.php:81 includes/ProductManager.php:46
+#: includes/lists/LicensesList.php:45 templates/licenses-page.php:5
 msgid "Licenses"
 msgstr "Lizenzen"
 
-#: includes/AdminMenus.php:73
+#: includes/AdminMenus.php:90
 msgid "License Manager - Import"
 msgstr "Lizenz-Manager - Import"
 
-#: includes/AdminMenus.php:74 includes/lists/LicensesList.php:195
+#: includes/AdminMenus.php:91 includes/lists/LicensesList.php:187
 #: templates/licenses-add-import-page.php:60
 msgid "Import"
 msgstr "Importieren"
 
-#: includes/AdminMenus.php:82
+#: includes/AdminMenus.php:99
 msgid "License Manager - Generators"
 msgstr "Lizenz-Manager - Generatoren"
 
-#: includes/AdminMenus.php:83 includes/lists/GeneratorsList.php:31
+#: includes/AdminMenus.php:100 includes/lists/GeneratorsList.php:32
 #: templates/generators-page.php:5
 msgid "Generators"
 msgstr "Generatoren"
 
-#: includes/AdminMenus.php:92
+#: includes/AdminMenus.php:109
 msgid "License Manager - Add New Generator"
 msgstr "Lizenz-Manager - Neuen Generator Hinzufügen"
 
-#: includes/AdminMenus.php:93 templates/generators-add-new.php:5
+#: includes/AdminMenus.php:110 templates/generators-add-new.php:5
 msgid "Add New Generator"
 msgstr "Neuen Generator Hinzufügen"
 
-#: includes/AdminMenus.php:101
+#: includes/AdminMenus.php:118
 msgid "License Manager - Edit Generator"
 msgstr "Lizenz-Manager - Generator Editieren"
 
-#: includes/AdminMenus.php:102 templates/generators-edit.php:5
+#: includes/AdminMenus.php:119 templates/generators-edit.php:5
 msgid "Edit Generator"
 msgstr "Generator Editieren"
 
-#: includes/AdminMenus.php:110
+#: includes/AdminMenus.php:127
 msgid "License Manager - Settings"
 msgstr "Lizenz-Manager - Einstellungen"
 
-#: includes/AdminMenus.php:111 templates/settings-page.php:5
+#: includes/AdminMenus.php:128
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: includes/AdminNotice.php:61
-msgid "Something went wrong, no keys were added. Please try again."
+#: includes/AdminMenus.php:193 includes/lists/APIKeyList.php:198
+msgid "Read"
+msgstr "Read"
+
+#: includes/AdminMenus.php:194 includes/lists/APIKeyList.php:199
+msgid "Write"
+msgstr "Write"
+
+#: includes/AdminMenus.php:195 includes/lists/APIKeyList.php:200
+msgid "Read/Write"
+msgstr "Read/Write"
+
+#: includes/AdminMenus.php:199 includes/lists/APIKeyList.php:222
+#, php-format
+msgid "%1$s at %2$s"
+msgstr "%1$s um %2$s"
+
+#: includes/AdminMenus.php:206
+msgid "You do not have permission to edit this API Key"
 msgstr ""
 
-#: includes/AdminNotice.php:68
+#: includes/AdminMenus.php:284
+#, php-format
+msgid ""
+"If you like %1$s please leave us a %2$s rating. A huge thanks in advance!"
+msgstr ""
+
+#: includes/AdminMenus.php:285
+msgid "License Manager for WooCommerce"
+msgstr "Lizenz-Manager für WooCommerce"
+
+#: includes/AdminNotice.php:114
+#, php-format
+msgid ""
+"Oops! Something went wrong. Let us know by sending an error report <a href="
+"\"%s\" target=\"_blank\" rel=\"noopener\">in the support forum</a>."
+msgstr ""
+
+#: includes/FormHandler.php:208
 #, php-format
 msgid "%d key(s) have been imported successfully."
 msgstr ""
 
-#: includes/AdminNotice.php:77
-#, php-format
-msgid "Import failed. %d key(s) were not added."
-msgstr ""
-
-#: includes/AdminNotice.php:86
+#: includes/FormHandler.php:226
 #, php-format
 msgid "%d key(s) have been imported and %d key(s) were not imported."
 msgstr ""
 
-#: includes/AdminNotice.php:103
+#: includes/FormHandler.php:257
 msgid "Your license key has been added successfully."
 msgstr ""
 
-#: includes/AdminNotice.php:109
-msgid "Something went wrong, your key was not added. Please try again."
+#: includes/FormHandler.php:279
+msgid "Description is missing."
+msgstr "Beschreibung fehlt."
+
+#: includes/FormHandler.php:283
+msgid "User is missing."
+msgstr "Benutzer fehlt."
+
+#: includes/FormHandler.php:287
+msgid "Permissions is missing."
 msgstr ""
 
-#: includes/AdminNotice.php:123 includes/AdminNotice.php:143
-msgid "Your license key has been activated successfully."
+#: includes/FormHandler.php:300
+msgid "You do not have permission to assign API Keys to the selected user."
 msgstr ""
 
-#: includes/AdminNotice.php:129 includes/AdminNotice.php:149
-msgid ""
-"Something went wrong, your license key was not deactivate. Please try again."
-msgstr ""
-
-#: includes/AdminNotice.php:163
-msgid "Invalid nonce! Your action was not completed."
-msgstr ""
-
-#: includes/FormHandler.php:279 includes/FormHandler.php:292
+#: includes/FormHandler.php:326 includes/FormHandler.php:339
 msgid "Invalid request."
 msgstr ""
 
-#: includes/FormHandler.php:321
+#: includes/FormHandler.php:368
 msgid "<p>The following license keys have been sold by this order:</p>"
 msgstr ""
 
-#: includes/FormHandler.php:347
+#: includes/FormHandler.php:394
 msgid "Show License Key(s)"
 msgstr ""
 
-#: includes/FormHandler.php:353
+#: includes/FormHandler.php:400
 msgid "Hide License Key(s)"
 msgstr ""
 
@@ -132,7 +160,7 @@ msgstr ""
 
 #: includes/Main.php:121
 msgid "Documentation"
-msgstr ""
+msgstr "Dokumentation"
 
 #: includes/Main.php:126
 msgid "Donate"
@@ -220,166 +248,243 @@ msgid ""
 "completed orders."
 msgstr ""
 
-#: includes/lists/GeneratorsList.php:30 includes/lists/LicensesList.php:189
+#: includes/api/v1/Generators.php:50 includes/api/v1/Licenses.php:50
+msgid "Hashed license key."
+msgstr ""
+
+#: includes/lists/APIKeyList.php:42
+msgid "Key"
+msgstr "Schlüssel"
+
+#: includes/lists/APIKeyList.php:43
+msgid "Keys"
+msgstr "Schlüssel"
+
+#: includes/lists/APIKeyList.php:56
+msgid "No keys found."
+msgstr ""
+
+#: includes/lists/APIKeyList.php:68 templates/settings/rest-api-key.php:13
+msgid "Description"
+msgstr "Beschreibung"
+
+#: includes/lists/APIKeyList.php:69 templates/settings/rest-api-key.php:74
+msgid "Consumer key ending in"
+msgstr ""
+
+#: includes/lists/APIKeyList.php:70 templates/settings/rest-api-key.php:32
+msgid "User"
+msgstr "Benutzer"
+
+#: includes/lists/APIKeyList.php:71 templates/settings/rest-api-key.php:51
+msgid "Permissions"
+msgstr ""
+
+#: includes/lists/APIKeyList.php:72 templates/settings/rest-api-key.php:82
+msgid "Last access"
+msgstr "Letzter Zugriff"
+
+#: includes/lists/APIKeyList.php:112
+msgid "API key"
+msgstr "API Schlüssel"
+
+#: includes/lists/APIKeyList.php:126
+#, php-format
+msgid "ID: %d"
+msgstr "ID: %d"
+
+#: includes/lists/APIKeyList.php:130
+msgid "View/Edit"
+msgstr ""
+
+#: includes/lists/APIKeyList.php:139 includes/lists/APIKeyList.php:245
+msgid "Revoke"
+msgstr ""
+
+#: includes/lists/APIKeyList.php:230 includes/lists/LicensesList.php:228
+#: templates/settings/rest-api-key.php:89
+msgid "Unknown"
+msgstr "Unbekannt"
+
+#: includes/lists/GeneratorsList.php:31 includes/lists/LicensesList.php:181
 msgid "Generator"
 msgstr ""
 
-#: includes/lists/GeneratorsList.php:66
+#: includes/lists/GeneratorsList.php:67
 msgid "No generators found."
 msgstr ""
 
-#: includes/lists/GeneratorsList.php:81 includes/lists/GeneratorsList.php:156
-#: includes/lists/LicensesList.php:305 includes/lists/LicensesList.php:337
+#: includes/lists/GeneratorsList.php:82 includes/lists/GeneratorsList.php:157
+#: includes/lists/LicensesList.php:297 includes/lists/LicensesList.php:329
 msgid "Delete"
-msgstr ""
+msgstr "Löschen"
 
-#: includes/lists/GeneratorsList.php:89
+#: includes/lists/GeneratorsList.php:90
 msgid "Edit"
 msgstr ""
 
-#: includes/lists/GeneratorsList.php:112
+#: includes/lists/GeneratorsList.php:113
 msgid "non-expiring"
 msgstr ""
 
-#: includes/lists/GeneratorsList.php:112
+#: includes/lists/GeneratorsList.php:113
 msgid "day(s)"
 msgstr ""
 
-#: includes/lists/GeneratorsList.php:130 includes/lists/LicensesList.php:431
+#: includes/lists/GeneratorsList.php:131 includes/lists/LicensesList.php:423
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
-#: includes/lists/GeneratorsList.php:131 templates/generators-add-new.php:15
+#: includes/lists/GeneratorsList.php:132 templates/generators-add-new.php:15
 #: templates/generators-edit.php:16
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
-#: includes/lists/GeneratorsList.php:132 templates/generators-add-new.php:28
+#: includes/lists/GeneratorsList.php:133 templates/generators-add-new.php:28
 #: templates/generators-edit.php:29
 msgid "Character map"
 msgstr ""
 
-#: includes/lists/GeneratorsList.php:133 templates/generators-add-new.php:41
+#: includes/lists/GeneratorsList.php:134 templates/generators-add-new.php:41
 #: templates/generators-edit.php:42
 msgid "Number of chunks"
 msgstr ""
 
-#: includes/lists/GeneratorsList.php:134 templates/generators-add-new.php:54
+#: includes/lists/GeneratorsList.php:135 templates/generators-add-new.php:54
 #: templates/generators-edit.php:55
 msgid "Chunk length"
 msgstr ""
 
-#: includes/lists/GeneratorsList.php:135 templates/generators-add-new.php:66
+#: includes/lists/GeneratorsList.php:136 templates/generators-add-new.php:66
 #: templates/generators-edit.php:67
 msgid "Separator"
 msgstr ""
 
-#: includes/lists/GeneratorsList.php:136 templates/generators-add-new.php:76
+#: includes/lists/GeneratorsList.php:137 templates/generators-add-new.php:76
 #: templates/generators-edit.php:77
 msgid "Prefix"
 msgstr ""
 
-#: includes/lists/GeneratorsList.php:137 templates/generators-add-new.php:86
+#: includes/lists/GeneratorsList.php:138 templates/generators-add-new.php:86
 #: templates/generators-edit.php:87
 msgid "Suffix"
 msgstr ""
 
-#: includes/lists/GeneratorsList.php:138 templates/generators-add-new.php:96
+#: includes/lists/GeneratorsList.php:139 templates/generators-add-new.php:96
 #: templates/generators-edit.php:97
 msgid "Expires in"
 msgstr ""
 
-#: includes/lists/LicensesList.php:52
+#: includes/lists/LicensesList.php:44
 msgid "License"
 msgstr ""
 
-#: includes/lists/LicensesList.php:73
+#: includes/lists/LicensesList.php:65
 msgid "All"
-msgstr ""
+msgstr "Alle"
 
-#: includes/lists/LicensesList.php:84 includes/lists/LicensesList.php:210
+#: includes/lists/LicensesList.php:76 includes/lists/LicensesList.php:202
 msgid "Sold"
 msgstr ""
 
-#: includes/lists/LicensesList.php:95 includes/lists/LicensesList.php:216
+#: includes/lists/LicensesList.php:87 includes/lists/LicensesList.php:208
 msgid "Delivered"
-msgstr ""
+msgstr "Zugestellt"
 
-#: includes/lists/LicensesList.php:106 includes/lists/LicensesList.php:222
+#: includes/lists/LicensesList.php:98 includes/lists/LicensesList.php:214
 msgid "Active"
-msgstr ""
+msgstr "Aktiv"
 
-#: includes/lists/LicensesList.php:117 includes/lists/LicensesList.php:228
+#: includes/lists/LicensesList.php:109 includes/lists/LicensesList.php:220
 msgid "Inactive"
-msgstr ""
+msgstr "Inaktiv"
 
-#: includes/lists/LicensesList.php:179
+#: includes/lists/LicensesList.php:171
 #, php-format
 msgid "%d Day(s)"
 msgstr ""
 
-#: includes/lists/LicensesList.php:236
-msgid "Unknown"
-msgstr ""
-
-#: includes/lists/LicensesList.php:264
+#: includes/lists/LicensesList.php:256
 msgid "Show"
 msgstr ""
 
-#: includes/lists/LicensesList.php:269
+#: includes/lists/LicensesList.php:261
 msgid "Hide"
 msgstr ""
 
-#: includes/lists/LicensesList.php:281 includes/lists/LicensesList.php:335
+#: includes/lists/LicensesList.php:273 includes/lists/LicensesList.php:327
 msgid "Activate"
-msgstr ""
+msgstr "Aktivieren"
 
-#: includes/lists/LicensesList.php:293 includes/lists/LicensesList.php:336
+#: includes/lists/LicensesList.php:285 includes/lists/LicensesList.php:328
 msgid "Deactivate"
-msgstr ""
+msgstr "Deaktivieren"
 
-#: includes/lists/LicensesList.php:424
+#: includes/lists/LicensesList.php:416
 msgid "No licenses found."
 msgstr ""
 
-#: includes/lists/LicensesList.php:432
+#: includes/lists/LicensesList.php:424
 msgid "License Key"
 msgstr ""
 
-#: includes/lists/LicensesList.php:433
+#: includes/lists/LicensesList.php:425
 msgid "Order"
 msgstr ""
 
-#: includes/lists/LicensesList.php:434
+#: includes/lists/LicensesList.php:426
 #: templates/licenses-add-import-page.php:41
 #: templates/licenses-add-import-page.php:107
 msgid "Product"
 msgstr ""
 
-#: includes/lists/LicensesList.php:435
+#: includes/lists/LicensesList.php:427
 msgid "Created at"
 msgstr ""
 
-#: includes/lists/LicensesList.php:436
+#: includes/lists/LicensesList.php:428
 msgid "Expires at"
 msgstr ""
 
-#: includes/lists/LicensesList.php:437
+#: includes/lists/LicensesList.php:429
 msgid "Valid for"
 msgstr ""
 
-#: includes/lists/LicensesList.php:438
+#: includes/lists/LicensesList.php:430
 msgid "Source"
 msgstr ""
 
-#: includes/lists/LicensesList.php:439
+#: includes/lists/LicensesList.php:431
 msgid "Status"
+msgstr "Status"
+
+#: includes/lists/LicensesList.php:467
+msgid "Your license key(s) have been altered successfully."
+msgstr ""
+
+#: includes/lists/LicensesList.php:488
+msgid "Your license key(s) have been deleted successfully."
+msgstr ""
+
+#: templates/emails/email-order-license-keys.php:3
+#: templates/emails/email-order-license-notice.php:3
+#: templates/order-view-license-keys.php:3
+msgid "Your License Key(s)"
+msgstr ""
+
+#: templates/emails/email-order-license-notice.php:4
+msgid ""
+"Your license keys will shortly be delivered. It can take up to 24 hours, but "
+"usually doesn't take longer than a few minutes. Thank you for your patience."
 msgstr ""
 
 #: templates/generators-add-new.php:21 templates/generators-add-new.php:34
 #: templates/generators-add-new.php:47 templates/generators-add-new.php:60
 #: templates/generators-edit.php:22 templates/generators-edit.php:35
 #: templates/generators-edit.php:48 templates/generators-edit.php:61
+#: templates/settings/rest-api-key.php:25
+#: templates/settings/rest-api-key.php:44
+#: templates/settings/rest-api-key.php:66
 msgid "Required."
 msgstr ""
 
@@ -472,7 +577,7 @@ msgstr ""
 
 #: templates/generators-edit.php:110
 msgid "Update"
-msgstr ""
+msgstr "Aktualisieren"
 
 #: templates/generators-edit.php:115
 msgid "Assigned Products"
@@ -576,8 +681,56 @@ msgstr ""
 
 #: templates/licenses-add-import-page.php:126
 msgid "Add"
-msgstr ""
+msgstr "Hinzufügen"
 
 #: templates/licenses-page.php:7
 msgid "Add/Import"
+msgstr "Hinzufügen/Importieren"
+
+#: templates/settings-page.php:9
+msgid "General"
+msgstr "Allgemein"
+
+#: templates/settings-page.php:12 templates/settings/rest-api-list.php:2
+msgid "REST API"
+msgstr "REST API"
+
+#: templates/settings/rest-api-key.php:1
+msgid "Key details"
 msgstr ""
+
+#: templates/settings/rest-api-key.php:26
+msgid "Friendly name for identifying this key."
+msgstr ""
+
+#: templates/settings/rest-api-key.php:37
+msgid "Please select a user..."
+msgstr ""
+
+#: templates/settings/rest-api-key.php:45
+msgid "Owner of these keys."
+msgstr ""
+
+#: templates/settings/rest-api-key.php:67
+msgid "Select the access type of these keys."
+msgstr ""
+
+#: templates/settings/rest-api-key.php:99
+msgid "Generate API key"
+msgstr ""
+
+#: templates/settings/rest-api-key.php:102
+msgid "Save changes"
+msgstr ""
+
+#: templates/settings/rest-api-key.php:118
+msgid "Revoke key"
+msgstr ""
+
+#: templates/settings/rest-api-list.php:4
+msgid "Add key"
+msgstr "Schlüssel hinzufügen"
+
+#: templates/settings/rest-api-list.php:12
+msgid "Search key"
+msgstr "Schlüssel suchen"

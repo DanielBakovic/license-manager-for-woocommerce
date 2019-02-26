@@ -22,21 +22,25 @@ class Database
         // Get
         add_filter('lmfwc_get_assigned_products',         array($this, 'getAssignedProducts'), 10, 1);
         add_filter('lmfwc_get_available_stock',           array($this, 'getAvailableStock'),   10, 1);
+        add_filter('lmfwc_get_api_key',                   array($this, 'getApiKey'),           10, 1);
 
         // Insert
         add_action('lmfwc_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 1);
         add_filter('lmfwc_insert_imported_license_keys',  array($this, 'insertImportedLicenseKeys'),  10, 1);
         add_filter('lmfwc_insert_added_license_key',      array($this, 'insertAddedLicenseKey'),      10, 1);
         add_filter('lmfwc_insert_generator',              array($this, 'insertGenerator'),            10, 1);
+        add_filter('lmfwc_insert_api_key',                array($this, 'insertApiKey'),               10, 3);
 
         // Update
         add_action('lmfwc_sell_imported_license_keys',    array($this, 'sellImportedLicenseKeys'), 10, 1);
         add_filter('lmfwc_toggle_license_key_status',     array($this, 'toggleLicenseKeyStatus'),  10, 1);
         add_filter('lmfwc_update_generator',              array($this, 'updateGenerator'),         10, 1);
+        add_filter('lmfwc_update_api_key',                array($this, 'updateApiKey'),            10, 4);
 
         // Delete
         add_filter('lmfwc_delete_license_keys',           array($this, 'deleteLicenseKeys'        ), 10, 1);
         add_filter('lmfwc_delete_generators',             array($this, 'deleteGenerators'         ), 10, 1);
+        add_filter('lmfwc_delete_api_keys',               array($this, 'deleteApiKeys'            ), 10, 1);
 
         // Misc.
         add_filter('lmfwc_license_key_exists',            array($this, 'licenseKeyExists'         ), 10, 1);
@@ -117,6 +121,53 @@ class Database
                 LicenseStatusEnum::ACTIVE
             )
         );
+    }
+
+    /**
+     * Retrieves license key with the given ID.
+     *
+     * @since 1.1.0
+     *
+     * @param int $id
+     *
+     * @return array
+     */
+    public function getApiKey($id)
+    {
+        global $wpdb;
+
+        $empty = array(
+            'id'        => 0,
+            'user_id'       => '',
+            'description'   => '',
+            'permissions'   => '',
+            'truncated_key' => '',
+            'last_access'   => '',
+        );
+
+        if (!$id) {
+            return $empty;
+        }
+
+        $table = Setup::API_KEYS_TABLE_NAME;
+
+        $key = $wpdb->get_row(
+            $wpdb->prepare("
+                SELECT
+                    id, user_id, description, permissions, truncated_key, last_access
+                FROM
+                    {$wpdb->prefix}{$table}
+                WHERE
+                    id = %d",
+                $id
+            ), ARRAY_A
+        );
+
+        if (is_null($key)) {
+            return $empty;
+        }
+
+        return $key;
     }
 
     // INSERT
@@ -324,6 +375,49 @@ class Database
         );
     }
 
+    /**
+     * Save the API key to the database.
+     *
+     * @since 1.1.0
+     *
+     * @param int $user_id
+     * @param string $description
+     * @param string $permissions
+     */
+    public function insertApiKey($user_id, $description, $permissions)
+    {
+        global $wpdb;
+
+        $consumer_key    = 'ck_' . wc_rand_hash();
+        $consumer_secret = 'cs_' . wc_rand_hash();
+
+        $key_id = $wpdb->insert(
+            $wpdb->prefix . Setup::API_KEYS_TABLE_NAME,
+            array(
+                'user_id'         => $user_id,
+                'description'     => $description,
+                'permissions'     => $permissions,
+                'consumer_key'    => wc_api_hash($consumer_key),
+                'consumer_secret' => $consumer_secret,
+                'truncated_key'   => substr($consumer_key, -7),
+            ),
+            array(
+                '%d',
+                '%s',
+                '%s',
+                '%s',
+                '%s',
+                '%s',
+            )
+        );
+
+        return array(
+            'consumer_key' => $consumer_key,
+            'consumer_secret' => $consumer_secret,
+            'key_id' => $wpdb->insert_id
+        );
+    }
+
     // UPDATE
 
     /**
@@ -419,6 +513,37 @@ class Database
     }
 
     /**
+     * Save the API key to the database.
+     *
+     * @since 1.1.0
+     *
+     * @param int $id
+     * @param int $user_id
+     * @param string $description
+     * @param string $permissions
+     */
+    public function updateApiKey($id, $user_id, $description, $permissions)
+    {
+        global $wpdb;
+
+        return $wpdb->update(
+            $wpdb->prefix . Setup::API_KEYS_TABLE_NAME,
+            array(
+                'user_id'     => $user_id,
+                'description' => $description,
+                'permissions' => $permissions,
+            ),
+            array('id' => $id),
+            array(
+                '%d',
+                '%s',
+                '%s',
+            ),
+            array('%d')
+        );
+    }
+
+    /**
      * Deletes license keys.
      *
      * @since 1.0.0
@@ -436,6 +561,28 @@ class Database
                 'DELETE FROM %s WHERE id IN (%s)',
                 $wpdb->prefix . Setup::GENERATORS_TABLE_NAME,
                 implode(', ', $args['ids'])
+            )
+        );
+    }
+
+    /**
+     * Deletes license keys.
+     *
+     * @since 1.1.0
+     *
+     * @param array $keys
+     *
+     * @return boolean
+     */
+    public function deleteApiKeys($keys)
+    {
+        global $wpdb;
+
+        return $wpdb->query(
+            sprintf(
+                'DELETE FROM %s WHERE id IN (%s)',
+                $wpdb->prefix . Setup::API_KEYS_TABLE_NAME,
+                implode(', ', (array)$keys)
             )
         );
     }

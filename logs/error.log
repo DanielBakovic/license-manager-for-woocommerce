@@ -1,0 +1,52 @@
+wp-content\plugins\license-manager-for-woocommerce\includes\Logger.php:238
+Exception thrown at: 2019-02-25 22:06
+Message: Oops! Something went wrong. Let us know by sending an error report <a href="https://wordpress.org/support/plugin/license-manager-for-woocommerce/" target="_blank" rel="noopener">in the support forum</a>.
+Code: 15
+Thrown at: D:\wamp64\www\wordpress\wp-content\plugins\license-manager-for-woocommerce\includes\AdminNotice.php:86
+Trace:
+    [0] LicenseManagerForWooCommerce\AdminNotice::add() | D:\wamp64\www\wordpress\wp-content\plugins\license-manager-for-woocommerce\includes\AdminNotice.php:121
+    [1] LicenseManagerForWooCommerce\AdminNotice::addErrorSupportForum() | D:\wamp64\www\wordpress\wp-content\plugins\license-manager-for-woocommerce\includes\lists\APIKeyList.php:381
+    [2] LicenseManagerForWooCommerce\Lists\APIKeyList->revokeKeys() | D:\wamp64\www\wordpress\wp-content\plugins\license-manager-for-woocommerce\includes\lists\APIKeyList.php:264
+    [3] LicenseManagerForWooCommerce\Lists\APIKeyList->process_bulk_action() | D:\wamp64\www\wordpress\wp-content\plugins\license-manager-for-woocommerce\includes\lists\APIKeyList.php:313
+    [4] LicenseManagerForWooCommerce\Lists\APIKeyList->prepare_items() | D:\wamp64\www\wordpress\wp-content\plugins\license-manager-for-woocommerce\templates\settings\rest-api-list.php:10
+    [5] include_once() | D:\wamp64\www\wordpress\wp-content\plugins\license-manager-for-woocommerce\templates\settings-page.php:28
+    [6] include() | D:\wamp64\www\wordpress\wp-content\plugins\license-manager-for-woocommerce\includes\AdminMenus.php:221
+    [7] LicenseManagerForWooCommerce\AdminMenus->settingsPage() | D:\wamp64\www\wordpress\wp-includes\class-wp-hook.php:286
+    [8] WP_Hook->apply_filters() | D:\wamp64\www\wordpress\wp-includes\class-wp-hook.php:310
+    [9] WP_Hook->do_action() | D:\wamp64\www\wordpress\wp-includes\plugin.php:465
+    [10] do_action() | D:\wamp64\www\wordpress\wp-admin\admin.php:253
+
+
+
+
+wp-content\plugins\license-manager-for-woocommerce\includes\Logger.php:238
+Exception thrown at: 2019-02-25 22:09
+Message: User is missing.
+Code: 11
+Thrown at: D:\wamp64\www\wordpress\wp-content\plugins\license-manager-for-woocommerce\includes\AdminNotice.php:86
+Trace:
+    [0] LicenseManagerForWooCommerce\AdminNotice::add() | D:\wamp64\www\wordpress\wp-content\plugins\license-manager-for-woocommerce\includes\FormHandler.php:306
+    [1] LicenseManagerForWooCommerce\FormHandler->apiKeyUpdate() | D:\wamp64\www\wordpress\wp-includes\class-wp-hook.php:286
+    [2] WP_Hook->apply_filters() | D:\wamp64\www\wordpress\wp-includes\class-wp-hook.php:310
+    [3] WP_Hook->do_action() | D:\wamp64\www\wordpress\wp-includes\plugin.php:465
+    [4] do_action() | D:\wamp64\www\wordpress\wp-admin\admin-post.php:70
+
+
+
+
+wp-content\plugins\license-manager-for-woocommerce\includes\Logger.php:238
+Exception thrown at: 2019-02-26 04:46
+Message: Oops! Something went wrong. Let us know by sending an error report <a href="https://wordpress.org/support/plugin/license-manager-for-woocommerce/" target="_blank" rel="noopener">in the support forum</a>.
+Code: 16
+Thrown at: D:\wamp64\www\wordpress\wp-content\plugins\license-manager-for-woocommerce\includes\AdminNotice.php:86
+Trace:
+    [0] LicenseManagerForWooCommerce\AdminNotice::add() | D:\wamp64\www\wordpress\wp-content\plugins\license-manager-for-woocommerce\includes\AdminNotice.php:121
+    [1] LicenseManagerForWooCommerce\AdminNotice::addErrorSupportForum() | D:\wamp64\www\wordpress\wp-content\plugins\license-manager-for-woocommerce\includes\FormHandler.php:329
+    [2] LicenseManagerForWooCommerce\FormHandler->apiKeyUpdate() | D:\wamp64\www\wordpress\wp-includes\class-wp-hook.php:286
+    [3] WP_Hook->apply_filters() | D:\wamp64\www\wordpress\wp-includes\class-wp-hook.php:310
+    [4] WP_Hook->do_action() | D:\wamp64\www\wordpress\wp-includes\plugin.php:465
+    [5] do_action() | D:\wamp64\www\wordpress\wp-admin\admin-post.php:70
+
+
+
+

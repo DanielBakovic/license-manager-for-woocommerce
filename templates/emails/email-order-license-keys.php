@@ -16,7 +16,7 @@
                 <?php foreach ($row['keys'] as $entry): ?>
                     <tr>
                         <td class="td" style="text-align: left; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
-                            <code><?=$this->crypto->decrypt($entry->license_key);?></code>
+                            <code><?=apply_filters('lmfwc_decrypt', $entry->license_key);?></code>
                         </td>
                     </tr>
                 <?php endforeach; ?>

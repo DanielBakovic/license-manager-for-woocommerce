@@ -8,7 +8,7 @@ defined('ABSPATH') || exit;
  * LicenseManagerForWooCommerce
  *
  * @package LicenseManagerForWooCommerce
- * @version 1.0.0
+ * @version 1.0.1
  * @since 1.0.0
  * @author Dražen Bebić
  * @link https://www.bebic.at/license-manager-for-woocommerce
@@ -20,7 +20,7 @@ final class Main
      *
      * @var string
      */
-    public $version = '1.0.0';
+    public $version = '1.0.1';
 
     /**
      * The single instance of the class.

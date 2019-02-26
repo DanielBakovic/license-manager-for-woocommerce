@@ -41,7 +41,7 @@ class AdminNotice
                 $error->get_error_message()
             );
 
-            delete_transient('lmfwc_error');
+            delete_transient('lmfwc_notice_error');
         } elseif ($success = get_transient('lmfwc_notice_success')) {
             echo sprintf(
                 self::MESSAGE_DISMISSIBLE,
@@ -83,6 +83,7 @@ class AdminNotice
     {
         switch ($level) {
             case 'error':
+                Logger::exception(new \Exception($message, $code));
                 set_transient('lmfwc_notice_error', new \WP_Error($code, $message), $duration);
                 break;
             case 'success':

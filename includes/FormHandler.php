@@ -25,6 +25,7 @@ class FormHandler
         add_action('admin_post_lmfwc_update_generator',    array($this, 'updateGenerator' ), 10);
         add_action('admin_post_lmfwc_import_license_keys', array($this, 'importLicenses'  ), 10);
         add_action('admin_post_lmfwc_add_license_key',     array($this, 'addLicense'      ), 10);
+        add_action('admin_post_lmfwc_api_key_update',      array($this, 'apiKeyUpdate'    ), 10);
 
         // AJAX calls.
         add_action('wp_ajax_lmfwc_show_license_key',      array($this, 'showLicenseKey'    ), 10);
@@ -262,6 +263,82 @@ class FormHandler
         wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
     }
 
+    /**
+     * Store a created API key to the database or updates an existing key.
+     *
+     * @since 1.1.0
+     */
+    public function apiKeyUpdate()
+    {
+        // Check the nonce.
+        check_admin_referer('lmfwc-api-key-update');
+
+        $error = null;
+
+        if (empty($_POST['description'])) {
+            $error = __('Description is missing.', 'lmfwc');
+            $code = 10;
+        }
+        if (empty($_POST['user']) || $_POST['user'] == -1) {
+            $error = __('User is missing.', 'lmfwc');
+            $code = 11;
+        }
+        if (empty($_POST['permissions'])) {
+            $error = __('Permissions is missing.', 'lmfwc');
+            $code = 12;
+        }
+
+        $key_id      = absint($_POST['id']);
+        $description = sanitize_text_field(wp_unslash($_POST['description']));
+        $permissions = (in_array($_POST['permissions'], array('read', 'write', 'read_write'))) ? sanitize_text_field($_POST['permissions']) : 'read';
+        $user_id     = absint($_POST['user']);
+        $action      = sanitize_text_field(wp_unslash($_POST['lmfwc_action']));
+
+        // Check if current user can edit other users.
+        if ($user_id && !current_user_can('edit_user', $user_id)) {
+            if (get_current_user_id() !== $user_id) {
+                $error = __('You do not have permission to assign API Keys to the selected user.', 'lmfwc');
+                $code = 13;
+            }
+        }
+
+        if ($error) {
+            AdminNotice::add('error', $error, $code);
+            wp_redirect(sprintf('admin.php?page=%s&tab=rest_api&create_key=1', AdminMenus::SETTINGS_PAGE));
+            exit();
+        }
+
+        if ($action == 'create') {
+            if ($data = apply_filters('lmfwc_insert_api_key', $user_id, $description, $permissions)) {
+                AdminNotice::add(
+                    'success',
+                    __('API Key generated successfully. Make sure to copy your new keys now as the secret key will be hidden once you leave this page.', 'lmfwc')
+                );
+                set_transient('lmfwc_api_key', $data, 60);
+            } else {
+                AdminNotice::addErrorSupportForum(14);
+            }
+
+            wp_redirect(sprintf('admin.php?page=%s&tab=rest_api&show_key=1', AdminMenus::SETTINGS_PAGE));
+            exit();
+        } elseif ($action == 'edit') {
+
+            if (apply_filters('lmfwc_update_api_key', $key_id, $user_id, $description, $permissions)) {
+                AdminNotice::add('success', __('API Key updated successfully.', 'lmfwc'));
+            } else {
+                AdminNotice::addErrorSupportForum(16);
+            }
+
+            wp_redirect(sprintf('admin.php?page=%s&tab=rest_api', AdminMenus::SETTINGS_PAGE));
+            exit();
+        }
+    }
+
+    /**
+     * Show a single license key.
+     *
+     * @since 1.0.0
+     */
     public function showLicenseKey()
     {
         // Validate request.
@@ -275,6 +352,11 @@ class FormHandler
         wp_die();
     }
 
+    /**
+     * Show all visible license keys.
+     *
+     * @since 1.0.0
+     */
     public function showAllLicenseKeys()
     {
         // Validate request.
