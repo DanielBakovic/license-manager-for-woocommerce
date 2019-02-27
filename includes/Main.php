@@ -20,7 +20,7 @@ final class Main
      *
      * @var string
      */
-    public $version = '1.0.1';
+    public $version = '1.1.0';
 
     /**
      * The single instance of the class.
@@ -38,6 +38,7 @@ final class Main
         $this->defineConstants();
         $this->initHooks();
 
+        new API\Authentication();
         add_action('init', array($this, 'init'));
     }
 

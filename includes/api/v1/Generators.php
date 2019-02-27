@@ -40,7 +40,7 @@ class Generators extends \WP_REST_Controller
                 array(
                     'methods'             => \WP_REST_Server::READABLE,
                     'callback'            => array($this, 'getGenerators'),
-                    'permission_callback' => array($this, 'getGeneratorsPermissionCheck'),
+                    'permission_callback' => array($this, 'getItemPermissionCheck'),
                 ),
                 'schema' => array($this, 'get_public_item_schema'),
             )
@@ -51,8 +51,8 @@ class Generators extends \WP_REST_Controller
             $this->namespace, '/' . $this->base, array(
                 array(
                     'methods'             => \WP_REST_Server::CREATABLE,
-                    'callback'            => array($this, 'postGenerators'),
-                    'permission_callback' => array($this, 'postGeneratorsPermissionCheck'),
+                    'callback'            => array($this, 'createGenerators'),
+                    'permission_callback' => array($this, 'createItemPermissionCheck'),
                 ),
                 'schema' => array($this, 'get_public_item_schema'),
             )
@@ -60,14 +60,14 @@ class Generators extends \WP_REST_Controller
 
         // GET generator/{id}
         register_rest_route(
-            $this->namespace, '/' . $this->base . '/(?P<key>[\w-]+)', array(
+            $this->namespace, '/' . $this->base . '/(?P<generator_id>[\w-]+)', array(
                 array(
                     'methods'             => \WP_REST_Server::READABLE,
                     'callback'            => array($this, 'getGenerator'),
-                    'permission_callback' => array($this, 'getGeneratorPermissionsCheck'),
+                    'permission_callback' => array($this, 'getItemPermissionCheck'),
                     'args'                => array(
-                        'key' => array(
-                            'description' => __('Generator key ID.', 'lmfwc'),
+                        'generator_id' => array(
+                            'description' => __('Generator ID.', 'lmfwc'),
                             'type'        => 'string',
                         ),
                     ),
@@ -78,14 +78,14 @@ class Generators extends \WP_REST_Controller
 
         // POST generator/{id}
         register_rest_route(
-            $this->namespace, '/' . $this->base . '/(?P<key_id>[\w-]+)', array(
+            $this->namespace, '/' . $this->base . '/(?P<generator_id>[\w-]+)', array(
                 array(
                     'methods'             => \WP_REST_Server::CREATABLE,
-                    'callback'            => array($this, 'postGenerator'),
-                    'permission_callback' => array($this, 'postGeneratorPermissionsCheck'),
+                    'callback'            => array($this, 'createGenerator'),
+                    'permission_callback' => array($this, 'createItemPermissionCheck'),
                     'args'                => array(
-                        'key_id' => array(
-                            'description' => __('Generator key ID.', 'lmfwc'),
+                        'generator_id' => array(
+                            'description' => __('Generator ID.', 'lmfwc'),
                             'type'        => 'string',
                         ),
                     ),
@@ -95,42 +95,32 @@ class Generators extends \WP_REST_Controller
         );
     }
 
-    public function getGenerators($request)
+    public function getGenerators(\WP_REST_Request $request)
     {
         return new \WP_REST_Response('getGenerators', 200);
     }
 
-    public function getGeneratorsPermissionCheck($request)
+    public function createGenerators(\WP_REST_Request $request)
     {
-        return true;
+        return new \WP_REST_Response('createGenerators', 200);
     }
 
-    public function postGenerators($request)
-    {
-        return new \WP_REST_Response('postGenerators', 200);
-    }
-
-    public function postGeneratorsPermissionCheck($request)
-    {
-        return true;
-    }
-
-    public function getGenerator($request)
+    public function getGenerator(\WP_REST_Request $request)
     {
         return new \WP_REST_Response('getGenerator', 200);
     }
 
-    public function getGeneratorPermissionsCheck($request)
+    public function createGenerator(\WP_REST_Request $request)
+    {
+        return new \WP_REST_Response('createGenerator', 200);
+    }
+
+    public function getItemPermissionCheck(\WP_REST_Request $request)
     {
         return true;
     }
 
-    public function postGenerator($request)
-    {
-        return new \WP_REST_Response('postGenerator', 200);
-    }
-
-    public function postGeneratorPermissionsCheck($request)
+    public function createItemPermissionCheck(\WP_REST_Request $request)
     {
         return true;
     }

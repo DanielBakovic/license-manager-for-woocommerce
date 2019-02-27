@@ -2,6 +2,8 @@
 
 namespace LicenseManagerForWooCommerce\API;
 
+use \LicenseManagerForWooCommerce\Logger;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -20,11 +22,6 @@ class Setup
      * @since 1.1.0
      */
     public function __construct() {
-        $this->init();
-    }
-
-    public function init()
-    {
         // REST API was included starting WordPress 4.4.
         if (!class_exists('\WP_REST_Server')) {
             return;
@@ -42,7 +39,7 @@ class Setup
             '\LicenseManagerForWooCommerce\API\v1\Generators'
         );
 
-        foreach ( $controllers as $controller ) {
+        foreach ($controllers as $controller) {
             $this->$controller = new $controller();
             $this->$controller->register_routes();
         }
