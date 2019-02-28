@@ -78,6 +78,16 @@ class Authentication
         //if (is_ssl()) {
         if (1 == 1) {
             $user_id = $this->performBasicAuthentication();
+        } else {
+            $this->setError(
+                new \WP_Error(
+                    'lmfwc_rest_no_ssl_error',
+                    __('The connection is not secure, therefore the API cannot be used.', 'lmfwc'),
+                    array('status' => 403)
+                )
+            );
+
+            return false;
         }
 
         if ($user_id) {
