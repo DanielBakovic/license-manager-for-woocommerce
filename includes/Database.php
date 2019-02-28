@@ -23,6 +23,11 @@ class Database
         add_filter('lmfwc_get_assigned_products',         array($this, 'getAssignedProducts'), 10, 1);
         add_filter('lmfwc_get_available_stock',           array($this, 'getAvailableStock'),   10, 1);
         add_filter('lmfwc_get_api_key',                   array($this, 'getApiKey'),           10, 1);
+        add_filter('lmfwc_get_api_key_by',                array($this, 'getApiKeyBy'),         10, 2);
+        add_filter('lmfwc_get_licenses',                  array($this, 'getLicenses'),         10);
+        add_filter('lmfwc_get_license',                   array($this, 'getLicense'),          10, 1);
+        add_filter('lmfwc_get_generators',                array($this, 'getGeneratorsApi'),    10);
+        add_filter('lmfwc_get_generator',                 array($this, 'getGeneratorApi'),     10, 1);
 
         // Insert
         add_action('lmfwc_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 1);
@@ -160,7 +165,8 @@ class Database
                 WHERE
                     id = %d",
                 $id
-            ), ARRAY_A
+            ),
+            ARRAY_A
         );
 
         if (is_null($key)) {
@@ -168,6 +174,146 @@ class Database
         }
 
         return $key;
+    }
+
+    /**
+     * Retrieves license key with the given ID by the column name and value.
+     *
+     * @since 1.1.0
+     *
+     * @param int $column_name
+     * @param mixed $value
+     *
+     * @return array
+     */
+    public function getApiKeyBy($column_name, $value)
+    {
+        global $wpdb;
+
+        $empty = array(
+            'id'        => 0,
+            'user_id'       => '',
+            'description'   => '',
+            'permissions'   => '',
+            'truncated_key' => '',
+            'last_access'   => '',
+        );
+
+        $table = Setup::API_KEYS_TABLE_NAME;
+
+        $type = '%s';
+
+        if (is_numeric($value)) {
+            $type = '%d';
+        }
+
+        $key = $wpdb->get_row(
+            $wpdb->prepare("
+                SELECT
+                    id, user_id, description, permissions, truncated_key, last_access
+                FROM
+                    {$wpdb->prefix}{$table}
+                WHERE
+                    {$column_name} = {$type}
+            ", $value),
+            ARRAY_A
+        );
+
+        if (is_null($key)) {
+            return $empty;
+        }
+
+        return $key;
+    }
+
+    /**
+     * Returns all currently available license keys.
+     * 
+     * @since 1.1.0
+     * 
+     * @return array
+     */
+    public function getLicenses()
+    {
+        global $wpdb;
+
+        $table = Setup::LICENSES_TABLE_NAME;
+
+        return $wpdb->get_results("
+            SELECT
+                id, order_id, product_id, license_key, hash, created_at, expires_at, valid_for, source, status
+            FROM
+                {$wpdb->prefix}{$table}
+        ");
+    }
+
+    /**
+     * Returns a single license key by its id.
+     * 
+     * @since 1.1.0
+     * 
+     * @return array
+     */
+    public function getLicense($id)
+    {
+        global $wpdb;
+
+        $table = Setup::LICENSES_TABLE_NAME;
+
+        return $wpdb->get_row(
+            $wpdb->prepare("
+            SELECT
+                id, order_id, product_id, license_key, hash, created_at, expires_at, valid_for, source, status
+            FROM
+                {$wpdb->prefix}{$table}
+            WHERE
+                id = %d
+        ", $id), ARRAY_A);
+    }
+
+    /**
+     * Returns all currently available license keys.
+     * 
+     * @since 1.1.0
+     * 
+     * @return array
+     */
+    public function getGeneratorsApi()
+    {
+        global $wpdb;
+
+        $table = Setup::GENERATORS_TABLE_NAME;
+
+        return $wpdb->get_results("
+            SELECT
+                `id`, `name`, `charset`, `chunks`, `chunk_length`, `separator`, `prefix`, `suffix`, `expires_in`
+            FROM
+                {$wpdb->prefix}{$table}
+        ");
+    }
+
+    /**
+     * Returns a single license key by its id.
+     * 
+     * @since 1.1.0
+     * 
+     * @return array
+     */
+    public function getGeneratorApi($id)
+    {
+        global $wpdb;
+
+        $table = Setup::GENERATORS_TABLE_NAME;
+
+        return $wpdb->get_row(
+            $wpdb->prepare("
+            SELECT
+                `id`, `name`, `charset`, `chunks`, `chunk_length`, `separator`, `prefix`, `suffix`, `expires_in`
+            FROM
+                {$wpdb->prefix}{$table}
+            WHERE
+                id = %d
+        ", $id), ARRAY_A);
     }
 
     // INSERT

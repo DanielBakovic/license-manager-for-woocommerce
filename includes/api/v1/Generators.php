@@ -40,9 +40,7 @@ class Generators extends \WP_REST_Controller
                 array(
                     'methods'             => \WP_REST_Server::READABLE,
                     'callback'            => array($this, 'getGenerators'),
-                    'permission_callback' => array($this, 'getItemPermissionCheck'),
-                ),
-                'schema' => array($this, 'get_public_item_schema'),
+                )
             )
         );
 
@@ -52,9 +50,7 @@ class Generators extends \WP_REST_Controller
                 array(
                     'methods'             => \WP_REST_Server::CREATABLE,
                     'callback'            => array($this, 'createGenerators'),
-                    'permission_callback' => array($this, 'createItemPermissionCheck'),
-                ),
-                'schema' => array($this, 'get_public_item_schema'),
+                )
             )
         );
 
@@ -64,15 +60,13 @@ class Generators extends \WP_REST_Controller
                 array(
                     'methods'             => \WP_REST_Server::READABLE,
                     'callback'            => array($this, 'getGenerator'),
-                    'permission_callback' => array($this, 'getItemPermissionCheck'),
                     'args'                => array(
                         'generator_id' => array(
                             'description' => __('Generator ID.', 'lmfwc'),
-                            'type'        => 'string',
+                            'type'        => 'integer',
                         ),
                     ),
-                ),
-                'schema' => array($this, 'get_public_item_schema'),
+                )
             )
         );
 
@@ -82,22 +76,30 @@ class Generators extends \WP_REST_Controller
                 array(
                     'methods'             => \WP_REST_Server::CREATABLE,
                     'callback'            => array($this, 'createGenerator'),
-                    'permission_callback' => array($this, 'createItemPermissionCheck'),
                     'args'                => array(
                         'generator_id' => array(
                             'description' => __('Generator ID.', 'lmfwc'),
-                            'type'        => 'string',
+                            'type'        => 'integer',
                         ),
                     ),
-                ),
-                'schema' => array($this, 'get_public_item_schema'),
+                )
             )
         );
     }
 
     public function getGenerators(\WP_REST_Request $request)
     {
-        return new \WP_REST_Response('getGenerators', 200);
+        $result = apply_filters('lmfwc_get_generators', null);
+
+        if (!$result) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                __('No generators available.', 'lmfwc'),
+                array('status' => 404)
+            );
+        }
+
+        return new \WP_REST_Response($result, 200);
     }
 
     public function createGenerators(\WP_REST_Request $request)
@@ -107,22 +109,23 @@ class Generators extends \WP_REST_Controller
 
     public function getGenerator(\WP_REST_Request $request)
     {
-        return new \WP_REST_Response('getGenerator', 200);
+        $id = intval($request->get_param('generator_id'));
+        $result = apply_filters('lmfwc_get_generator', $id);
+
+        if (!$result) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                sprintf(__('The generator with the ID: %d could not be found.', 'lmfwc'), $id),
+                array('status' => 404)
+            );
+        }
+
+        return new \WP_REST_Response($result, 200);
     }
 
     public function createGenerator(\WP_REST_Request $request)
     {
         return new \WP_REST_Response('createGenerator', 200);
-    }
-
-    public function getItemPermissionCheck(\WP_REST_Request $request)
-    {
-        return true;
-    }
-
-    public function createItemPermissionCheck(\WP_REST_Request $request)
-    {
-        return true;
     }
 
 }

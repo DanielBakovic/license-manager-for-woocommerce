@@ -152,19 +152,35 @@ class Authentication
 
         // Stop if don't have any key.
         if (!$consumer_key || !$consumer_secret) {
+            $this->setError(
+                new \WP_Error(
+                    'lmfwc_rest_authentication_error',
+                    __('Consumer key or secret is missing.', 'lmfwc'),
+                    array('status' => 401)
+                )
+            );
+
             return false;
         }
 
         // Get user data.
         $this->user = $this->getUserDataByConsumerKey($consumer_key);
         if (empty($this->user)) {
+            $this->setError(
+                new \WP_Error(
+                    'lmfwc_rest_authentication_error',
+                    __('Consumer key is invalid.', 'lmfwc'),
+                    array('status' => 401)
+                )
+            );
+
             return false;
         }
 
         // Validate user secret.
         if (!hash_equals($this->user->consumer_secret, $consumer_secret)) {
-            $this->set_error(
-                new WP_Error(
+            $this->setError(
+                new \WP_Error(
                     'lmfwc_rest_authentication_error',
                     __('Consumer secret is invalid.', 'lmfwc'),
                     array('status' => 401)
@@ -214,7 +230,7 @@ class Authentication
             case 'HEAD':
             case 'GET':
                 if ('read' !== $permissions && 'read_write' !== $permissions) {
-                    return new WP_Error(
+                    return new \WP_Error(
                         'lmfwc_rest_authentication_error',
                         __('The API key provided does not have read permissions.', 'lmfwc'),
                         array('status' => 401)
@@ -226,9 +242,9 @@ class Authentication
             case 'PATCH':
             case 'DELETE':
                 if ('write' !== $permissions && 'read_write' !== $permissions) {
-                    return new WP_Error(
+                    return new \WP_Error(
                         'lmfwc_rest_authentication_error',
-                        __('The API key provided does not have write permissions.', 'lmfwc' ),
+                        __('The API key provided does not have write permissions.', 'lmfwc'),
                         array('status' => 401)
                     );
                 }
@@ -237,9 +253,9 @@ class Authentication
                 return true;
 
             default:
-                return new WP_Error(
+                return new \WP_Error(
                     'lmfwc_rest_authentication_error',
-                    __('Unknown request method.', 'lmfwc' ),
+                    __('Unknown request method.', 'lmfwc'),
                     array('status' => 401)
                 );
         }
@@ -272,7 +288,7 @@ class Authentication
      */
     public function sendUnauthorizedHeaders($response) {
         if (is_wp_error($this->getError()) && 'basic_auth' === $this->auth_method) {
-            $auth_message = __('License Manager for WooCommerce API. Use a consumer key in the username field and a consumer secret in the password field.', 'lmfwc' );
+            $auth_message = __('License Manager for WooCommerce API. Use a consumer key in the username field and a consumer secret in the password field.', 'lmfwc');
             $response->header('WWW-Authenticate', 'Basic realm="' . $auth_message . '"', true);
         }
 

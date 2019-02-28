@@ -38,8 +38,8 @@ final class Main
         $this->defineConstants();
         $this->initHooks();
 
-        new API\Authentication();
         add_action('init', array($this, 'init'));
+        new API\Authentication();
     }
 
     /**
