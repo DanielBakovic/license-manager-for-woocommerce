@@ -83,7 +83,12 @@ class Licenses extends \WP_REST_Controller
             )
         );
 
-        // PUT license/{id}
+
+        /*
+         * PUT license/{id}
+         * 
+         * Updates an already existing license in the database
+         */
         register_rest_route(
             $this->namespace, '/' . $this->base . '/(?P<key_id>[\w-]+)', array(
                 array(
@@ -100,6 +105,13 @@ class Licenses extends \WP_REST_Controller
         );
     }
 
+    /**
+     * Callback for the GET licenses route. Retrieves all the license keys from the database.
+     * 
+     * @param WP_Rest_Request $request
+     * 
+     * @return WP_REST_Response
+     */
     public function getLicenses(\WP_REST_Request $request)
     {
         $result = apply_filters('lmfwc_get_licenses', null);
@@ -115,6 +127,13 @@ class Licenses extends \WP_REST_Controller
         return new \WP_REST_Response($result, 200);
     }
 
+    /**
+     * Callback for the GET licenses/{id} route. Retrieves a single license key from the database.
+     * 
+     * @param WP_Rest_Request $request
+     * 
+     * @return WP_REST_Response
+     */
     public function getLicense(\WP_REST_Request $request)
     {
         $id = intval($request->get_param('key_id'));
@@ -131,6 +150,13 @@ class Licenses extends \WP_REST_Controller
         return new \WP_REST_Response($result, 200);
     }
 
+    /**
+     * Callback for the POST licenses route. Create a new license key in the database.
+     * 
+     * @param WP_Rest_Request $request
+     * 
+     * @return WP_REST_Response
+     */
     public function createLicense(\WP_REST_Request $request)
     {
         $body = $request->get_params();
@@ -138,12 +164,12 @@ class Licenses extends \WP_REST_Controller
         // Validate the product_id parameter
         if (isset($body['product_id']) && is_numeric($body['product_id'])) {
 
-            $id = absint($body['product_id']);
+            $product_id = absint($body['product_id']);
 
-            if (!$this->validateProductId($id)) {
+            if (!$this->validateProductId($product_id)) {
                 return new \WP_Error(
                     'lmfwc_rest_data_error',
-                    sprintf(__('The WooCommerce product with the ID: %d could not be found.', 'lmfwc'), $id),
+                    sprintf(__('The WooCommerce product with the ID: %d could not be found.', 'lmfwc'), $product_id),
                     array('status' => 404)
                 );
             }
@@ -176,16 +202,52 @@ class Licenses extends \WP_REST_Controller
             );
         }
 
-        return new \WP_REST_Response('createLicense', 200);
+        $license_key_id = apply_filters(
+            'lmfwc_insert_license_key_from_api',
+            $product_id,
+            sanitize_text_field($body['license_key']),
+            $valid_for,
+            $status
+        );
+
+        if (!$license_key_id) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                __('The license key could not be added to the database.', 'lmfwc'),
+                array('status' => 404)
+            );
+        }
+
+        if (!$license_key = apply_filters('lmfwc_get_license', absint($license_key_id))) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                __('The newly added license key could not be retrieved from the database.', 'lmfwc'),
+                array('status' => 404)
+            );
+        }
+
+        return new \WP_REST_Response($license_key, 200);
     }
 
+    /**
+     * Callback for the PUT licenses/{id} route. Updates an existing license key in the database.
+     * 
+     * @param WP_Rest_Request $request
+     * 
+     * @return WP_REST_Response
+     */
     public function updateLicense(\WP_REST_Request $request)
     {
         return new \WP_REST_Response('updateLicense', 200);
     }
 
-    // Validation functions.
-
+    /**
+     * Validate a product ID supplied by the request
+     * 
+     * @param integer $product_id
+     * 
+     * @return boolean
+     */
     protected function validateProductId($product_id)
     {
         try {
@@ -194,13 +256,7 @@ class Licenses extends \WP_REST_Controller
             return false;
         }
 
-        return new \WP_REST_Response($product, 200);
-
-        if ($product->exists()) {
-            return true;
-        }
-
-        return false;
+        return true;
     }
 
 }

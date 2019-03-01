@@ -11,14 +11,15 @@ defined('ABSPATH') || exit;
  * LicenseManagerForWooCommerce Database connector.
  *
  * @version 1.0.0
- * @since 1.0.0
+ * @since   1.0.0
  */
 class Database
 {
     /**
      * Database Constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         // Get
         add_filter('lmfwc_get_assigned_products',         array($this, 'getAssignedProducts'), 10, 1);
         add_filter('lmfwc_get_available_stock',           array($this, 'getAvailableStock'),   10, 1);
@@ -58,8 +59,7 @@ class Database
      * Retrieve assigned products for a specific generator.
      *
      * @since 1.0.0
-     *
-     * @param int $args['generator_id']
+     * @param int $args['generator_id'] ID of the given generator
      *
      * @return boolean
      */
@@ -68,7 +68,8 @@ class Database
         global $wpdb;
 
         $results = $wpdb->get_results(
-            $wpdb->prepare("
+            $wpdb->prepare(
+                "
                 SELECT
                     post_id
                 FROM
@@ -113,7 +114,8 @@ class Database
         $table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
 
         return $wpdb->get_var(
-            $wpdb->prepare("
+            $wpdb->prepare(
+                "
                 SELECT
                     COUNT(*)
                 FROM
@@ -158,7 +160,8 @@ class Database
         $table = Setup::API_KEYS_TABLE_NAME;
 
         $key = $wpdb->get_row(
-            $wpdb->prepare("
+            $wpdb->prepare(
+                "
                 SELECT
                     id, user_id, description, permissions, truncated_key, last_access
                 FROM
@@ -182,7 +185,7 @@ class Database
      *
      * @since 1.1.0
      *
-     * @param int $column_name
+     * @param int   $column_name
      * @param mixed $value
      *
      * @return array
@@ -209,14 +212,16 @@ class Database
         }
 
         $key = $wpdb->get_row(
-            $wpdb->prepare("
+            $wpdb->prepare(
+                "
                 SELECT
                     id, user_id, description, permissions, truncated_key, last_access
                 FROM
                     {$wpdb->prefix}{$table}
                 WHERE
                     {$column_name} = {$type}
-            ", $value),
+            ", $value
+            ),
             ARRAY_A
         );
 
@@ -240,12 +245,14 @@ class Database
 
         $table = Setup::LICENSES_TABLE_NAME;
 
-        return $wpdb->get_results("
+        return $wpdb->get_results(
+            "
             SELECT
                 id, order_id, product_id, license_key, hash, created_at, expires_at, valid_for, source, status
             FROM
                 {$wpdb->prefix}{$table}
-        ");
+        "
+        );
     }
 
     /**
@@ -262,14 +269,17 @@ class Database
         $table = Setup::LICENSES_TABLE_NAME;
 
         return $wpdb->get_row(
-            $wpdb->prepare("
+            $wpdb->prepare(
+                "
             SELECT
                 id, order_id, product_id, license_key, hash, created_at, expires_at, valid_for, source, status
             FROM
                 {$wpdb->prefix}{$table}
             WHERE
                 id = %d
-        ", $id), ARRAY_A);
+        ", $id
+            ), ARRAY_A
+        );
     }
 
     /**
@@ -285,12 +295,14 @@ class Database
 
         $table = Setup::GENERATORS_TABLE_NAME;
 
-        return $wpdb->get_results("
+        return $wpdb->get_results(
+            "
             SELECT
                 `id`, `name`, `charset`, `chunks`, `chunk_length`, `separator`, `prefix`, `suffix`, `expires_in`
             FROM
                 {$wpdb->prefix}{$table}
-        ");
+        "
+        );
     }
 
     /**
@@ -307,14 +319,17 @@ class Database
         $table = Setup::GENERATORS_TABLE_NAME;
 
         return $wpdb->get_row(
-            $wpdb->prepare("
+            $wpdb->prepare(
+                "
             SELECT
                 `id`, `name`, `charset`, `chunks`, `chunk_length`, `separator`, `prefix`, `suffix`, `expires_in`
             FROM
                 {$wpdb->prefix}{$table}
             WHERE
                 id = %d
-        ", $id), ARRAY_A);
+        ", $id
+            ), ARRAY_A
+        );
     }
 
     // INSERT
@@ -355,7 +370,7 @@ class Database
             // Key exists, up the invalid keys count.
             if (apply_filters('lmfwc_license_key_exists', $license_key)) {
                 $invalid_keys_amount++;
-            // Key doesn't exist, add it to the database table.
+                // Key doesn't exist, add it to the database table.
             } else {
                 // Save to database.
                 $wpdb->insert(
@@ -377,7 +392,8 @@ class Database
 
         // There have been duplicate keys, regenerate and add them.
         if ($invalid_keys_amount > 0) {
-            $new_keys = apply_filters('lmfwc_create_license_keys', array(
+            $new_keys = apply_filters(
+                'lmfwc_create_license_keys', array(
                 'amount'       => $invalid_keys_amount,
                 'charset'      => $args['charset'],
                 'chunks'       => $args['chunks'],
@@ -386,8 +402,10 @@ class Database
                 'prefix'       => $args['prefix'],
                 'suffix'       => $args['suffix'],
                 'expires_in'   => $args['expires_in']
-            ));
-            $this->insertGeneratedLicenseKeys(array(
+                )
+            );
+            $this->insertGeneratedLicenseKeys(
+                array(
                 'order_id'     => $args['order_id'],
                 'product_id'   => $args['product_id'],
                 'licenses'     => $new_keys['licenses'],
@@ -399,7 +417,8 @@ class Database
                 'separator'    => $args['separator'],
                 'suffix'       => $args['suffix'],
                 'status'       => $args['status']
-            ));
+                )
+            );
         } else {
             // Keys have been generated and saved, this order is now complete.
             update_post_meta($args['order_id'], 'lmfwc_order_complete', 1);
@@ -429,8 +448,8 @@ class Database
         // Add the keys to the database table.
         foreach ($args['license_keys'] as $license_key) {
             if ($wpdb->insert(
-                    $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
-                    array(
+                $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
+                array(
                         'order_id'    => null,
                         'product_id'  => $args['product_id'],
                         'license_key' => apply_filters('lmfwc_encrypt', $license_key),
@@ -440,8 +459,8 @@ class Database
                         'source'      => SourceEnum::IMPORT,
                         'status'      => $status
                     ),
-                    array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
-                )
+                array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
+            )
             ) {
                 $result['added']++;
             } else {
@@ -527,7 +546,7 @@ class Database
      *
      * @since 1.1.0
      *
-     * @param int $user_id
+     * @param int    $user_id
      * @param string $description
      * @param string $permissions
      */
@@ -570,7 +589,7 @@ class Database
      *
      * @since 1.1.0
      *
-     * @param int $product_id
+     * @param int    $product_id
      * @param string $description
      * @param string $permissions
      */
@@ -582,13 +601,13 @@ class Database
             $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
             array(
                 'product_id'  => $product_id,
-                'license_key' => SOME_VALUE_GOES_HERE,
-                'hash'        => SOME_VALUE_GOES_HERE,
-                'created_at'  => SOME_VALUE_GOES_HERE,
-                'expires_at'  => SOME_VALUE_GOES_HERE,
-                'valid_for'   => SOME_VALUE_GOES_HERE,
-                'source'      => SOME_VALUE_GOES_HERE,
-                'status'      => SOME_VALUE_GOES_HERE
+                'license_key' => apply_filters('lmfwc_encrypt', $license_key),
+                'hash'        => apply_filters('lmfwc_hash', $license_key),
+                'created_at'  => date('Y-m-d H:i:s'),
+                'expires_at'  => null,
+                'valid_for'   => $valid_for,
+                'source'      => SourceEnum::API,
+                'status'      => $status
             ),
             array(
                 '%d',
@@ -596,16 +615,13 @@ class Database
                 '%s',
                 '%s',
                 '%s',
-                '%s',
+                '%d',
+                '%d',
+                '%d'
             )
         );
 
-        return array(
-            'consumer_key' => $consumer_key,
-            'consumer_secret' => $consumer_secret,
-            'key_id' => $wpdb->insert_id
-        );
-
+        return $wpdb->insert_id;
     }
 
     // UPDATE
@@ -615,9 +631,9 @@ class Database
      *
      * @since 1.0.0
      *
-     * @param array  $args['license_keys']
-     * @param int    $args['order_id']
-     * @param int    $args['amount']
+     * @param array $args['license_keys']
+     * @param int   $args['order_id']
+     * @param int   $args['amount']
      */
     public function sellImportedLicenseKeys($args)
     {
@@ -707,8 +723,8 @@ class Database
      *
      * @since 1.1.0
      *
-     * @param int $id
-     * @param int $user_id
+     * @param int    $id
+     * @param int    $user_id
      * @param string $description
      * @param string $permissions
      */
@@ -896,11 +912,13 @@ class Database
     {
         global $wpdb;
 
-        return $wpdb->query(sprintf(
-            'DELETE FROM %s WHERE id IN (%s)',
-            $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
-            implode(', ', $args['ids'])
-        ));
+        return $wpdb->query(
+            sprintf(
+                'DELETE FROM %s WHERE id IN (%s)',
+                $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
+                implode(', ', $args['ids'])
+            )
+        );
     }
 
     /**
@@ -947,9 +965,9 @@ class Database
     /**
      * Returns the number of license keys available.
      *
-     * @param $status \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum
+     * @param LicenseStatusEnum $status
      *
-     * @return int
+     * @return integer
      */
     public static function getLicenseKeyCount($status = 0)
     {
@@ -971,8 +989,8 @@ class Database
     /**
      * Returns distinct values from a specific column/table.
      *
-     * @param $column string
-     * @param $table string
+     * @param string $column The column name
+     * @param string $table  The table name
      *
      * @return (array)\stdObject
      */

@@ -38,7 +38,8 @@ if (!defined('LMFWC_PLUGIN_URL')) {
  * @since  1.0.0
  * @return LicenseManagerForWooCommerce
  */
-function lmfwc() {
+function lmfwc()
+{
     return \LicenseManagerForWooCommerce\Main::instance();
 }
 

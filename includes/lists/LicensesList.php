@@ -9,6 +9,7 @@ use \LicenseManagerForWooCommerce\Logger;
 use \LicenseManagerForWooCommerce\Settings;
 use \LicenseManagerForWooCommerce\Setup;
 use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
+use \LicenseManagerForWooCommerce\Enums\SourceEnum;
 
 defined('ABSPATH') || exit;
 
@@ -175,13 +176,19 @@ class LicensesList extends \WP_List_Table
                 return $link;
             case 'source':
                 switch ($item['source']) {
-                    case 1:
+                    case SourceEnum::GENERATOR:
                         $status = sprintf(
                             '<span class="dashicons dashicons-admin-generic" title="%s"></span>',
                             __('Generator', 'lmfwc')
                         );
                         break;
-                    case 2:
+                    case SourceEnum::IMPORT:
+                        $status = sprintf(
+                            '<span class="dashicons dashicons-download" title="%s"></span>',
+                            __('Import', 'lmfwc')
+                        );
+                        break;
+                    case SourceEnum::API:
                         $status = sprintf(
                             '<span class="dashicons dashicons-download" title="%s"></span>',
                             __('Import', 'lmfwc')
@@ -190,7 +197,7 @@ class LicensesList extends \WP_List_Table
 
                     // Default switch case
                     default:
-                        $status = '';
+                        $status = __('Unknown', 'lmfwc');
                         break;
                 }
                 return $status;
