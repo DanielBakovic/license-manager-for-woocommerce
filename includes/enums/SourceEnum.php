@@ -16,4 +16,5 @@ abstract class SourceEnum
 
     const GENERATOR = 1;
     const IMPORT = 2;
+    const API = 3;
 }

@@ -35,6 +35,7 @@ class Database
         add_filter('lmfwc_insert_added_license_key',      array($this, 'insertAddedLicenseKey'),      10, 1);
         add_filter('lmfwc_insert_generator',              array($this, 'insertGenerator'),            10, 1);
         add_filter('lmfwc_insert_api_key',                array($this, 'insertApiKey'),               10, 3);
+        add_filter('lmfwc_insert_license_key_from_api',   array($this, 'insertLicenseKeyFromApi'),    10, 4);
 
         // Update
         add_action('lmfwc_sell_imported_license_keys',    array($this, 'sellImportedLicenseKeys'), 10, 1);
@@ -562,6 +563,49 @@ class Database
             'consumer_secret' => $consumer_secret,
             'key_id' => $wpdb->insert_id
         );
+    }
+
+    /**
+     * Save the license key from the API to the database.
+     *
+     * @since 1.1.0
+     *
+     * @param int $product_id
+     * @param string $description
+     * @param string $permissions
+     */
+    public function insertLicenseKeyFromApi($product_id, $license_key, $valid_for, $status)
+    {
+        global $wpdb;
+
+        $key_id = $wpdb->insert(
+            $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
+            array(
+                'product_id'  => $product_id,
+                'license_key' => SOME_VALUE_GOES_HERE,
+                'hash'        => SOME_VALUE_GOES_HERE,
+                'created_at'  => SOME_VALUE_GOES_HERE,
+                'expires_at'  => SOME_VALUE_GOES_HERE,
+                'valid_for'   => SOME_VALUE_GOES_HERE,
+                'source'      => SOME_VALUE_GOES_HERE,
+                'status'      => SOME_VALUE_GOES_HERE
+            ),
+            array(
+                '%d',
+                '%s',
+                '%s',
+                '%s',
+                '%s',
+                '%s',
+            )
+        );
+
+        return array(
+            'consumer_key' => $consumer_key,
+            'consumer_secret' => $consumer_secret,
+            'key_id' => $wpdb->insert_id
+        );
+
     }
 
     // UPDATE

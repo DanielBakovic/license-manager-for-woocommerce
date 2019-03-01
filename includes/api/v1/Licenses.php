@@ -3,6 +3,7 @@
 namespace LicenseManagerForWooCommerce\API\v1;
 
 use \LicenseManagerForWooCommerce\Logger;
+use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
 
 defined('ABSPATH') || exit;
 
@@ -34,33 +35,31 @@ class Licenses extends \WP_REST_Controller
      */
     public function register_routes()
     {
-        // GET license
+        /*
+         * GET license
+         * 
+         * Retrieves all the available licenses from the database.
+         */
         register_rest_route(
             $this->namespace, '/' . $this->base, array(
                 array(
-                    'methods'             => \WP_REST_Server::READABLE,
-                    'callback'            => array($this, 'getLicenses'),
+                    'methods'  => \WP_REST_Server::READABLE,
+                    'callback' => array($this, 'getLicenses'),
                 )
             )
         );
 
-        // POST license
-        register_rest_route(
-            $this->namespace, '/' . $this->base, array(
-                array(
-                    'methods'             => \WP_REST_Server::CREATABLE,
-                    'callback'            => array($this, 'createLicenses'),
-                )
-            )
-        );
-
-        // GET license/{id}
+        /*
+         * GET license/{id}
+         * 
+         * Retrieves a single licenses from the database.
+         */
         register_rest_route(
             $this->namespace, '/' . $this->base . '/(?P<key_id>[\w-]+)', array(
                 array(
-                    'methods'             => \WP_REST_Server::READABLE,
-                    'callback'            => array($this, 'getLicense'),
-                    'args'                => array(
+                    'methods'  => \WP_REST_Server::READABLE,
+                    'callback' => array($this, 'getLicense'),
+                    'args'     => array(
                         'key_id' => array(
                             'description' => __('License key ID.', 'lmfwc'),
                             'type'        => 'integer',
@@ -70,13 +69,27 @@ class Licenses extends \WP_REST_Controller
             )
         );
 
-        // POST license/{id}
+        /*
+         * POST license
+         * 
+         * Creates a new license in the database
+         */
+        register_rest_route(
+            $this->namespace, '/' . $this->base, array(
+                array(
+                    'methods'  => \WP_REST_Server::CREATABLE,
+                    'callback' => array($this, 'createLicense'),
+                )
+            )
+        );
+
+        // PUT license/{id}
         register_rest_route(
             $this->namespace, '/' . $this->base . '/(?P<key_id>[\w-]+)', array(
                 array(
-                    'methods'             => \WP_REST_Server::CREATABLE,
-                    'callback'            => array($this, 'createLicense'),
-                    'args'                => array(
+                    'methods'  => \WP_REST_Server::EDITABLE,
+                    'callback' => array($this, 'updateLicense'),
+                    'args'     => array(
                         'key_id' => array(
                             'description' => __('License key ID.', 'lmfwc'),
                             'type'        => 'integer',
@@ -86,6 +99,7 @@ class Licenses extends \WP_REST_Controller
             )
         );
     }
+
     public function getLicenses(\WP_REST_Request $request)
     {
         $result = apply_filters('lmfwc_get_licenses', null);
@@ -99,11 +113,6 @@ class Licenses extends \WP_REST_Controller
         }
 
         return new \WP_REST_Response($result, 200);
-    }
-
-    public function createLicenses(\WP_REST_Request $request)
-    {
-        return new \WP_REST_Response('', 200);
     }
 
     public function getLicense(\WP_REST_Request $request)
@@ -124,7 +133,74 @@ class Licenses extends \WP_REST_Controller
 
     public function createLicense(\WP_REST_Request $request)
     {
+        $body = $request->get_params();
+
+        // Validate the product_id parameter
+        if (isset($body['product_id']) && is_numeric($body['product_id'])) {
+
+            $id = absint($body['product_id']);
+
+            if (!$this->validateProductId($id)) {
+                return new \WP_Error(
+                    'lmfwc_rest_data_error',
+                    sprintf(__('The WooCommerce product with the ID: %d could not be found.', 'lmfwc'), $id),
+                    array('status' => 404)
+                );
+            }
+        }
+
+        // Validate the license_key parameter
+        if (!isset($body['license_key'])) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                __('The license key is missing from the request.', 'lmfwc'),
+                array('status' => 404)
+            );
+        }
+
+        // Validate the valid_for parameter
+        if (isset($body['valid_for']) && is_numeric($body['valid_for'])) {
+           $valid_for = absint($body['valid_for']);
+        } else {
+            $valid_for = null;
+        }
+
+        // Validate the status parameter
+        if (isset($body['status']) && in_array(sanitize_text_field($body['status']), array('active', 'inactive'))) {
+            $status = LicenseStatusEnum::$values[sanitize_text_field($body['status'])];
+        } else {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                __('The status is missing from the request.', 'lmfwc'),
+                array('status' => 404)
+            );
+        }
+
         return new \WP_REST_Response('createLicense', 200);
+    }
+
+    public function updateLicense(\WP_REST_Request $request)
+    {
+        return new \WP_REST_Response('updateLicense', 200);
+    }
+
+    // Validation functions.
+
+    protected function validateProductId($product_id)
+    {
+        try {
+            $product = new \WC_Product($product_id);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return new \WP_REST_Response($product, 200);
+
+        if ($product->exists()) {
+            return true;
+        }
+
+        return false;
     }
 
 }

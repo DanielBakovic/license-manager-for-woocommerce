@@ -38,8 +38,8 @@ class Generators extends \WP_REST_Controller
         register_rest_route(
             $this->namespace, '/' . $this->base, array(
                 array(
-                    'methods'             => \WP_REST_Server::READABLE,
-                    'callback'            => array($this, 'getGenerators'),
+                    'methods'  => \WP_REST_Server::READABLE,
+                    'callback' => array($this, 'getGenerators'),
                 )
             )
         );
@@ -48,8 +48,8 @@ class Generators extends \WP_REST_Controller
         register_rest_route(
             $this->namespace, '/' . $this->base, array(
                 array(
-                    'methods'             => \WP_REST_Server::CREATABLE,
-                    'callback'            => array($this, 'createGenerators'),
+                    'methods'  => \WP_REST_Server::CREATABLE,
+                    'callback' => array($this, 'createGenerators'),
                 )
             )
         );
@@ -58,9 +58,9 @@ class Generators extends \WP_REST_Controller
         register_rest_route(
             $this->namespace, '/' . $this->base . '/(?P<generator_id>[\w-]+)', array(
                 array(
-                    'methods'             => \WP_REST_Server::READABLE,
-                    'callback'            => array($this, 'getGenerator'),
-                    'args'                => array(
+                    'methods'  => \WP_REST_Server::READABLE,
+                    'callback' => array($this, 'getGenerator'),
+                    'args'     => array(
                         'generator_id' => array(
                             'description' => __('Generator ID.', 'lmfwc'),
                             'type'        => 'integer',
@@ -74,9 +74,9 @@ class Generators extends \WP_REST_Controller
         register_rest_route(
             $this->namespace, '/' . $this->base . '/(?P<generator_id>[\w-]+)', array(
                 array(
-                    'methods'             => \WP_REST_Server::CREATABLE,
-                    'callback'            => array($this, 'createGenerator'),
-                    'args'                => array(
+                    'methods'  => \WP_REST_Server::CREATABLE,
+                    'callback' => array($this, 'createGenerator'),
+                    'args'     => array(
                         'generator_id' => array(
                             'description' => __('Generator ID.', 'lmfwc'),
                             'type'        => 'integer',

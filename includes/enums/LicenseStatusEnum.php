@@ -27,4 +27,12 @@ abstract class LicenseStatusEnum
         self::INACTIVE,
         self::USED
     );
+
+    public static $values = array(
+        'sold' => self::SOLD,
+        'delivered' => self::DELIVERED,
+        'active' => self::ACTIVE,
+        'inactive' => self::INACTIVE,
+        'used' => self::USED
+    );
 }
