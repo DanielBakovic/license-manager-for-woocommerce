@@ -169,7 +169,9 @@ class LicensesList extends \WP_List_Table
                 return $expires_at;
             case 'valid_for':
                 if ($item['valid_for']) {
-                    $link = sprintf(__('%d Day(s)', 'lmfwc'), intval($item['valid_for']));
+                    $link = sprintf(__('<b>%d</b> day(s)', 'lmfwc'), intval($item['valid_for']));
+                    $link .= '<br>';
+                    $link .= sprintf('<small>%s</small>', __('After purchase', 'lmfwc'));
                 } else {
                     $link = '';
                 }
@@ -178,20 +180,26 @@ class LicensesList extends \WP_List_Table
                 switch ($item['source']) {
                     case SourceEnum::GENERATOR:
                         $status = sprintf(
-                            '<span class="dashicons dashicons-admin-generic" title="%s"></span>',
+                            '<img class="lmfwc-source-icon" src="%s" alt="%s" title="%s">',
+                            LMFWC_IMG_URL . 'icons/ic_settings_black_24dp.png',
+                            __('Generator', 'lmfwc'),
                             __('Generator', 'lmfwc')
                         );
                         break;
                     case SourceEnum::IMPORT:
                         $status = sprintf(
-                            '<span class="dashicons dashicons-download" title="%s"></span>',
+                            '<img class="lmfwc-source-icon" src="%s" alt="%s" title="%s">',
+                            LMFWC_IMG_URL . 'icons/ic_import_export_black_24dp.png',
+                            __('Import', 'lmfwc'),
                             __('Import', 'lmfwc')
                         );
                         break;
                     case SourceEnum::API:
                         $status = sprintf(
-                            '<span class="dashicons dashicons-download" title="%s"></span>',
-                            __('Import', 'lmfwc')
+                            '<img class="lmfwc-source-icon" src="%s" alt="%s" title="%s">',
+                            LMFWC_IMG_URL . 'icons/ic_cloud_black_24dp.png',
+                            __('API', 'lmfwc'),
+                            __('API', 'lmfwc')
                         );
                         break;
 
@@ -227,6 +235,12 @@ class LicensesList extends \WP_List_Table
                             __('Inactive', 'lmfwc')
                         );
                         break;
+                    case LicenseStatusEnum::USED:
+                        $status = sprintf(
+                            '<span class="lmfwc-status used">%s</span>',
+                            __('Used', 'lmfwc')
+                        );
+                        break;
 
                     // Default switch case
                     default:
@@ -257,6 +271,7 @@ class LicensesList extends \WP_List_Table
         }
 
         $actions = [
+            'id' => sprintf(__('ID: %d', 'lmfwc'), intval($item['id'])),
             'show' => sprintf(
                 '<a class="lmfwc-license-key-show" data-id="%d">%s</a>',
                 $item['id'],
@@ -427,7 +442,6 @@ class LicensesList extends \WP_List_Table
     {
         $columns = array(
             'cb'          => '<input type="checkbox" />',
-            'id'          => __('ID', 'lmfwc'),
             'license_key' => __('License Key', 'lmfwc'),
             'order_id'    => __('Order', 'lmfwc'),
             'product_id'  => __('Product', 'lmfwc'),

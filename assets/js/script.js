@@ -88,6 +88,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
     var licenseTable = {
         btnHideLicense: document.querySelectorAll('.lmfwc-license-key-hide'),
         btnShowLicense: document.querySelectorAll('.lmfwc-license-key-show'),
+        btnCopyToClipboard: document.querySelectorAll('code.lmfwc-placeholder'),
         bindHideButtons: function() {
             if (!this.btnHideLicense) return;
 
@@ -133,9 +134,12 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 });
             }
         },
+        bindCopyToClipboard: function() {
+        },
         init: function() {
             this.bindShowButtons();
             this.bindHideButtons();
+            this.bindCopyToClipboard();
         }
     }
 

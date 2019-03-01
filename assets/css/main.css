@@ -8,6 +8,8 @@
 	--color-info: #17a2b8;
 	--color-light: #f8f9fa;
 	--color-dark: #343a40;
+
+	--color-grey-1: #E1E1E1;
 }
 
 @font-face {
@@ -58,6 +60,13 @@ table.wp-list-table.licenses td.source.column-source > span {
 	cursor: pointer;
 }
 
+table.wp-list-table.licenses td.source.column-source,
+table.wp-list-table.licenses td.status.column-status,
+table.wp-list-table.licenses td.valid_for.column-valid_for {
+	vertical-align: middle;
+	text-align: center;
+}
+
 /** License Key Placeholder */
 .lmfwc-placeholder {
 	font-family: 'Roboto Mono';
@@ -81,11 +90,19 @@ table.wp-list-table.licenses td.source.column-source > span {
 	bottom: 0;
 	left: -25px;
 	width: 25px;
-	background: #c0c0c0;
+	background-color: #c0c0c0;
 	color: #ffffff;
 	line-height: 25px;
 	border-top-left-radius: 3px;
 	border-bottom-left-radius: 3px;
+	-webkit-transition: background-color .3s ease-in-out;
+	   -moz-transition: background-color .3s ease-in-out;
+	    -ms-transition: background-color .3s ease-in-out;
+	     -o-transition: background-color .3s ease-in-out;
+	        transition: background-color .3s ease-in-out;
+}
+.lmfwc-placeholder:hover:before {
+	background-color: var(--color-primary);
 }
 .lmfwc-placeholder.empty:after {
 	position: absolute;
@@ -102,6 +119,12 @@ table.wp-list-table.licenses td.source.column-source > span {
 	margin-left: 5px;
 }
 
+/* Source Icons */
+.lmfwc-source-icon {
+	max-width: 24px;
+	max-height: 24px;
+}
+
 /* Custom status */
 .lmfwc-status {
 	padding: 3px 6px;
@@ -109,7 +132,6 @@ table.wp-list-table.licenses td.source.column-source > span {
 	position: relative;
 	font-weight: 600;
 	border-radius: 3px;
-	font-size: 0.75em;
 }
 .lmfwc-status.sold {
 	background: var(--color-info);
@@ -124,8 +146,12 @@ table.wp-list-table.licenses td.source.column-source > span {
 	color: var(--color-light);
 }
 .lmfwc-status.inactive {
-	background: var(--color-dark);
-	color: var(--color-light);
+	background: var(--color-grey-1);
+	color: var(--color-secondary);
+}
+.lmfwc-status.used {
+	background: var(--color-warning);
+	color: var(--color-dark);
 }
 
 /** My Account **/

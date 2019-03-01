@@ -1,4 +1,14 @@
 <?php
+/**
+ * Database connector
+ * PHP Version: 5.6
+ * 
+ * @category WordPress
+ * @package  LicenseManagerForWooCommerce
+ * @author   Dražen Bebić <drazen.bebic@outlook.com>
+ * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
+ * @link     https://www.bebic.at/license-manager-for-woocommerce
+ */
 
 namespace LicenseManagerForWooCommerce;
 
@@ -43,6 +53,7 @@ class Database
         add_filter('lmfwc_toggle_license_key_status',     array($this, 'toggleLicenseKeyStatus'),  10, 1);
         add_filter('lmfwc_update_generator',              array($this, 'updateGenerator'),         10, 1);
         add_filter('lmfwc_update_api_key',                array($this, 'updateApiKey'),            10, 4);
+        add_filter('lmfwc_update_license_key',            array($this, 'updateLicenseKey'),        10, 6);
 
         // Delete
         add_filter('lmfwc_delete_license_keys',           array($this, 'deleteLicenseKeys'        ), 10, 1);
@@ -236,7 +247,6 @@ class Database
      * Returns all currently available license keys.
      * 
      * @since 1.1.0
-     * 
      * @return array
      */
     public function getLicenses()
@@ -258,8 +268,8 @@ class Database
     /**
      * Returns a single license key by its id.
      * 
+     * @param integer $id License key ID
      * @since 1.1.0
-     * 
      * @return array
      */
     public function getLicense($id)
@@ -286,7 +296,6 @@ class Database
      * Returns all currently available license keys.
      * 
      * @since 1.1.0
-     * 
      * @return array
      */
     public function getGeneratorsApi()
@@ -308,8 +317,8 @@ class Database
     /**
      * Returns a single license key by its id.
      * 
-     * @since 1.1.0
-     * 
+     * @param  integer $id Generator ID
+     * @since  1.1.0
      * @return array
      */
     public function getGeneratorApi($id)
@@ -631,9 +640,9 @@ class Database
      *
      * @since 1.0.0
      *
-     * @param array $args['license_keys']
-     * @param int   $args['order_id']
-     * @param int   $args['amount']
+     * @param array   $args['license_keys']
+     * @param integer $args['order_id']
+     * @param integer $args['amount']
      */
     public function sellImportedLicenseKeys($args)
     {
@@ -686,15 +695,15 @@ class Database
      *
      * @since 1.0.0
      *
-     * @param int    $args['id']           - Generator ID.
-     * @param string $args['name']         - Generator name.
-     * @param string $args['charset']      - Character map used for key generation.
-     * @param int    $args['chunks']       - Number of chunks.
-     * @param int    $args['chunk_length'] - Chunk length.
-     * @param string $args['separator']    - Separator used.
-     * @param string $args['prefix']       - License key prefix.
-     * @param string $args['suffis']       - License key suffix.
-     * @param string $args['expires_in']   - Number of days for which the license is valid.
+     * @param int    $args['id']           Generator ID.
+     * @param string $args['name']         Generator name.
+     * @param string $args['charset']      Character map used for key generation.
+     * @param int    $args['chunks']       Number of chunks.
+     * @param int    $args['chunk_length'] Chunk length.
+     * @param string $args['separator']    Separator used.
+     * @param string $args['prefix']       License key prefix.
+     * @param string $args['suffis']       License key suffix.
+     * @param string $args['expires_in']   Number of days for which the license is valid.
      */
     public function updateGenerator($args)
     {
@@ -721,12 +730,12 @@ class Database
     /**
      * Save the API key to the database.
      *
+     * @param integer $id          The API Key ID
+     * @param integer $user_id     The User ID of the owner
+     * @param string  $description Friendly name for the key
+     * @param string  $permissions The permissions given to this key
      * @since 1.1.0
-     *
-     * @param int    $id
-     * @param int    $user_id
-     * @param string $description
-     * @param string $permissions
+     * @return integer
      */
     public function updateApiKey($id, $user_id, $description, $permissions)
     {
@@ -747,6 +756,76 @@ class Database
             ),
             array('%d')
         );
+    }
+
+    /**
+     * Update an existing license key in the database.
+     *
+     * @since 1.1.0
+     *
+     * @param integer $key_id    The License Key ID
+     * @param integer $order_id  The WooCommerce Order ID
+     * @param string  $valid_for Validity in days
+     * @param string  $status    Status enumerator
+     */
+    public function updateLicenseKey(
+        $key_id,
+        $order_id,
+        $product_id,
+        $license_key,
+        $valid_for,
+        $status
+    ) {
+        global $wpdb;
+
+        $table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
+        $first = true;
+
+        $sql = "UPDATE {$table}";
+
+        if ($status) {
+            $sql .= $wpdb->prepare(' SET status = %d', $status);
+            $first = false;
+        }
+
+        if ($order_id) {
+            $sql .= $first ? ' SET ' : ', ';
+            $sql .= $wpdb->prepare('order_id = %d', $order_id);
+            $first = false;
+        }
+
+        if ($product_id) {
+            $sql .= $first ? ' SET ' : ', ';
+            $sql .= $wpdb->prepare('product_id = %d', $product_id);
+            $first = false;
+        }
+
+        if ($license_key) {
+            $sql .= $first ? ' SET ' : ', ';
+            $license_key_encrypted = apply_filters('lmfwc_encrypt', $license_key);
+            $license_key_hashed = apply_filters('lmfwc_hash', $license_key);
+
+            $sql .= $wpdb->prepare(
+                'license_key = %s, hash = %s',
+                $license_key_encrypted,
+                $license_key_hashed
+            );
+            $first = false;
+        }
+
+        if ($valid_for) {
+            $sql .= $first ? ' SET ' : ', ';
+            $sql .= $wpdb->prepare('valid_for = %d', $valid_for);
+            $first = false;
+        }
+
+        $sql .= $wpdb->prepare(' WHERE id = %d;', $key_id);
+
+        $wpdb->query($sql);
+
+        Logger::file($sql);
+
+        return $this->getLicense($key_id);
     }
 
     /**
@@ -924,12 +1003,12 @@ class Database
     /**
      * Activates or Deactivates license keys.
      *
-     * @since 1.0.0
+     * @param int    $args['status']      New license key status
+     * @param string $args['column_name'] The column name by which to compare
+     * @param string $args['operator']    The operator to use
+     * @param array  $args['value']       Value of the column by which to compare
      *
-     * @param int    $args['status']
-     * @param string $args['column_name']
-     * @param string $args['operator']
-     * @param array  $args['value']
+     * @since 1.0.0
      *
      * @return boolean
      */
@@ -965,7 +1044,7 @@ class Database
     /**
      * Returns the number of license keys available.
      *
-     * @param LicenseStatusEnum $status
+     * @param LicenseStatusEnum $status The new license key status
      *
      * @return integer
      */
@@ -982,7 +1061,12 @@ class Database
         if ($status == 0) {
             return $wpdb->get_var("SELECT COUNT(*) FROM $table");
         } else {
-            return $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $table WHERE status = %d", intval($status)));
+            return $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT COUNT(*) FROM $table WHERE status = %d",
+                    intval($status)
+                )
+            );
         }
     }
 
