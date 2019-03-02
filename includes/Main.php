@@ -53,6 +53,9 @@ final class Main
         $this->_initHooks();
 
         add_action('init', array($this, 'init'));
+
+        $this->udpateDatabase();
+
         new API\Authentication();
     }
 
@@ -88,11 +91,11 @@ final class Main
         $this->_define('LMFWC_PLUGIN_BASENAME', plugin_basename(LMFWC_PLUGIN_FILE));
 
         // Directories
-        $this->_define('LMFWC_ASSETS_DIR',    LMFWC_ABSPATH       . 'assets/');
-        $this->_define('LMFWC_LOG_DIR',       LMFWC_ABSPATH       . 'logs/');
-        $this->_define('LMFWC_TEMPLATES_DIR', LMFWC_ABSPATH       . 'templates/');
-        $this->_define('LMFWC_ETC_DIR',       LMFWC_ASSETS_DIR    . 'etc/');
-        $this->_define('LMFWC_METABOX_DIR',   LMFWC_TEMPLATES_DIR . 'meta-box/');
+        $this->_define('LMFWC_ASSETS_DIR',     LMFWC_ABSPATH       . 'assets/');
+        $this->_define('LMFWC_LOG_DIR',        LMFWC_ABSPATH       . 'logs/');
+        $this->_define('LMFWC_TEMPLATES_DIR',  LMFWC_ABSPATH       . 'templates/');
+        $this->_define('LMFWC_MIGRATIONS_DIR', LMFWC_ABSPATH       . 'migrations/');
+        $this->_define('LMFWC_ETC_DIR',        LMFWC_ASSETS_DIR    . 'etc/');
 
         // URL's
         $this->_define('LMFWC_ASSETS_URL', LMFWC_PLUGIN_URL . 'assets/');
@@ -168,7 +171,7 @@ final class Main
      * 
      * @return null
      */
-    private function _define( $name, $value )
+    private function _define($name, $value)
     {
         if (!defined($name)) {
             define($name, $value);
@@ -212,6 +215,28 @@ final class Main
         new Database();
         new FormHandler();
         new API\Setup();
+    }
+
+    private function udpateDatabase()
+    {
+        // Run update only when
+        $run_update = true;
+
+        if (key_exists('action', $_REQUEST)) {
+            $blacklist = array(
+                "delete-plugin",
+                "activate",
+                "deactivate"
+            );
+
+            if (in_array($_REQUEST["action"], $blacklist)) {
+                $run_update = false;
+            }
+        }
+
+        if ($run_update) {
+            Setup::update();
+        }
     }
 
 }

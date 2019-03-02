@@ -55,26 +55,28 @@ class FormHandler
         check_admin_referer('lmfwc_save_generator');
 
         // Validate request.
-        $redirect_url = 'admin.php?page=%s&validation_error=%s';
-
         if ($_POST['name'] == '' || !is_string($_POST['name'])) {
-            wp_redirect(sprintf($redirect_url, AdminMenus::ADD_GENERATOR_PAGE, 'invalid_name'));
-            wp_die();
+            AdminNotice::add('error', __('Generator name is missing.', 'lmfwc'), 18);
+            wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::ADD_GENERATOR_PAGE)));
+            exit();
         }
 
         if ($_POST['charset'] == '' || !is_string($_POST['charset'])) {
-            wp_redirect(sprintf($redirect_url, AdminMenus::ADD_GENERATOR_PAGE, 'invalid_charset'));
-            wp_die();
+            AdminNotice::add('error', __('The charset is invalid.', 'lmfwc'), 18);
+            wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::ADD_GENERATOR_PAGE)));
+            exit();
         }
 
         if ($_POST['chunks'] == '' || !is_numeric($_POST['chunks'])) {
-            wp_redirect(sprintf($redirect_url, AdminMenus::ADD_GENERATOR_PAGE, 'invalid_chunks'));
-            wp_die();
+            AdminNotice::add('error', __('Only integer values allowed for chunks.', 'lmfwc'), 18);
+            wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::ADD_GENERATOR_PAGE)));
+            exit();
         }
 
         if ($_POST['chunk_length'] == '' || !is_numeric($_POST['chunk_length'])) {
-            wp_redirect(sprintf($redirect_url, AdminMenus::ADD_GENERATOR_PAGE, 'invalid_chunk_length'));
-            wp_die();
+            AdminNotice::add('error', __('Only integer values allowed for chunk length.', 'lmfwc'), 18);
+            wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::ADD_GENERATOR_PAGE)));
+            exit();
         }
 
         // Save the generator.
@@ -89,16 +91,15 @@ class FormHandler
             'expires_in'   => absint($_POST['expires_in'])
         ));
 
-        // Redirect according to $result.
-        $redirect_url = 'admin.php?page=%s&action=edit&id=%d&status=%s';
-
         if ($result) {
-            wp_redirect(sprintf($redirect_url, AdminMenus::GENERATORS_PAGE, absint($_POST['id']), 'true'));
+            AdminNotice::add('success', __('The generator was added successfully.', 'lmfwc'));
         } else {
-            wp_redirect(sprintf($redirect_url, AdminMenus::GENERATORS_PAGE, absint($_POST['id']), 'failed'));
+            AdminNotice::addErrorSupportForum(19);
         }
 
-        wp_die();
+        wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::GENERATORS_PAGE)));
+
+        exit();
     }
 
     /**

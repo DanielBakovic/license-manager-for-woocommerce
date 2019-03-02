@@ -38,7 +38,7 @@ class Setup
      *
      * @since 1.0.0
      */
-    const DB_VERSION = 100;
+    const DB_VERSION = 101;
 
     /**
      * Installation script.
@@ -68,6 +68,53 @@ class Setup
 
         foreach ($tables as $table) {
             $wpdb->query("DROP TABLE IF EXISTS {$table}");
+        }
+    }
+
+    /**
+     * Update script.
+     *
+     * @since 1.1.0
+     */
+    public static function update()
+    {
+        $db_version = get_option('lmfwc_db_version');
+
+        if (!$db_version) {
+            self::migrate('ACTIVATE');
+            //update_option('lmfwc_db_version', self::DB_VERSION, true);
+        } elseif ($db_version < self::DB_VERSION) {
+            self::migrate('UPGRADE');
+            //update_option('lmfwc_db_version', self::DB_VERSION, true);
+        }
+    }
+
+    /**
+     * Execute migration files.
+     *
+     * @since 1.1.2
+     */
+    public static function migrate($migration_mode)
+    {
+        global $wpdb;
+
+        Logger::file($migration_mode);
+
+        $db_version = get_option('lmfwc_db_version');
+        $reg_exp_filename = "/(\d{14})_(.*?)_(.*?)\.php/";
+
+        foreach (glob(LMFWC_MIGRATIONS_DIR . "*.php") as $filename)
+        {
+            if (preg_match($reg_exp_filename, basename($filename), $match)) {
+                $file_basename = $match[0];
+                $file_datetime = $match[1];
+                $file_version = $match[2];
+                $file_description = $match[3];
+
+                if (intval($file_version) <= self::DB_VERSION && intval($file_version) > $db_version) {
+                    require_once $filename;
+                }
+            }
         }
     }
 

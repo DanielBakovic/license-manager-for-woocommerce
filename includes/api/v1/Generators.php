@@ -34,7 +34,11 @@ class Generators extends \WP_REST_Controller
      */
     public function register_routes()
     {
-        // GET generator
+        /*
+         * GET generators
+         * 
+         * Retrieves all the available generators from the database.
+         */
         register_rest_route(
             $this->namespace, '/' . $this->base, array(
                 array(
@@ -44,17 +48,11 @@ class Generators extends \WP_REST_Controller
             )
         );
 
-        // POST generator
-        register_rest_route(
-            $this->namespace, '/' . $this->base, array(
-                array(
-                    'methods'  => \WP_REST_Server::CREATABLE,
-                    'callback' => array($this, 'createGenerators'),
-                )
-            )
-        );
-
-        // GET generator/{id}
+        /*
+         * GET generators/{id}
+         * 
+         * Retrieves a single generator from the database.
+         */
         register_rest_route(
             $this->namespace, '/' . $this->base . '/(?P<generator_id>[\w-]+)', array(
                 array(
@@ -70,7 +68,25 @@ class Generators extends \WP_REST_Controller
             )
         );
 
-        // POST generator/{id}
+        /*
+         * POST generators
+         * 
+         * Creates a new generator in the database
+         */
+        register_rest_route(
+            $this->namespace, '/' . $this->base, array(
+                array(
+                    'methods'  => \WP_REST_Server::CREATABLE,
+                    'callback' => array($this, 'createGenerators'),
+                )
+            )
+        );
+
+        /*
+         * PUT generators/{id}
+         * 
+         * Updates an already existing generator in the database
+         */
         register_rest_route(
             $this->namespace, '/' . $this->base . '/(?P<generator_id>[\w-]+)', array(
                 array(

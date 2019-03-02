@@ -36,7 +36,7 @@ class Licenses extends \WP_REST_Controller
     public function register_routes()
     {
         /*
-         * GET license
+         * GET licenses
          * 
          * Retrieves all the available licenses from the database.
          */
@@ -50,7 +50,7 @@ class Licenses extends \WP_REST_Controller
         );
 
         /*
-         * GET license/{id}
+         * GET licenses/{id}
          * 
          * Retrieves a single licenses from the database.
          */
@@ -70,7 +70,7 @@ class Licenses extends \WP_REST_Controller
         );
 
         /*
-         * POST license
+         * POST licenses
          * 
          * Creates a new license in the database
          */
@@ -83,9 +83,8 @@ class Licenses extends \WP_REST_Controller
             )
         );
 
-
         /*
-         * PUT license/{id}
+         * PUT licenses/{id}
          * 
          * Updates an already existing license in the database
          */

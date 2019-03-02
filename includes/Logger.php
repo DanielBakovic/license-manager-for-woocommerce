@@ -160,6 +160,10 @@ class Logger
             $filename = self::DEBUG_FILE;
         }
 
+        if (!file_exists(LMFWC_LOG_DIR)) {
+            mkdir(LMFWC_LOG_DIR);
+        }
+
         if (!isset($log_files[$filename])) {
             $log_files[$filename] = fopen(LMFWC_LOG_DIR . $filename, 'ab');
 
