@@ -136,7 +136,7 @@ class AdminMenus
     {
         $option = 'per_page';
         $args = array(
-            'label' => 'Licenses per page',
+            'label' => __('Licenses per page', 'lmfwc'),
             'default' => 10,
             'option' => 'licenses_per_page'
         );
@@ -232,7 +232,7 @@ class AdminMenus
     {
         $option = 'per_page';
         $args = array(
-            'label' => 'Generators per page',
+            'label' => __('Generators per page', 'lmfwc'),
             'default' => 10,
             'option' => 'generators_per_page'
         );

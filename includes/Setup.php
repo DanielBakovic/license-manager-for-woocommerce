@@ -98,8 +98,6 @@ class Setup
     {
         global $wpdb;
 
-        Logger::file($migration_mode);
-
         $db_version = get_option('lmfwc_db_version');
         $reg_exp_filename = "/(\d{14})_(.*?)_(.*?)\.php/";
 

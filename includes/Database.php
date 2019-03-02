@@ -54,6 +54,7 @@ class Database
         add_filter('lmfwc_update_generator',              array($this, 'updateGenerator'),         10, 1);
         add_filter('lmfwc_update_api_key',                array($this, 'updateApiKey'),            10, 4);
         add_filter('lmfwc_update_license_key',            array($this, 'updateLicenseKey'),        10, 6);
+        add_filter('lmfwc_update_generator_from_api',     array($this, 'updateGeneratorFromApi'),  10, 9);
 
         // Delete
         add_filter('lmfwc_delete_license_keys',           array($this, 'deleteLicenseKeys'        ), 10, 1);
@@ -529,25 +530,47 @@ class Database
      * @param string $args['prefix']       - License key prefix.
      * @param string $args['suffis']       - License key suffix.
      * @param string $args['expires_in']   - Number of days for which the license is valid.
+     * @throws \Exception
+     * @return integer
      */
     public function insertGenerator($args)
     {
+        $name         = $args['name']         ? sanitize_text_field($args['name'])      : null;
+        $charset      = $args['charset']      ? sanitize_text_field($args['charset'])   : null;
+        $chunks       = $args['chunks']       ? absint($args['chunks'])                 : null;
+        $chunk_length = $args['chunk_length'] ? absint($args['chunk_length'])           : null;
+        $separator    = $args['separator']    ? sanitize_text_field($args['separator']) : null;
+        $prefix       = $args['prefix']       ? sanitize_text_field($args['prefix'])    : null;
+        $suffix       = $args['suffix']       ? sanitize_text_field($args['suffix'])    : null;
+        $expires_in   = $args['expires_in']   ? absint($args['expires_in'])             : null;
+
+        if (!$name)         throw new \Exception('Generator name is missing', 1);
+        if (!$charset)      throw new \Exception('Generator charset is missing', 2);
+        if (!$chunks)       throw new \Exception('Generator chunks is missing', 3);
+        if (!$chunk_length) throw new \Exception('Generator chunk_length is missing', 4);
+
         global $wpdb;
 
-        return $wpdb->insert(
+        $insert = $wpdb->insert(
             $wpdb->prefix . Setup::GENERATORS_TABLE_NAME,
             array(
-                'name'         => sanitize_text_field($args['name']),
-                'charset'      => sanitize_text_field($args['charset']),
-                'chunks'       => intval($args['chunks']),
-                'chunk_length' => intval($args['chunk_length']),
-                'separator'    => sanitize_text_field($args['separator']),
-                'prefix'       => sanitize_text_field($args['prefix']),
-                'suffix'       => sanitize_text_field($args['suffix']),
-                'expires_in'   => sanitize_text_field($args['expires_in'])
+                'name'         => $name,
+                'charset'      => $charset,
+                'chunks'       => $chunks,
+                'chunk_length' => $chunk_length,
+                'separator'    => $separator,
+                'prefix'       => $prefix,
+                'suffix'       => $suffix,
+                'expires_in'   => $expires_in
             ),
             array('%s', '%s', '%d', '%d', '%s', '%s', '%s')
         );
+
+        if (!$insert) {
+            return 0;
+        }
+
+        return $wpdb->insert_id;
     }
 
     /**
@@ -763,10 +786,11 @@ class Database
      *
      * @since 1.1.0
      *
-     * @param integer $key_id    The License Key ID
-     * @param integer $order_id  The WooCommerce Order ID
-     * @param string  $valid_for Validity in days
-     * @param string  $status    Status enumerator
+     * @param  integer $key_id    The License Key ID
+     * @param  integer $order_id  The WooCommerce Order ID
+     * @param  string  $valid_for Validity in days
+     * @param  string  $status    Status enumerator
+     * @return array
      */
     public function updateLicenseKey(
         $key_id,
@@ -823,9 +847,119 @@ class Database
 
         $wpdb->query($sql);
 
-        Logger::file($sql);
-
         return $this->getLicense($key_id);
+    }
+
+    /**
+     * Update an existing generator.
+     *
+     * @since 1.1.0
+     *
+     * @param  integer $generator_id Generator ID
+     * @param  string  $name         Generator name
+     * @param  string  $charset      Character set
+     * @param  integer $chunks       Number of chunks
+     * @param  integer $chunk_length Individual chunk length
+     * @param  string  $separator    Chunk separator
+     * @param  string  $prefix       License Key prefix
+     * @param  string  $suffix       License Key suffix
+     * @param  integer $expires_in   Validity period after purchase (in days)
+     * @return array
+     */
+    public function updateGeneratorFromApi(
+        $generator_id,
+        $name,
+        $charset,
+        $chunks,
+        $chunk_length,
+        $separator,
+        $prefix,
+        $suffix,
+        $expires_in
+    ) {
+        $clean_generator_id = $generator_id ? absint($generator_id)           : null;
+        $clean_name         = $name         ? sanitize_text_field($name)      : null;
+        $clean_charset      = $charset      ? sanitize_text_field($charset)   : null;
+        $clean_chunks       = $chunks       ? absint($chunks)                 : null;
+        $clean_chunk_length = $chunk_length ? absint($chunk_length)           : null;
+        $clean_separator    = $separator    ? sanitize_text_field($separator) : null;
+        $clean_prefix       = $prefix       ? sanitize_text_field($prefix)    : null;
+        $clean_suffix       = $suffix       ? sanitize_text_field($suffix)    : null;
+        $clean_expires_in   = $expires_in   ? absint($expires_in)             : null;
+
+        Logger::file(array(
+            $clean_generator_id,
+            $clean_name,
+            $clean_charset,
+            $clean_chunks,
+            $clean_chunk_length,
+            $clean_separator,
+            $clean_prefix,
+            $clean_suffix,
+            $clean_expires_in
+        ));
+
+        if (!$generator_id) throw new \Exception('Generator ID is missing', 1);
+
+        global $wpdb;
+
+        $table = $wpdb->prefix . Setup::GENERATORS_TABLE_NAME;
+        $first = true;
+
+        $sql = "UPDATE {$table}";
+
+        if ($clean_name) {
+            $sql .= $wpdb->prepare(' SET name = %s', $clean_name);
+            $first = false;
+        }
+
+        if ($clean_charset) {
+            $sql .= $first ? ' SET ' : ', ';
+            $sql .= $wpdb->prepare('charset = %s', $clean_charset);
+            $first = false;
+        }
+
+        if ($clean_chunks) {
+            $sql .= $first ? ' SET ' : ', ';
+            $sql .= $wpdb->prepare('chunks = %d', $clean_chunks);
+            $first = false;
+        }
+
+        if ($clean_chunk_length) {
+            $sql .= $first ? ' SET ' : ', ';
+            $sql .= $wpdb->prepare('chunk_length = %d', $clean_chunk_length);
+            $first = false;
+        }
+
+        if ($clean_separator) {
+            $sql .= $first ? ' SET ' : ', ';
+            $sql .= $wpdb->prepare('separator = %s', $clean_separator);
+            $first = false;
+        }
+
+        if ($clean_prefix) {
+            $sql .= $first ? ' SET ' : ', ';
+            $sql .= $wpdb->prepare('prefix = %s', $clean_prefix);
+            $first = false;
+        }
+
+        if ($clean_suffix) {
+            $sql .= $first ? ' SET ' : ', ';
+            $sql .= $wpdb->prepare('suffix = %s', $clean_suffix);
+            $first = false;
+        }
+
+        if ($clean_expires_in) {
+            $sql .= $first ? ' SET ' : ', ';
+            $sql .= $wpdb->prepare('expires_in = %d', $clean_expires_in);
+            $first = false;
+        }
+
+        $sql .= $wpdb->prepare(' WHERE id = %d;', $generator_id);
+
+        $wpdb->query($sql);
+
+        return $this->getGenerator($generator_id);
     }
 
     /**

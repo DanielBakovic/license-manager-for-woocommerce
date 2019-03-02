@@ -15,7 +15,6 @@ defined('ABSPATH') || exit;
  */
 class Licenses extends \WP_REST_Controller
 {
-
     /**
      * Endpoint namespace.
      *
@@ -105,7 +104,7 @@ class Licenses extends \WP_REST_Controller
     }
 
     /**
-     * Callback for the GET licenses route. Retrieves all the license keys from the database.
+     * Callback for the GET licenses route. Retrieves all license keys from the database.
      * 
      * @param  WP_REST_Request $request
      * @return WP_REST_Response
@@ -148,7 +147,7 @@ class Licenses extends \WP_REST_Controller
     }
 
     /**
-     * Callback for the POST licenses route. Create a new license key in the database.
+     * Callback for the POST licenses route. Creates a new license key in the database.
      * 
      * @param  WP_REST_Request $request
      * @return WP_REST_Response

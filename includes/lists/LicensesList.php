@@ -408,11 +408,11 @@ class LicensesList extends \WP_List_Table
 
         $table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
 
-        $sql = "SELECT * FROM $table";
+        $sql = "SELECT * FROM {$table}";
         if (isset($where)) $sql .= $where;
         $sql .= ' ORDER BY ' . (empty($_REQUEST['orderby']) ? 'id' : esc_sql($_REQUEST['orderby']));
         $sql .= ' '          . (empty($_REQUEST['order'])   ? 'DESC'  : esc_sql($_REQUEST['order']));
-        $sql .= " LIMIT $per_page";
+        $sql .= " LIMIT {$per_page}";
         $sql .= ' OFFSET ' . ($page_number - 1) * $per_page;
 
         $results = $wpdb->get_results($sql, ARRAY_A);

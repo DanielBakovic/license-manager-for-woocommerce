@@ -42,10 +42,10 @@ class GeneratorsList extends \WP_List_Table
 
         $table = $wpdb->prefix . Setup::GENERATORS_TABLE_NAME;
 
-        $sql = "SELECT * FROM $table";
-        $sql .= ' ORDER BY ' . (empty($_REQUEST['orderby']) ? 'id' : esc_sql($_REQUEST['orderby']));
-        $sql .= ' '          . (empty($_REQUEST['order'])   ? 'ASC'  : esc_sql($_REQUEST['order']));
-        $sql .= " LIMIT $per_page";
+        $sql = "SELECT * FROM {$table}";
+        $sql .= ' ORDER BY ' . (empty($_REQUEST['orderby']) ? 'id'   : esc_sql($_REQUEST['orderby']));
+        $sql .= ' '          . (empty($_REQUEST['order'])   ? 'DESC' : esc_sql($_REQUEST['order']));
+        $sql .= " LIMIT {$per_page}";
         $sql .= ' OFFSET ' . ($page_number - 1) * $per_page;
 
         $results = $wpdb->get_results($sql, ARRAY_A);
@@ -73,6 +73,7 @@ class GeneratorsList extends \WP_List_Table
         $title = '<strong>' . $item['name'] . '</strong>';
 
         $actions = [
+            'id' => sprintf(__('ID: %d', 'lmfwc'), intval($item['id'])),
             'delete' => sprintf(
                 '<a href="?page=%s&action=%s&id=%s&_wpnonce=%s">%s</a>',
                 AdminMenus::GENERATORS_PAGE,
@@ -128,7 +129,6 @@ class GeneratorsList extends \WP_List_Table
     {
         $columns = array(
             'cb'           => '<input type="checkbox" />',
-            'id'           => __('ID', 'lmfwc'),
             'name'         => __('Name', 'lmfwc'),
             'charset'      => __('Character map', 'lmfwc'),
             'chunks'       => __('Number of chunks', 'lmfwc'),
@@ -184,13 +184,14 @@ class GeneratorsList extends \WP_List_Table
 
         $this->process_bulk_action();
 
-        $per_page     = $this->get_items_per_page('orders_per_page', 10);
+        $per_page     = $this->get_items_per_page('generators_per_page', 10);
         $current_page = $this->get_pagenum();
         $total_items  = self::record_count();
 
         $this->set_pagination_args([
             'total_items' => $total_items,
-            'per_page'    => $per_page
+            'per_page'    => $per_page,
+            'total_pages' => ceil($total_items / $per_page)
         ]);
 
         $this->items = self::get_orders($per_page, $current_page);
