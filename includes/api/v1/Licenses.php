@@ -356,7 +356,7 @@ class Licenses extends \WP_REST_Controller
         }
 
         $updated_license_key = apply_filters(
-            'lmfwc_update_license_key',
+            'lmfwc_update_selective_license_key',
             $key_id,
             $order_id,
             $product_id,

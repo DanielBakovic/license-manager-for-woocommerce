@@ -213,6 +213,9 @@ final class Main
         new Generator();
         new OrderManager();
         new Database();
+        new Repositories\ApiKey();
+        new Repositories\Generator();
+        new Repositories\License();
         new FormHandler();
         new API\Setup();
     }

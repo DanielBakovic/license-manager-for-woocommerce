@@ -498,15 +498,13 @@ class LicensesList extends \WP_List_Table
 
         $result = apply_filters(
             'lmfwc_delete_license_keys',
-            array(
-                'ids' => (array)($_REQUEST['id'])
-            )
+            (array)($_REQUEST['id'])
         );
 
         if ($result) {
             AdminNotice::add(
                 'success',
-                __('Your license key(s) have been deleted successfully.', 'lmfwc')
+                sprintf(__('%d License key(s) permanently deleted.', 'lmfwc'), $result)
             );
             wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::LICENSES_PAGE)));
         } else {

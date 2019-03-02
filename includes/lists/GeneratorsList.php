@@ -111,7 +111,14 @@ class GeneratorsList extends \WP_List_Table
                 ($item['suffix'] == '') ? $suffix = '' : $suffix = sprintf('<code>%s</code>', $item['suffix']);
                 return $suffix;
             case 'expires_in':
-                (!$item['expires_in']) ? $expires_in = __('non-expiring', 'lmfwc') : $expires_in = sprintf('%d %s', $item['expires_in'], __('day(s)', 'lmfwc'));
+                if (!$item['expires_in']) {
+                    return '';
+                }
+
+                $expires_in = sprintf('%d %s', $item['expires_in'], __('day(s)', 'lmfwc'));
+                $expires_in .= '<br>';
+                $expires_in .= sprintf('<small>%s</small>', __('After purchase'));
+
                 return $expires_in;
             default:
                 return $item[$column_name];
@@ -219,36 +226,38 @@ class GeneratorsList extends \WP_List_Table
     public function deleteGenerators()
     {
         $selected_generators = (array)$_REQUEST['id'];
+        $generators_to_delete = array();
 
         foreach ($selected_generators as $generator_id) {
             if ($products = apply_filters('lmfwc_get_assigned_products', array('generator_id' => absint($generator_id)))) {
                 continue;
             } else {
-                $result = apply_filters(
-                    'lmfwc_delete_generators',
-                    array(
-                        'ids' => (array)$generator_id
-                    )
-                );
+                array_push($generators_to_delete, $generator_id);
             }
         }
 
+        $result = apply_filters(
+            'lmfwc_delete_generators',
+            $generators_to_delete
+        );
+
         if ($result) {
+            AdminNotice::add(
+                'success',
+                sprintf(__('%d Generator(s) permanently deleted.', 'lmfwc'), $result)
+            );
+
             wp_redirect(
                 admin_url(
-                    sprintf(
-                        'admin.php?page=%s&lmfwc_delete_generators=true',
-                        AdminMenus::GENERATORS_PAGE
-                    )
+                    sprintf('admin.php?page=%s', AdminMenus::GENERATORS_PAGE)
                 )
             );
         } else {
+            AdminNotice::addErrorSupportForum(9);
+
             wp_redirect(
                 admin_url(
-                    sprintf(
-                        'admin.php?page=%s&lmfwc_delete_generators=error',
-                        AdminMenus::GENERATORS_PAGE
-                    )
+                    sprintf('admin.php?page=%s', AdminMenus::GENERATORS_PAGE)
                 )
             );
         }

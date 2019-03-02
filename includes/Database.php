@@ -33,36 +33,16 @@ class Database
         // Get
         add_filter('lmfwc_get_assigned_products',         array($this, 'getAssignedProducts'), 10, 1);
         add_filter('lmfwc_get_available_stock',           array($this, 'getAvailableStock'),   10, 1);
-        add_filter('lmfwc_get_api_key',                   array($this, 'getApiKey'),           10, 1);
-        add_filter('lmfwc_get_api_key_by',                array($this, 'getApiKeyBy'),         10, 2);
-        add_filter('lmfwc_get_licenses',                  array($this, 'getLicenses'),         10);
-        add_filter('lmfwc_get_license',                   array($this, 'getLicense'),          10, 1);
-        add_filter('lmfwc_get_generators',                array($this, 'getGeneratorsApi'),    10);
-        add_filter('lmfwc_get_generator',                 array($this, 'getGeneratorApi'),     10, 1);
 
         // Insert
         add_action('lmfwc_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 1);
         add_filter('lmfwc_insert_imported_license_keys',  array($this, 'insertImportedLicenseKeys'),  10, 1);
         add_filter('lmfwc_insert_added_license_key',      array($this, 'insertAddedLicenseKey'),      10, 1);
-        add_filter('lmfwc_insert_generator',              array($this, 'insertGenerator'),            10, 1);
-        add_filter('lmfwc_insert_api_key',                array($this, 'insertApiKey'),               10, 3);
         add_filter('lmfwc_insert_license_key_from_api',   array($this, 'insertLicenseKeyFromApi'),    10, 4);
 
         // Update
         add_action('lmfwc_sell_imported_license_keys',    array($this, 'sellImportedLicenseKeys'), 10, 1);
         add_filter('lmfwc_toggle_license_key_status',     array($this, 'toggleLicenseKeyStatus'),  10, 1);
-        add_filter('lmfwc_update_generator',              array($this, 'updateGenerator'),         10, 1);
-        add_filter('lmfwc_update_api_key',                array($this, 'updateApiKey'),            10, 4);
-        add_filter('lmfwc_update_license_key',            array($this, 'updateLicenseKey'),        10, 6);
-        add_filter('lmfwc_update_generator_from_api',     array($this, 'updateGeneratorFromApi'),  10, 9);
-
-        // Delete
-        add_filter('lmfwc_delete_license_keys',           array($this, 'deleteLicenseKeys'        ), 10, 1);
-        add_filter('lmfwc_delete_generators',             array($this, 'deleteGenerators'         ), 10, 1);
-        add_filter('lmfwc_delete_api_keys',               array($this, 'deleteApiKeys'            ), 10, 1);
-
-        // Misc.
-        add_filter('lmfwc_license_key_exists',            array($this, 'licenseKeyExists'         ), 10, 1);
     }
 
     // GET
@@ -886,18 +866,6 @@ class Database
         $clean_prefix       = $prefix       ? sanitize_text_field($prefix)    : null;
         $clean_suffix       = $suffix       ? sanitize_text_field($suffix)    : null;
         $clean_expires_in   = $expires_in   ? absint($expires_in)             : null;
-
-        Logger::file(array(
-            $clean_generator_id,
-            $clean_name,
-            $clean_charset,
-            $clean_chunks,
-            $clean_chunk_length,
-            $clean_separator,
-            $clean_prefix,
-            $clean_suffix,
-            $clean_expires_in
-        ));
 
         if (!$generator_id) throw new \Exception('Generator ID is missing', 1);
 

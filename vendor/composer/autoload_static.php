@@ -9,6 +9,7 @@ class ComposerStaticInit1e498426c3516c7c6bd12ace14395786
     public static $prefixLengthsPsr4 = array (
         'L' => 
         array (
+            'LicenseManagerForWooCommerce\\Repositories\\' => 42,
             'LicenseManagerForWooCommerce\\Lists\\' => 35,
             'LicenseManagerForWooCommerce\\Enums\\' => 35,
             'LicenseManagerForWooCommerce\\Abstracts\\' => 39,
@@ -23,6 +24,10 @@ class ComposerStaticInit1e498426c3516c7c6bd12ace14395786
     );
 
     public static $prefixDirsPsr4 = array (
+        'LicenseManagerForWooCommerce\\Repositories\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/includes/repositories',
+        ),
         'LicenseManagerForWooCommerce\\Lists\\' => 
         array (
             0 => __DIR__ . '/../..' . '/includes/lists',

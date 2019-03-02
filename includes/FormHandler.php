@@ -80,16 +80,17 @@ class FormHandler
         }
 
         // Save the generator.
-        $result = apply_filters('lmfwc_insert_generator', array(
-            'name'         => sanitize_text_field($_POST['name']),
-            'charset'      => sanitize_text_field($_POST['charset']),
-            'chunks'       => absint($_POST['chunks']),
-            'chunk_length' => absint($_POST['chunk_length']),
-            'separator'    => sanitize_text_field($_POST['separator']),
-            'prefix'       => sanitize_text_field($_POST['prefix']),
-            'suffix'       => sanitize_text_field($_POST['suffix']),
-            'expires_in'   => absint($_POST['expires_in'])
-        ));
+        $result = apply_filters(
+            'lmfwc_insert_generator',
+            $_POST['name'],
+            $_POST['charset'],
+            $_POST['chunks'],
+            $_POST['chunk_length'],
+            $_POST['separator'],
+            $_POST['prefix'],
+            $_POST['suffix'],
+            $_POST['expires_in']
+        );
 
         if ($result) {
             AdminNotice::add('success', __('The generator was added successfully.', 'lmfwc'));
@@ -112,52 +113,115 @@ class FormHandler
         // Verify the nonce.
         check_admin_referer('lmfwc_update_generator');
 
-        // Validate request.
-        $redirect_url = 'admin.php?page=%s&action=edit&id=%d&validation_error=%s"';
+        $generator_id = absint($_POST['id']);
 
+        // Validate request.
         if ($_POST['name'] == '' || !is_string($_POST['name'])) {
-            wp_redirect(sprintf($redirect_url, AdminMenus::EDIT_GENERATOR_PAGE, absint($_POST['id']), 'invalid_name'));
-            wp_die();
+            AdminNotice::add(
+                'error',
+                __('The Generator name is invalid.', 'lmfwc'),
+                30
+            );
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&action=edit&id=%d',
+                        AdminMenus::EDIT_GENERATOR_PAGE,
+                        $generator_id
+                    )
+                )
+            );
+            exit();
         }
 
         if ($_POST['charset'] == '' || !is_string($_POST['charset'])) {
-            wp_redirect(sprintf($redirect_url, AdminMenus::EDIT_GENERATOR_PAGE, absint($_POST['id']), 'invalid_charset'));
-            wp_die();
+            AdminNotice::add(
+                'error',
+                __('The Generator charset is invalid.', 'lmfwc'),
+                31
+            );
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&action=edit&id=%d',
+                        AdminMenus::EDIT_GENERATOR_PAGE,
+                        $generator_id
+                    )
+                )
+            );
+            exit();
         }
 
         if ($_POST['chunks'] == '' || !is_numeric($_POST['chunks'])) {
-            wp_redirect(sprintf($redirect_url, AdminMenus::EDIT_GENERATOR_PAGE, absint($_POST['id']), 'invalid_chunks'));
-            wp_die();
+            AdminNotice::add(
+                'error',
+                __('The Generator chunks are invalid.', 'lmfwc'),
+                32
+            );
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&action=edit&id=%d',
+                        AdminMenus::EDIT_GENERATOR_PAGE,
+                        $generator_id
+                    )
+                )
+            );
+            exit();
         }
 
         if ($_POST['chunk_length'] == '' || !is_numeric($_POST['chunk_length'])) {
-            wp_redirect(sprintf($redirect_url, AdminMenus::EDIT_GENERATOR_PAGE, absint($_POST['id']), 'invalid_chunk_length'));
-            wp_die();
+            AdminNotice::add(
+                'error',
+                __('The Generator chunk length is invalid.', 'lmfwc'),
+                33
+            );
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&action=edit&id=%d',
+                        AdminMenus::EDIT_GENERATOR_PAGE,
+                        $generator_id
+                    )
+                )
+            );
+            exit();
         }
 
         // Update the generator.
-        $result = apply_filters('lmfwc_update_generator', array(
-            'id'           => absint($_POST['id']),
-            'name'         => sanitize_text_field($_POST['name']),
-            'charset'      => sanitize_text_field($_POST['charset']),
-            'chunks'       => absint($_POST['chunks']),
-            'chunk_length' => absint($_POST['chunk_length']),
-            'separator'    => sanitize_text_field($_POST['separator']),
-            'prefix'       => sanitize_text_field($_POST['prefix']),
-            'suffix'       => sanitize_text_field($_POST['suffix']),
-            'expires_in'   => absint($_POST['expires_in'])
-        ));
+        $result = apply_filters(
+            'lmfwc_update_generator',
+            $_POST['id'],
+            $_POST['name'],
+            $_POST['charset'],
+            $_POST['chunks'],
+            $_POST['chunk_length'],
+            $_POST['separator'],
+            $_POST['prefix'],
+            $_POST['suffix'],
+            $_POST['expires_in']
+        );
 
         // Redirect according to $result.
-        $redirect_url = 'admin.php?page=%s&action=edit&id=%d&status=%s';
-
-        if ($result) {
-            wp_redirect(sprintf($redirect_url, AdminMenus::EDIT_GENERATOR_PAGE, absint($_POST['id']), 'true'));
+        if (!$result) {
+            AdminNotice::addErrorSupportForum(34);
         } else {
-            wp_redirect(sprintf($redirect_url, AdminMenus::EDIT_GENERATOR_PAGE, absint($_POST['id']), 'failed'));
+            AdminNotice::add(
+                'success',
+                __('The Generator was updated successfully.')
+            );
         }
 
-        wp_die();
+        wp_redirect(
+            admin_url(
+                sprintf(
+                    'admin.php?page=%s&action=edit&id=%d',
+                    AdminMenus::EDIT_GENERATOR_PAGE,
+                    $generator_id
+                )
+            )
+        );
+        exit();
     }
 
     /**

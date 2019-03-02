@@ -196,16 +196,17 @@ class Generators extends \WP_REST_Controller
             );
         }
 
-        $generator_id = apply_filters('lmfwc_insert_generator', array(
-            'name'         => $name,
-            'charset'      => $charset,
-            'chunks'       => $chunks,
-            'chunk_length' => $chunk_length,
-            'separator'    => $separator,
-            'prefix'       => $prefix,
-            'suffix'       => $suffix,
-            'expires_in'   => $expires_in
-        ));
+        $generator_id = apply_filters(
+            'lmfwc_insert_generator',
+            $name,
+            $charset,
+            $chunks,
+            $chunk_length,
+            $separator,
+            $prefix,
+            $suffix,
+            $expires_in
+        );
 
         if (!$generator_id) {
             return new \WP_Error(
@@ -281,7 +282,7 @@ class Generators extends \WP_REST_Controller
         }
 
         $updated_generator = apply_filters(
-            'lmfwc_update_generator_from_api',
+            'lmfwc_update_selective_generator',
             $generator_id,
             $name,
             $charset,

@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'LicenseManagerForWooCommerce\\Repositories\\' => array($baseDir . '/includes/repositories'),
     'LicenseManagerForWooCommerce\\Lists\\' => array($baseDir . '/includes/lists'),
     'LicenseManagerForWooCommerce\\Enums\\' => array($baseDir . '/includes/enums'),
     'LicenseManagerForWooCommerce\\Abstracts\\' => array($baseDir . '/includes/abstracts'),

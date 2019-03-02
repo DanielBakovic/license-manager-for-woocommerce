@@ -6,7 +6,8 @@
             "LicenseManagerForWooCommerce\\API\\": "includes/api",
             "LicenseManagerForWooCommerce\\API\\v1\\": "includes/api/v1",
             "LicenseManagerForWooCommerce\\Enums\\": "includes/enums",
-            "LicenseManagerForWooCommerce\\Lists\\": "includes/lists"
+            "LicenseManagerForWooCommerce\\Lists\\": "includes/lists",
+            "LicenseManagerForWooCommerce\\Repositories\\": "includes/repositories"
         }
     },
     "require": {
