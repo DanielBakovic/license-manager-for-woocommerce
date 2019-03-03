@@ -87,7 +87,8 @@ class Generator
                 FROM
                     {$this->table}
                 ;
-            "
+            ",
+            OBJECT
         );
     }
 
@@ -128,7 +129,8 @@ class Generator
                         id = %d
                 ",
                 $clean_id
-            ), ARRAY_A
+            ),
+            OBJECT
         );
     }
 

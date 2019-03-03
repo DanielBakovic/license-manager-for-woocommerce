@@ -132,6 +132,7 @@ table.wp-list-table.licenses td.valid_for.column-valid_for {
 	position: relative;
 	font-weight: 600;
 	border-radius: 3px;
+	cursor: default;
 }
 .lmfwc-status.sold {
 	background: var(--color-info);
@@ -152,6 +153,10 @@ table.wp-list-table.licenses td.valid_for.column-valid_for {
 .lmfwc-status.used {
 	background: var(--color-warning);
 	color: var(--color-dark);
+}
+.lmfwc-status.expired {
+	background: var(--color-danger);
+	color: var(--color-light);
 }
 
 /** My Account **/

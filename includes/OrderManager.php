@@ -95,7 +95,7 @@ class OrderManager
                         );
 
                         // Retrieve the generator from the database and set up the args.
-                        $generator = Database::getGenerator($generator_id);
+                        $generator = apply_filters('lmfwc_get_generator', $generator_id);
 
                         $licenses = apply_filters('lmfwc_create_license_keys', array(
                             'amount'       => $amount_to_generate,
@@ -109,13 +109,15 @@ class OrderManager
                         ));
 
                         // Save the license keys.
-                        do_action('lmfwc_insert_generated_license_keys', array(
-                            'order_id'   => $order_id,
-                            'product_id' => $product->get_id(),
-                            'licenses'   => $licenses['licenses'],
-                            'expires_in' => $licenses['expires_in'],
-                            'status'     => LicenseStatusEnum::SOLD
-                        ));
+                        apply_filters(
+                            'lmfwc_insert_generated_license_keys',
+                            $order_id,
+                            $product->get_id(),
+                            $licenses['licenses'],
+                            $licenses['expires_in'],
+                            LicenseStatusEnum::SOLD,
+                            $generator
+                        );
                     }
                 }
 
@@ -124,7 +126,7 @@ class OrderManager
                 $generator_id = get_post_meta($product->get_id(), 'lmfwc_licensed_product_assigned_generator', true);
 
                 // Retrieve the generator from the database and set up the args.
-                $generator = Database::getGenerator($generator_id);
+                $generator = apply_filters('lmfwc_get_generator', $generator_id);
 
                 $licenses = apply_filters('lmfwc_create_license_keys', array(
                     'amount'       => $item_data->get_quantity(),
@@ -138,13 +140,15 @@ class OrderManager
                 ));
 
                 // Save the license keys.
-                do_action('lmfwc_insert_generated_license_keys', array(
-                    'order_id'   => $order_id,
-                    'product_id' => $product->get_id(),
-                    'licenses'   => $licenses['licenses'],
-                    'expires_in' => $licenses['expires_in'],
-                    'status'     => LicenseStatusEnum::SOLD
-                ));
+                apply_filters(
+                    'lmfwc_insert_generated_license_keys',
+                    $order_id,
+                    $product->get_id(),
+                    $licenses['licenses'],
+                    $licenses['expires_in'],
+                    LicenseStatusEnum::SOLD,
+                    $generator
+                );
             }
 
             // Set the order as complete.

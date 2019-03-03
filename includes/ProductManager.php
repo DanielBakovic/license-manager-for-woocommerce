@@ -67,7 +67,7 @@ class ProductManager
             'inactive'  => Database::getLicenseKeysByProductId($post->ID, LicenseStatusEnum::INACTIVE)
         );
 
-        foreach (Database::getGenerators() as $generator) {
+        foreach (apply_filters('lmfwc_get_generators', null) as $generator) {
             $generator_options[$generator->id] = $generator->name;
         }
 

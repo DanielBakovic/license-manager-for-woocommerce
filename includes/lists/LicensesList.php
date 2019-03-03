@@ -28,14 +28,19 @@ class LicensesList extends \WP_List_Table
     const SPINNER_URL = '/wp-admin/images/loading.gif';
 
     /**
-     * @string
+     * @var string
      */
     private $date_format;
 
     /**
-     * @string
+     * @var string
      */
     private $time_format;
+
+    /**
+     * @var string
+     */
+    private $gmt_offset;
 
     /**
      * Class constructor.
@@ -49,6 +54,7 @@ class LicensesList extends \WP_List_Table
 
         $this->date_format = get_option('date_format');
         $this->time_format = get_option('time_format');
+        $this->gmt_offset = get_option('gmt_offset');
     }
 
     protected function get_views()
@@ -64,7 +70,7 @@ class LicensesList extends \WP_List_Table
             $all_url,
             $class,
             __('All', 'lmfwc'),
-            Database::getLicenseKeyCount()
+            apply_filters('lmfwc_get_license_key_count', null)
         );
 
         // Sold link
@@ -75,7 +81,7 @@ class LicensesList extends \WP_List_Table
             $sold_url,
             $class,
             __('Sold', 'lmfwc'),
-            Database::getLicenseKeyCount(LicenseStatusEnum::SOLD)
+            apply_filters('lmfwc_get_license_key_count', LicenseStatusEnum::SOLD)
         );
 
         // Delivered link
@@ -86,7 +92,7 @@ class LicensesList extends \WP_List_Table
             $delivered_url,
             $class,
             __('Delivered', 'lmfwc'),
-            Database::getLicenseKeyCount(LicenseStatusEnum::DELIVERED)
+            apply_filters('lmfwc_get_license_key_count', LicenseStatusEnum::DELIVERED)
         );
 
         // Active link
@@ -97,7 +103,7 @@ class LicensesList extends \WP_List_Table
             $active_url,
             $class,
             __('Active', 'lmfwc'),
-            Database::getLicenseKeyCount(LicenseStatusEnum::ACTIVE)
+            apply_filters('lmfwc_get_license_key_count', LicenseStatusEnum::ACTIVE)
         );
 
         // Inactive link
@@ -108,7 +114,7 @@ class LicensesList extends \WP_List_Table
             $inactive_url,
             $class,
             __('Inactive', 'lmfwc'),
-            Database::getLicenseKeyCount(LicenseStatusEnum::INACTIVE)
+            apply_filters('lmfwc_get_license_key_count', LicenseStatusEnum::INACTIVE)
         );
 
         return $status_links;
@@ -139,34 +145,6 @@ class LicensesList extends \WP_List_Table
                     $link = '';
                 }
                 return $link;
-            case 'created_at':
-                if ($item['created_at']) {
-                    $date_time = new \DateTime($item['created_at']);
-
-                    $created_at = sprintf(
-                        '%s<br>%s',
-                        $date_time->format($this->date_format),
-                        $date_time->format($this->time_format)
-                    );
-                } else {
-                    $created_at = '';
-                }
-
-                return $created_at;
-            case 'expires_at':
-                if ($item['expires_at']) {
-                    $date_time = new \DateTime($item['expires_at']);
-
-                    $expires_at = sprintf(
-                        '%s <br> %s',
-                        $date_time->format($this->date_format),
-                        $date_time->format($this->time_format)
-                    );
-                } else {
-                    $expires_at = '';
-                }
-
-                return $expires_at;
             case 'valid_for':
                 if ($item['valid_for']) {
                     $link = sprintf(__('<b>%d</b> day(s)', 'lmfwc'), intval($item['valid_for']));
@@ -321,6 +299,56 @@ class LicensesList extends \WP_List_Table
         ];
 
         return $title . $this->row_actions($actions);
+    }
+
+    public function column_created_at($item)
+    {
+        if (!$item['created_at']) {
+            return '';
+        }
+
+        $offset_seconds = floatval($this->gmt_offset) * 60 * 60;
+        $timestamp = strtotime($item['created_at']) + $offset_seconds;
+        $result = date('Y-m-d H:i:s', $timestamp);
+        $date = new \DateTime($result);
+
+        $created_at = sprintf(
+            '%s, %s',
+            $date->format($this->date_format),
+            $date->format($this->time_format)
+        );
+
+        return $created_at;
+    }
+
+    public function column_expires_at($item)
+    {
+        if (!$item['expires_at']) {
+            return '';
+        }
+
+        $offset_seconds = floatval($this->gmt_offset) * 60 * 60;
+        $timestamp_created_at = strtotime($item['expires_at']) + $offset_seconds;
+        $timestamp_now = strtotime('now') + $offset_seconds;
+        $datetime_string = date('Y-m-d H:i:s', $timestamp_created_at);
+        $date = new \DateTime($datetime_string);
+
+        if ($timestamp_now > $timestamp_created_at
+            && intval($item['status'] != LicenseStatusEnum::USED)
+        ) {
+            return sprintf(
+                '<span class="lmfwc-status expired" title="%s">%s, %s</span><br>',
+                __('Expired'),
+                $date->format($this->date_format),
+                $date->format($this->time_format)
+            );
+        }
+
+        return sprintf(
+            '%s, %s',
+            $date->format($this->date_format),
+            $date->format($this->time_format)
+        );
     }
 
     public function column_cb($item)

@@ -251,7 +251,7 @@ class AdminMenus
             return;
         }
 
-        if (!$generator = Database::getGenerator(absint($_GET['id']))) {
+        if (!$generator = apply_filters('lmfwc_get_generator', $_GET['id'])) {
            return;
         }
 

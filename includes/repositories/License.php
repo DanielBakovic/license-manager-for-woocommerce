@@ -52,11 +52,13 @@ class License
         // SELECT
         add_filter('lmfwc_get_license_keys', array($this, 'getLicenseKeys'), 10);
         add_filter('lmfwc_get_license_key', array($this, 'getLicenseKey'), 10, 1);
+        add_filter('lmfwc_get_license_key_count', array($this, 'getLicenseKeyCount'), 10, 1);
         add_filter('lmfwc_get_available_stock', array($this, 'getAvailableStock'), 10, 1);
+        add_filter('lmfwc_license_key_exists', array($this, 'licenseKeyExists'), 10, 1);
 
         // INSERT
         add_filter('lmfwc_insert_license_key', array($this, 'insertLicenseKey'), 10, 6);
-        add_action('lmfwc_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 1);
+        add_filter('lmfwc_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 6);
         add_filter('lmfwc_insert_imported_license_keys', array($this, 'insertImportedLicenseKeys'), 10, 3);
 
         // UPDATE
@@ -141,13 +143,44 @@ class License
     }
 
     /**
+     * Returns the number of license keys available.
+     *
+     * @param LicenseStatusEnum $status The new license key status
+     *
+     * @since  1.1.0
+     * @throws Exception
+     * @return integer
+     */
+    public static function getLicenseKeyCount($status = null)
+    {
+        global $wpdb;
+
+        $clean_status = $status ? absint($status) : null;
+
+        if ($clean_status && !in_array($clean_status, LicenseStatusEnum::$statuses)) {
+            throw new Exception('License Status is invalid', 1);
+        }
+
+        if (!$clean_status) {
+            return $wpdb->get_var("SELECT COUNT(*) FROM {$this->table}");
+        } else {
+            return $wpdb->get_var(
+                $wpdb->prepare(
+                    "SELECT COUNT(*) FROM {$this->table} WHERE status = %d",
+                    $clean_status
+                )
+            );
+        }
+    }
+
+    /**
      * Retrieves the number of available license keys for a given product.
      *
      * @param int $product_id WooCommerce Product ID
      *
      * @since  1.0.0
      * @throws Exception
-     * @return int
+     * @return integer
      */
     public function getAvailableStock($product_id)
     {
@@ -175,6 +208,45 @@ class License
                 LicenseStatusEnum::ACTIVE
             )
         );
+    }
+
+    /**
+     * Check if the license key already exists in the database.
+     *
+     * @param string $license_key Unencrypted License Key
+     *
+     * @since  1.1.0
+     * @throws Exception
+     * @return boolean
+     */
+    public function licenseKeyExists($license_key)
+    {
+        $clean_license_key = $license_key ? sanitize_text_field($license_key) : null;
+
+        if (!$clean_license_key) {
+            throw new Exception('License Key is invalid.', 1);
+        }
+
+        $hashed_license_key = apply_filters('lmfwc_hash', $clean_license_key);
+
+        global $wpdb;
+
+        $result = $wpdb->get_var(
+            $wpdb->prepare(
+                "
+                    SELECT
+                        license_key
+                    FROM
+                        `{$this->table}`
+                    WHERE
+                        hash = '%s'
+                    ;
+                ",
+                $hashed_license_key
+            )
+        );
+
+        return $result != null;
     }
 
     /**
@@ -266,57 +338,91 @@ class License
     /**
      * Save the license keys for a given product to the database.
      *
-     * @since 1.0.0
+     * @param integer   $order_id     WooCoomerce Order ID
+     * @param integer   $product_id   WooCommerce Product ID
+     * @param array     $license_keys License Keys to be added
+     * @param integer   $expires_in   Validity period after purchase (in days)
+     * @param integer   $status       Status enumerator value
+     * @param stdObject $generator    Generator to use to create new keys
      *
-     * @param int    $args['order_id']
-     * @param int    $args['product_id']
-     * @param array  $args['licenses']
-     * @param int    $args['expires_in']
-     * @param string $args['charset']
-     * @param int    $args['chunk_length']
-     * @param int    $args['chunks']
-     * @param string $args['prefix']
-     * @param string $args['separator']
-     * @param string $args['suffix']
-     * @param int    $args['status']
+     * @since  1.1.0
+     * @throws Exception
+     * @return integer
      */
-    public function insertGeneratedLicenseKeys($args)
-    {
+    public function insertGeneratedLicenseKeys(
+        $order_id,
+        $product_id,
+        $license_keys,
+        $expires_in,
+        $status,
+        $generator
+    ) {
+        $clean_order_id     = $order_id     ? absint($order_id)     : null;
+        $clean_product_id   = $product_id   ? absint($product_id)   : null;
+        $clean_license_keys = array();
+        $clean_expires_in   = $expires_in   ? absint($expires_in)   : null;
+        $clean_status       = $status       ? absint($status)       : null;
+
+        if (!$clean_status
+            || !in_array($clean_status, LicenseStatusEnum::$statuses)
+        ) {
+            throw new Exception('License Status is invalid.', 1);
+        }
+
+        if (!is_array($license_keys)) {
+            throw new Exception('License Keys must be provided as array', 2);
+        }
+
+        foreach ($license_keys as $license_key) {
+            array_push($clean_license_keys, sanitize_text_field($license_key));
+        }
+
+        if (count($clean_license_keys) === 0) {
+            throw new Exception('No License Keys were provided', 3);
+        }
+
         global $wpdb;
 
-        $date                = new \DateTime();
-        $created_at          = $date->format('Y-m-d H:i:s');
-        $expires_at          = null;
+        $gm_date = new \DateTime('now', new \DateTimeZone('GMT'));
+        $created_at = $gm_date->format('Y-m-d H:i:s');
         $invalid_keys_amount = 0;
 
-        // Set the expiration date if specified.
-        if ($args['expires_in'] != null && is_numeric($args['expires_in'])) {
-            $expires_at = $date->add(new \DateInterval('P' . $args['expires_in'] . 'D'))->format('Y-m-d H:i:s');
+        if ($clean_expires_in && $status == LicenseStatusEnum::SOLD) {
+            $date_interval = 'P' . $clean_expires_in . 'D';
+            $date_expires_at = new \DateInterval($date_interval);
+            $expires_at = $gm_date->add($date_expires_at)->format('Y-m-d H:i:s');
+        } else {
+            $expires_at = null;
         }
 
         // Add the keys to the database table.
-        foreach ($args['licenses'] as $license_key) {
+        foreach ($clean_license_keys as $license_key) {
             // Key exists, up the invalid keys count.
             if (apply_filters('lmfwc_license_key_exists', $license_key)) {
                 $invalid_keys_amount++;
-                // Key doesn't exist, add it to the database table.
-            } else {
-                // Save to database.
-                $wpdb->insert(
-                    $this->table,
-                    array(
-                        'order_id'    => $args['order_id'],
-                        'product_id'  => $args['product_id'],
-                        'license_key' => apply_filters('lmfwc_encrypt', $license_key),
-                        'hash'        => apply_filters('lmfwc_hash', $license_key),
-                        'created_at'  => $created_at,
-                        'expires_at'  => $expires_at,
-                        'source'      => SourceEnum::GENERATOR,
-                        'status'      => $args['status']
-                    ),
-                    array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
-                );
+                continue;
             }
+
+            // Key doesn't exist, add it to the database table.
+            $encrypted_license_key = apply_filters('lmfwc_encrypt', $license_key);
+            $hashed_license_key = apply_filters('lmfwc_hash', $license_key);
+
+            // Save to database.
+            $wpdb->insert(
+                $this->table,
+                array(
+                    'order_id'    => $clean_order_id,
+                    'product_id'  => $clean_product_id,
+                    'license_key' => $encrypted_license_key,
+                    'hash'        => $hashed_license_key,
+                    'created_at'  => $created_at,
+                    'expires_at'  => $expires_at,
+                    'valid_for'   => $clean_expires_in,
+                    'source'      => SourceEnum::GENERATOR,
+                    'status'      => $clean_status
+                ),
+                array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
+            );
         }
 
         // There have been duplicate keys, regenerate and add them.
@@ -324,33 +430,26 @@ class License
             $new_keys = apply_filters(
                 'lmfwc_create_license_keys', array(
                 'amount'       => $invalid_keys_amount,
-                'charset'      => $args['charset'],
-                'chunks'       => $args['chunks'],
-                'chunk_length' => $args['chunk_length'],
-                'separator'    => $args['separator'],
-                'prefix'       => $args['prefix'],
-                'suffix'       => $args['suffix'],
-                'expires_in'   => $args['expires_in']
+                'charset'      => $generator->charset,
+                'chunks'       => $generator->chunks,
+                'chunk_length' => $generator->chunk_length,
+                'separator'    => $generator->separator,
+                'prefix'       => $generator->prefix,
+                'suffix'       => $generator->suffix,
+                'expires_in'   => $clean_expires_in
                 )
             );
             $this->insertGeneratedLicenseKeys(
-                array(
-                'order_id'     => $args['order_id'],
-                'product_id'   => $args['product_id'],
-                'licenses'     => $new_keys['licenses'],
-                'expires_in'   => $args['expires_in'],
-                'charset'      => $args['charset'],
-                'chunk_length' => $args['chunk_length'],
-                'chunks'       => $args['chunks'],
-                'prefix'       => $args['prefix'],
-                'separator'    => $args['separator'],
-                'suffix'       => $args['suffix'],
-                'status'       => $args['status']
-                )
+                $clean_order_id,
+                $clean_product_id,
+                $new_keys['licenses'],
+                $clean_expires_in,
+                $clean_status,
+                $generator
             );
         } else {
             // Keys have been generated and saved, this order is now complete.
-            update_post_meta($args['order_id'], 'lmfwc_order_complete', 1);
+            update_post_meta($clean_order_id, 'lmfwc_order_complete', 1);
         }
     }
 
@@ -400,21 +499,22 @@ class License
 
         // Add the keys to the database table.
         foreach ($clean_license_keys as $license_key) {
-            if ($wpdb->insert(
-                    $this->table,
-                    array(
-                            'order_id'    => null,
-                            'product_id'  => $clean_product_id,
-                            'license_key' => apply_filters('lmfwc_encrypt', $license_key),
-                            'hash'        => apply_filters('lmfwc_hash', $license_key),
-                            'created_at'  => $created_at,
-                            'expires_at'  => null,
-                            'source'      => SourceEnum::IMPORT,
-                            'status'      => $clean_status
-                        ),
-                    array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
-                )
-            ) {
+            $insert = $wpdb->insert(
+                $this->table,
+                array(
+                    'order_id'    => null,
+                    'product_id'  => $clean_product_id,
+                    'license_key' => apply_filters('lmfwc_encrypt', $license_key),
+                    'hash'        => apply_filters('lmfwc_hash', $license_key),
+                    'created_at'  => $created_at,
+                    'expires_at'  => null,
+                    'source'      => SourceEnum::IMPORT,
+                    'status'      => $clean_status
+                ),
+                array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
+            );
+
+            if ($insert) {
                 $result['added']++;
             } else {
                 $result['failed']++;
