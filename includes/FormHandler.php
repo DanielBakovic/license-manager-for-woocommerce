@@ -3,6 +3,8 @@
 namespace LicenseManagerForWooCommerce;
 
 use \LicenseManagerForWooCommerce\Lists\LicensesList;
+use \LicenseManagerForWooCommerce\Enums\SourceEnum;
+use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
 
 defined('ABSPATH') || exit;
 
@@ -249,12 +251,24 @@ class FormHandler
             return null;
         }
 
+        if (array_key_exists('activate', $_POST)) {
+            $status = LicenseStatusEnum::ACTIVE;
+        } else {
+            $status = LicenseStatusEnum::INACTIVE;
+        }
+
         // Save the imported keys.
-        $result = apply_filters('lmfwc_insert_imported_license_keys', array(
-            'license_keys' => $license_keys,
-            'activate'     => array_key_exists('activate', $_POST) ? true : false,
-            'product_id'   => intval($_POST['product'])
-        ));
+        //$result = apply_filters('lmfwc_insert_imported_license_keys', array(
+        //    'license_keys' => $license_keys,
+        //    'activate'     => array_key_exists('activate', $_POST) ? true : false,
+        //    'product_id'   => intval($_POST['product'])
+        //));
+        $result = apply_filters(
+            'lmfwc_insert_imported_license_keys',
+            $license_keys,
+            $status,
+            $_POST['product']
+        );
 
         // Delete the temporary file now that we're done.
         unlink(LMFWC_ETC_DIR . self::TEMP_TXT_FILE);
@@ -263,7 +277,7 @@ class FormHandler
         if ($result['failed'] == 0 && $result['added'] == 0) {
             AdminNotice::addErrorSupportForum(3);
             wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
-            wp_die();
+            exit();
         }
 
         if ($result['failed'] == 0 && $result['added'] > 0) {
@@ -275,13 +289,13 @@ class FormHandler
                 )
             );
             wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
-            wp_die();
+            exit();
         }
 
         if ($result['failed'] > 0 && $result['added'] == 0) {
             AdminNotice::addErrorSupportForum(4);
             wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
-            wp_die();
+            exit();
         }
 
         if ($result['failed'] > 0 && $result['added'] > 0) {
@@ -294,7 +308,7 @@ class FormHandler
                 )
             );
             wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
-            wp_die();
+            exit();
         }
     }
 
@@ -309,13 +323,23 @@ class FormHandler
         check_admin_referer('lmfwc-add');
 
         // Save the license key.
-        $result = apply_filters('lmfwc_insert_added_license_key', array(
-            'license_key' => sanitize_text_field($_POST['license_key']),
-            'activate'    => array_key_exists('activate', $_POST) ? true : false,
-            'product_id'  => intval($_POST['product']),
-            'valid_for'   => ($_POST['valid_for']) ? intval($_POST['valid_for']) : null
-        ));
+        if (array_key_exists('activate', $_POST)) {
+            $status = LicenseStatusEnum::ACTIVE;
+        } else {
+            $status = LicenseStatusEnum::INACTIVE;
+        }
 
+        $result = apply_filters(
+            'lmfwc_insert_license_key',
+            null,
+            $_POST['product'],
+            $_POST['license_key'],
+            $_POST['valid_for'],
+            SourceEnum::IMPORT,
+            $status
+        );
+
+        // Redirect with message
         if ($result) {
             AdminNotice::add(
                 'success',

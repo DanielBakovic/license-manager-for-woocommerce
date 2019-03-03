@@ -30,15 +30,8 @@ class Database
      */
     public function __construct()
     {
-        // Get
-        add_filter('lmfwc_get_assigned_products',         array($this, 'getAssignedProducts'), 10, 1);
-        add_filter('lmfwc_get_available_stock',           array($this, 'getAvailableStock'),   10, 1);
-
         // Insert
-        add_action('lmfwc_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 1);
-        add_filter('lmfwc_insert_imported_license_keys',  array($this, 'insertImportedLicenseKeys'),  10, 1);
-        add_filter('lmfwc_insert_added_license_key',      array($this, 'insertAddedLicenseKey'),      10, 1);
-        add_filter('lmfwc_insert_license_key_from_api',   array($this, 'insertLicenseKeyFromApi'),    10, 4);
+        //add_action('lmfwc_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 1);
 
         // Update
         add_action('lmfwc_sell_imported_license_keys',    array($this, 'sellImportedLicenseKeys'), 10, 1);

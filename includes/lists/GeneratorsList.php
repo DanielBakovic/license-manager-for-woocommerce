@@ -70,27 +70,31 @@ class GeneratorsList extends \WP_List_Table
 
     public function column_name($item)
     {
+        $products = apply_filters('lmfwc_get_assigned_products', $item['id']);
+        $actions = [];
         $title = '<strong>' . $item['name'] . '</strong>';
 
-        $actions = [
-            'id' => sprintf(__('ID: %d', 'lmfwc'), intval($item['id'])),
-            'delete' => sprintf(
+        $actions['id'] = sprintf(__('ID: %d', 'lmfwc'), intval($item['id']));
+
+        if (!apply_filters('lmfwc_get_assigned_products', $item['id'])) {
+            $actions['delete'] = sprintf(
                 '<a href="?page=%s&action=%s&id=%s&_wpnonce=%s">%s</a>',
                 AdminMenus::GENERATORS_PAGE,
                 'delete',
                 absint($item['id']),
                 wp_create_nonce('delete'),
                 __('Delete', 'lmfwc')
-            ),
-            'edit' => sprintf(
-                '<a href="?page=%s&action=%s&id=%s&_wpnonce=%s">%s</a>',
-                AdminMenus::EDIT_GENERATOR_PAGE,
-                'edit',
-                absint($item['id']),
-                wp_create_nonce('edit'),
-                __('Edit', 'lmfwc')
-            )
-        ];
+            );
+        }
+
+        $actions['edit'] = sprintf(
+            '<a href="?page=%s&action=%s&id=%s&_wpnonce=%s">%s</a>',
+            AdminMenus::EDIT_GENERATOR_PAGE,
+            'edit',
+            absint($item['id']),
+            wp_create_nonce('edit'),
+            __('Edit', 'lmfwc')
+        );
 
         return $title . $this->row_actions($actions);
     }
@@ -229,7 +233,7 @@ class GeneratorsList extends \WP_List_Table
         $generators_to_delete = array();
 
         foreach ($selected_generators as $generator_id) {
-            if ($products = apply_filters('lmfwc_get_assigned_products', array('generator_id' => absint($generator_id)))) {
+            if ($products = apply_filters('lmfwc_get_assigned_products', $generator_id)) {
                 continue;
             } else {
                 array_push($generators_to_delete, $generator_id);

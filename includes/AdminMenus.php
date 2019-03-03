@@ -255,7 +255,7 @@ class AdminMenus
            return;
         }
 
-        $products = apply_filters('lmfwc_get_assigned_products', array('generator_id' => absint($_GET['id'])));
+        $products = apply_filters('lmfwc_get_assigned_products', $_GET['id']);
 
         include LMFWC_TEMPLATES_DIR . 'generators-edit.php';
     }

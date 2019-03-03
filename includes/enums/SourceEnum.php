@@ -17,4 +17,11 @@ abstract class SourceEnum
     const GENERATOR = 1;
     const IMPORT = 2;
     const API = 3;
+
+    public static $sources = array(
+        self::GENERATOR,
+        self::IMPORT,
+        self::API
+    );
+
 }

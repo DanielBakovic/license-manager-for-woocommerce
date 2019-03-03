@@ -128,7 +128,7 @@ class ProductManager
         echo sprintf(
             '<p class="form-field"><label>%s</label><span class="description">%d %s</span></p>',
             __('Available', 'lmfwc'),
-            apply_filters('lmfwc_get_available_stock', array('product_id' => $post->ID)),
+            apply_filters('lmfwc_get_available_stock', $post->ID),
             __('License key(s) in stock and available for sale.')
         );
 

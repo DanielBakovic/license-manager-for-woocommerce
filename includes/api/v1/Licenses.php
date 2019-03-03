@@ -3,6 +3,7 @@
 namespace LicenseManagerForWooCommerce\API\v1;
 
 use \LicenseManagerForWooCommerce\Logger;
+use \LicenseManagerForWooCommerce\Enums\SourceEnum;
 use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
 
 defined('ABSPATH') || exit;
@@ -111,7 +112,7 @@ class Licenses extends \WP_REST_Controller
      */
     public function getLicenses(\WP_REST_Request $request)
     {
-        $result = apply_filters('lmfwc_get_licenses', null);
+        $result = apply_filters('lmfwc_get_license_keys', null);
 
         if (!$result) {
             return new \WP_Error(
@@ -133,7 +134,7 @@ class Licenses extends \WP_REST_Controller
     public function getLicense(\WP_REST_Request $request)
     {
         $id = intval($request->get_param('key_id'));
-        $result = apply_filters('lmfwc_get_license', $id);
+        $result = apply_filters('lmfwc_get_license_key', $id);
 
         if (!$result) {
             return new \WP_Error(
@@ -158,7 +159,6 @@ class Licenses extends \WP_REST_Controller
 
         // Validate the product_id parameter
         if (isset($body['product_id']) && is_numeric($body['product_id'])) {
-
             $product_id = absint($body['product_id']);
 
             if (!$this->validateProductId($product_id)) {
@@ -198,10 +198,12 @@ class Licenses extends \WP_REST_Controller
         }
 
         $license_key_id = apply_filters(
-            'lmfwc_insert_license_key_from_api',
+            'lmfwc_insert_license_key',
+            null,
             $product_id,
-            sanitize_text_field($body['license_key']),
+            $body['license_key'],
             $valid_for,
+            SourceEnum::API,
             $status
         );
 
@@ -213,7 +215,7 @@ class Licenses extends \WP_REST_Controller
             );
         }
 
-        if (!$license_key = apply_filters('lmfwc_get_license', absint($license_key_id))) {
+        if (!$license_key = apply_filters('lmfwc_get_license_key', absint($license_key_id))) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
                 __('The newly added license key could not be retrieved from the database.', 'lmfwc'),
@@ -271,7 +273,7 @@ class Licenses extends \WP_REST_Controller
         }
 
         $key_id     = absint($body['key_id']);
-        $license    = apply_filters('lmfwc_get_license', $key_id);
+        $license    = apply_filters('lmfwc_get_license_key', $key_id);
         $order_id   = isset($body['order_id'])   ? absint($body['order_id'])   : null;
         $product_id = isset($body['product_id']) ? absint($body['product_id']) : null;
 

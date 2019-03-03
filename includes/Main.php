@@ -216,6 +216,7 @@ final class Main
         new Repositories\ApiKey();
         new Repositories\Generator();
         new Repositories\License();
+        new Repositories\PostMeta();
         new FormHandler();
         new API\Setup();
     }
