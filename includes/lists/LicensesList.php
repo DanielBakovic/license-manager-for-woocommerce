@@ -59,7 +59,7 @@ class LicensesList extends \WP_List_Table
 
     protected function get_views()
     {
-        $status_links   = array();
+        $status_links = array();
         $current = (!empty($_REQUEST['status']) ? $_REQUEST['status'] : 'all');
 
         // All link
@@ -74,8 +74,8 @@ class LicensesList extends \WP_List_Table
         );
 
         // Sold link
-        $class         = ($current == LicenseStatusEnum::SOLD ? ' class="current"' :'');
-        $sold_url      = esc_url(add_query_arg('status', LicenseStatusEnum::SOLD));
+        $class = ($current == LicenseStatusEnum::SOLD ? ' class="current"' :'');
+        $sold_url = esc_url(add_query_arg('status', LicenseStatusEnum::SOLD));
         $status_links['sold'] = sprintf(
             '<a href="%s" %s>%s <span class="count">(%d)</span></a>',
             $sold_url,
@@ -85,7 +85,7 @@ class LicensesList extends \WP_List_Table
         );
 
         // Delivered link
-        $class         = ($current == LicenseStatusEnum::DELIVERED ? ' class="current"' :'');
+        $class = ($current == LicenseStatusEnum::DELIVERED ? ' class="current"' :'');
         $delivered_url = esc_url(add_query_arg('status', LicenseStatusEnum::DELIVERED));
         $status_links['delivered'] = sprintf(
             '<a href="%s" %s>%s <span class="count">(%d)</span></a>',
@@ -96,7 +96,7 @@ class LicensesList extends \WP_List_Table
         );
 
         // Active link
-        $class      = ($current == LicenseStatusEnum::ACTIVE ? ' class="current"' :'');
+        $class = ($current == LicenseStatusEnum::ACTIVE ? ' class="current"' :'');
         $active_url = esc_url(add_query_arg('status', LicenseStatusEnum::ACTIVE));
         $status_links['active'] = sprintf(
             '<a href="%s" %s>%s <span class="count">(%d)</span></a>',
@@ -107,7 +107,7 @@ class LicensesList extends \WP_List_Table
         );
 
         // Inactive link
-        $class        = ($current == LicenseStatusEnum::INACTIVE ? ' class="current"' :'');
+        $class = ($current == LicenseStatusEnum::INACTIVE ? ' class="current"' :'');
         $inactive_url = esc_url(add_query_arg('status', LicenseStatusEnum::INACTIVE));
         $status_links['inactive'] = sprintf(
             '<a href="%s" %s>%s <span class="count">(%d)</span></a>',
@@ -502,12 +502,10 @@ class LicensesList extends \WP_List_Table
 
         $result = apply_filters(
             'lmfwc_toggle_license_key_status',
-            array(
-                'column_name' => 'id',
-                'operator' => 'in',
-                'value' => (array)$_REQUEST['id'],
-                'status' => $status
-            )
+            'id',
+            'in',
+            (array)$_REQUEST['id'],
+            $status
         );
 
         if ($result) {

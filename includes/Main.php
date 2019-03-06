@@ -164,6 +164,28 @@ final class Main
     }
 
     /**
+     * Checks if WooCommerce is active or not
+     * 
+     * @since  1.1.0
+     * @return boolean
+     */
+    public function isWooCommerceActive()
+    {
+        if (in_array(
+                'woocommerce/woocommerce.php',
+                apply_filters(
+                    'active_plugins',
+                    get_option('active_plugins')
+                )
+            )
+        ) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Define constant if not already set.
      *
      * @param string      $name  Constant name.
@@ -197,6 +219,7 @@ final class Main
 
         add_action('admin_enqueue_scripts', array($this, 'adminEnqueueScripts'));
         add_filter('plugin_row_meta', array($this, 'pluginRowMeta'), 10, 2);
+        add_filter('is_woocommerce_active' , array($this, 'isWooCommerceActive'), 10);
     }
 
     /**
@@ -212,7 +235,6 @@ final class Main
         new AdminNotice();
         new Generator();
         new OrderManager();
-        new Database();
         new Repositories\ApiKey();
         new Repositories\Generator();
         new Repositories\License();

@@ -25,16 +25,6 @@ if (!class_exists('WP_List_Table')) {
 class APIKeyList extends \WP_List_Table
 {
     /**
-     * @string
-     */
-    private $date_format;
-
-    /**
-     * @string
-     */
-    private $time_format;
-
-    /**
      * Class constructor.
      */
     public function __construct() {
@@ -43,9 +33,6 @@ class APIKeyList extends \WP_List_Table
             'plural'   => __('Keys', 'lmfwc'),
             'ajax'     => false
         ]);
-
-        $this->date_format = get_option('date_format');
-        $this->time_format = get_option('time_format');
     }
 
     /**
@@ -215,7 +202,7 @@ class APIKeyList extends \WP_List_Table
     {
         if (!empty($key['last_access'])) {
             $date = sprintf(
-                __( '%1$s at %2$s', 'lmfwc'),
+                __('%1$s at %2$s', 'lmfwc'),
                 date_i18n(wc_date_format(), strtotime($key['last_access'])),
                 date_i18n(wc_time_format(), strtotime($key['last_access']))
             );
@@ -270,8 +257,8 @@ class APIKeyList extends \WP_List_Table
     /**
      * Search box.
      *
-     * @param  string $text     Button text.
-     * @param  string $input_id Input ID.
+     * @param string $text     Button text.
+     * @param string $input_id Input ID.
      */
     public function search_box($text, $input_id)
     {

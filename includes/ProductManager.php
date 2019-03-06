@@ -56,16 +56,12 @@ class ProductManager
     {
         global $post;
 
-        $licensed          = get_post_meta($post->ID, 'lmfwc_licensed_product',                    true);
-        $generator_id      = get_post_meta($post->ID, 'lmfwc_licensed_product_assigned_generator', true);
-        $use_generator     = get_post_meta($post->ID, 'lmfwc_licensed_product_use_generator',      true);
-        $use_stock         = get_post_meta($post->ID, 'lmfwc_licensed_product_use_stock',          true);
+        $licensed      = get_post_meta($post->ID, 'lmfwc_licensed_product',                    true);
+        $generator_id  = get_post_meta($post->ID, 'lmfwc_licensed_product_assigned_generator', true);
+        $use_generator = get_post_meta($post->ID, 'lmfwc_licensed_product_use_generator',      true);
+        $use_stock     = get_post_meta($post->ID, 'lmfwc_licensed_product_use_stock',          true);
 
         $generator_options = array('' => __('Please select a generator', 'lmfwc'));
-        $license_keys      = array(
-            'available' => Database::getLicenseKeysByProductId($post->ID, LicenseStatusEnum::ACTIVE),
-            'inactive'  => Database::getLicenseKeysByProductId($post->ID, LicenseStatusEnum::INACTIVE)
-        );
 
         foreach (apply_filters('lmfwc_get_generators', null) as $generator) {
             $generator_options[$generator->id] = $generator->name;

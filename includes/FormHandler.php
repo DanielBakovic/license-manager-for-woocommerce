@@ -434,7 +434,8 @@ class FormHandler
         check_ajax_referer('lmfwc_show_license_key', 'show');
         if ($_SERVER['REQUEST_METHOD'] != 'POST') wp_die(__('Invalid request.', 'lmfwc'));
 
-        $license_key = Database::getLicenseKey(intval($_POST['id']));
+        $license_row = apply_filters('lmfwc_get_license_key', $_POST['id']);
+        $license_key = apply_filters('lmfwc_decrypt', $license_row['license_key']);
 
         wp_send_json($license_key);
 
@@ -455,7 +456,10 @@ class FormHandler
         $license_keys = array();
 
         foreach (json_decode($_POST['ids']) as $license_key_id) {
-            $license_keys[$license_key_id] = Database::getLicenseKey(intval($license_key_id));
+            $license_row = apply_filters('lmfwc_get_license_key', $license_key_id);
+            $license_key = apply_filters('lmfwc_decrypt', $license_row['license_key']);
+
+            $license_keys[$license_key_id] = $license_key;
         }
 
         wp_send_json($license_keys);
@@ -476,8 +480,14 @@ class FormHandler
         // Not a WC_Order_Item_Product object? Nothing to do...
         if (!($item instanceof \WC_Order_Item_Product)) return;
 
+        $license_keys = apply_filters(
+            'lmfwc_get_ordered_license_keys',
+            $item->get_order_id(),
+            $item->get_product_id()
+        );
+
         // No license keys? Nothing to do...
-        if (!$license_keys = Database::getOrderedLicenseKeys($item->get_order_id(), $item->get_product_id())) return;
+        if (!$license_keys) return;
 
         $html = __('<p>The following license keys have been sold by this order:</p>', 'lmfwc');
         $html .= '<ul class="lmfwc-license-list">';

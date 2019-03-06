@@ -60,7 +60,8 @@ class OrderManager
             // Sell license keys through available stock.
             if ($use_stock) {
                 // Retrieve the available license keys.
-                $license_keys = Database::getLicenseKeysByProductId(
+                $license_keys = apply_filters(
+                    'lmfwc_get_product_license_keys',
                     $product->get_id(),
                     LicenseStatusEnum::ACTIVE
                 );
@@ -69,21 +70,22 @@ class OrderManager
 
                 // There are enough keys.
                 if ($item_data->get_quantity() <= $available_stock) {
-                    // Set the retrieved license keys as sold.
-                    do_action('lmfwc_sell_imported_license_keys', array(
-                        'license_keys' => $license_keys,
-                        'order_id'     => $order_id,
-                        'amount'       => $item_data->get_quantity()
-                    ));
-                // There aren not enough keys.
+                    // Set the retrieved license keys as "SOLD".
+                    apply_filters(
+                        'lmfwc_sell_imported_license_keys',
+                        $license_keys,
+                        $order_id,
+                        $item_data->get_quantity()
+                    );
+                // There aren't not enough keys.
                 } else {
-
-                    // Set the available license keys as sold.
-                    do_action('lmfwc_sell_imported_license_keys', array(
-                        'license_keys' => $license_keys,
-                        'order_id'     => $order_id,
-                        'amount'       => $available_stock
-                    ));
+                    // Set the available license keys as "SOLD".
+                    apply_filters(
+                        'lmfwc_sell_imported_license_keys',
+                        $license_keys,
+                        $order_id,
+                        $available_stock
+                    );
 
                     // The "use generator" option is active, generate them
                     if ($use_generator) {
@@ -156,23 +158,26 @@ class OrderManager
 
             // Set status to delivered if the setting is on.
             if (Settings::get('lmfwc_auto_delivery')) {
-                apply_filters('lmfwc_toggle_license_key_status', array(
-                    'column_name' => 'order_id',
-                    'operator' => 'eq',
-                    'value' => $order_id,
-                    'status' => LicenseStatusEnum::DELIVERED
-                ));
+                apply_filters(
+                    'lmfwc_toggle_license_key_status',
+                    'order_id',
+                    'eq',
+                    $order_id,
+                    LicenseStatusEnum::DELIVERED
+                );
             }
         }
     }
 
     /**
-     * Adds the bought license keys to the "Order complete" email, or displays a notice - depending on the settings.
+     * Adds the bought license keys to the "Order complete" email, or displays a
+     * notice - depending on the settings.
      *
-     * @since 1.0.0
+     * @param integer $order          WC_Order
+     * @param integer $is_admin_email Either true or false
      *
-     * @param int $order          - WC_Order
-     * @param int $is_admin_email - boolean
+     * @since  1.0.0
+     * @return null
      */
     public function deliverLicenseKeys($order, $is_admin_email)
     {
@@ -196,7 +201,8 @@ class OrderManager
                 if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)) break;
 
                 $data[$product->get_id()]['name'] = $product->get_name();
-                $data[$product->get_id()]['keys'] = Database::getOrderedLicenseKeys(
+                $data[$product->get_id()]['keys'] = apply_filters(
+                    'lmfwc_get_ordered_license_keys',
                     $order->get_id(),
                     $product->get_id()
                 );
@@ -240,7 +246,8 @@ class OrderManager
             if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)) break;
 
             $data[$product->get_id()]['name'] = $product->get_name();
-            $data[$product->get_id()]['keys'] = Database::getOrderedLicenseKeys(
+            $data[$product->get_id()]['keys'] = apply_filters(
+                'lmfwc_get_ordered_license_keys',
                 $order->get_id(),
                 $product->get_id()
             );

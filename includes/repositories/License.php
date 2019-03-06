@@ -54,6 +54,8 @@ class License
         add_filter('lmfwc_get_license_key', array($this, 'getLicenseKey'), 10, 1);
         add_filter('lmfwc_get_license_key_count', array($this, 'getLicenseKeyCount'), 10, 1);
         add_filter('lmfwc_get_available_stock', array($this, 'getAvailableStock'), 10, 1);
+        add_filter('lmfwc_get_ordered_license_keys', array($this, 'getOrderedLicenseKeys'), 10, 2);
+        add_filter('lmfwc_get_product_license_keys', array($this, 'getProductLicenseKeys'), 10, 2);
         add_filter('lmfwc_license_key_exists', array($this, 'licenseKeyExists'), 10, 1);
 
         // INSERT
@@ -63,6 +65,8 @@ class License
 
         // UPDATE
         add_filter('lmfwc_update_selective_license_key', array($this, 'updateSelectiveLicenseKey'), 10, 6);
+        add_action('lmfwc_sell_imported_license_keys', array($this, 'sellImportedLicenseKeys'), 10, 3);
+        add_filter('lmfwc_toggle_license_key_status', array($this, 'toggleLicenseKeyStatus'), 10, 4);
 
         // DELETE
         add_filter('lmfwc_delete_license_keys', array($this, 'deleteLicenseKeys'), 10, 1);
@@ -151,7 +155,7 @@ class License
      * @throws Exception
      * @return integer
      */
-    public static function getLicenseKeyCount($status = null)
+    public function getLicenseKeyCount($status = null)
     {
         global $wpdb;
 
@@ -207,6 +211,129 @@ class License
                 $clean_product_id,
                 LicenseStatusEnum::ACTIVE
             )
+        );
+    }
+
+    /**
+     * Retrieves all license keys related to a order/product combination.
+     *
+     * @param int $order_id   WooCommerce Order ID
+     * @param int $product_id WooCOmmerce Product ID
+     *
+     * @since  1.0.0
+     * @throws Exception
+     * @return array
+     */
+    public function getOrderedLicenseKeys($order_id, $product_id)
+    {
+        $clean_order_id   = $order_id   ? absint($order_id)   : null;
+        $clean_product_id = $product_id ? absint($product_id) : null;
+
+        if (!$clean_order_id) {
+            throw new \Exception('Order ID is invalid', 1);
+        }
+
+        if (!$clean_product_id) {
+            throw new \Exception("Product ID is invalid", 2);
+        }
+
+        if ($clean_order_id) {
+            new \WC_Order($clean_order_id);
+        }
+
+        if ($clean_product_id) {
+            new \WC_Product($clean_product_id);
+        }
+
+        global $wpdb;
+
+        return $wpdb->get_results(
+            $wpdb->prepare(
+                "
+                    SELECT
+                        id
+                        , order_id
+                        , product_id
+                        , license_key
+                        , hash
+                        , created_at
+                        , expires_at
+                        , valid_for
+                        , source
+                        , status
+                    FROM
+                        {$this->table}
+                    WHERE
+                        1=1
+                        AND order_id = %d
+                        AND product_id = %d
+                ;",
+                $clean_order_id,
+                $clean_product_id
+            ),
+            OBJECT
+        );
+    }
+
+    /**
+     * Retrieves all license keys related to a specific product.
+     *
+     * @since 1.0.0
+     *
+     * @param int $product_id
+     * @param int $status
+     *
+     * @return array
+     */
+    public static function getProductLicenseKeys($product_id, $status)
+    {
+        $clean_product_id = $product_id ? absint($product_id) : null;
+        $clean_status     = $status     ? absint($status)     : null;
+
+        if (!$clean_product_id) {
+            throw new \Exception('Product ID is invalid', 1);
+        }
+
+        if (!$clean_status) {
+            throw new \Exception('Status is invalid', 2);
+        }
+
+        if ($clean_product_id) {
+            new \WC_Product($product_id);
+        }
+
+        if (!in_array($clean_status, LicenseStatusEnum::$statuses)) {
+            throw new \Exception('Status is invalid', 3);
+        }
+
+        global $wpdb;
+
+        return $wpdb->get_results(
+            $wpdb->prepare(
+                "
+                    SELECT
+                        id
+                        , order_id
+                        , product_id
+                        , license_key
+                        , hash
+                        , created_at
+                        , expires_at
+                        , valid_for
+                        , source
+                        , status
+                    FROM
+                        {$this->table}
+                    WHERE
+                        1=1
+                        AND product_id = %d
+                        AND status = %d
+                    ;
+                ",
+                $clean_product_id,
+                $clean_status
+            ),
+            OBJECT
         );
     }
 
@@ -612,6 +739,102 @@ class License
         $wpdb->query($sql);
 
         return $this->getLicense($id);
+    }
+
+    /**
+     * Mark the imported license keys as sold.
+     *
+     * @param array   $license_keys License Keys
+     * @param integer $order_id     WooCommerce Order ID
+     * @param integer $amount       License Key amount
+     *
+     * @since  1.1.0
+     * @throws Exception
+     * @return integer
+     */
+    public function sellImportedLicenseKeys($license_keys, $order_id, $amount)
+    {
+        $clean_license_keys = array();
+        $clean_order_id     = $order_id ? absint($order_id) : null;
+        $clean_amount       = $amount   ? absint($amount)   : null;
+
+        if (!is_array($license_keys) || count($license_keys) <= 0) {
+            throw new Exception('License Keys are invalid.', 1);
+        }
+
+        if (!$clean_order_id) {
+            throw new Exception('Order ID is invalid.', 2);
+        }
+
+        if (!$clean_order_id) {
+            throw new Exception('Amount is invalid.', 3);
+        }
+
+        global $wpdb;
+
+        for ($i = 0; $i < $clean_amount; $i++) {
+            $date       = new \DateTime();
+            $valid_for  = intval($clean_license_keys[$i]->valid_for);
+            $expires_at = null;
+
+            if (is_numeric($valid_for)) {
+                $date_interval = new \DateInterval('P' . $valid_for . 'D');
+                $expires_at = $date->add($date_interval)->format('Y-m-d H:i:s');
+            }
+
+            $wpdb->update(
+                $this->table,
+                array(
+                    'order_id'   => $clean_order_id,
+                    'expires_at' => $expires_at,
+                    'status'     => LicenseStatusEnum::SOLD
+                ),
+                array('id' => $clean_license_keys[$i]->id),
+                array('%d', '%s', '%d'),
+                array('%d')
+            );
+        }
+    }
+
+    /**
+     * Activates or Deactivates license keys.
+     *
+     * @param string         $column_name The column name by which to compare
+     * @param string         $operator    The operator to use
+     * @param array          $value       Value of the column by which to compare
+     * @param int|array<int> $status      New license key status
+     *
+     * @since  1.1.0
+     * @throws Exception
+     * @return boolean
+     */
+    public function toggleLicenseKeyStatus($column_name, $operator, $value, $status)
+    {
+        global $wpdb;
+
+        if ($args['operator'] == 'in') {
+            $result = $wpdb->query(
+                sprintf(
+                    'UPDATE %s SET status = %d WHERE %s IN (%s)',
+                    $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
+                    intval($args['status']),
+                    sanitize_text_field($args['column_name']),
+                    implode(', ', $args['value'])
+                )
+            );
+        } elseif ($args['operator'] == 'eq') {
+            $result = $wpdb->query(
+                sprintf(
+                    'UPDATE %s SET status = %d WHERE %s = %d',
+                    $wpdb->prefix . Setup::LICENSES_TABLE_NAME,
+                    intval($args['status']),
+                    sanitize_text_field($args['column_name']),
+                    intval($args['value'])
+                )
+            );
+        }
+
+        return $result;
     }
 
     /**

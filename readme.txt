@@ -1,10 +1,10 @@
-=== License Manager for WooCommerce ===
+﻿=== License Manager for WooCommerce ===
 Contributors: drazenbebic
 Donate link: https://www.bebic.at/license-manager-for-woocommerce/donate
 Tags: license key, license, key, software license, serial key, manager, woocommerce
 Requires at least: 4.7
 Tested up to: 5.1
-Stable tag: 1.0.1
+Stable tag: 1.1.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
