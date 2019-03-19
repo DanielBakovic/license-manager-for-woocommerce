@@ -66,7 +66,7 @@ class PostMeta
         $clean_generator_id = $generator_id ? absint($generator_id) : null;
 
         if (!$clean_generator_id) {
-            throw new Exception('Generator ID is invalid.', 1);
+            throw new \Exception('Generator ID is invalid.', 1);
         }
 
         global $wpdb;

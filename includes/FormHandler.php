@@ -1,4 +1,14 @@
 <?php
+/**
+ * Main plugin file.
+ * PHP Version: 5.6
+ * 
+ * @category WordPress
+ * @package  LicenseManagerForWooCommerce
+ * @author   Dražen Bebić <drazen.bebic@outlook.com>
+ * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
+ * @link     https://www.bebic.at/license-manager-for-woocommerce
+ */
 
 namespace LicenseManagerForWooCommerce;
 
@@ -9,10 +19,15 @@ use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
 defined('ABSPATH') || exit;
 
 /**
- * LicenseManagerForWooCommerce FormHandler.
+ * LicenseManagerForWooCommerce FormHandler
  *
- * @version 1.0.0
- * @since 1.0.0
+ * @category WordPress
+ * @package  LicenseManagerForWooCommerce
+ * @author   Dražen Bebić <drazen.bebic@outlook.com>
+ * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
+ * @version  Release: <1.1.0>
+ * @link     https://www.bebic.at/license-manager-for-woocommerce
+ * @since    1.0.0
  */
 class FormHandler
 {
@@ -21,37 +36,68 @@ class FormHandler
     /**
      * FormHandler Constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         // Admin POST requests.
-        add_action('admin_post_lmfwc_save_generator',      array($this, 'saveGenerator'   ), 10);
-        add_action('admin_post_lmfwc_update_generator',    array($this, 'updateGenerator' ), 10);
-        add_action('admin_post_lmfwc_import_license_keys', array($this, 'importLicenses'  ), 10);
-        add_action('admin_post_lmfwc_add_license_key',     array($this, 'addLicense'      ), 10);
-        add_action('admin_post_lmfwc_api_key_update',      array($this, 'apiKeyUpdate'    ), 10);
+        add_action(
+            'admin_post_lmfwc_save_generator',
+            array($this, 'saveGenerator'),
+            10
+        );
+        add_action(
+            'admin_post_lmfwc_update_generator',
+            array($this, 'updateGenerator'),
+            10
+        );
+        add_action(
+            'admin_post_lmfwc_import_license_keys',
+            array($this, 'importLicenseKeys'),
+            10
+        );
+        add_action(
+            'admin_post_lmfwc_add_license_key',
+            array($this, 'addLicenseKey'),
+            10
+        );
+        add_action(
+            'admin_post_lmfwc_update_license_key',
+            array($this, 'updateLicenseKey'),
+            10
+        );
+        add_action(
+            'admin_post_lmfwc_api_key_update',
+            array($this, 'apiKeyUpdate'),
+            10
+        );
 
         // AJAX calls.
-        add_action('wp_ajax_lmfwc_show_license_key',      array($this, 'showLicenseKey'    ), 10);
-        add_action('wp_ajax_lmfwc_show_all_license_keys', array($this, 'showAllLicenseKeys'), 10);
+        add_action(
+            'wp_ajax_lmfwc_show_license_key',
+            array($this, 'showLicenseKey'),
+            10
+        );
+        add_action(
+            'wp_ajax_lmfwc_show_all_license_keys',
+            array($this, 'showAllLicenseKeys'),
+            10
+        );
 
-        // WooCommerce
-        add_action('woocommerce_after_order_itemmeta', array($this, 'showOrderedLicenses'), 10, 3);
+        // WooCommerce related
+        add_action(
+            'woocommerce_after_order_itemmeta',
+            array($this, 'showOrderedLicenses'),
+            10,
+            3
+        );
     }
 
     /**
      * Save the generator to the database.
      *
-     * @since 1.0.0
-     *
-     * @param string $args['name']         - Generator name.
-     * @param string $args['charset']      - Character map used for key generation.
-     * @param int    $args['chunks']       - Number of chunks.
-     * @param int    $args['chunk_length'] - Chunk length.
-     * @param string $args['separator']    - Separator used.
-     * @param string $args['prefix']       - License key prefix.
-     * @param string $args['suffis']       - License key suffix.
-     * @param string $args['expires_in']   - Number of days for which the license is valid.
+     * @since  1.0.0
+     * @return null
      */
-    public function saveGenerator($args)
+    public function saveGenerator()
     {
         // Verify the nonce.
         check_admin_referer('lmfwc_save_generator');
@@ -59,25 +105,51 @@ class FormHandler
         // Validate request.
         if ($_POST['name'] == '' || !is_string($_POST['name'])) {
             AdminNotice::add('error', __('Generator name is missing.', 'lmfwc'), 18);
-            wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::ADD_GENERATOR_PAGE)));
+            wp_redirect(
+                admin_url(
+                    sprintf('admin.php?page=%s', AdminMenus::ADD_GENERATOR_PAGE)
+                )
+            );
             exit();
         }
 
         if ($_POST['charset'] == '' || !is_string($_POST['charset'])) {
             AdminNotice::add('error', __('The charset is invalid.', 'lmfwc'), 18);
-            wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::ADD_GENERATOR_PAGE)));
+            wp_redirect(
+                admin_url(
+                    sprintf('admin.php?page=%s', AdminMenus::ADD_GENERATOR_PAGE)
+                )
+            );
             exit();
         }
 
         if ($_POST['chunks'] == '' || !is_numeric($_POST['chunks'])) {
-            AdminNotice::add('error', __('Only integer values allowed for chunks.', 'lmfwc'), 18);
-            wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::ADD_GENERATOR_PAGE)));
+            AdminNotice::add(
+                'error',
+                __('Only integer values allowed for chunks.', 'lmfwc'),
+                18
+            );
+            wp_redirect(
+                admin_url(
+                    sprintf('admin.php?page=%s', AdminMenus::ADD_GENERATOR_PAGE)
+                )
+            );
+
             exit();
         }
 
         if ($_POST['chunk_length'] == '' || !is_numeric($_POST['chunk_length'])) {
-            AdminNotice::add('error', __('Only integer values allowed for chunk length.', 'lmfwc'), 18);
-            wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::ADD_GENERATOR_PAGE)));
+            AdminNotice::add(
+                'error',
+                __('Only integer values allowed for chunk length.', 'lmfwc'),
+                18
+            );
+            wp_redirect(
+                admin_url(
+                    sprintf('admin.php?page=%s', AdminMenus::ADD_GENERATOR_PAGE)
+                )
+            );
+
             exit();
         }
 
@@ -95,12 +167,19 @@ class FormHandler
         );
 
         if ($result) {
-            AdminNotice::add('success', __('The generator was added successfully.', 'lmfwc'));
+            AdminNotice::add(
+                'success',
+                __('The generator was added successfully.', 'lmfwc')
+            );
         } else {
             AdminNotice::addErrorSupportForum(19);
         }
 
-        wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::GENERATORS_PAGE)));
+        wp_redirect(
+            admin_url(
+                sprintf('admin.php?page=%s', AdminMenus::GENERATORS_PAGE)
+            )
+        );
 
         exit();
     }
@@ -108,7 +187,8 @@ class FormHandler
     /**
      * Update an existing generator.
      *
-     * @since 1.0.0
+     * @since  1.0.0
+     * @return null
      */
     public function updateGenerator()
     {
@@ -229,25 +309,35 @@ class FormHandler
     /**
      * Import licenses from a compatible CSV or TXT file into the database.
      *
-     * @since 1.0.0
+     * @since  1.0.0
+     * @return null
      */
-    public function importLicenses()
+    public function importLicenseKeys()
     {
         // Check the nonce.
-        check_admin_referer('lmfwc-import');
+        check_admin_referer('lmfwc_import_license_keys');
 
         // Check the file extension, return if not .txt
-        if (!pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION) == 'txt' || $_FILES['file']['type'] != 'text/plain') {
+        if (!pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION) == 'txt'
+            || $_FILES['file']['type'] != 'text/plain'
+        ) {
             return null;
         }
+
+        $file_name = $_FILES['file']['tmp_name'];
+        $file_path = LMFWC_ETC_DIR . self::TEMP_TXT_FILE;
 
         // File upload file, return with error.
-        if (!move_uploaded_file($_FILES['file']['tmp_name'], LMFWC_ETC_DIR . self::TEMP_TXT_FILE)) {
+        if (!move_uploaded_file($file_name, $file_path)) {
             return null;
         }
 
+        $license_keys = file(
+            LMFWC_ETC_DIR . self::TEMP_TXT_FILE, FILE_IGNORE_NEW_LINES
+        );
+
         // Check for invalid file contents.
-        if (!is_array($license_keys = file(LMFWC_ETC_DIR . self::TEMP_TXT_FILE, FILE_IGNORE_NEW_LINES))) {
+        if (!is_array($license_keys)) {
             return null;
         }
 
@@ -258,16 +348,12 @@ class FormHandler
         }
 
         // Save the imported keys.
-        //$result = apply_filters('lmfwc_insert_imported_license_keys', array(
-        //    'license_keys' => $license_keys,
-        //    'activate'     => array_key_exists('activate', $_POST) ? true : false,
-        //    'product_id'   => intval($_POST['product'])
-        //));
         $result = apply_filters(
             'lmfwc_insert_imported_license_keys',
             $license_keys,
             $status,
-            $_POST['product']
+            $_POST['product'],
+            $_POST['valid_for']
         );
 
         // Delete the temporary file now that we're done.
@@ -276,7 +362,12 @@ class FormHandler
         // Redirect according to $result.
         if ($result['failed'] == 0 && $result['added'] == 0) {
             AdminNotice::addErrorSupportForum(3);
-            wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
+            wp_redirect(
+                sprintf(
+                    'admin.php?page=%s&action=add',
+                    AdminMenus::LICENSES_PAGE
+                )
+            );
             exit();
         }
 
@@ -284,17 +375,27 @@ class FormHandler
             AdminNotice::add(
                 'success',
                 sprintf(
-                    __('%d key(s) have been imported successfully.', 'lmfwc'),
+                    __('%d License key(s) added successfully.', 'lmfwc'),
                     intval($result['added'])
                 )
             );
-            wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
+            wp_redirect(
+                sprintf(
+                    'admin.php?page=%s&action=add',
+                    AdminMenus::LICENSES_PAGE
+                )
+            );
             exit();
         }
 
         if ($result['failed'] > 0 && $result['added'] == 0) {
             AdminNotice::addErrorSupportForum(4);
-            wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
+            wp_redirect(
+                sprintf(
+                    'admin.php?page=%s&action=add',
+                    AdminMenus::LICENSES_PAGE
+                )
+            );
             exit();
         }
 
@@ -302,12 +403,17 @@ class FormHandler
             AdminNotice::add(
                 'warning',
                 sprintf(
-                    __('%d key(s) have been imported and %d key(s) were not imported.', 'lmfwc'),
+                    __('%d key(s) have been imported, while %d key(s) were not imported.', 'lmfwc'),
                     intval($result['added']),
                     intval($result['failed'])
                 )
             );
-            wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
+            wp_redirect(
+                sprintf(
+                    'admin.php?page=%s&action=add',
+                    AdminMenus::LICENSES_PAGE
+                )
+            );
             exit();
         }
     }
@@ -315,20 +421,22 @@ class FormHandler
     /**
      * Add a single license key to the database.
      *
-     * @since 1.0.0
+     * @since  1.0.0
+     * @return null
      */
-    public function addLicense()
+    public function addLicenseKey()
     {
-        // Check the nonce.
-        check_admin_referer('lmfwc-add');
+        // Check the nonce
+        check_admin_referer('lmfwc_add_license_key');
 
-        // Save the license key.
+        // Set the proper license key status
         if (array_key_exists('activate', $_POST)) {
             $status = LicenseStatusEnum::ACTIVE;
         } else {
             $status = LicenseStatusEnum::INACTIVE;
         }
 
+        // Insert the license key
         $result = apply_filters(
             'lmfwc_insert_license_key',
             null,
@@ -343,19 +451,72 @@ class FormHandler
         if ($result) {
             AdminNotice::add(
                 'success',
-                __('Your license key has been added successfully.', 'lmfwc')
+                __('1 License key(s) added successfully.', 'lmfwc')
             );
         } else {
             AdminNotice::addErrorSupportForum(5);
         }
 
-        wp_redirect(sprintf('admin.php?page=%s', AdminMenus::ADD_IMPORT_PAGE));
+        // Redirect
+        wp_redirect(
+            sprintf(
+                'admin.php?page=%s&action=add',
+                AdminMenus::LICENSES_PAGE
+            )
+        );
+
+        exit();
+    }
+
+    /**
+     * Updates an existing license keys.
+     * 
+     * @since  1.1.0
+     * @return null
+     */
+    public function updateLicenseKey()
+    {
+        // Check the nonce
+        check_admin_referer('lmfwc_update_license_key');
+
+        // Update the License
+        $result = apply_filters(
+            'lmfwc_update_license_key',
+            $_POST['license_id'],
+            $_POST['product'],
+            $_POST['license_key'],
+            $_POST['valid_for'],
+            $_POST['source'],
+            $_POST['status']
+        );
+
+        // Set the admin notice
+        if ($result) {
+            AdminNotice::add(
+                'success',
+                __('Your license key has been updated successfully.', 'lmfwc')
+            );
+        } else {
+            AdminNotice::addErrorSupportForum(6);
+        }
+
+        // Redirect
+        wp_redirect(
+            sprintf(
+                'admin.php?page=%s&action=edit&id=%d',
+                AdminMenus::LICENSES_PAGE,
+                absint($_POST['license_id'])
+            )
+        );
+
+        exit();
     }
 
     /**
      * Store a created API key to the database or updates an existing key.
      *
-     * @since 1.1.0
+     * @since  1.1.0
+     * @return null
      */
     public function apiKeyUpdate()
     {
@@ -368,10 +529,12 @@ class FormHandler
             $error = __('Description is missing.', 'lmfwc');
             $code = 10;
         }
+
         if (empty($_POST['user']) || $_POST['user'] == -1) {
             $error = __('User is missing.', 'lmfwc');
             $code = 11;
         }
+
         if (empty($_POST['permissions'])) {
             $error = __('Permissions is missing.', 'lmfwc');
             $code = 12;
@@ -393,12 +556,24 @@ class FormHandler
 
         if ($error) {
             AdminNotice::add('error', $error, $code);
-            wp_redirect(sprintf('admin.php?page=%s&tab=rest_api&create_key=1', AdminMenus::SETTINGS_PAGE));
+            wp_redirect(
+                sprintf(
+                    'admin.php?page=%s&tab=rest_api&create_key=1',
+                    AdminMenus::SETTINGS_PAGE
+                )
+            );
             exit();
         }
 
         if ($action == 'create') {
-            if ($data = apply_filters('lmfwc_insert_api_key', $user_id, $description, $permissions)) {
+            $data = apply_filters(
+                'lmfwc_insert_api_key',
+                $user_id,
+                $description,
+                $permissions
+            );
+
+            if ($data) {
                 AdminNotice::add(
                     'success',
                     __('API Key generated successfully. Make sure to copy your new keys now as the secret key will be hidden once you leave this page.', 'lmfwc')
@@ -408,17 +583,39 @@ class FormHandler
                 AdminNotice::addErrorSupportForum(14);
             }
 
-            wp_redirect(sprintf('admin.php?page=%s&tab=rest_api&show_key=1', AdminMenus::SETTINGS_PAGE));
+            wp_redirect(
+                sprintf(
+                    'admin.php?page=%s&tab=rest_api&show_key=1',
+                    AdminMenus::SETTINGS_PAGE
+                )
+            );
+
             exit();
         } elseif ($action == 'edit') {
+            $update = apply_filters(
+                'lmfwc_update_api_key',
+                $key_id,
+                $user_id,
+                $description,
+                $permissions
+            );
 
-            if (apply_filters('lmfwc_update_api_key', $key_id, $user_id, $description, $permissions)) {
-                AdminNotice::add('success', __('API Key updated successfully.', 'lmfwc'));
+            if ($update) {
+                AdminNotice::add(
+                    'success',
+                    __('API Key updated successfully.', 'lmfwc')
+                );
             } else {
                 AdminNotice::addErrorSupportForum(16);
             }
 
-            wp_redirect(sprintf('admin.php?page=%s&tab=rest_api', AdminMenus::SETTINGS_PAGE));
+            wp_redirect(
+                sprintf(
+                    'admin.php?page=%s&tab=rest_api',
+                    AdminMenus::SETTINGS_PAGE
+                )
+            );
+
             exit();
         }
     }
@@ -426,13 +623,17 @@ class FormHandler
     /**
      * Show a single license key.
      *
-     * @since 1.0.0
+     * @since  1.0.0
+     * @return null
      */
     public function showLicenseKey()
     {
         // Validate request.
         check_ajax_referer('lmfwc_show_license_key', 'show');
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') wp_die(__('Invalid request.', 'lmfwc'));
+
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+            wp_die(__('Invalid request.', 'lmfwc'));
+        }
 
         $license_row = apply_filters('lmfwc_get_license_key', $_POST['id']);
         $license_key = apply_filters('lmfwc_decrypt', $license_row['license_key']);
@@ -445,19 +646,28 @@ class FormHandler
     /**
      * Show all visible license keys.
      *
-     * @since 1.0.0
+     * @since  1.0.0
+     * @return null
      */
     public function showAllLicenseKeys()
     {
         // Validate request.
         check_ajax_referer('lmfwc_show_all_license_keys', 'show_all');
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') wp_die(__('Invalid request.', 'lmfwc'));
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+            wp_die(__('Invalid request.', 'lmfwc'));
+        }
 
         $license_keys = array();
 
         foreach (json_decode($_POST['ids']) as $license_key_id) {
-            $license_row = apply_filters('lmfwc_get_license_key', $license_key_id);
-            $license_key = apply_filters('lmfwc_decrypt', $license_row['license_key']);
+            $license_row = apply_filters(
+                'lmfwc_get_license_key',
+                $license_key_id
+            );
+            $license_key = apply_filters(
+                'lmfwc_decrypt',
+                $license_row['license_key']
+            );
 
             $license_keys[$license_key_id] = $license_key;
         }
@@ -470,24 +680,30 @@ class FormHandler
     /**
      * Hook into the WordPress Order Item Meta Box and display the license key(s)
      *
-     * @since 1.0.0
-     *
-     * @param int                   $item_id
-     * @param WC_Order_Item_Product $item
-     * @param WC_Product_Simple     $product
+     * @param int                   $item_id ID
+     * @param WC_Order_Item_Product $item    The WooCommerce Item Product object
+     * @param WC_Product_Simple     $product The WooCommerce Product object
+     * 
+     * @since  1.0.0
+     * @return null
      */
-    public function showOrderedLicenses($item_id, $item, $product) {
+    public function showOrderedLicenses($item_id, $item, $product)
+    {
         // Not a WC_Order_Item_Product object? Nothing to do...
-        if (!($item instanceof \WC_Order_Item_Product)) return;
+        if (!($item instanceof \WC_Order_Item_Product)) {
+            return;
+        }
 
         $license_keys = apply_filters(
-            'lmfwc_get_ordered_license_keys',
+            'lmfwc_get_order_license_keys',
             $item->get_order_id(),
             $item->get_product_id()
         );
 
         // No license keys? Nothing to do...
-        if (!$license_keys) return;
+        if (!$license_keys) {
+            return;
+        }
 
         $html = __('<p>The following license keys have been sold by this order:</p>', 'lmfwc');
         $html .= '<ul class="lmfwc-license-list">';

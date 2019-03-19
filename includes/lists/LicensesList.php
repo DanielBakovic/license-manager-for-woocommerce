@@ -248,19 +248,48 @@ class LicensesList extends \WP_List_Table
             $title .= sprintf('<img class="lmfwc-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
         }
 
-        $actions = [
-            'id' => sprintf(__('ID: %d', 'lmfwc'), intval($item['id'])),
-            'show' => sprintf(
-                '<a class="lmfwc-license-key-show" data-id="%d">%s</a>',
-                $item['id'],
-                __('Show', 'lmfwc')
-            ),
-            'hide' => sprintf(
-                '<a class="lmfwc-license-key-hide" data-id="%d">%s</a>',
-                $item['id'],
-                __('Hide', 'lmfwc')
-            ),
-            'activate' => sprintf(
+        // ID
+        $actions['id'] = sprintf(__('ID: %d', 'lmfwc'), intval($item['id']));
+
+        // Edit
+        if ($item['status'] != LicenseStatusEnum::SOLD
+            && $item['status'] != LicenseStatusEnum::DELIVERED
+            && $item['status'] != LicenseStatusEnum::USED
+        ) {
+            $actions['edit'] = sprintf(
+                '<a href="%s">%s</a>',
+                admin_url(
+                    wp_nonce_url(
+                        sprintf(
+                            'admin.php?page=%s&action=edit&id=%d',
+                            AdminMenus::LICENSES_PAGE,
+                            intval($item['id'])
+                        ),
+                        'lmfwc_edit_license_key'
+                    )
+                ),
+                __('Edit', 'lmfwc')
+            );
+        }
+
+        // Hide/Show
+        $actions['show'] = sprintf(
+            '<a class="lmfwc-license-key-show" data-id="%d">%s</a>',
+            $item['id'],
+            __('Show', 'lmfwc')
+        );
+        $actions['hide'] = sprintf(
+            '<a class="lmfwc-license-key-hide" data-id="%d">%s</a>',
+            $item['id'],
+            __('Hide', 'lmfwc')
+        );
+
+        // Activate, Deactivate, and Delete
+        if ($item['status'] != LicenseStatusEnum::SOLD
+            && $item['status'] != LicenseStatusEnum::DELIVERED
+            && $item['status'] != LicenseStatusEnum::USED
+        ) {
+            $actions['activate'] = sprintf(
                 '<a href="%s">%s</a>',
                 admin_url(
                     sprintf(
@@ -271,8 +300,8 @@ class LicensesList extends \WP_List_Table
                     )
                 ),
                 __('Activate', 'lmfwc')
-            ),
-            'deactivate' => sprintf(
+            );
+            $actions['deactivate'] = sprintf(
                 '<a href="%s">%s</a>',
                 admin_url(
                     sprintf(
@@ -283,8 +312,8 @@ class LicensesList extends \WP_List_Table
                     )
                 ),
                 __('Deactivate', 'lmfwc')
-            ),
-            'delete' => sprintf(
+            );
+            $actions['delete'] = sprintf(
                 '<a href="%s">%s</a>',
                 admin_url(
                     sprintf(
@@ -295,8 +324,8 @@ class LicensesList extends \WP_List_Table
                     )
                 ),
                 __('Delete', 'lmfwc')
-            ),
-        ];
+            );
+        }
 
         return $title . $this->row_actions($actions);
     }
@@ -497,53 +526,147 @@ class LicensesList extends \WP_List_Table
     private function toggleLicenseKeyStatus($status)
     {
         ($status == LicenseStatusEnum::ACTIVE) ? $nonce_action = 'activate' : $nonce_action = 'deactivate';
+        $status_whitelist = array(
+            LicenseStatusEnum::ACTIVE,
+            LicenseStatusEnum::INACTIVE
+        );
 
         $this->verifyNonce($nonce_action);
 
-        $result = apply_filters(
-            'lmfwc_toggle_license_key_status',
-            'id',
-            'in',
-            (array)$_REQUEST['id'],
-            $status
+        $license_ids = (array)$_REQUEST['id'];
+        $count = 0;
+        $skipped = 0;
+
+        foreach ($license_ids as $license_id) {
+            try {
+                // Retrieve full license info
+                $license = apply_filters(
+                    'lmfwc_get_license_key',
+                    $license_id
+                );
+
+                // Skip if the license if it's already sold, delivered, or used
+                if (!in_array($license['status'], $status_whitelist)) {
+                    $skipped++;
+                    continue;
+                }
+
+                apply_filters(
+                    'lmfwc_update_license_key_status',
+                    $license_id,
+                    $status
+                );
+                $count++;
+            } catch (\Exception $e) {
+                // Todo...
+            }
+        }
+
+        if ($nonce_action == 'activate') {
+            $message = sprintf(
+                esc_html__('%d License key(s) activated successfully.', 'lmfwc'),
+                $count
+            );
+        } elseif ($nonce_action == 'deactivate') {
+            $message = sprintf(
+                esc_html__('%d License key(s) deactivated successfully.', 'lmfwc'),
+                $count
+            );
+        }
+
+        // Inform the user how many license keys were skipped
+        if ($skipped > 0) {
+            $message .= ' ';
+            $message .= sprintf(
+                esc_html__('Skipped %d license key(s) due to their incompatible status.', 'wcdpi'),
+                $skipped
+            );
+        }
+
+        // Set the admin notice
+        AdminNotice::add('success', $message);
+
+        // Redirect and exit
+        wp_redirect(
+            admin_url(
+                sprintf('admin.php?page=%s', AdminMenus::LICENSES_PAGE)
+            )
         );
 
-        if ($result) {
-            AdminNotice::add(
-                'success',
-                __('Your license key(s) have been altered successfully.', 'lmfwc')
-            );
-        } else {
-            AdminNotice::addErrorSupportForum(6);
-        }
+        exit();
     }
 
     private function deleteLicenseKeys()
     {
         $this->verifyNonce('delete');
+        $status_whitelist = array(
+            LicenseStatusEnum::ACTIVE,
+            LicenseStatusEnum::INACTIVE
+        );
+
+        $license_ids = (array)($_REQUEST['id']);
+        $license_ids_to_delete = array();
+        $count = 0;
+        $skipped = 0;
+
+        foreach ($license_ids as $license_id) {
+            try {
+                // Retrieve full license info
+                $license = apply_filters(
+                    'lmfwc_get_license_key',
+                    $license_id
+                );
+
+                // Skip if the license if it's already sold, delivered, or used
+                if (!in_array($license['status'], $status_whitelist)) {
+                    $skipped++;
+                    continue;
+                }
+
+                $license_ids_to_delete[] = $license_id;
+                $count++;
+            } catch (\Exception $e) {
+                // Todo...
+            }
+        }
 
         $result = apply_filters(
             'lmfwc_delete_license_keys',
-            (array)($_REQUEST['id'])
+            $license_ids_to_delete
         );
 
-        if ($result) {
-            AdminNotice::add(
-                'success',
-                sprintf(__('%d License key(s) permanently deleted.', 'lmfwc'), $result)
+        $message = sprintf(
+            esc_html__('%d License key(s) permanently deleted.', 'lmfwc'),
+            $result
+        );
+
+        // Inform the user how many license keys were skipped
+        if ($skipped > 0) {
+            $message .= ' ';
+            $message .= sprintf(
+                esc_html__('Skipped %d license key(s) due to their incompatible status.', 'wcdpi'),
+                $skipped
             );
-            wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::LICENSES_PAGE)));
-        } else {
-            AdminNotice::addErrorSupportForum(7);
-            wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::LICENSES_PAGE)));
         }
 
-        wp_die();
+        // Set the admin notice
+        AdminNotice::add('success', $message);
+
+        // Redirect and exit
+        wp_redirect(
+            admin_url(
+                sprintf('admin.php?page=%s', AdminMenus::LICENSES_PAGE)
+            )
+        );
+
+        exit();
     }
 
     public static function isViewFilterActive()
     {
-        if (array_key_exists('status', $_GET) && in_array($_GET['status'], LicenseStatusEnum::$statuses)) {
+        if (array_key_exists('status', $_GET)
+            && in_array($_GET['status'], LicenseStatusEnum::$statuses)
+        ) {
             return true;
         } else {
             return false;
@@ -568,5 +691,6 @@ class LicensesList extends \WP_List_Table
         $url .= add_query_arg($args);
 
         wp_redirect($url);
+        exit();
     }
 }

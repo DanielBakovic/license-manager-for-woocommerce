@@ -48,18 +48,47 @@ class Generator
         $this->table = $wpdb->prefix . Setup::GENERATORS_TABLE_NAME;
 
         // SELECT
-        add_filter('lmfwc_get_generators', array($this, 'getGenerators'), 10);
-        add_filter('lmfwc_get_generator', array($this, 'getGenerator'), 10, 1);
+        add_filter(
+            'lmfwc_get_generators',
+            array($this, 'getGenerators'),
+            10
+        );
+        add_filter(
+            'lmfwc_get_generator',
+            array($this, 'getGenerator'),
+            10,
+            1
+        );
 
         // INSERT
-        add_filter('lmfwc_insert_generator', array($this, 'insertGenerator'), 10, 8);
+        add_filter(
+            'lmfwc_insert_generator',
+            array($this, 'insertGenerator'),
+            10,
+            8
+        );
 
         // UPDATE
-        add_filter('lmfwc_update_generator', array($this, 'updateGenerator'), 10, 9);
-        add_filter('lmfwc_update_selective_generator', array($this, 'updateSelectiveGenerator'), 10, 9);
+        add_filter(
+            'lmfwc_update_generator',
+            array($this, 'updateGenerator'),
+            10,
+            9
+        );
+        add_filter(
+            'lmfwc_update_selective_generator',
+            array($this, 'updateSelectiveGenerator'),
+            10,
+            9
+        );
 
         // DELETE
-        add_filter('lmfwc_delete_generators', array($this, 'deleteGenerators'), 10, 1);
+        add_filter(
+            'lmfwc_delete_generators',
+            array($this, 'deleteGenerators'),
+            10,
+            1
+        );
     }
 
     /**

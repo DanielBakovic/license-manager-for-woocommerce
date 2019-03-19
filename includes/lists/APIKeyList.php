@@ -361,7 +361,7 @@ class APIKeyList extends \WP_List_Table
         if ($count = apply_filters('lmfwc_delete_api_keys', $keys)) {
             AdminNotice::add(
                 'success',
-                sprintf(__('%d API keys permanently revoked.'), $count)
+                sprintf(__('%d API key(s) permanently revoked.'), $count)
             );
         } else {
             AdminNotice::addErrorSupportForum(15);

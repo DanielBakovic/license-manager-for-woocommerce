@@ -202,7 +202,7 @@ class OrderManager
 
                 $data[$product->get_id()]['name'] = $product->get_name();
                 $data[$product->get_id()]['keys'] = apply_filters(
-                    'lmfwc_get_ordered_license_keys',
+                    'lmfwc_get_order_license_keys',
                     $order->get_id(),
                     $product->get_id()
                 );
@@ -247,7 +247,7 @@ class OrderManager
 
             $data[$product->get_id()]['name'] = $product->get_name();
             $data[$product->get_id()]['keys'] = apply_filters(
-                'lmfwc_get_ordered_license_keys',
+                'lmfwc_get_order_license_keys',
                 $order->get_id(),
                 $product->get_id()
             );

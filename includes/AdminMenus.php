@@ -21,8 +21,7 @@ class AdminMenus
     private $tab_whitelist;
     private $section_whitelist;
 
-    const LICENSES_PAGE       = 'lmfwc';
-    const ADD_IMPORT_PAGE     = 'lmfwc_add_import';
+    const LICENSES_PAGE       = 'lmfwc_licenses';
     const GENERATORS_PAGE     = 'lmfwc_generators';
     const ADD_GENERATOR_PAGE  = 'lmfwc_generators_add';
     const EDIT_GENERATOR_PAGE = 'lmfwc_generators_edit';
@@ -84,15 +83,7 @@ class AdminMenus
             array($this, 'licensesPage')
         );
         add_action('load-' . $licenses_hook, array($this, 'licensesPageScreenOptions'));
-        // Add/Import Page
-        add_submenu_page(
-            self::LICENSES_PAGE,
-            __('License Manager - Import', 'lmfwc'),
-            __('Import', 'lmfwc'),
-            'manage_options',
-            self::ADD_IMPORT_PAGE,
-            array($this, 'licensesAddImportPage')
-        );
+
         // Generators List Page
         $generators_hook = add_submenu_page(
             self::LICENSES_PAGE,
@@ -103,6 +94,7 @@ class AdminMenus
             array($this, 'generatorsPage')
         );
         add_action('load-' . $generators_hook, array($this, 'generatorsPageScreenOptions'));
+
         // Add Generator Page
         add_submenu_page(
             self::LICENSES_PAGE,
@@ -112,15 +104,17 @@ class AdminMenus
             self::ADD_GENERATOR_PAGE,
             array($this, 'generatorsAddPage')
         );
+
         // Edit Generator Page
         add_submenu_page(
-            null,
+            self::GENERATORS_PAGE,
             __('License Manager - Edit Generator', 'lmfwc'),
             __('Edit Generator', 'lmfwc'),
             'manage_options',
             self::EDIT_GENERATOR_PAGE,
             array($this, 'generatorsEditPage')
         );
+
         // Settings Page
         add_submenu_page(
             self::LICENSES_PAGE,
@@ -146,21 +140,58 @@ class AdminMenus
 
     public function licensesPage()
     {
+
         $licenses = new \LicenseManagerForWooCommerce\Lists\LicensesList();
 
-        include LMFWC_TEMPLATES_DIR . 'licenses-page.php';
-    }
-
-    public function licensesAddImportPage()
-    {
-        $products = new \WP_Query(
-            array(
-                'post_type'      => 'product',
-                'posts_per_page' => -1
+        $action = $this->getCurrentAction($default = 'list');
+        $add_license_url = admin_url(
+            sprintf(
+                'admin.php?page=%s&action=add&_wpnonce=%s',
+                self::LICENSES_PAGE,
+                wp_create_nonce('add')
             )
         );
 
-        include LMFWC_TEMPLATES_DIR . 'licenses-add-import-page.php';
+        if ($action === 'add'
+            || $action === 'edit'
+            || $action === 'activate'
+            || $action === 'deactivate'
+            || $action === 'delete'
+        ) {
+            $products = new \WP_Query(
+                array(
+                    'post_type'      => 'product',
+                    'posts_per_page' => -1
+                )
+            );
+        } 
+
+        if ($action === 'edit') {
+            $status_whitelist = array(
+                LicenseStatusEnum::ACTIVE,
+                LicenseStatusEnum::INACTIVE
+            );
+            $license_id = absint($_GET['id']);
+            $license_row = apply_filters('lmfwc_get_license_key', $license_id);
+            $license_status = absint($license_row['status']);
+            $license_key = apply_filters('lmfwc_decrypt', $license_row['license_key']);
+            $valid_for = $license_row['valid_for'];
+            $activated = ($license_row['status'] == LicenseStatusEnum::ACTIVE) ? true : false;
+            $product_id = absint($license_row['product_id']);
+            $license_source = absint($license_row['source']);
+            $status_active = LicenseStatusEnum::ACTIVE;
+            $status_inactive = LicenseStatusEnum::INACTIVE;
+
+            if (!$license_id) {
+                wp_die(__('Invalid License Key ID', 'lmfwc'));
+            }
+
+            if (!in_array($license_status, $status_whitelist)) {
+                wp_die(__('This License Key can no longer be edited', 'lmfwc'));
+            }
+        }
+
+        include LMFWC_TEMPLATES_DIR . 'licenses-page.php';
     }
 
     public function settingsPage()
@@ -307,6 +338,22 @@ class AdminMenus
         $section = '';
 
         return $section;
+    }
+
+    /**
+     * Returns the string value of the "action" GET parameter
+     * 
+     * @return string|null
+     */
+    protected function getCurrentAction($default)
+    {
+        $action = $default;
+
+        if (!isset($_GET['action']) || !is_string($_GET['action'])) {
+            return $action;
+        }
+
+        return sanitize_text_field($_GET['action']);
     }
 
 }
