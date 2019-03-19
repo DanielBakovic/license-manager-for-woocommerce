@@ -21,11 +21,9 @@ class AdminMenus
     private $tab_whitelist;
     private $section_whitelist;
 
-    const LICENSES_PAGE       = 'lmfwc_licenses';
-    const GENERATORS_PAGE     = 'lmfwc_generators';
-    const ADD_GENERATOR_PAGE  = 'lmfwc_generators_add';
-    const EDIT_GENERATOR_PAGE = 'lmfwc_generators_edit';
-    const SETTINGS_PAGE       = 'lmfwc_settings';
+    const LICENSES_PAGE   = 'lmfwc_licenses';
+    const GENERATORS_PAGE = 'lmfwc_generators';
+    const SETTINGS_PAGE   = 'lmfwc_settings';
 
     /**
      * Class constructor.
@@ -94,26 +92,6 @@ class AdminMenus
             array($this, 'generatorsPage')
         );
         add_action('load-' . $generators_hook, array($this, 'generatorsPageScreenOptions'));
-
-        // Add Generator Page
-        add_submenu_page(
-            self::LICENSES_PAGE,
-            __('License Manager - Add New Generator', 'lmfwc'),
-            __('Add New Generator', 'lmfwc'),
-            'manage_options',
-            self::ADD_GENERATOR_PAGE,
-            array($this, 'generatorsAddPage')
-        );
-
-        // Edit Generator Page
-        add_submenu_page(
-            self::GENERATORS_PAGE,
-            __('License Manager - Edit Generator', 'lmfwc'),
-            __('Edit Generator', 'lmfwc'),
-            'manage_options',
-            self::EDIT_GENERATOR_PAGE,
-            array($this, 'generatorsEditPage')
-        );
 
         // Settings Page
         add_submenu_page(
@@ -255,6 +233,32 @@ class AdminMenus
     public function generatorsPage()
     {
         $generators = new \LicenseManagerForWooCommerce\Lists\GeneratorsList();
+
+
+        $action = $this->getCurrentAction($default = 'list');
+
+        if ($action == 'list') {
+            $add_generator_url = wp_nonce_url(
+                sprintf(
+                    admin_url('admin.php?page=%s&action=add'),
+                    self::GENERATORS_PAGE
+                ),
+                'lmwfc_add_generator'
+            );
+        }
+
+        if ($action == 'edit') {
+            if (!array_key_exists('edit', $_GET) && !array_key_exists('id', $_GET)) {
+                return;
+            }
+
+            if (!$generator = apply_filters('lmfwc_get_generator', $_GET['id'])) {
+               return;
+            }
+
+            $products = apply_filters('lmfwc_get_assigned_products', $_GET['id']);
+
+        }
 
         include LMFWC_TEMPLATES_DIR . 'generators-page.php';
     }

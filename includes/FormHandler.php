@@ -107,7 +107,10 @@ class FormHandler
             AdminNotice::add('error', __('Generator name is missing.', 'lmfwc'), 18);
             wp_redirect(
                 admin_url(
-                    sprintf('admin.php?page=%s', AdminMenus::ADD_GENERATOR_PAGE)
+                    sprintf(
+                        'admin.php?page=%s&action=add',
+                        AdminMenus::GENERATORS_PAGE
+                    )
                 )
             );
             exit();
@@ -117,7 +120,10 @@ class FormHandler
             AdminNotice::add('error', __('The charset is invalid.', 'lmfwc'), 18);
             wp_redirect(
                 admin_url(
-                    sprintf('admin.php?page=%s', AdminMenus::ADD_GENERATOR_PAGE)
+                    sprintf(
+                        'admin.php?page=%s&action=add',
+                        AdminMenus::GENERATORS_PAGE
+                    )
                 )
             );
             exit();
@@ -131,7 +137,10 @@ class FormHandler
             );
             wp_redirect(
                 admin_url(
-                    sprintf('admin.php?page=%s', AdminMenus::ADD_GENERATOR_PAGE)
+                    sprintf(
+                        'admin.php?page=%s&action=add',
+                        AdminMenus::GENERATORS_PAGE
+                    )
                 )
             );
 
@@ -146,7 +155,10 @@ class FormHandler
             );
             wp_redirect(
                 admin_url(
-                    sprintf('admin.php?page=%s', AdminMenus::ADD_GENERATOR_PAGE)
+                    sprintf(
+                        'admin.php?page=%s&action=add',
+                        AdminMenus::GENERATORS_PAGE
+                    )
                 )
             );
 
@@ -208,7 +220,7 @@ class FormHandler
                 admin_url(
                     sprintf(
                         'admin.php?page=%s&action=edit&id=%d',
-                        AdminMenus::EDIT_GENERATOR_PAGE,
+                        AdminMenus::GENERATORS_PAGE,
                         $generator_id
                     )
                 )
@@ -226,7 +238,7 @@ class FormHandler
                 admin_url(
                     sprintf(
                         'admin.php?page=%s&action=edit&id=%d',
-                        AdminMenus::EDIT_GENERATOR_PAGE,
+                        AdminMenus::GENERATORS_PAGE,
                         $generator_id
                     )
                 )
@@ -244,7 +256,7 @@ class FormHandler
                 admin_url(
                     sprintf(
                         'admin.php?page=%s&action=edit&id=%d',
-                        AdminMenus::EDIT_GENERATOR_PAGE,
+                        AdminMenus::GENERATORS_PAGE,
                         $generator_id
                     )
                 )
@@ -262,7 +274,7 @@ class FormHandler
                 admin_url(
                     sprintf(
                         'admin.php?page=%s&action=edit&id=%d',
-                        AdminMenus::EDIT_GENERATOR_PAGE,
+                        AdminMenus::GENERATORS_PAGE,
                         $generator_id
                     )
                 )
@@ -296,11 +308,7 @@ class FormHandler
 
         wp_redirect(
             admin_url(
-                sprintf(
-                    'admin.php?page=%s&action=edit&id=%d',
-                    AdminMenus::EDIT_GENERATOR_PAGE,
-                    $generator_id
-                )
+                sprintf('admin.php?page=%s', AdminMenus::GENERATORS_PAGE)
             )
         );
         exit();

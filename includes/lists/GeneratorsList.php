@@ -89,7 +89,7 @@ class GeneratorsList extends \WP_List_Table
 
         $actions['edit'] = sprintf(
             '<a href="?page=%s&action=%s&id=%s&_wpnonce=%s">%s</a>',
-            AdminMenus::EDIT_GENERATOR_PAGE,
+            AdminMenus::GENERATORS_PAGE,
             'edit',
             absint($item['id']),
             wp_create_nonce('edit'),

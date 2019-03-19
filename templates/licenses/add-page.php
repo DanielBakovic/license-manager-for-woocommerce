@@ -3,8 +3,7 @@
 <h1 class="wp-heading-inline"><?php esc_html_e('Import License Keys', 'lmfwc'); ?></h1>
 <hr class="wp-header-end">
 
-<form method="post" action="<?php echo esc_html(admin_url('admin-post.php'));?>" enctype="multipart/form-data">
-
+<form method="post" action="<?php echo esc_html(admin_url('admin-post.php')) ;?>" enctype="multipart/form-data">
     <input type="hidden" name="action" value="lmfwc_import_license_keys">
     <?php wp_nonce_field('lmfwc_import_license_keys'); ?>
 
