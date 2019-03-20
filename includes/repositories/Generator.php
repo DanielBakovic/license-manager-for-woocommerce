@@ -29,6 +29,8 @@ defined('ABSPATH') || exit;
  */
 class Generator
 {
+    const UNDEFINED = -1;
+
     /**
      * Prefixed table name.
      * 
@@ -134,7 +136,7 @@ class Generator
         $clean_id = $id ? absint($id) : null;
 
         if (!$clean_id) {
-            throw new \Exception('Generator ID is missing', 1);
+            throw new \Exception('Generator ID is invalid', 1);
         }
 
         global $wpdb;
@@ -199,19 +201,19 @@ class Generator
         $clean_expires_in   = $expires_in   ? absint($expires_in)             : null;
 
         if (!$clean_name) {
-            throw new \Exception('Generator name is missing', 1);
+            throw new \Exception('Generator name is invalid', 1);
         }
 
         if (!$clean_charset) {
-            throw new \Exception('Generator charset is missing', 2);
+            throw new \Exception('Generator charset is invalid', 2);
         }
 
         if (!$clean_chunks) {
-            throw new \Exception('Generator chunks is missing', 3);
+            throw new \Exception('Generator chunks is invalid', 3);
         }
 
         if (!$clean_chunk_length) {
-            throw new \Exception('Generator chunk_length is missing', 4);
+            throw new \Exception('Generator chunk_length is invalid', 4);
         }
 
         global $wpdb;
@@ -276,23 +278,23 @@ class Generator
         $clean_expires_in   = $expires_in   ? absint($expires_in)             : null;
 
         if (!$clean_id) {
-            throw new \Exception('Generator ID is missing', 1);
+            throw new \Exception('Generator ID is invalid', 1);
         }
 
         if (!$clean_name) {
-            throw new \Exception('Generator name is missing', 2);
+            throw new \Exception('Generator name is invalid', 2);
         }
 
         if (!$clean_charset) {
-            throw new \Exception('Generator charset is missing', 3);
+            throw new \Exception('Generator charset is invalid', 3);
         }
 
         if (!$clean_chunks) {
-            throw new \Exception('Generator chunks is missing', 4);
+            throw new \Exception('Generator chunks is invalid', 4);
         }
 
         if (!$clean_chunk_length) {
-            throw new \Exception('Generator chunk_length is missing', 5);
+            throw new \Exception('Generator chunk_length is invalid', 5);
         }
 
         global $wpdb;
@@ -342,30 +344,108 @@ class Generator
         $suffix,
         $expires_in
     ) {
-        $clean_id           = $id           ? absint($id)                     : null;
-        $clean_name         = $name         ? sanitize_text_field($name)      : null;
-        $clean_charset      = $charset      ? sanitize_text_field($charset)   : null;
-        $clean_chunks       = $chunks       ? absint($chunks)                 : null;
-        $clean_chunk_length = $chunk_length ? absint($chunk_length)           : null;
-        $clean_separator    = $separator    ? sanitize_text_field($separator) : null;
-        $clean_prefix       = $prefix       ? sanitize_text_field($prefix)    : null;
-        $clean_suffix       = $suffix       ? sanitize_text_field($suffix)    : null;
-        $clean_expires_in   = $expires_in   ? absint($expires_in)             : null;
-
-        if (!$id) {
-            throw new \Exception('Generator ID is missing', 1);
+        if ($id && $id != self::UNDEFINED) {
+            $clean_id = absint($id);
+        } elseif (is_null($id)) {
+            $clean_id = null;
+        } elseif ($id == self::UNDEFINED) {
+            $clean_id = self::UNDEFINED;
         }
 
-        if (!$clean_name
-            && !$clean_charset
-            && !$clean_chunks
-            && !$clean_chunk_length
-            && !$clean_separator
-            && !$clean_prefix
-            && !$clean_suffix
-            && !$clean_expires_in
+        if ($name && $name != self::UNDEFINED) {
+            $clean_name = sanitize_text_field($name);
+        } elseif (is_null($name)) {
+            $clean_name = null;
+        } elseif ($name == self::UNDEFINED) {
+            $clean_name = self::UNDEFINED;
+        }
+
+        if ($charset && $charset != self::UNDEFINED) {
+            $clean_charset = sanitize_text_field($charset);
+        } elseif (is_null($charset)) {
+            $clean_charset = null;
+        } elseif ($charset == self::UNDEFINED) {
+            $clean_charset = self::UNDEFINED;
+        }
+
+        if ($chunks && $chunks != self::UNDEFINED) {
+            $clean_chunks = absint($chunks);
+        } elseif (is_null($chunks)) {
+            $clean_chunks = null;
+        } elseif ($chunks == self::UNDEFINED) {
+            $clean_chunks = self::UNDEFINED;
+        }
+
+        if ($chunk_length && $chunk_length != self::UNDEFINED) {
+            $clean_chunk_length = absint($chunk_length);
+        } elseif (is_null($chunk_length)) {
+            $clean_chunk_length = null;
+        } elseif ($chunk_length == self::UNDEFINED) {
+            $clean_chunk_length = self::UNDEFINED;
+        }
+
+        if ($separator && $separator != self::UNDEFINED) {
+            $clean_separator = sanitize_text_field($separator);
+        } elseif (is_null($separator)) {
+            $clean_separator = null;
+        } elseif ($separator == self::UNDEFINED) {
+            $clean_separator = self::UNDEFINED;
+        }
+
+        if ($prefix && $prefix != self::UNDEFINED) {
+            $clean_prefix = sanitize_text_field($prefix);
+        } elseif (is_null($prefix)) {
+            $clean_prefix = null;
+        } elseif ($prefix == self::UNDEFINED) {
+            $clean_prefix = self::UNDEFINED;
+        }
+
+        if ($suffix && $suffix != self::UNDEFINED) {
+            $clean_suffix = sanitize_text_field($suffix);
+        } elseif (is_null($suffix)) {
+            $clean_suffix = null;
+        } elseif ($suffix == self::UNDEFINED) {
+            $clean_suffix = self::UNDEFINED;
+        }
+
+        if ($expires_in && $expires_in != self::UNDEFINED) {
+            $clean_expires_in = absint($expires_in);
+        } elseif (is_null($expires_in)) {
+            $clean_expires_in = null;
+        } elseif ($expires_in == self::UNDEFINED) {
+            $clean_expires_in = self::UNDEFINED;
+        }
+
+        if (!$id) {
+            throw new \Exception('Generator ID is invalid', 1);
+        }
+
+        if ($clean_name == self::UNDEFINED
+            && $clean_charset == self::UNDEFINED
+            && $clean_chunks == self::UNDEFINED
+            && $clean_chunk_length == self::UNDEFINED
+            && $clean_separator == self::UNDEFINED
+            && $clean_prefix == self::UNDEFINED
+            && $clean_suffix == self::UNDEFINED
+            && $clean_expires_in == self::UNDEFINED
         ) {
             throw new \Exception('No parameters provided', 2);
+        }
+
+        if (!$clean_name && $clean_name != self::UNDEFINED) {
+            throw new \Exception('Generator name is invalid', 3);
+        }
+
+        if (!$clean_charset && $clean_charset != self::UNDEFINED) {
+            throw new \Exception('Generator character map is invalid', 3);
+        }
+
+        if (!$clean_chunks && $clean_chunks != self::UNDEFINED) {
+            throw new \Exception('Generator number of chunks is invalid', 3);
+        }
+
+        if (!$clean_chunk_length && $clean_chunk_length != self::UNDEFINED) {
+            throw new \Exception('Generator chunk length is invalid', 3);
         }
 
         global $wpdb;
@@ -375,54 +455,96 @@ class Generator
 
         $sql = "UPDATE {$table}";
 
-        if ($clean_name) {
-            $sql .= $wpdb->prepare(' SET name = %s', $clean_name);
+        if ($clean_name != self::UNDEFINED) {
+            $sql .= $wpdb->prepare(' SET `name` = %s', $clean_name);
             $first = false;
         }
 
-        if ($clean_charset) {
+        if ($clean_charset != self::UNDEFINED) {
             $sql .= $first ? ' SET ' : ', ';
-            $sql .= $wpdb->prepare('charset = %s', $clean_charset);
+            
+            if (is_null($clean_charset)) {
+                $sql .= '`charset` = NULL';
+            } else {
+                $sql .= $wpdb->prepare('`charset` = %s', $clean_charset);
+            }
+
             $first = false;
         }
 
-        if ($clean_chunks) {
+        if ($clean_chunks != self::UNDEFINED) {
             $sql .= $first ? ' SET ' : ', ';
-            $sql .= $wpdb->prepare('chunks = %d', $clean_chunks);
+            
+            if (is_null($clean_chunks)) {
+                $sql .= '`chunks` = NULL';
+            } else {
+                $sql .= $wpdb->prepare('`chunks` = %d', $clean_chunks);
+            }
+
             $first = false;
         }
 
-        if ($clean_chunk_length) {
+        if ($clean_chunk_length != self::UNDEFINED) {
             $sql .= $first ? ' SET ' : ', ';
-            $sql .= $wpdb->prepare('chunk_length = %d', $clean_chunk_length);
+            
+            if (is_null($clean_chunk_length)) {
+                $sql .= '`chunk_length` = NULL';
+            } else {
+                $sql .= $wpdb->prepare('`chunk_length` = %d', $clean_chunk_length);
+            }
+
             $first = false;
         }
 
-        if ($clean_separator) {
+        if ($clean_separator != self::UNDEFINED) {
             $sql .= $first ? ' SET ' : ', ';
-            $sql .= $wpdb->prepare('separator = %s', $clean_separator);
+            
+            if (is_null($clean_separator)) {
+                $sql .= '`separator` = NULL';
+            } else {
+                $sql .= $wpdb->prepare('`separator` = %s', $clean_separator);
+            }
+
             $first = false;
         }
 
-        if ($clean_prefix) {
+        if ($clean_prefix != self::UNDEFINED) {
             $sql .= $first ? ' SET ' : ', ';
-            $sql .= $wpdb->prepare('prefix = %s', $clean_prefix);
+            
+            if (is_null($clean_prefix)) {
+                $sql .= '`prefix` = NULL';
+            } else {
+                $sql .= $wpdb->prepare('`prefix` = %s', $clean_prefix);
+            }
+
             $first = false;
         }
 
-        if ($clean_suffix) {
+        if ($clean_suffix != self::UNDEFINED) {
             $sql .= $first ? ' SET ' : ', ';
-            $sql .= $wpdb->prepare('suffix = %s', $clean_suffix);
+            
+            if (is_null($clean_suffix)) {
+                $sql .= '`suffix` = NULL';
+            } else {
+                $sql .= $wpdb->prepare('`suffix` = %s', $clean_suffix);
+            }
+
             $first = false;
         }
 
-        if ($clean_expires_in) {
+        if ($clean_expires_in != self::UNDEFINED) {
             $sql .= $first ? ' SET ' : ', ';
-            $sql .= $wpdb->prepare('expires_in = %d', $clean_expires_in);
+            
+            if (is_null($clean_expires_in)) {
+                $sql .= '`expires_in` = NULL';
+            } else {
+                $sql .= $wpdb->prepare('`expires_in` = %d', $clean_expires_in);
+            }
+
             $first = false;
         }
 
-        $sql .= $wpdb->prepare(' WHERE id = %d;', $id);
+        $sql .= $wpdb->prepare(' WHERE `id` = %d;', $id);
 
         $wpdb->query($sql);
 
