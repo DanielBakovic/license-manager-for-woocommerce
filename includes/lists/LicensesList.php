@@ -4,12 +4,10 @@ namespace LicenseManagerForWooCommerce\Lists;
 
 use \LicenseManagerForWooCommerce\AdminMenus;
 use \LicenseManagerForWooCommerce\AdminNotice;
-use \LicenseManagerForWooCommerce\Database;
-use \LicenseManagerForWooCommerce\Logger;
 use \LicenseManagerForWooCommerce\Settings;
 use \LicenseManagerForWooCommerce\Setup;
-use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
-use \LicenseManagerForWooCommerce\Enums\SourceEnum;
+use \LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
+use \LicenseManagerForWooCommerce\Enums\LicenseSource as LicenseSourceEnum;
 
 defined('ABSPATH') || exit;
 
@@ -156,7 +154,7 @@ class LicensesList extends \WP_List_Table
                 return $link;
             case 'source':
                 switch ($item['source']) {
-                    case SourceEnum::GENERATOR:
+                    case LicenseSourceEnum::GENERATOR:
                         $status = sprintf(
                             '<img class="lmfwc-source-icon" src="%s" alt="%s" title="%s">',
                             LMFWC_IMG_URL . 'icons/ic_settings_black_24dp.png',
@@ -164,7 +162,7 @@ class LicensesList extends \WP_List_Table
                             __('Generator', 'lmfwc')
                         );
                         break;
-                    case SourceEnum::IMPORT:
+                    case LicenseSourceEnum::IMPORT:
                         $status = sprintf(
                             '<img class="lmfwc-source-icon" src="%s" alt="%s" title="%s">',
                             LMFWC_IMG_URL . 'icons/ic_import_export_black_24dp.png',
@@ -172,7 +170,7 @@ class LicensesList extends \WP_List_Table
                             __('Import', 'lmfwc')
                         );
                         break;
-                    case SourceEnum::API:
+                    case LicenseSourceEnum::API:
                         $status = sprintf(
                             '<img class="lmfwc-source-icon" src="%s" alt="%s" title="%s">',
                             LMFWC_IMG_URL . 'icons/ic_cloud_black_24dp.png',
@@ -665,7 +663,7 @@ class LicensesList extends \WP_List_Table
     public static function isViewFilterActive()
     {
         if (array_key_exists('status', $_GET)
-            && in_array($_GET['status'], LicenseStatusEnum::$statuses)
+            && in_array($_GET['status'], LicenseStatusEnum::$status)
         ) {
             return true;
         } else {

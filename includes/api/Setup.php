@@ -2,8 +2,6 @@
 
 namespace LicenseManagerForWooCommerce\API;
 
-use \LicenseManagerForWooCommerce\Logger;
-
 defined('ABSPATH') || exit;
 
 /**

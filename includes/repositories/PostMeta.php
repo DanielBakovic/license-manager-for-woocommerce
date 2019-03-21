@@ -12,10 +12,6 @@
 
 namespace LicenseManagerForWooCommerce\Repositories;
 
-use \LicenseManagerForWooCommerce\Setup;
-use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
-use \LicenseManagerForWooCommerce\Enums\SourceEnum;
-
 defined('ABSPATH') || exit;
 
 /**

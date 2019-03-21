@@ -2,7 +2,7 @@
 
 namespace LicenseManagerForWooCommerce;
 
-use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
+use \LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
 
 defined('ABSPATH') || exit;
 

@@ -450,10 +450,9 @@ class Generator
 
         global $wpdb;
 
-        $table = $this->table;
         $first = true;
 
-        $sql = "UPDATE {$table}";
+        $sql = "UPDATE {$this->table}";
 
         if ($clean_name != self::UNDEFINED) {
             $sql .= $wpdb->prepare(' SET `name` = %s', $clean_name);

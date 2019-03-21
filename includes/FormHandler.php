@@ -13,8 +13,8 @@
 namespace LicenseManagerForWooCommerce;
 
 use \LicenseManagerForWooCommerce\Lists\LicensesList;
-use \LicenseManagerForWooCommerce\Enums\SourceEnum;
-use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
+use \LicenseManagerForWooCommerce\Enums\LicenseSource as LicenseSourceEnum;
+use \LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
 
 defined('ABSPATH') || exit;
 
@@ -451,7 +451,7 @@ class FormHandler
             $_POST['product'],
             $_POST['license_key'],
             $_POST['valid_for'],
-            SourceEnum::IMPORT,
+            LicenseSourceEnum::IMPORT,
             $status
         );
 

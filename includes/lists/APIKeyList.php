@@ -4,11 +4,6 @@ namespace LicenseManagerForWooCommerce\Lists;
 
 use \LicenseManagerForWooCommerce\AdminMenus;
 use \LicenseManagerForWooCommerce\AdminNotice;
-use \LicenseManagerForWooCommerce\Database;
-use \LicenseManagerForWooCommerce\Logger;
-use \LicenseManagerForWooCommerce\Settings;
-use \LicenseManagerForWooCommerce\Setup;
-use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
 
 defined('ABSPATH') || exit;
 

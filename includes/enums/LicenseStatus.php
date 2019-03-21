@@ -7,10 +7,10 @@ defined('ABSPATH') || exit;
 /**
  * License Status Enumerator.
  *
- * @version 1.0.0
- * @since 1.0.0
+ * @version 1.1.0
+ * @since   1.0.0
  */
-abstract class LicenseStatusEnum
+abstract class LicenseStatus
 {
     const __default = -1;
 
@@ -20,12 +20,20 @@ abstract class LicenseStatusEnum
     const INACTIVE  = 4;
     const USED      = 5;
 
-    public static $statuses = array(
+    public static $status = array(
         self::SOLD,
         self::DELIVERED,
         self::ACTIVE,
         self::INACTIVE,
         self::USED
+    );
+
+    public static $enum_array = array(
+        'sold',
+        'delivered',
+        'active',
+        'inactive',
+        'used'
     );
 
     public static $values = array(

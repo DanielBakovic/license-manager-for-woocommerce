@@ -2,8 +2,7 @@
 
 namespace LicenseManagerForWooCommerce;
 
-use \LicenseManagerForWooCommerce\Database;
-use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
+use \LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
 
 defined('ABSPATH') || exit;
 
@@ -19,9 +18,22 @@ class OrderManager
      * Class constructor.
      */
     public function __construct() {
-        add_action('woocommerce_order_status_completed',          array($this, 'generateOrderLicenses'));
-        add_action('woocommerce_email_after_order_table',         array($this, 'deliverLicenseKeys'), 10, 2);
-        add_action('woocommerce_order_details_after_order_table', array($this, 'showBoughtLicenses'), 10, 1);
+        add_action(
+            'woocommerce_order_status_completed',
+            array($this, 'generateOrderLicenses')
+        );
+        add_action(
+            'woocommerce_email_after_order_table',
+            array($this, 'deliverLicenseKeys'),
+            10,
+            2
+        );
+        add_action(
+            'woocommerce_order_details_after_order_table',
+            array($this, 'showBoughtLicenses'),
+            10,
+            1
+        );
     }
 
     /**

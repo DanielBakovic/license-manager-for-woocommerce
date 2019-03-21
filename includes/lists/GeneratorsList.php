@@ -4,7 +4,6 @@ namespace LicenseManagerForWooCommerce\Lists;
 
 use \LicenseManagerForWooCommerce\AdminMenus;
 use \LicenseManagerForWooCommerce\AdminNotice;
-use \LicenseManagerForWooCommerce\Logger;
 use \LicenseManagerForWooCommerce\Setup;
 
 defined('ABSPATH') || exit;

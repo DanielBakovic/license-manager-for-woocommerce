@@ -2,7 +2,7 @@
 
 namespace LicenseManagerForWooCommerce\API\v1;
 
-use \LicenseManagerForWooCommerce\Logger;
+use \LicenseManagerForWooCommerce\Abstracts\RestController as LMFWC_REST_Controller;
 
 defined('ABSPATH') || exit;
 
@@ -12,10 +12,8 @@ defined('ABSPATH') || exit;
  * @version 1.0.0
  * @since 1.1.0
  */
-class Generators extends \WP_REST_Controller
+class Generators extends LMFWC_REST_Controller
 {
-    const UNDEFINED = -1;
-
     /**
      * Endpoint namespace.
      *
@@ -250,20 +248,19 @@ class Generators extends \WP_REST_Controller
      */
     public function updateGenerator(\WP_REST_Request $request)
     {
-        $generator_id = $request->get_param('generator_id');
-        $body = json_decode($request->get_body());
+        // init
+        $generator_id = null;
+        $body         = null;
 
-        // Body variables now equal either their unsanitized, null, or UNDEFINED (-1)
-        $generator_id = isset($generator_id)                   ? $generator_id       : null;
-        $name         = property_exists($body, 'name')         ? $body->name         : self::UNDEFINED;
-        $charset      = property_exists($body, 'charset')      ? $body->charset      : self::UNDEFINED;
-        $chunks       = property_exists($body, 'chunks')       ? $body->chunks       : self::UNDEFINED;
-        $chunk_length = property_exists($body, 'chunk_length') ? $body->chunk_length : self::UNDEFINED;
-        $separator    = property_exists($body, 'separator')    ? $body->separator    : self::UNDEFINED;
-        $prefix       = property_exists($body, 'prefix')       ? $body->prefix       : self::UNDEFINED;
-        $suffix       = property_exists($body, 'suffix')       ? $body->suffix       : self::UNDEFINED;
-        $expires_in   = property_exists($body, 'expires_in')   ? $body->expires_in   : self::UNDEFINED;
+        // Set and sanitize the basic parameters to be used.
+        if ($request->get_param('generator_id')) {
+            $generator_id = absint($request->get_param('generator_id'));
+        }
+        if ($this->isJson($request->get_body())) {
+            $body = json_decode($request->get_body());
+        }
 
+        // Validate basic parameters
         if (!$generator_id) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
@@ -271,7 +268,80 @@ class Generators extends \WP_REST_Controller
                 array('status' => 404)
             );
         }
+        if (!$body) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                'No parameters were provided.',
+                array('status' => 404)
+            );
+        }
 
+        // Set and sanitize the other parameters to be used
+        if (property_exists($body, 'name')) {
+            $name = sanitize_text_field($body->name);
+        } else {
+            $name = self::UNDEFINED;
+        }
+
+        if (property_exists($body, 'charset')) {
+            $charset = sanitize_text_field($body->charset);
+        } else {
+            $charset = self::UNDEFINED;
+        }
+
+        if (property_exists($body, 'chunks')) {
+            $chunks = absint($body->chunks);
+        } else {
+            $chunks = self::UNDEFINED;
+        }
+
+        if (property_exists($body, 'chunk_length')) {
+            $chunk_length = absint($body->chunk_length);
+        } else {
+            $chunk_length = self::UNDEFINED;
+        }
+
+        if (property_exists($body, 'separator')) {
+            if (is_null($body->separator)) {
+                $separator = null;
+            } else {
+                $separator = sanitize_text_field($body->separator);
+            }
+        } else {
+            $separator = self::UNDEFINED;
+        }
+
+        if (property_exists($body, 'prefix')) {
+            if (is_null($body->prefix)) {
+                $prefix = null;
+            } else {
+                $prefix = sanitize_text_field($body->prefix);
+            }
+        } else {
+            $prefix = self::UNDEFINED;
+        }
+
+        if (property_exists($body, 'suffix')) {
+            if (is_null($body->suffix)) {
+                $suffix = null;
+            } else {
+                $suffix = sanitize_text_field($body->suffix);
+            }
+        } else {
+            $suffix = self::UNDEFINED;
+        }
+
+        if (property_exists($body, 'expires_in')) {
+            if (is_null($body->expires_in)) {
+                $expires_in = null;
+            } else {
+                $expires_in = sanitize_text_field($body->expires_in);
+            }
+        } else {
+            $expires_in = self::UNDEFINED;
+        }
+
+        // Throw errors if anything crucial is missing
         if ($name == self::UNDEFINED
             && $charset == self::UNDEFINED
             && $chunks == self::UNDEFINED
@@ -283,48 +353,42 @@ class Generators extends \WP_REST_Controller
         ) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                __('No parameters were provided in the request. Please provide at least one parameter you wish to alter.', 'lmfwc'),
+                'No parameters were provided.',
                 array('status' => 404)
             );
         }
-
-        // Data sanitization is only needed if the value exists and is not UNDEFINED
-        if ($name && $name != self::UNDEFINED) {
-            $name = sanitize_text_field($name);
+        if (!$name) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                'Generator name is invalid.',
+                array('status' => 404)
+            );
         }
-
-        if ($charset && $charset != self::UNDEFINED) {
-            $charset = sanitize_text_field($charset);
+        if (!$charset) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                'Generator character map is invalid.',
+                array('status' => 404)
+            );
         }
-
-        if ($chunks && $chunks != self::UNDEFINED) {
-            $chunks = absint($chunks);
+        if (!$chunks) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                'Generator chunks is invalid.',
+                array('status' => 404)
+            );
         }
-
-        if ($chunk_length && $chunk_length != self::UNDEFINED) {
-            $chunk_length = absint($chunk_length);
+        if (!$chunk_length) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                'Generator chunk length is invalid.',
+                array('status' => 404)
+            );
         }
-
-        if ($separator && $separator != self::UNDEFINED) {
-            $separator = sanitize_text_field($separator);
-        }
-
-        if ($prefix && $prefix != self::UNDEFINED) {
-            $prefix = sanitize_text_field($prefix);
-        }
-
-        if ($suffix && $suffix != self::UNDEFINED) {
-            $suffix = sanitize_text_field($suffix);
-        }
-
-        if ($expires_in && $expires_in != self::UNDEFINED) {
-            $expires_in = absint($expires_in);
-        }
-
         if ($name && $name != self::UNDEFINED && strlen($name) > 255) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                __('The Generator Name can not be longer than 255 characters.', 'lmfwc'),
+                'Generator name cannot be longer than 255 characters.',
                 array('status' => 404)
             );
         }
@@ -350,8 +414,6 @@ class Generators extends \WP_REST_Controller
             );
         }
 
-
         return new \WP_REST_Response($updated_generator, 200);
     }
-
 }

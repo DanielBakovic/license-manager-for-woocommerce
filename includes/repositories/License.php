@@ -13,8 +13,8 @@
 namespace LicenseManagerForWooCommerce\Repositories;
 
 use \LicenseManagerForWooCommerce\Setup;
-use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
-use \LicenseManagerForWooCommerce\Enums\SourceEnum;
+use \LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
+use \LicenseManagerForWooCommerce\Enums\LicenseSource as LicenseSourceEnum;
 
 defined('ABSPATH') || exit;
 
@@ -31,6 +31,8 @@ defined('ABSPATH') || exit;
  */
 class License
 {
+    const UNDEFINED = -1;
+
     /**
      * Prefixed table name.
      * 
@@ -129,7 +131,7 @@ class License
             'lmfwc_update_selective_license_key',
             array($this, 'updateSelectiveLicenseKey'),
             10,
-            6
+            7
         );
         add_action(
             'lmfwc_sell_imported_license_keys',
@@ -230,7 +232,7 @@ class License
     /**
      * Returns the number of license keys available.
      *
-     * @param LicenseStatusEnum $status The new license key status
+     * @param Enums\LicenseStatus $status The new license key status
      *
      * @since  1.1.0
      * @throws Exception
@@ -242,7 +244,7 @@ class License
 
         $clean_status = $status ? absint($status) : null;
 
-        if ($clean_status && !in_array($clean_status, LicenseStatusEnum::$statuses)) {
+        if ($clean_status && !in_array($clean_status, LicenseStatusEnum::$status)) {
             throw new \Exception('License Status is invalid', 1);
         }
 
@@ -383,7 +385,7 @@ class License
             new \WC_Product($product_id);
         }
 
-        if (!in_array($clean_status, LicenseStatusEnum::$statuses)) {
+        if (!in_array($clean_status, LicenseStatusEnum::$status)) {
             throw new \Exception('Status is invalid', 3);
         }
 
@@ -502,7 +504,7 @@ class License
             throw new \Exception('Source Enumerator is missing', 2);
         }
 
-        if (!in_array($clean_source, SourceEnum::$sources)) {
+        if (!in_array($clean_source, LicenseSourceEnum::$sources)) {
             throw new \Exception('Source Enumerator is invalid', 3);
         }
 
@@ -510,7 +512,7 @@ class License
             throw new \Exception('Status Enumerator is missing', 4);
         }
 
-        if (!in_array($clean_status, LicenseStatusEnum::$statuses)) {
+        if (!in_array($clean_status, LicenseStatusEnum::$status)) {
             throw new \Exception('Status Enumerator is invalid', 5);
         }
 
@@ -572,7 +574,7 @@ class License
         $clean_status       = $status       ? absint($status)       : null;
 
         if (!$clean_status
-            || !in_array($clean_status, LicenseStatusEnum::$statuses)
+            || !in_array($clean_status, LicenseStatusEnum::$status)
         ) {
             throw new \Exception('License Status is invalid.', 1);
         }
@@ -626,7 +628,7 @@ class License
                     'created_at'  => $created_at,
                     'expires_at'  => $expires_at,
                     'valid_for'   => $clean_expires_in,
-                    'source'      => SourceEnum::GENERATOR,
+                    'source'      => LicenseSourceEnum::GENERATOR,
                     'status'      => $clean_status
                 ),
                 array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
@@ -692,7 +694,7 @@ class License
             throw new \Exception('Status enumerator is missing', 2);
         }
 
-        if (!in_array($clean_status, LicenseStatusEnum::$statuses)) {
+        if (!in_array($clean_status, LicenseStatusEnum::$status)) {
             throw new \Exception('Status enumerator is invalid', 3);
         }
 
@@ -722,7 +724,7 @@ class License
                     'created_at'  => $created_at,
                     'expires_at'  => null,
                     'valid_for'   => $clean_valid_for,
-                    'source'      => SourceEnum::IMPORT,
+                    'source'      => LicenseSourceEnum::IMPORT,
                     'status'      => $clean_status
                 ),
                 array('%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%d')
@@ -779,11 +781,11 @@ class License
             throw new \Exception('Invalid License Key', 2);
         }
 
-        if (!in_array($clean_source, SourceEnum::$sources)) {
+        if (!in_array($clean_source, LicenseSourceEnum::$sources)) {
             throw new \Exception('Source Enumerator is invalid', 3);
         }
 
-        if (!in_array($clean_status, LicenseStatusEnum::$statuses)) {
+        if (!in_array($clean_status, LicenseStatusEnum::$status)) {
             throw new \Exception('Status Enumerator is invalid', 4);
         }
 
@@ -827,7 +829,7 @@ class License
             throw new \Exception('Invalid License Key ID', 1);
         }
 
-        if (!in_array($clean_status, LicenseStatusEnum::$statuses)) {
+        if (!in_array($clean_status, LicenseStatusEnum::$status)) {
             throw new \Exception('Status Enumerator is invalid', 2);
         }
 
@@ -851,7 +853,8 @@ class License
      * @param integer $order_id    The WooCommerce Order ID
      * @param integer $product_id  The WooCommerce Product ID
      * @param string  $license_key License Key
-     * @param string  $valid_for   Validity in days
+     * @param string  $expires_at  Timestamp of license expiry
+     * @param integer $valid_for   Validity in days
      * @param integer $status      Status enumerator
      *
      * @since  1.1.0
@@ -863,25 +866,80 @@ class License
         $order_id,
         $product_id,
         $license_key,
+        $expires_at,
         $valid_for,
         $status
     ) {
-        $clean_id          = $id          ? absint($id)                       : null;
-        $clean_order_id    = $order_id    ? absint($order_id)                 : null;
-        $clean_product_id  = $product_id  ? absint($product_id)               : null;
-        $clean_license_key = $license_key ? sanitize_text_field($license_key) : null;
-        $clean_valid_for   = $valid_for   ? sanitize_text_field($valid_for)   : null;
-        $clean_status      = $status      ? absint($status)                   : null;
+        if ($id && $id != self::UNDEFINED) {
+            $clean_id = absint($id);
+        } elseif (is_null($id)) {
+            $clean_id = null;
+        } elseif ($id == self::UNDEFINED) {
+            $clean_id = self::UNDEFINED;
+        }
+
+        if ($order_id && $order_id != self::UNDEFINED) {
+            $clean_order_id = absint($order_id);
+        } elseif (is_null($order_id)) {
+            $clean_order_id = null;
+        } elseif ($order_id == self::UNDEFINED) {
+            $clean_order_id = self::UNDEFINED;
+        }
+
+        if ($product_id && $product_id != self::UNDEFINED) {
+            $clean_product_id = absint($product_id);
+        } elseif (is_null($product_id)) {
+            $clean_product_id = null;
+        } elseif ($product_id == self::UNDEFINED) {
+            $clean_product_id = self::UNDEFINED;
+        }
+
+        if ($license_key && $license_key != self::UNDEFINED) {
+            $clean_license_key = sanitize_text_field($license_key);
+        } elseif (is_null($license_key)) {
+            $clean_license_key = null;
+        } elseif ($license_key == self::UNDEFINED) {
+            $clean_license_key = self::UNDEFINED;
+        }
+
+        if ($expires_at && $expires_at != self::UNDEFINED) {
+            $clean_expires_at = sanitize_text_field($expires_at);
+        } elseif (is_null($expires_at)) {
+            $clean_expires_at = null;
+        } elseif ($expires_at == self::UNDEFINED) {
+            $clean_expires_at = self::UNDEFINED;
+        }
+
+        if ($valid_for && $valid_for != self::UNDEFINED) {
+            $clean_valid_for = absint($valid_for);
+        } elseif (is_null($valid_for)) {
+            $clean_valid_for = null;
+        } elseif ($valid_for == self::UNDEFINED) {
+            $clean_valid_for = self::UNDEFINED;
+        }
+
+        if ($status && $status != self::UNDEFINED) {
+            $clean_status = absint($status);
+        } elseif (is_null($status)) {
+            $clean_status = null;
+        } elseif ($status == self::UNDEFINED) {
+            $clean_status = self::UNDEFINED;
+        }
 
         if (!$clean_id) {
             throw new \Exception('Invalid License Key ID', 1);
         }
 
-        if (!$clean_order_id
-            && !$clean_product_id
-            && !$clean_license_key
-            && !$clean_valid_for
-            && !$clean_status
+        if (!$clean_license_key) {
+            throw new \Exception('Invalid License Key', 1);
+        }
+
+        if ($order_id == self::UNDEFINED
+            && $product_id == self::UNDEFINED
+            && $license_key == self::UNDEFINED
+            && $expires_at == self::UNDEFINED
+            && $valid_for == self::UNDEFINED
+            && $status == self::UNDEFINED
         ) {
             throw new \Exception('No parameters provided', 2);
         }
@@ -891,39 +949,80 @@ class License
         $first = true;
         $sql = "UPDATE {$this->table}";
 
-        if ($status) {
-            $sql .= $wpdb->prepare(' SET status = %d', $status);
+        // Order ID
+        if ($clean_order_id != self::UNDEFINED) {
+            if (is_null($clean_order_id)) {
+                $sql .= ' SET `order_id` = NULL';
+            } else {
+                $sql .= $wpdb->prepare(' SET `order_id` = %d', $clean_order_id);
+            }
+
             $first = false;
         }
 
-        if ($order_id) {
+        // Product ID
+        if ($clean_product_id != self::UNDEFINED) {
             $sql .= $first ? ' SET ' : ', ';
-            $sql .= $wpdb->prepare('order_id = %d', $order_id);
+            
+            if (is_null($clean_product_id)) {
+                $sql .= '`product_id` = NULL';
+            } else {
+                $sql .= $wpdb->prepare('`product_id` = %d', $clean_product_id);
+            }
+
             $first = false;
         }
 
-        if ($product_id) {
+        // License Key
+        if ($clean_license_key != self::UNDEFINED) {
             $sql .= $first ? ' SET ' : ', ';
-            $sql .= $wpdb->prepare('product_id = %d', $product_id);
-            $first = false;
-        }
-
-        if ($license_key) {
-            $sql .= $first ? ' SET ' : ', ';
-            $license_key_encrypted = apply_filters('lmfwc_encrypt', $license_key);
-            $license_key_hashed = apply_filters('lmfwc_hash', $license_key);
+            $license_key_encrypted = apply_filters('lmfwc_encrypt', $clean_license_key);
+            $license_key_hashed = apply_filters('lmfwc_hash', $clean_license_key);
 
             $sql .= $wpdb->prepare(
-                'license_key = %s, hash = %s',
+                '`license_key` = %s, `hash` = %s',
                 $license_key_encrypted,
                 $license_key_hashed
             );
             $first = false;
         }
 
-        if ($valid_for) {
+        // Expires at
+        if ($clean_expires_at != self::UNDEFINED) {
             $sql .= $first ? ' SET ' : ', ';
-            $sql .= $wpdb->prepare('valid_for = %d', $valid_for);
+            
+            if (is_null($clean_expires_at)) {
+                $sql .= '`expires_at` = NULL';
+            } else {
+                $sql .= $wpdb->prepare('`expires_at` = %s', $clean_expires_at);
+            }
+
+            $first = false;
+        }
+
+        // Valid for
+        if ($clean_valid_for != self::UNDEFINED) {
+            $sql .= $first ? ' SET ' : ', ';
+            
+            if (is_null($clean_valid_for)) {
+                $sql .= '`valid_for` = NULL';
+            } else {
+                $sql .= $wpdb->prepare('`valid_for` = %d', $clean_valid_for);
+            }
+
+            $first = false;
+        }
+
+        // Status
+        if ($clean_status != self::UNDEFINED) {
+            $sql .= $first ? ' SET ' : ', ';
+            
+            if (is_null($clean_status)) {
+                $sql .= '`status` = NULL';
+            } else {
+                $sql .= $wpdb->prepare('`status` = %d', $clean_status);
+            }
+
             $first = false;
         }
 
@@ -931,7 +1030,7 @@ class License
 
         $wpdb->query($sql);
 
-        return $this->getLicense($id);
+        return $this->getLicenseKey($id);
     }
 
     /**
@@ -1015,7 +1114,7 @@ class License
             throw new \Exception('Invalid operator.', 2);
         }
 
-        if (!in_array($clean_status, LicenseStatusEnum::$statuses)) {
+        if (!in_array($clean_status, LicenseStatusEnum::$status)) {
             throw new \Exception('Invalid status.', 3);
         }
 

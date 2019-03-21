@@ -10,7 +10,7 @@ defined('ABSPATH') || exit;
  * @version 1.0.0
  * @since 1.0.0
  */
-abstract class SourceEnum
+abstract class LicenseSource
 {
     const __default = -1;
 

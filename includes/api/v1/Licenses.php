@@ -2,9 +2,9 @@
 
 namespace LicenseManagerForWooCommerce\API\v1;
 
-use \LicenseManagerForWooCommerce\Logger;
-use \LicenseManagerForWooCommerce\Enums\SourceEnum;
-use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
+use \LicenseManagerForWooCommerce\Abstracts\RestController as LMFWC_REST_Controller;
+use \LicenseManagerForWooCommerce\Enums\LicenseSource as LicenseSourceEnum;
+use \LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
 
 defined('ABSPATH') || exit;
 
@@ -14,7 +14,7 @@ defined('ABSPATH') || exit;
  * @version 1.0.0
  * @since 1.1.0
  */
-class Licenses extends \WP_REST_Controller
+class Licenses extends LMFWC_REST_Controller
 {
     /**
      * Endpoint namespace.
@@ -55,12 +55,12 @@ class Licenses extends \WP_REST_Controller
          * Retrieves a single licenses from the database.
          */
         register_rest_route(
-            $this->namespace, '/' . $this->base . '/(?P<key_id>[\w-]+)', array(
+            $this->namespace, '/' . $this->base . '/(?P<license_key_id>[\w-]+)', array(
                 array(
                     'methods'  => \WP_REST_Server::READABLE,
                     'callback' => array($this, 'getLicense'),
                     'args'     => array(
-                        'key_id' => array(
+                        'license_key_id' => array(
                             'description' => __('License key ID.', 'lmfwc'),
                             'type'        => 'integer',
                         ),
@@ -89,12 +89,12 @@ class Licenses extends \WP_REST_Controller
          * Updates an already existing license in the database
          */
         register_rest_route(
-            $this->namespace, '/' . $this->base . '/(?P<key_id>[\w-]+)', array(
+            $this->namespace, '/' . $this->base . '/(?P<license_key_id>[\w-]+)', array(
                 array(
                     'methods'  => \WP_REST_Server::EDITABLE,
                     'callback' => array($this, 'updateLicense'),
                     'args'     => array(
-                        'key_id' => array(
+                        'license_key_id' => array(
                             'description' => __('License key ID.', 'lmfwc'),
                             'type'        => 'integer',
                         ),
@@ -117,7 +117,7 @@ class Licenses extends \WP_REST_Controller
         if (!$result) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                __('No license keys available.', 'lmfwc'),
+                'No license keys available.',
                 array('status' => 404)
             );
         }
@@ -133,13 +133,13 @@ class Licenses extends \WP_REST_Controller
      */
     public function getLicense(\WP_REST_Request $request)
     {
-        $id = intval($request->get_param('key_id'));
-        $result = apply_filters('lmfwc_get_license_key', $id);
+        $license_key_id = intval($request->get_param('license_key_id'));
+        $result = apply_filters('lmfwc_get_license_key', $license_key_id);
 
         if (!$result) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                sprintf(__('The license key with the ID: %d could not be found.', 'lmfwc'), $id),
+                sprintf('License Key with ID: %d could not be found.', $license_key_id),
                 array('status' => 404)
             );
         }
@@ -161,10 +161,12 @@ class Licenses extends \WP_REST_Controller
         if (isset($body['product_id']) && is_numeric($body['product_id'])) {
             $product_id = absint($body['product_id']);
 
-            if (!$this->validateProductId($product_id)) {
+            try {
+                $product = new \WC_Product($product_id);
+            } catch (\Exception $e) {
                 return new \WP_Error(
                     'lmfwc_rest_data_error',
-                    sprintf(__('The WooCommerce Product with the ID: %d could not be found.', 'lmfwc'), $product_id),
+                    $e->getMessage(),
                     array('status' => 404)
                 );
             }
@@ -174,7 +176,7 @@ class Licenses extends \WP_REST_Controller
         if (!isset($body['license_key'])) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                __('The License Key is missing from the request.', 'lmfwc'),
+                'License Key is invalid.',
                 array('status' => 404)
             );
         }
@@ -187,38 +189,51 @@ class Licenses extends \WP_REST_Controller
         }
 
         // Validate the status parameter
-        if (isset($body['status']) && in_array(sanitize_text_field($body['status']), array('active', 'inactive'))) {
+        if (isset($body['status'])
+            && in_array(sanitize_text_field($body['status']), array('active', 'inactive'))
+        ) {
             $status = LicenseStatusEnum::$values[sanitize_text_field($body['status'])];
         } else {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                __('The status is missing from the request.', 'lmfwc'),
+                'License Key status is invalid',
                 array('status' => 404)
             );
         }
 
-        $license_key_id = apply_filters(
-            'lmfwc_insert_license_key',
-            null,
-            $product_id,
-            $body['license_key'],
-            $valid_for,
-            SourceEnum::API,
-            $status
-        );
+        try {
+            $license_key_id = apply_filters(
+                'lmfwc_insert_license_key',
+                null,
+                $product_id,
+                $body['license_key'],
+                $valid_for,
+                LicenseSourceEnum::API,
+                $status
+            );
+        } catch (Exception $e) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                $e->getMessage(),
+                array('status' => 404)
+            );
+        }
 
         if (!$license_key_id) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                __('The license key could not be added to the database.', 'lmfwc'),
+                'The license key could not be added to the database.',
                 array('status' => 404)
             );
         }
 
-        if (!$license_key = apply_filters('lmfwc_get_license_key', absint($license_key_id))) {
+        if (!$license_key = apply_filters(
+            'lmfwc_get_license_key',
+            absint($license_key_id))
+        ) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                __('The newly added license key could not be retrieved from the database.', 'lmfwc'),
+                'The newly added license key could not be retrieved from the database.',
                 array('status' => 404)
             );
         }
@@ -234,53 +249,163 @@ class Licenses extends \WP_REST_Controller
      */
     public function updateLicense(\WP_REST_Request $request)
     {
-        $body = $request->get_params();
-        $key_id = null;
-        $order_id = null;
-        $product_id = null;
-        $license_key = null;
-        $valid_for = null;
-        $status = null;
-        $status_enum = null;
+        // init
+        $license_key_id = null;
+        $body           = null;
+        $status         = null;
 
-        if (!isset($body['order_id']) &&
-            !isset($body['product_id']) &&
-            !isset($body['license_key']) &&
-            !isset($body['valid_for']) &&
-            !isset($body['status'])
+        // Set and sanitize the basic parameters to be used.
+        if ($request->get_param('license_key_id')) {
+            $license_key_id = absint($request->get_param('license_key_id'));
+        }
+        if ($this->isJson($request->get_body())) {
+            $body = json_decode($request->get_body());
+        }
+
+        // Validate basic parameters
+        if (!$license_key_id) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                'License Key ID is invalid.',
+                array('status' => 404)
+            );
+        }
+        if (!$body) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                'No parameters were provided.',
+                array('status' => 404)
+            );
+        }
+
+        // Set and sanitize the other parameters to be used
+        if (property_exists($body, 'order_id')) {
+            if (is_null($body->order_id)) {
+                $order_id = null;
+            } else {
+                $order_id = absint($body->order_id);
+            }
+        } else {
+            $order_id = self::UNDEFINED;
+        }
+
+        if (property_exists($body, 'product_id')) {
+            if (is_null($body->product_id)) {
+                $product_id = null;
+            } else {
+                $product_id = absint($body->product_id);
+            }
+        } else {
+            $product_id = self::UNDEFINED;
+        }
+
+        if (property_exists($body, 'license_key')) {
+            $license_key = sanitize_text_field($body->license_key);
+        } else {
+            $license_key = self::UNDEFINED;
+        }
+
+        if (property_exists($body, 'expires_at')) {
+            if (is_null($body->expires_at)) {
+                $expires_at = null;
+            } else {
+                $expires_at = sanitize_text_field($body->expires_at);
+            }
+        } else {
+            $expires_at = self::UNDEFINED;
+        }
+
+        if (property_exists($body, 'valid_for')) {
+            if (is_null($body->valid_for)) {
+                $valid_for = null;
+            } else {
+                $valid_for = absint($body->valid_for);
+            }
+        } else {
+            $valid_for = self::UNDEFINED;
+        }
+
+        if (property_exists($body, 'status')) {
+            if (is_null($body->status)) {
+                $status_enum = null;
+                $status = null;
+            } else {
+                $status_enum = sanitize_text_field($body->status);
+                $status = LicenseStatusEnum::$values[$status_enum];
+            }
+        } else {
+            $status_enum = self::UNDEFINED;
+        }
+
+        // Throw errors if anything crucial is missing
+        if ($order_id == self::UNDEFINED
+            && $product_id == self::UNDEFINED
+            && $license_key == self::UNDEFINED
+            && $valid_for == self::UNDEFINED
+            && $status_enum == self::UNDEFINED
         ) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                __('No parameters were provided in the request. Please provide at least one parameter you wish to alter.', 'lmfwc'),
+                'No parameters were provided.',
                 array('status' => 404)
             );
         }
-
-        if (!isset($body['key_id'])) {
+        if (!$status) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                __('The License Key ID is missing from the request.', 'lmfwc'),
+                'License Key status is invalid.',
                 array('status' => 404)
             );
         }
-
-        if (!is_numeric($body['key_id'])) {
+        if ($status_enum
+            && $status_enum != self::UNDEFINED
+            && !in_array($status_enum, LicenseStatusEnum::$enum_array)
+        ) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                __('The License Key ID is not a number.', 'lmfwc'),
+                'Status enumerator is invalid.',
                 array('status' => 404)
             );
         }
+        if ($order_id && $order_id != self::UNDEFINED) {
+            try {
+                $order = new \WC_Order($order_id);
+            } catch (\Exception $e) {
+                return new \WP_Error(
+                    'lmfwc_rest_data_error',
+                    $e->getMessage(),
+                    array('status' => 404)
+                );
+            }
+            if ($order->get_status() == 'completed') {
+                return new \WP_Error(
+                    'lmfwc_rest_data_error',
+                    sprintf('WooCommerce Order with ID: %d has already been completed.', $order_id),
+                    array('status' => 404)
+                );
+            }
+        }
+        if ($product_id && $product_id != self::UNDEFINED) {
+            try {
+                $product = new \WC_Product($product_id);
+            } catch (\Exception $e) {
+                return new \WP_Error(
+                    'lmfwc_rest_data_error',
+                    $e->getMessage(),
+                    array('status' => 404)
+                );
+            }
+        }
 
-        $key_id     = absint($body['key_id']);
-        $license    = apply_filters('lmfwc_get_license_key', $key_id);
-        $order_id   = isset($body['order_id'])   ? absint($body['order_id'])   : null;
-        $product_id = isset($body['product_id']) ? absint($body['product_id']) : null;
+        $license = apply_filters('lmfwc_get_license_key', $license_key_id);
 
         if (!$license) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                sprintf(__('The License Key with the ID: %d could not be found.', 'lmfwc'), $key_id),
+                sprintf(
+                    'License Key with ID: %d could not be found.',
+                    $license_key_id
+                ),
                 array('status' => 404)
             );
         }
@@ -288,7 +413,10 @@ class Licenses extends \WP_REST_Controller
         if (intval($license['status']) === LicenseStatusEnum::SOLD) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                sprintf(__('The License Key with the ID: %d has already been sold and cannot be modified any further.', 'lmfwc'), $key_id),
+                sprintf(
+                    'License Key with ID: %d has already been sold.',
+                    $license_key_id
+                ),
                 array('status' => 404)
             );
         }
@@ -296,7 +424,10 @@ class Licenses extends \WP_REST_Controller
         if (intval($license['status']) === LicenseStatusEnum::USED) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                sprintf(__('The License Key with the ID: %d has already been used and cannot be modified any further.', 'lmfwc'), $key_id),
+                sprintf(
+                    'License Key with ID: %d has already been used.',
+                    $license_key_id
+                ),
                 array('status' => 404)
             );
         }
@@ -304,104 +435,33 @@ class Licenses extends \WP_REST_Controller
         if (intval($license['status']) === LicenseStatusEnum::DELIVERED) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                sprintf(__('The License Key with the ID: %d has already been delivered and cannot be modified any further.', 'lmfwc'), $key_id),
+                sprintf(
+                    'License Key with ID: %d has already been delivered.',
+                    $license_key_id
+                ),
                 array('status' => 404)
             );
         }
 
-        if (!$this->validateOrderId($order_id)) {
+        try {
+            $updated_license_key = apply_filters(
+                'lmfwc_update_selective_license_key',
+                $license_key_id,
+                $order_id,
+                $product_id,
+                $license_key,
+                $expires_at,
+                $valid_for,
+                $status
+            );
+        } catch (Exception $e) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                sprintf(__('The WooCommerce Order with the ID: %d could not be found.', 'lmfwc'), $order_id),
+                $e->getMessage(),
                 array('status' => 404)
             );
         }
-
-        $order = new \WC_Order($order_id);
-
-        if ($order->get_status() == 'completed') {
-            return new \WP_Error(
-                'lmfwc_rest_data_error',
-                sprintf(__('The WooCommerce Order with the ID: %d is already completed. No further changes to the associated License Key(s) are possible.', 'lmfwc'), $order_id),
-                array('status' => 404)
-            );
-        }
-
-        if (!$this->validateProductId($product_id)) {
-            return new \WP_Error(
-                'lmfwc_rest_data_error',
-                sprintf(__('The WooCommerce Product with the ID: %d could not be found.', 'lmfwc'), $product_id),
-                array('status' => 404)
-            );
-        }
-
-        if (isset($body['license_key'])) {
-            $license_key = sanitize_text_field($body['license_key']);
-        }
-
-        if (isset($body['valid_for']) && is_numeric($body['valid_for'])) {
-            $valid_for = absint($body['valid_for']);
-        }
-
-        if (isset($body['status'])) {
-            $status_enum = sanitize_text_field($body['status']);
-
-            if (!in_array($status_enum, array('sold', 'delivered', 'active', 'inactive', 'used'))) {
-                return new \WP_Error(
-                    'lmfwc_rest_data_error',
-                    __('The status must be a valid enumerator value.', 'lmfwc'),
-                    array('status' => 404)
-                );
-            }
-
-            $status = LicenseStatusEnum::$values[$status_enum];
-        }
-
-        $updated_license_key = apply_filters(
-            'lmfwc_update_selective_license_key',
-            $key_id,
-            $order_id,
-            $product_id,
-            $license_key,
-            $valid_for,
-            $status
-        );
 
         return new \WP_REST_Response($updated_license_key, 200);
     }
-
-    /**
-     * Validate a WooCommerce Product ID supplied by the request
-     * 
-     * @param  integer $product_id
-     * @return boolean
-     */
-    protected function validateProductId($product_id)
-    {
-        try {
-            $product = new \WC_Product($product_id);
-        } catch (\Exception $e) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Validate a WooCommerce Order ID supplied by the request
-     * 
-     * @param  integer $order_id
-     * @return boolean
-     */
-    protected function validateOrderId($order_id)
-    {
-        try {
-            $order = new \WC_Order($order_id);
-        } catch (\Exception $e) {
-            return false;
-        }
-
-        return true;
-    }
-
 }

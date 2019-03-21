@@ -2,8 +2,6 @@
 
 namespace LicenseManagerForWooCommerce;
 
-use \LicenseManagerForWooCommerce\Enums\LicenseStatusEnum;
-
 defined('ABSPATH') || exit;
 
 /**
@@ -25,8 +23,14 @@ class ProductManager
         /**
          * @see https://www.proy.info/woocommerce-admin-custom-product-data-tab/
          */
-        add_filter('woocommerce_product_data_tabs',   array($this, 'inventoryManagementTab'));
-        add_action('woocommerce_product_data_panels', array($this, 'inventoryManagementPanel'));
+        add_filter(
+            'woocommerce_product_data_tabs',
+            array($this, 'inventoryManagementTab')
+        );
+        add_action(
+            'woocommerce_product_data_panels',
+            array($this, 'inventoryManagementPanel')
+        );
 
         // Change the product_data_tab icon
         add_action('admin_head', array($this, 'styleInventoryManagement'));
