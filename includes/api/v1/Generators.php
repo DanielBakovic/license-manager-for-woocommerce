@@ -59,7 +59,7 @@ class Generators extends LMFWC_REST_Controller
                     'callback' => array($this, 'getGenerator'),
                     'args'     => array(
                         'generator_id' => array(
-                            'description' => __('Generator ID.', 'lmfwc'),
+                            'description' => 'Generator ID',
                             'type'        => 'integer',
                         ),
                     ),
@@ -93,7 +93,7 @@ class Generators extends LMFWC_REST_Controller
                     'callback' => array($this, 'updateGenerator'),
                     'args'     => array(
                         'generator_id' => array(
-                            'description' => __('Generator ID.', 'lmfwc'),
+                            'description' => 'Generator ID',
                             'type'        => 'integer',
                         ),
                     ),
@@ -110,12 +110,20 @@ class Generators extends LMFWC_REST_Controller
      */
     public function getGenerators(\WP_REST_Request $request)
     {
-        $result = apply_filters('lmfwc_get_generators', null);
+        try {
+            $result = apply_filters('lmfwc_get_generators', null);
+        } catch (\Exception $e) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                $e->getMessage(),
+                array('status' => 404)
+            );
+        }
 
         if (!$result) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                __('No generators available.', 'lmfwc'),
+                'No Generators available',
                 array('status' => 404)
             );
         }
@@ -131,24 +139,33 @@ class Generators extends LMFWC_REST_Controller
      */
     public function getGenerator(\WP_REST_Request $request)
     {
-        $body = $request->get_params();
-
-        $generator_id = isset($body['generator_id']) ? absint($body['generator_id']) : null;
+        $generator_id = absint($request->get_param('generator_id'));
 
         if (!$generator_id) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                __('The Generator ID is missing from the request.', 'lmfwc'),
+                'Generator ID is invalid.',
                 array('status' => 404)
             );
         }
 
-        $result = apply_filters('lmfwc_get_generator', $generator_id);
+        try {
+            $result = apply_filters('lmfwc_get_generator', $generator_id);
+        } catch (Exception $e) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                $e->getMessage(),
+                array('status' => 404)
+            );
+        }
 
         if (!$result) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                sprintf(__('The generator with the ID: %d could not be found.', 'lmfwc'), $generator_id),
+                sprintf(
+                    'Generator with ID: %d could not be found.',
+                    $generator_id
+                ),
                 array('status' => 404)
             );
         }
@@ -182,7 +199,6 @@ class Generators extends LMFWC_REST_Controller
                 array('status' => 404)
             );
         }
-
         if (!$charset) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
@@ -190,7 +206,6 @@ class Generators extends LMFWC_REST_Controller
                 array('status' => 404)
             );
         }
-
         if (!$chunks) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
@@ -198,7 +213,6 @@ class Generators extends LMFWC_REST_Controller
                 array('status' => 404)
             );
         }
-
         if (!$chunk_length) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
@@ -207,17 +221,26 @@ class Generators extends LMFWC_REST_Controller
             );
         }
 
-        $generator_id = apply_filters(
-            'lmfwc_insert_generator',
-            $name,
-            $charset,
-            $chunks,
-            $chunk_length,
-            $separator,
-            $prefix,
-            $suffix,
-            $expires_in
-        );
+        try {
+            $generator_id = apply_filters(
+                'lmfwc_insert_generator',
+                $name,
+                $charset,
+                $chunks,
+                $chunk_length,
+                $separator,
+                $prefix,
+                $suffix,
+                $expires_in
+            );
+        } catch (\Exception $e) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                $e->getMessage(),
+                array('status' => 404)
+            );
+        }
+
 
         if (!$generator_id) {
             return new \WP_Error(
@@ -227,7 +250,15 @@ class Generators extends LMFWC_REST_Controller
             );
         }
 
-        $generator = apply_filters('lmfwc_get_generator', $generator_id);
+        try {
+            $generator = apply_filters('lmfwc_get_generator', $generator_id);
+        } catch (Exception $e) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                $e->getMessage(),
+                array('status' => 404)
+            );
+        }
 
         if (!$generator) {
             return new \WP_Error(

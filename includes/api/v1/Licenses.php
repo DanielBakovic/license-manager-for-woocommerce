@@ -61,7 +61,7 @@ class Licenses extends LMFWC_REST_Controller
                     'callback' => array($this, 'getLicense'),
                     'args'     => array(
                         'license_key_id' => array(
-                            'description' => __('License key ID.', 'lmfwc'),
+                            'description' => 'License Key ID',
                             'type'        => 'integer',
                         ),
                     ),
@@ -95,7 +95,7 @@ class Licenses extends LMFWC_REST_Controller
                     'callback' => array($this, 'updateLicense'),
                     'args'     => array(
                         'license_key_id' => array(
-                            'description' => __('License key ID.', 'lmfwc'),
+                            'description' => 'License Key ID',
                             'type'        => 'integer',
                         ),
                     ),
@@ -112,12 +112,20 @@ class Licenses extends LMFWC_REST_Controller
      */
     public function getLicenses(\WP_REST_Request $request)
     {
-        $result = apply_filters('lmfwc_get_license_keys', null);
+        try {
+            $result = apply_filters('lmfwc_get_license_keys', null);
+        } catch (\Exception $e) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                $e->getMessage(),
+                array('status' => 404)
+            );
+        }
 
         if (!$result) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                'No license keys available.',
+                'No License Keys available',
                 array('status' => 404)
             );
         }
@@ -133,13 +141,33 @@ class Licenses extends LMFWC_REST_Controller
      */
     public function getLicense(\WP_REST_Request $request)
     {
-        $license_key_id = intval($request->get_param('license_key_id'));
-        $result = apply_filters('lmfwc_get_license_key', $license_key_id);
+        $license_key_id = absint($request->get_param('license_key_id'));
+
+        if (!$license_key_id) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                'License Key ID is invalid.',
+                array('status' => 404)
+            );
+        }
+
+        try {
+            $result = apply_filters('lmfwc_get_license_key', $license_key_id);
+        } catch (Exception $e) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                $e->getMessage(),
+                array('status' => 404)
+            );
+        }
 
         if (!$result) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
-                sprintf('License Key with ID: %d could not be found.', $license_key_id),
+                sprintf(
+                    'License Key with ID: %d could not be found.',
+                    $license_key_id
+                ),
                 array('status' => 404)
             );
         }
@@ -157,10 +185,14 @@ class Licenses extends LMFWC_REST_Controller
     {
         $body = $request->get_params();
 
-        // Validate the product_id parameter
-        if (isset($body['product_id']) && is_numeric($body['product_id'])) {
-            $product_id = absint($body['product_id']);
+        $product_id  = isset($body['product_id'])  ? absint($body['product_id'])               : null;
+        $license_key = isset($body['license_key']) ? sanitize_text_field($body['license_key']) : null;
+        $valid_for   = isset($body['valid_for'])   ? absint($body['valid_for'])                : null;
+        $valid_for   = $valid_for                  ? $valid_for                                : null;
+        $status_enum = isset($body['status'])      ? sanitize_text_field($body['status'])      : null;
+        $status      = null;
 
+        if ($product_id) {
             try {
                 $product = new \WC_Product($product_id);
             } catch (\Exception $e) {
@@ -171,34 +203,21 @@ class Licenses extends LMFWC_REST_Controller
                 );
             }
         }
-
-        // Validate the license_key parameter
-        if (!isset($body['license_key'])) {
+        if (!$license_key) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
                 'License Key is invalid.',
                 array('status' => 404)
             );
         }
-
-        // Validate the valid_for parameter
-        if (isset($body['valid_for']) && is_numeric($body['valid_for'])) {
-           $valid_for = absint($body['valid_for']);
-        } else {
-            $valid_for = null;
-        }
-
-        // Validate the status parameter
-        if (isset($body['status'])
-            && in_array(sanitize_text_field($body['status']), array('active', 'inactive'))
-        ) {
-            $status = LicenseStatusEnum::$values[sanitize_text_field($body['status'])];
-        } else {
+        if ($status_enum && !in_array($status_enum, LicenseStatusEnum::$enum_array)) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
                 'License Key status is invalid',
                 array('status' => 404)
             );
+        } else {
+            $status = LicenseStatusEnum::$values[$status_enum];
         }
 
         try {
@@ -206,12 +225,12 @@ class Licenses extends LMFWC_REST_Controller
                 'lmfwc_insert_license_key',
                 null,
                 $product_id,
-                $body['license_key'],
+                $license_key,
                 $valid_for,
                 LicenseSourceEnum::API,
                 $status
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
                 $e->getMessage(),
@@ -227,10 +246,17 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
-        if (!$license_key = apply_filters(
-            'lmfwc_get_license_key',
-            absint($license_key_id))
-        ) {
+        try {
+            $license_key = apply_filters('lmfwc_get_license_key', $license_key_id);
+        } catch (Exception $e) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                $e->getMessage(),
+                array('status' => 404)
+            );
+        }
+
+        if (!$license_key) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
                 'The newly added license key could not be retrieved from the database.',
@@ -454,7 +480,7 @@ class Licenses extends LMFWC_REST_Controller
                 $valid_for,
                 $status
             );
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
                 $e->getMessage(),
