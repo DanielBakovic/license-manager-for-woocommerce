@@ -24,7 +24,7 @@ The **License Manager for WooCommerce** allows you to easily sell and manage all
 
 #### API
 
-An API is **currently in development** and will be included in the Version 1.1.0. This version is expected to release by the end of March 2019.
+The plugin also offers two additional routes for manipulating licenses and generator resources. These routes are authorized via API keys (generated through the plugin settings) and accessed via the WordPress API. Here you can [download the Postman collection](https://www.bebic.at/assets/lmfwc.postman_collection.json) (v2.1) for these new routes. An extensive [API documentation](https://www.bebic.at/license-manager-for-woocommerce/apidocs) is also available on the plugin homepage.
 
 #### Support
 
@@ -56,6 +56,15 @@ The plugin will create two files inside its own `assets/etc` folder. These files
 Yes, there is! An extensive documentation describing the plugin features and functionality in detail can be found on the [plugin homepage](https://www.bebic.at/license-manager-for-woocommerce).
 
 == Changelog ==
+
+= 1.1.0 - 2019-03-23 =
+* Feature - Added license and generator api routes. Currently available calls are GET (single/all), POST (create), and PUT (update) for both resources.
+* Feature - API Authentication for the new routes. Currently only basic authentication over SSL is supported.
+* Feature - Editing license keys is now possible.
+* Feature - Added a "valid for" field on the bulk import of license keys.
+* Tweak - Major code restructuring. Laid the foundation for future features.
+* Tweak - Reworked the whole plugin to make use of filters and actions.
+* Enhancement - Minor visual upgrades across the plugin.
 
 = 1.0.1 - 2019-02-24 =
 * Update - WordPress 5.1 compatibility.

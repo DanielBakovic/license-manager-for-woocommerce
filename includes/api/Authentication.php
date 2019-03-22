@@ -73,8 +73,7 @@ class Authentication
             return $user_id;
         }
 
-        //if (is_ssl()) {
-        if (1 == 1) {
+        if (is_ssl()) {
             $user_id = $this->performBasicAuthentication();
         } else {
             $this->setError(
