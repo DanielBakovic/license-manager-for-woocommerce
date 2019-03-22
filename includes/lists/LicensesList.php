@@ -438,7 +438,7 @@ class LicensesList extends \WP_List_Table
 
         $this->process_bulk_action();
 
-        $per_page     = $this->get_items_per_page('licenses_per_page', 10);
+        $per_page     = $this->get_items_per_page('lmfwc_licenses_per_page', 10);
         $current_page = $this->get_pagenum();
         $total_items  = self::record_count();
 

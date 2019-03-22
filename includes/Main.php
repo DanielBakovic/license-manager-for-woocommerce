@@ -54,8 +54,6 @@ final class Main
 
         add_action('init', array($this, 'init'));
 
-        $this->udpateDatabase();
-
         new API\Authentication();
     }
 
@@ -164,28 +162,6 @@ final class Main
     }
 
     /**
-     * Checks if WooCommerce is active or not
-     * 
-     * @since  1.1.0
-     * @return boolean
-     */
-    public function isWooCommerceActive()
-    {
-        if (in_array(
-                'woocommerce/woocommerce.php',
-                apply_filters(
-                    'active_plugins',
-                    get_option('active_plugins')
-                )
-            )
-        ) {
-            return true;
-        }
-
-        return false;
-    }
-
-    /**
      * Define constant if not already set.
      *
      * @param string      $name  Constant name.
@@ -212,6 +188,10 @@ final class Main
             LMFWC_PLUGIN_FILE,
             array('\LicenseManagerForWooCommerce\Setup', 'install')
         );
+        register_deactivation_hook(
+            LMFWC_PLUGIN_FILE,
+            array('\LicenseManagerForWooCommerce\Setup', 'deactivate')
+        );
         register_uninstall_hook(
             LMFWC_PLUGIN_FILE,
             array('\LicenseManagerForWooCommerce\Setup', 'uninstall')
@@ -219,7 +199,6 @@ final class Main
 
         add_action('admin_enqueue_scripts', array($this, 'adminEnqueueScripts'));
         add_filter('plugin_row_meta', array($this, 'pluginRowMeta'), 10, 2);
-        add_filter('is_woocommerce_active' , array($this, 'isWooCommerceActive'), 10);
     }
 
     /**
@@ -242,27 +221,4 @@ final class Main
         new FormHandler();
         new API\Setup();
     }
-
-    private function udpateDatabase()
-    {
-        // Run update only when
-        $run_update = true;
-
-        if (key_exists('action', $_REQUEST)) {
-            $blacklist = array(
-                "delete-plugin",
-                "activate",
-                "deactivate"
-            );
-
-            if (in_array($_REQUEST["action"], $blacklist)) {
-                $run_update = false;
-            }
-        }
-
-        if ($run_update) {
-            Setup::update();
-        }
-    }
-
 }

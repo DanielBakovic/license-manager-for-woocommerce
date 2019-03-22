@@ -13,6 +13,7 @@
 namespace LicenseManagerForWooCommerce\Repositories;
 
 use \LicenseManagerForWooCommerce\Setup;
+use \LicenseManagerForWooCommerce\Logger;
 use \LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
 use \LicenseManagerForWooCommerce\Enums\LicenseSource as LicenseSourceEnum;
 
@@ -368,7 +369,7 @@ class License
      *
      * @return array
      */
-    public static function getProductLicenseKeys($product_id, $status)
+    public function getProductLicenseKeys($product_id, $status)
     {
         $clean_product_id = $product_id ? absint($product_id) : null;
         $clean_status     = $status     ? absint($status)     : null;
@@ -1046,7 +1047,7 @@ class License
      */
     public function sellImportedLicenseKeys($license_keys, $order_id, $amount)
     {
-        $clean_license_keys = array();
+        $clean_license_keys = $license_keys;
         $clean_order_id     = $order_id ? absint($order_id) : null;
         $clean_amount       = $amount   ? absint($amount)   : null;
 

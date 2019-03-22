@@ -8,7 +8,6 @@
 	--color-info: #17a2b8;
 	--color-light: #f8f9fa;
 	--color-dark: #343a40;
-
 	--color-grey-1: #E1E1E1;
 }
 
@@ -95,15 +94,8 @@ table.wp-list-table.licenses td.valid_for.column-valid_for {
 	line-height: 25px;
 	border-top-left-radius: 3px;
 	border-bottom-left-radius: 3px;
-	-webkit-transition: background-color .3s ease-in-out;
-	   -moz-transition: background-color .3s ease-in-out;
-	    -ms-transition: background-color .3s ease-in-out;
-	     -o-transition: background-color .3s ease-in-out;
-	        transition: background-color .3s ease-in-out;
 }
-.lmfwc-placeholder:hover:before {
-	background-color: var(--color-primary);
-}
+
 .lmfwc-placeholder.empty:after {
 	position: absolute;
 	top: 0;

@@ -52,6 +52,16 @@ class Setup
     }
 
     /**
+     * Deactivation script.
+     *
+     * @since 1.0.0
+     */
+    public static function deactivate()
+    {
+        // Nothing for now...
+    }
+
+    /**
      * Uninstallation script.
      *
      * @since 1.0.0
@@ -68,51 +78,6 @@ class Setup
 
         foreach ($tables as $table) {
             $wpdb->query("DROP TABLE IF EXISTS {$table}");
-        }
-    }
-
-    /**
-     * Update script.
-     *
-     * @since 1.1.0
-     */
-    public static function update()
-    {
-        $db_version = get_option('lmfwc_db_version');
-
-        if (!$db_version) {
-            self::migrate('ACTIVATE');
-            //update_option('lmfwc_db_version', self::DB_VERSION, true);
-        } elseif ($db_version < self::DB_VERSION) {
-            self::migrate('UPGRADE');
-            //update_option('lmfwc_db_version', self::DB_VERSION, true);
-        }
-    }
-
-    /**
-     * Execute migration files.
-     *
-     * @since 1.1.2
-     */
-    public static function migrate($migration_mode)
-    {
-        global $wpdb;
-
-        $db_version = get_option('lmfwc_db_version');
-        $reg_exp_filename = "/(\d{14})_(.*?)_(.*?)\.php/";
-
-        foreach (glob(LMFWC_MIGRATIONS_DIR . "*.php") as $filename)
-        {
-            if (preg_match($reg_exp_filename, basename($filename), $match)) {
-                $file_basename = $match[0];
-                $file_datetime = $match[1];
-                $file_version = $match[2];
-                $file_description = $match[3];
-
-                if (intval($file_version) <= self::DB_VERSION && intval($file_version) > $db_version) {
-                    require_once $filename;
-                }
-            }
         }
     }
 
@@ -136,10 +101,10 @@ class Setup
                 `id` BIGINT(20) NOT NULL COMMENT 'Primary Key' AUTO_INCREMENT,
                 `order_id` BIGINT(20) NULL DEFAULT NULL COMMENT 'WC_Order ID',
                 `product_id` BIGINT(20) NULL DEFAULT NULL COMMENT 'WC_Product ID',
-                `license_key` VARCHAR(255) NOT NULL COMMENT 'Encrypted License Key',
+                `license_key` VARCHAR(4000) NOT NULL COMMENT 'Encrypted License Key',
                 `hash` VARCHAR(255) NOT NULL COMMENT 'Hashed License Key ID',
                 `created_at` DATETIME NOT NULL COMMENT 'Creation Date',
-                `expires_at` DATETIME NULL COMMENT 'Expiration Date',
+                `expires_at` DATETIME NULL DEFAULT NULL COMMENT 'Expiration Date',
                 `valid_for` INT(32) NULL DEFAULT NULL COMMENT 'License Validity (in days)',
                 `source` VARCHAR(255) NOT NULL COMMENT 'Import or Generator',
                 `status` TINYINT(1) NOT NULL COMMENT 'Sold, Delivered, Active, Inactive',
@@ -148,7 +113,7 @@ class Setup
             CREATE TABLE $table2 (
                 `id` INT(20) NOT NULL AUTO_INCREMENT,
                 `name` VARCHAR(255) NOT NULL,
-                `charset` VARCHAR(255) NULL,
+                `charset` VARCHAR(255) NOT NULL,
                 `chunks` INT(10) NOT NULL,
                 `chunk_length` INT(10) NOT NULL,
                 `separator` VARCHAR(255) NULL DEFAULT NULL,
@@ -180,7 +145,7 @@ class Setup
     {
         // The defaults for the Setting API.
         $defaults = array(
-            'lmfwc_hide_license_keys' => 1,
+            'lmfwc_hide_license_keys' => 0,
             'lmfwc_auto_delivery' => 1
         );
 

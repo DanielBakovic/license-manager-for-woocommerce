@@ -32,6 +32,8 @@ class APIKeyList extends \WP_List_Table
 
     /**
      * No items found text.
+     * 
+     * @return null
      */
     public function no_items()
     {

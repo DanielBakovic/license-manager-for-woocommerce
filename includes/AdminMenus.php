@@ -110,7 +110,7 @@ class AdminMenus
         $args = array(
             'label' => __('Licenses per page', 'lmfwc'),
             'default' => 10,
-            'option' => 'licenses_per_page'
+            'option' => 'lmfwc_licenses_per_page'
         );
 
         add_screen_option($option, $args);
