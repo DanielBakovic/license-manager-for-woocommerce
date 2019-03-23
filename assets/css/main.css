@@ -70,12 +70,11 @@ table.wp-list-table.licenses td.valid_for.column-valid_for {
 .lmfwc-placeholder {
 	font-family: 'Roboto Mono';
 	font-weight: 400;
-	display: inline-block;
 	min-width: 150px;
 	height: 20px;
 	text-align: center;
 	position: relative;
-	line-height: 20px;
+	line-height: 2;
 	padding: 3px 10px 2px;
 	margin-left: 25px;
 	border-top-right-radius: 3px;

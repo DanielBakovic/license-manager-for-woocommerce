@@ -4,7 +4,7 @@ Donate link: https://www.bebic.at/license-manager-for-woocommerce/donate
 Tags: license key, license, key, software license, serial key, manager, woocommerce
 Requires at least: 4.7
 Tested up to: 5.1
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -30,6 +30,10 @@ The plugin also offers two additional routes for manipulating licenses and gener
 
 If you have any feature requests, need more hooks, or maybe have even found a bug, please let us know in the support forum or e-mail us at <licensemanager@bebic.at>. We look forward to hearing from you!
 
+#### Important
+
+The plugin will create two files inside the `wp-content/uploads/lmfwc-files` folder. These files (`defuse.txt` and `secret.txt`) contain cryptographic secrets which are automatically generated if they don't exist. These cryptographic secrets are used to encrypt, decrypt and hash your license keys. Once they are generated please **back them up somewhere safe**. In case you lose these two files your encrypted license keys inside the database will remain forever lost!
+
 == Installation ==
 
 #### Manual installation
@@ -47,7 +51,7 @@ If you have any feature requests, need more hooks, or maybe have even found a bu
 
 #### Important
 
-The plugin will create two files inside its own `assets/etc` folder. These files (`defuse.txt` and `secret.txt`) contain cryptographic secrets which are automatically generated if they don't exist. These cryptographic secrets are used to encrypt, decrypt and hash your license keys. Once they are generated please **back them up somewhere safe**. In case you lose these two files your encrypted license keys inside the database will remain forever lost!
+The plugin will create two files inside the `wp-content/uploads/lmfwc-files` folder. These files (`defuse.txt` and `secret.txt`) contain cryptographic secrets which are automatically generated if they don't exist. These cryptographic secrets are used to encrypt, decrypt and hash your license keys. Once they are generated please **back them up somewhere safe**. In case you lose these two files your encrypted license keys inside the database will remain forever lost!
 
 == Frequently Asked Questions ==
 
@@ -57,11 +61,15 @@ Yes, there is! An extensive documentation describing the plugin features and fun
 
 == Changelog ==
 
+= 1.1.1 - 2019-03-32 =
+* Fix - The cryptographic secrets were being deleted on plugin update, causing the plugin to become unusable after the 1.1.0 update.
+
 = 1.1.0 - 2019-03-23 =
 * Feature - Added license and generator api routes. Currently available calls are GET (single/all), POST (create), and PUT (update) for both resources.
 * Feature - API Authentication for the new routes. Currently only basic authentication over SSL is supported.
 * Feature - Editing license keys is now possible.
 * Feature - Added a "valid for" field on the bulk import of license keys.
+* Tweak - The plugin now supports license key sizes of up to 255 characters.
 * Tweak - Major code restructuring. Laid the foundation for future features.
 * Tweak - Reworked the whole plugin to make use of filters and actions.
 * Enhancement - Minor visual upgrades across the plugin.
@@ -74,6 +82,9 @@ Yes, there is! An extensive documentation describing the plugin features and fun
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.1.1 =
+Copy your previously backed up `defuse.txt` and `secret.txt` to the `wp-content/uploads/lmfwc-files/` folder. Overwrite the existing files, as those are incompatible with the keys you already have in your database. If you did not backup these files previously, then you will need to completely delete (not deactivate!) and install the plugin anew.
 
 = 1.0.0 =
 There is no specific upgrade process for the initial release. Simply install the plugin and you're good to go!

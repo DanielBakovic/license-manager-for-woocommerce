@@ -11,7 +11,7 @@ defined('ABSPATH') || exit;
 /**
  * LicenseManagerForWooCommerce Crypto class.
  *
- * @version 1.0.0
+ * @version 1.0.1
  * @since 1.0.0
  */
 class Crypto
@@ -19,6 +19,7 @@ class Crypto
     /**
      * The defuse key file name.
      *
+     * @var   string
      * @since 1.0.0
      */
     const DEFUSE_FILE = 'defuse.txt';
@@ -26,23 +27,45 @@ class Crypto
     /**
      * The secret file name.
      *
+     * @var   string
      * @since 1.0.0
      */
     const SECRET_FILE = 'secret.txt';
+
+    /**
+     * Folder name inside the wp_contents directory where the cryptographic secrets
+     * are stored.
+     * 
+     * @var   string
+     * @since 1.1.1
+     */
+    const PLUGIN_SLUG = 'lmfwc-files';
 
     /**
      * The defuse key file content.
      *
      * @var string
      */
-    private $keyAscii;
+    private $key_ascii;
+
+    /**
+     * Directory path to the plugin folder inside wp-content/uploads
+     * 
+     * @var string
+     */
+    private $lmfwc_uploads_dir;
 
     /**
      * Setup Constructor.
      */
     public function __construct()
     {
-        $this->keyAscii = file_get_contents(LMFWC_ETC_DIR . self::DEFUSE_FILE);
+        $uploads = wp_upload_dir(null, false);
+
+        $this->lmfwc_uploads_dir = $uploads['basedir'] . '/lmfwc-files/';
+        $this->key_ascii = file_get_contents(
+            $this->lmfwc_uploads_dir . self::DEFUSE_FILE
+        );
 
         add_filter('lmfwc_encrypt', array($this, 'encrypt'), 10, 1);
         add_filter('lmfwc_decrypt', array($this, 'decrypt'), 10, 1);
@@ -58,7 +81,7 @@ class Crypto
      */
     private function loadEncryptionKeyFromConfig()
     {
-        return Key::loadFromAsciiSafeString($this->keyAscii);
+        return Key::loadFromAsciiSafeString($this->key_ascii);
     }
 
     /**
@@ -96,6 +119,10 @@ class Crypto
 
     public function hash($value)
     {
-        return hash_hmac('sha256', $value, file_get_contents(LMFWC_ETC_DIR . self::SECRET_FILE));
+        return hash_hmac(
+            'sha256',
+            $value,
+            file_get_contents($this->lmfwc_uploads_dir . self::SECRET_FILE)
+        );
     }
 }

@@ -143,23 +143,35 @@ class Setup
 
     public static function setDefaulOptions()
     {
-        // The defaults for the Setting API.
+        $uploads = wp_upload_dir(null, false);
         $defaults = array(
             'lmfwc_hide_license_keys' => 0,
             'lmfwc_auto_delivery' => 1
         );
 
+        // The defaults for the Setting API.
         update_option('lmfwc_settings', $defaults);
         update_option('lmfwc_db_version', self::DB_VERSION);
 
         // Cryptographic secrets.
-        if (!file_exists(LMFWC_ETC_DIR . 'defuse.txt')) {
-            $defuse = \Defuse\Crypto\Key::createNewRandomKey();
-            file_put_contents(LMFWC_ETC_DIR . 'defuse.txt', $defuse->saveToAsciiSafeString());
+        if (!file_exists($uploads['basedir'] . 'lmfwc-files/.htaccess')) {
+            @mkdir($uploads['basedir'] . '/lmfwc-files/', '0777', true);
+            file_put_contents($uploads['basedir'] . '/lmfwc-files/.htaccess', 'Deny from all');
         }
 
-        if (!file_exists(LMFWC_ETC_DIR . 'secret.txt')) {
-            file_put_contents(LMFWC_ETC_DIR . 'secret.txt', bin2hex(random_bytes(16)));
+        if (!file_exists($uploads['basedir'] . '/lmfwc-files/defuse.txt')) {
+            $defuse = \Defuse\Crypto\Key::createNewRandomKey();
+            file_put_contents(
+                $uploads['basedir'] . '/lmfwc-files/defuse.txt',
+                $defuse->saveToAsciiSafeString()
+            );
+        }
+
+        if (!file_exists($uploads['basedir'] . '/lmfwc-files/secret.txt')) {
+            file_put_contents(
+                $uploads['basedir'] . '/lmfwc-files/secret.txt',
+                bin2hex(openssl_random_pseudo_bytes(32))
+            );
         }
     }
 }
