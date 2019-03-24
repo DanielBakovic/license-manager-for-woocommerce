@@ -4,7 +4,7 @@ Donate link: https://www.bebic.at/license-manager-for-woocommerce/donate
 Tags: license key, license, key, software license, serial key, manager, woocommerce
 Requires at least: 4.7
 Tested up to: 5.1
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -61,7 +61,12 @@ Yes, there is! An extensive documentation describing the plugin features and fun
 
 == Changelog ==
 
-= 1.1.1 - 2019-03-32 =
+= 1.1.2 - 2019-03-24 =
+* Feature - Clicking license keys inside the table now copies them into your clipboard.
+* Fix - CSV and TXT upload of license keys now works as expected again.
+* Tweak - Minor UI improvements on the licenses page.
+
+= 1.1.1 - 2019-03-23 =
 * Fix - The cryptographic secrets were being deleted on plugin update, causing the plugin to become unusable after the 1.1.0 update.
 
 = 1.1.0 - 2019-03-23 =

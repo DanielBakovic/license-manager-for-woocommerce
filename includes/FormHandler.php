@@ -31,7 +31,7 @@ defined('ABSPATH') || exit;
  */
 class FormHandler
 {
-    const TEMP_TXT_FILE = 'import.tmp.txt';
+    const TEMP_IMPORT_FILE = 'import.tmp';
 
     /**
      * FormHandler Constructor.
@@ -325,28 +325,63 @@ class FormHandler
         // Check the nonce.
         check_admin_referer('lmfwc_import_license_keys');
 
-        // Check the file extension, return if not .txt
-        if (!pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION) == 'txt'
-            || $_FILES['file']['type'] != 'text/plain'
+        $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+        $mimes = array('application/vnd.ms-excel','text/plain','text/csv','text/tsv');
+
+        if (!in_array($ext, array('txt', 'csv'))
+            || !in_array($_FILES['file']['type'], $mimes)
         ) {
-            return null;
+            AdminNotice::addErrorSupportForum(3);
+            wp_redirect(
+                sprintf(
+                    'admin.php?page=%s&action=add',
+                    AdminMenus::LICENSES_PAGE
+                )
+            );
+            exit();
         }
 
         $file_name = $_FILES['file']['tmp_name'];
-        $file_path = LMFWC_ETC_DIR . self::TEMP_TXT_FILE;
+        $file_path = LMFWC_ASSETS_DIR . self::TEMP_IMPORT_FILE;
 
         // File upload file, return with error.
         if (!move_uploaded_file($file_name, $file_path)) {
             return null;
         }
 
-        $license_keys = file(
-            LMFWC_ETC_DIR . self::TEMP_TXT_FILE, FILE_IGNORE_NEW_LINES
-        );
+        // Handle TXT file uploads
+        if ($ext == 'txt') {
+            $license_keys = file(
+                LMFWC_ASSETS_DIR . self::TEMP_IMPORT_FILE, FILE_IGNORE_NEW_LINES
+            );
 
-        // Check for invalid file contents.
-        if (!is_array($license_keys)) {
-            return null;
+            // Check for invalid file contents.
+            if (!is_array($license_keys)) {
+                AdminNotice::addErrorSupportForum(3);
+                wp_redirect(
+                    sprintf(
+                        'admin.php?page=%s&action=add',
+                        AdminMenus::LICENSES_PAGE
+                    )
+                );
+                exit();
+            }
+        }
+
+        // Handle CSV file uploads
+        if ($ext == 'csv') {
+            $license_keys = array();
+
+            if (($handle = fopen(LMFWC_ASSETS_DIR . self::TEMP_IMPORT_FILE, 'r')) !== FALSE) {
+                while (($data = fgetcsv($handle, 1000, ',')) !== FALSE) {
+                    if ($data && is_array($data) && count($data) > 0) {
+                        foreach ($data as $license_key) {
+                            array_push($license_keys, $license_key);
+                        }
+                    }
+                }
+                fclose($handle);
+            }
         }
 
         if (array_key_exists('activate', $_POST)) {
@@ -356,16 +391,27 @@ class FormHandler
         }
 
         // Save the imported keys.
-        $result = apply_filters(
-            'lmfwc_insert_imported_license_keys',
-            $license_keys,
-            $status,
-            $_POST['product'],
-            $_POST['valid_for']
-        );
+        try {
+            $result = apply_filters(
+                'lmfwc_insert_imported_license_keys',
+                $license_keys,
+                $status,
+                $_POST['product'],
+                $_POST['valid_for']
+            );
+        } catch (\Exception $e) {
+            AdminNotice::addErrorSupportForum(3);
+            wp_redirect(
+                sprintf(
+                    'admin.php?page=%s&action=add',
+                    AdminMenus::LICENSES_PAGE
+                )
+            );
+            exit();
+        }
 
         // Delete the temporary file now that we're done.
-        unlink(LMFWC_ETC_DIR . self::TEMP_TXT_FILE);
+        unlink(LMFWC_ASSETS_DIR . self::TEMP_IMPORT_FILE);
 
         // Redirect according to $result.
         if ($result['failed'] == 0 && $result['added'] == 0) {
