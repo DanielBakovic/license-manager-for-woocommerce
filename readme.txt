@@ -4,7 +4,7 @@ Donate link: https://www.bebic.at/license-manager-for-woocommerce/donate
 Tags: license key, license, key, software license, serial key, manager, woocommerce
 Requires at least: 4.7
 Tested up to: 5.1
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -61,13 +61,18 @@ Yes, there is! An extensive documentation describing the plugin features and fun
 
 == Changelog ==
 
+= 1.1.3 - 2019-03-24 =
+* Fix - On some environments the activate hook wouldn't work properly and the needed cryptographic secrets weren't generated. I negotiated a deal for this not to happen anymore.
+* Fix - When going to the REST API settings page you no longer get a 500 error. Once again, my mistake.
+* Fix - Removed unused JavaScript code. It was just lurking there for no purpose, at all.
+
 = 1.1.2 - 2019-03-24 =
-* Feature - Clicking license keys inside the table now copies them into your clipboard.
-* Fix - CSV and TXT upload of license keys now works as expected again.
-* Tweak - Minor UI improvements on the licenses page.
+* Feature - Clicking license keys inside the table now copies them into your clipboard. Cool huh?
+* Fix - CSV and TXT upload of license keys now works as expected again. I hope.
+* Tweak - Minor UI improvements on the licenses page. I made stuff look cool(er).
 
 = 1.1.1 - 2019-03-23 =
-* Fix - The cryptographic secrets were being deleted on plugin update, causing the plugin to become unusable after the 1.1.0 update.
+* Fix - The cryptographic secrets were being deleted on plugin update, causing the plugin to become unusable after the 1.1.0 update. I'm really sorry for this one.
 
 = 1.1.0 - 2019-03-23 =
 * Feature - Added license and generator api routes. Currently available calls are GET (single/all), POST (create), and PUT (update) for both resources.

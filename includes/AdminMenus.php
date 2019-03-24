@@ -51,11 +51,8 @@ class AdminMenus
     public function getPluginPageIDs()
     {
         return array(
-            'license-manager_page_lmfwc',
-            'license-manager_page_lmfwc_add_import',
+            'license-manager_page_lmfwc_licenses',
             'license-manager_page_lmfwc_generators',
-            'license-manager_page_lmfwc_generators_add',
-            'license-manager_page_lmfwc_generators_edit',
             'license-manager_page_lmfwc_settings'
         );
     }
@@ -212,7 +209,7 @@ class AdminMenus
                     }
                 }
             } elseif ($action === 'list') {
-                $keys = new \LicenseManagerForWooCommerce\Lists\ApiKeyList();
+                $keys = new \LicenseManagerForWooCommerce\Lists\APIKeyList();
             } elseif ($action === 'show') {
                 $key_data = get_transient('lmfwc_api_key');
                 delete_transient('lmfwc_api_key');

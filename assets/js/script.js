@@ -116,8 +116,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
                     });
                 }
             }
-
-            document.addEventListener('click', this.hideCopyNotices);
         },
         hideLicenseKey: function(el) {
             var code = el.parentNode.parentNode.previousSibling.previousSibling;
@@ -192,13 +190,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
             setTimeout(function() {
                 document.body.removeChild(copied);
             }, 1500);
-        },
-        hideCopyNotices: function(e) {
-            if (e.target.classList.contains('lmfwc-placeholder')) {
-                if (!e.target.classList.contains('empty')) {
-                    console.log(e.target);
-                }
-            }
         },
         init: function() {
             this.bindEventListeners();

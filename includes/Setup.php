@@ -155,23 +155,32 @@ class Setup
 
         // Cryptographic secrets.
         if (!file_exists($uploads['basedir'] . 'lmfwc-files/.htaccess')) {
-            @mkdir($uploads['basedir'] . '/lmfwc-files/', '0777', true);
-            file_put_contents($uploads['basedir'] . '/lmfwc-files/.htaccess', 'Deny from all');
+            @mkdir($uploads['basedir'] . '/lmfwc-files', 0775, true);
+            $file_handle = @fopen($uploads['basedir'] . '/lmfwc-files/.htaccess', 'w');
+
+            if ($file_handle) {
+                fwrite($file_handle, 'deny from all');
+                fclose($file_handle);
+            }
         }
 
         if (!file_exists($uploads['basedir'] . '/lmfwc-files/defuse.txt')) {
             $defuse = \Defuse\Crypto\Key::createNewRandomKey();
-            file_put_contents(
-                $uploads['basedir'] . '/lmfwc-files/defuse.txt',
-                $defuse->saveToAsciiSafeString()
-            );
+            $file_handle = @fopen($uploads['basedir'] . '/lmfwc-files/defuse.txt', 'w');
+
+            if ($file_handle) {
+                fwrite($file_handle, $defuse->saveToAsciiSafeString());
+                fclose($file_handle);
+            }
         }
 
         if (!file_exists($uploads['basedir'] . '/lmfwc-files/secret.txt')) {
-            file_put_contents(
-                $uploads['basedir'] . '/lmfwc-files/secret.txt',
-                bin2hex(openssl_random_pseudo_bytes(32))
-            );
+            $file_handle = @fopen($uploads['basedir'] . '/lmfwc-files/secret.txt', 'w');
+
+            if ($file_handle) {
+                fwrite($file_handle, bin2hex(openssl_random_pseudo_bytes(32)));
+                fclose($file_handle);
+            }
         }
     }
 }
