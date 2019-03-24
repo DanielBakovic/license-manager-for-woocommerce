@@ -189,31 +189,31 @@ class LicensesList extends \WP_List_Table
                 switch ($item['status']) {
                     case LicenseStatusEnum::SOLD:
                         $status = sprintf(
-                            '<span class="lmfwc-status sold">%s</span>',
+                            '<div class="lmfwc-status sold"><span class="dashicons dashicons-marker"></span> %s</div>',
                             __('Sold', 'lmfwc')
                         );
                         break;
                     case LicenseStatusEnum::DELIVERED:
                         $status = sprintf(
-                            '<span class="lmfwc-status delivered">%s</span>',
+                            '<div class="lmfwc-status delivered"><span class="dashicons dashicons-marker"></span> %s</div>',
                             __('Delivered', 'lmfwc')
                         );
                         break;
                     case LicenseStatusEnum::ACTIVE:
                         $status = sprintf(
-                            '<span class="lmfwc-status active">%s</span>',
+                            '<div class="lmfwc-status active"><span class="dashicons dashicons-marker"></span> %s</div>',
                             __('Active', 'lmfwc')
                         );
                         break;
                     case LicenseStatusEnum::INACTIVE:
                         $status = sprintf(
-                            '<span class="lmfwc-status inactive">%s</span>',
+                            '<div class="lmfwc-status inactive"><span class="dashicons dashicons-marker"></span> %s</div>',
                             __('Inactive', 'lmfwc')
                         );
                         break;
                     case LicenseStatusEnum::USED:
                         $status = sprintf(
-                            '<span class="lmfwc-status used">%s</span>',
+                            '<div class="lmfwc-status used"><span class="dashicons dashicons-marker"></span> %s</div>',
                             __('Used', 'lmfwc')
                         );
                         break;
@@ -240,10 +240,21 @@ class LicensesList extends \WP_List_Table
     {
         if (Settings::get('lmfwc_hide_license_keys')) {
             $title = '<code class="lmfwc-placeholder empty"></code>';
-            $title .= sprintf('<img class="lmfwc-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
+            $title .= sprintf(
+                '<img class="lmfwc-spinner" data-id="%d" src="%s">',
+                $item['id'],
+                self::SPINNER_URL
+            );
         } else {
-            $title = sprintf('<code class="lmfwc-placeholder">%s</code>', apply_filters('lmfwc_decrypt', $item['license_key']));
-            $title .= sprintf('<img class="lmfwc-spinner" data-id="%d" src="%s">', $item['id'], self::SPINNER_URL);
+            $title = sprintf(
+                '<code class="lmfwc-placeholder">%s</code>',
+                apply_filters('lmfwc_decrypt', $item['license_key'])
+            );
+            $title .= sprintf(
+                '<img class="lmfwc-spinner" data-id="%d" src="%s">',
+                $item['id'],
+                self::SPINNER_URL
+            );
         }
 
         // ID
@@ -340,7 +351,7 @@ class LicensesList extends \WP_List_Table
         $date = new \DateTime($result);
 
         $created_at = sprintf(
-            '%s, %s',
+            '<span class="lmfwc-date lmfwc-status">%s, %s</span>',
             $date->format($this->date_format),
             $date->format($this->time_format)
         );
@@ -364,7 +375,7 @@ class LicensesList extends \WP_List_Table
             && intval($item['status'] != LicenseStatusEnum::USED)
         ) {
             return sprintf(
-                '<span class="lmfwc-status expired" title="%s">%s, %s</span><br>',
+                '<span class="lmfwc-date lmfwc-status expired" title="%s">%s, %s</span><br>',
                 __('Expired'),
                 $date->format($this->date_format),
                 $date->format($this->time_format)
@@ -372,10 +383,36 @@ class LicensesList extends \WP_List_Table
         }
 
         return sprintf(
-            '%s, %s',
+            '<span class="lmfwc-date lmfwc-status">%s, %s</span>',
             $date->format($this->date_format),
             $date->format($this->time_format)
         );
+    }
+
+    public function column_order_and_product($item)
+    {
+        $html = '';
+
+        if ($order = wc_get_order($item['order_id'])) {
+            $link = sprintf(
+                '<a href="%s" target="_blank">#%s</a>',
+                get_edit_post_link($item['order_id']),
+                $order->get_order_number()
+            );
+        } else {
+            $link = '';
+        }
+        if ($product = wc_get_product($item['product_id'])) {
+            $link = sprintf(
+                '<a href="%s" target="_blank">%s</a>',
+                get_edit_post_link($item['product_id']),
+                $product->get_name()
+            );
+        } else {
+            $link = '';
+        }
+
+        return $link;
     }
 
     public function column_cb($item)
@@ -503,8 +540,8 @@ class LicensesList extends \WP_List_Table
             'created_at'  => __('Created at', 'lmfwc'),
             'expires_at'  => __('Expires at', 'lmfwc'),
             'valid_for'   => __('Valid for', 'lmfwc'),
-            'source'      => __('Source', 'lmfwc'),
-            'status'      => __('Status', 'lmfwc')
+            'status'      => __('Status', 'lmfwc'),
+            'source'      => __('Source', 'lmfwc')
         );
 
         return $columns;

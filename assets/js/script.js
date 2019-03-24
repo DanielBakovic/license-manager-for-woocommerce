@@ -89,57 +89,119 @@ document.addEventListener('DOMContentLoaded', function(event) {
         btnHideLicense: document.querySelectorAll('.lmfwc-license-key-hide'),
         btnShowLicense: document.querySelectorAll('.lmfwc-license-key-show'),
         btnCopyToClipboard: document.querySelectorAll('code.lmfwc-placeholder'),
-        bindHideButtons: function() {
-            if (!this.btnHideLicense) return;
+        txtCopiedToClipboard: document.querySelector('.lmfwc-txt-copied-to-clipboard'),
+        bindEventListeners: function() {
+            var that = this;
 
-            for(var i = 0; i < this.btnHideLicense.length; i++) {
-                this.btnHideLicense[i].addEventListener('click', function() {
-                    var code = this.parentNode.parentNode.previousSibling.previousSibling;
-
-                    code.innerText = '';
-                    code.classList.add('empty');
-                });
-            }
-        },
-        bindShowButtons: function() {
-            if (!this.btnShowLicense) return;
-
-            for(var i = 0; i < this.btnShowLicense.length; i++) {
-                this.btnShowLicense[i].addEventListener('click', function() {
-                    var licenseKeyId = parseInt(this.dataset.id);
-                    var spinner      = this.parentNode.parentNode.previousSibling;
-                    var code         = spinner.previousSibling;
-
-                    spinner.style.opacity = 1;
-
-                    lmfwcAjax({
-                        url: ajaxurl,
-                        type: 'POST',
-                        data: {
-                            action: 'lmfwc_show_license_key',
-                            show: license.show,
-                            id: licenseKeyId
-                        },
-                        success: function(response) {
-                            code.classList.remove('empty');
-                            code.innerText = JSON.parse(response);
-                        },
-                        error: function(response) {
-                            console.log(response);
-                        },
-                        complete: function() {
-                            spinner.style.opacity = 0;
-                        }
+            if (this.btnHideLicense) {
+                for (var i = 0; i < this.btnHideLicense.length; i++) {
+                    this.btnHideLicense[i].addEventListener('click', function() {
+                        that.hideLicenseKey(this);
                     });
-                });
+                }
             }
+
+            if (this.btnShowLicense) {
+                for (var i = 0; i < this.btnShowLicense.length; i++) {
+                    this.btnShowLicense[i].addEventListener('click', function() {
+                        that.showLicenseKey(this);
+                    });
+                }
+            }
+
+            if (this.btnCopyToClipboard) {
+                for (var i = 0; i < this.btnCopyToClipboard.length; i++) {
+                    this.btnCopyToClipboard[i].addEventListener('click', function(e) {
+                        that.copyToClipboard(this, e);
+                    });
+                }
+            }
+
+            document.addEventListener('click', this.hideCopyNotices);
         },
-        bindCopyToClipboard: function() {
+        hideLicenseKey: function(el) {
+            var code = el.parentNode.parentNode.previousSibling.previousSibling;
+
+            code.innerText = '';
+            code.classList.add('empty');
+        },
+        showLicenseKey: function(el) {
+            var licenseKeyId = parseInt(el.dataset.id);
+            var spinner      = el.parentNode.parentNode.previousSibling;
+            var code         = spinner.previousSibling;
+
+            spinner.style.opacity = 1;
+
+            lmfwcAjax({
+                url: ajaxurl,
+                type: 'POST',
+                data: {
+                    action: 'lmfwc_show_license_key',
+                    show: license.show,
+                    id: licenseKeyId
+                },
+                success: function(response) {
+                    code.classList.remove('empty');
+                    code.innerText = JSON.parse(response);
+                },
+                error: function(response) {
+                    console.log(response);
+                },
+                complete: function() {
+                    spinner.style.opacity = 0;
+                }
+            });
+        },
+        copyToClipboard: function(el, e) {
+            // Copy to cliboard
+            var str = el.innerText.toString();
+
+            if (!str) return;
+
+            const textArea = document.createElement('textarea');
+            textArea.value = str;
+            textArea.setAttribute('readonly', '');
+            textArea.style.position = 'absolute';
+            textArea.style.left = '-9999px';
+            document.body.appendChild(textArea);
+            const selected =
+                document.getSelection().rangeCount > 0
+                    ? document.getSelection().getRangeAt(0)
+                    : false;
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            if (selected) {
+                document.getSelection().removeAllRanges();
+                document.getSelection().addRange(selected);
+            }
+
+            // Display info
+            var copied = document.createElement('div');
+            copied.classList.add('lmfwc-clipboard');
+            copied.style.position = 'absolute';
+            copied.style.left = e.clientX.toString() + 'px';
+            copied.style.top = (window.pageYOffset + e.clientY).toString() + 'px';
+            copied.innerText = document.querySelector('.lmfwc-txt-copied-to-clipboard').innerText.toString();
+            document.body.appendChild(copied);
+
+            //copied.style.opacity = 0;
+            setTimeout(function() {
+                copied.style.opacity = '0';
+            }, 700);
+            setTimeout(function() {
+                document.body.removeChild(copied);
+            }, 1500);
+        },
+        hideCopyNotices: function(e) {
+            if (e.target.classList.contains('lmfwc-placeholder')) {
+                if (!e.target.classList.contains('empty')) {
+                    console.log(e.target);
+                }
+            }
         },
         init: function() {
-            this.bindShowButtons();
-            this.bindHideButtons();
-            this.bindCopyToClipboard();
+            this.bindEventListeners();
         }
     }
 

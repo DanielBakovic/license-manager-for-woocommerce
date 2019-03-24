@@ -2,7 +2,7 @@
 
 <h1 class="wp-heading-inline"><?=__('Licenses', 'lmfwc'); ?></h1>
 <a class="page-title-action" href="<?php echo esc_url($add_license_url); ?>">
-    <span><?php echo __('Add/Import', 'lmfwc');?></span>
+    <span><?php esc_html_e('Add/Import', 'lmfwc');?></span>
 </a>
 <hr class="wp-header-end">
 
@@ -14,3 +14,5 @@
         $licenses->display();
     ?>
 </form>
+
+<span class="lmfwc-txt-copied-to-clipboard" style="display: none"><?php esc_html_e('Copied to clipboard', 'lmfwc'); ?></span>

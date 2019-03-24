@@ -212,7 +212,7 @@ class AdminMenus
                     }
                 }
             } elseif ($action === 'list') {
-                $keys = new Lists\ApiKeyList();
+                $keys = new \LicenseManagerForWooCommerce\Lists\ApiKeyList();
             } elseif ($action === 'show') {
                 $key_data = get_transient('lmfwc_api_key');
                 delete_transient('lmfwc_api_key');

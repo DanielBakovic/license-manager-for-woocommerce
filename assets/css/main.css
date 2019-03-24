@@ -60,25 +60,39 @@ table.wp-list-table.licenses td.source.column-source > span {
 }
 
 table.wp-list-table.licenses td.source.column-source,
-table.wp-list-table.licenses td.status.column-status,
 table.wp-list-table.licenses td.valid_for.column-valid_for {
 	vertical-align: middle;
+	text-align: center;
+}
+table.wp-list-table.licenses td.status.column-status {
+	vertical-align: middle;
+	text-align: left;
+}
+table.wp-list-table.licenses span.lmfwc-date {
+	display: inline-block;
+	min-width: 100px;
 	text-align: center;
 }
 
 /** License Key Placeholder */
 .lmfwc-placeholder {
+	display: inline-block;
 	font-family: 'Roboto Mono';
 	font-weight: 400;
 	min-width: 150px;
-	height: 20px;
+	min-height: 20px;
 	text-align: center;
 	position: relative;
-	line-height: 2;
+	line-height: 20px;
 	padding: 3px 10px 2px;
 	margin-left: 25px;
 	border-top-right-radius: 3px;
 	border-bottom-right-radius: 3px;
+	cursor: pointer;
+}
+.lmfwc-placeholder:hover {
+	background-image: linear-gradient(to right, #c0c0c0, #8c8c8c);
+	color: #fff;
 }
 .lmfwc-placeholder:before {
 	font-family: 'dashicons';
@@ -109,6 +123,20 @@ table.wp-list-table.licenses td.valid_for.column-valid_for {
 	opacity: 0;
 	margin-left: 5px;
 }
+.lmfwc-clipboard {
+	font-family: "Roboto Mono";
+	background-color: #f0f0f0;
+	color: #334;
+	padding: 7px 14px;
+	border: 1px solid rgba(0,0,0,.1);
+	border-radius: 3px;
+	opacity: 1;
+	-webkit-box-shadow: 2px 3px 5px rgba(0,0,0,.1);
+			box-shadow: 2px 3px 5px rgba(0,0,0,.1);
+	-webkit-transition: all .5s ease-out;
+		 -o-transition: all .5s ease-out;
+			transition: all .5s ease-out;
+}
 
 /* Source Icons */
 .lmfwc-source-icon {
@@ -119,35 +147,59 @@ table.wp-list-table.licenses td.valid_for.column-valid_for {
 /* Custom status */
 .lmfwc-status {
 	padding: 3px 6px;
-	background: #e7e7e7;
 	position: relative;
 	font-weight: 600;
 	border-radius: 3px;
 	cursor: default;
+	border: 2px solid transparent;
+	color: #6f6f6f;
 }
 .lmfwc-status.sold {
-	background: var(--color-info);
-	color: var(--color-light);
+	border: 2px solid var(--color-info);
+	color: var(--color-info);
 }
+.lmfwc-status.sold > span.dashicons {
+	color: var(--color-info);
+}
+
 .lmfwc-status.delivered {
-	background: var(--color-success);
-	color: var(--color-light);
+	border: 2px solid var(--color-success);
+	color: var(--color-success);
 }
+.lmfwc-status.delivered > span.dashicons {
+	color: var(--color-success);
+}
+
 .lmfwc-status.active {
-	background: var(--color-primary);
-	color: var(--color-light);
+	border: 2px solid var(--color-primary);
+	color: var(--color-primary);
 }
+.lmfwc-status.active > span.dashicons {
+	color: var(--color-primary);
+}
+
 .lmfwc-status.inactive {
-	background: var(--color-grey-1);
-	color: var(--color-secondary);
+	border: 2px solid var(--color-grey-1);
+	color: var(--color-grey-1);
 }
+.lmfwc-status.inactive > span.dashicons {
+	color: var(--color-grey-1);
+}
+
 .lmfwc-status.used {
-	background: var(--color-warning);
-	color: var(--color-dark);
+	border: 2px solid var(--color-warning);
+	color: var(--color-warning);
 }
+.lmfwc-status.used > span.dashicons {
+	color: var(--color-warning);
+}
+
 .lmfwc-status.expired {
-	background: var(--color-danger);
-	color: var(--color-light);
+	border: 2px solid var(--color-danger);
+	color: var(--color-danger);
+}
+.lmfwc-status.expired > span.dashicons {
+	color: var(--color-danger);
 }
 
 /** My Account **/
