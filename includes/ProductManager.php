@@ -129,7 +129,7 @@ class ProductManager
             '<p class="form-field"><label>%s</label><span class="description">%d %s</span></p>',
             __('Available', 'lmfwc'),
             apply_filters('lmfwc_get_available_stock', $post->ID),
-            __('License key(s) in stock and available for sale.')
+            __('License key(s) in stock and available for sale.', 'lmfwc')
         );
 
         echo '</div></div>';
@@ -152,7 +152,11 @@ class ProductManager
     public function savePost($post_id)
     {
         // This is not a product.
-        if (!array_key_exists('post_type', $_POST) || $_POST['post_type'] != 'product') return;
+        if (!array_key_exists('post_type', $_POST)
+            || $_POST['post_type'] != 'product'
+        ) {
+            return;
+        }
 
         // Update licensed product flag, according to checkbox.
         if (array_key_exists('lmfwc_licensed_product', $_POST)) {

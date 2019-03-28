@@ -37,10 +37,27 @@ class Authentication
      * Initialize authentication actions.
      */
     public function __construct() {
-        add_filter('determine_current_user',     array($this, 'authenticate'), 15);
-        add_filter('rest_authentication_errors', array($this, 'checkAuthenticationError'), 15);
-        add_filter('rest_post_dispatch',         array($this, 'sendUnauthorizedHeaders'), 50);
-        add_filter('rest_pre_dispatch',          array($this, 'checkUserPermissions'), 10, 3);
+        add_filter(
+            'determine_current_user',
+            array($this, 'authenticate'),
+            15
+        );
+        add_filter(
+            'rest_authentication_errors',
+            array($this, 'checkAuthenticationError'),
+            15
+        );
+        add_filter(
+            'rest_post_dispatch',
+            array($this, 'sendUnauthorizedHeaders'),
+            50
+        );
+        add_filter(
+            'rest_pre_dispatch',
+            array($this, 'checkUserPermissions'),
+            10,
+            3
+        );
     }
 
     /**

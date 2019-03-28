@@ -11,7 +11,7 @@
         <tbody>
             <!-- FILE -->
             <tr scope="row">
-                <th scope="row"><label><?php esc_html_e('File (TXT)', 'lmfwc');?></label></th>
+                <th scope="row"><label><?php esc_html_e('File (TXT/CSV)', 'lmfwc');?></label></th>
                 <td>
                     <input name="file" id="file" class="regular-text" type="file" accept=".csv,.txt">
                     <p class="description" id="tagline-description">

@@ -13,6 +13,7 @@
 namespace LicenseManagerForWooCommerce\Repositories;
 
 use \LicenseManagerForWooCommerce\Setup;
+use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
 
 defined('ABSPATH') || exit;
 
@@ -136,7 +137,7 @@ class Generator
         $clean_id = $id ? absint($id) : null;
 
         if (!$clean_id) {
-            throw new \Exception('Generator ID is invalid', 1);
+            throw new LMFWC_Exception('Generator ID is invalid');
         }
 
         global $wpdb;
@@ -201,19 +202,19 @@ class Generator
         $clean_expires_in   = $expires_in   ? absint($expires_in)             : null;
 
         if (!$clean_name) {
-            throw new \Exception('Generator name is invalid', 1);
+            throw new LMFWC_Exception('Generator name is invalid');
         }
 
         if (!$clean_charset) {
-            throw new \Exception('Generator charset is invalid', 2);
+            throw new LMFWC_Exception('Generator charset is invalid');
         }
 
         if (!$clean_chunks) {
-            throw new \Exception('Generator chunks is invalid', 3);
+            throw new LMFWC_Exception('Generator chunks is invalid');
         }
 
         if (!$clean_chunk_length) {
-            throw new \Exception('Generator chunk_length is invalid', 4);
+            throw new LMFWC_Exception('Generator chunk_length is invalid');
         }
 
         global $wpdb;
@@ -278,23 +279,23 @@ class Generator
         $clean_expires_in   = $expires_in   ? absint($expires_in)             : null;
 
         if (!$clean_id) {
-            throw new \Exception('Generator ID is invalid', 1);
+            throw new LMFWC_Exception('Generator ID is invalid');
         }
 
         if (!$clean_name) {
-            throw new \Exception('Generator name is invalid', 2);
+            throw new LMFWC_Exception('Generator name is invalid');
         }
 
         if (!$clean_charset) {
-            throw new \Exception('Generator charset is invalid', 3);
+            throw new LMFWC_Exception('Generator charset is invalid');
         }
 
         if (!$clean_chunks) {
-            throw new \Exception('Generator chunks is invalid', 4);
+            throw new LMFWC_Exception('Generator chunks is invalid');
         }
 
         if (!$clean_chunk_length) {
-            throw new \Exception('Generator chunk_length is invalid', 5);
+            throw new LMFWC_Exception('Generator chunk_length is invalid');
         }
 
         global $wpdb;
@@ -417,7 +418,7 @@ class Generator
         }
 
         if (!$id) {
-            throw new \Exception('Generator ID is invalid', 1);
+            throw new LMFWC_Exception('Generator ID is invalid');
         }
 
         if ($clean_name == self::UNDEFINED
@@ -429,23 +430,23 @@ class Generator
             && $clean_suffix == self::UNDEFINED
             && $clean_expires_in == self::UNDEFINED
         ) {
-            throw new \Exception('No parameters provided', 2);
+            throw new LMFWC_Exception('No parameters provided');
         }
 
         if (!$clean_name && $clean_name != self::UNDEFINED) {
-            throw new \Exception('Generator name is invalid', 3);
+            throw new LMFWC_Exception('Generator name is invalid');
         }
 
         if (!$clean_charset && $clean_charset != self::UNDEFINED) {
-            throw new \Exception('Generator character map is invalid', 3);
+            throw new LMFWC_Exception('Generator character map is invalid');
         }
 
         if (!$clean_chunks && $clean_chunks != self::UNDEFINED) {
-            throw new \Exception('Generator number of chunks is invalid', 3);
+            throw new LMFWC_Exception('Generator number of chunks is invalid');
         }
 
         if (!$clean_chunk_length && $clean_chunk_length != self::UNDEFINED) {
-            throw new \Exception('Generator chunk length is invalid', 3);
+            throw new LMFWC_Exception('Generator chunk length is invalid');
         }
 
         global $wpdb;
@@ -564,7 +565,7 @@ class Generator
         $clean_ids = array();
 
         if (!is_array($generators)) {
-            throw new \Exception('Input parameter must be an array', 1);
+            throw new LMFWC_Exception('Input parameter must be an array');
         }
 
         foreach ($generators as $id) {
@@ -576,7 +577,7 @@ class Generator
         }
 
         if (count($clean_ids) == 0) {
-            throw new \Exception('No valid IDs given', 2);
+            throw new LMFWC_Exception('No valid IDs given');
         }
 
         global $wpdb;

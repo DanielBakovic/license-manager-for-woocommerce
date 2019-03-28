@@ -21,7 +21,7 @@ defined('ABSPATH') || exit;
  * @package  LicenseManagerForWooCommerce
  * @author   Dražen Bebić <drazen.bebic@outlook.com>
  * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
- * @version  Release: <1.1.3>
+ * @version  Release: <1.2.0>
  * @link     https://www.bebic.at/license-manager-for-woocommerce
  * @since    1.0.0
  */
@@ -32,7 +32,7 @@ final class Main
      *
      * @var string
      */
-    public $version = '1.1.3';
+    public $version = '1.2.0';
 
     /**
      * The single instance of the class.
@@ -93,6 +93,7 @@ final class Main
         $this->_define('LMFWC_LOG_DIR',        LMFWC_ABSPATH       . 'logs/');
         $this->_define('LMFWC_TEMPLATES_DIR',  LMFWC_ABSPATH       . 'templates/');
         $this->_define('LMFWC_MIGRATIONS_DIR', LMFWC_ABSPATH       . 'migrations/');
+        $this->_define('LMFWC_CSS_DIR',        LMFWC_ASSETS_DIR    . 'css/');
 
         // URL's
         $this->_define('LMFWC_ASSETS_URL', LMFWC_PLUGIN_URL . 'assets/');
@@ -208,6 +209,7 @@ final class Main
     public function init()
     {
         new Crypto();
+        new Export();
         new ProductManager();
         new AdminMenus();
         new AdminNotice();

@@ -440,7 +440,9 @@ class LicensesList extends \WP_List_Table
         $actions = [
             'activate'   => __('Activate', 'lmfwc'),
             'deactivate' => __('Deactivate', 'lmfwc'),
-            'delete'     => __('Delete', 'lmfwc')
+            'delete'     => __('Delete', 'lmfwc'),
+            'export_csv' => __('Export (CSV)', 'lmfwc'),
+            'export_pdf' => __('Export (PDF)', 'lmwfc')
         ];
 
         return $actions;
@@ -459,6 +461,12 @@ class LicensesList extends \WP_List_Table
                 break;
             case 'delete':
                 $this->deleteLicenseKeys();
+                break;
+            case 'export_pdf':
+                $this->exportLicenseKeys('PDF');
+                break;
+            case 'export_csv':
+                $this->exportLicenseKeys('CSV');
                 break;
             default:
                 break;
@@ -553,11 +561,13 @@ class LicensesList extends \WP_List_Table
             !wp_verify_nonce($_REQUEST['_wpnonce'], $nonce_action) &&
             !wp_verify_nonce($_REQUEST['_wpnonce'], 'bulk-' . $this->_args['plural'])
         ) {
-            AdminNotice::addErrorSupportForum(9);
+            AdminNotice::error(__('The nonce is invalid or has expired.', 'lmfwc'));
             wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::LICENSES_PAGE)));
-            wp_die();
+
+            exit();
         }
     }
+
     private function toggleLicenseKeyStatus($status)
     {
         ($status == LicenseStatusEnum::ACTIVE) ? $nonce_action = 'activate' : $nonce_action = 'deactivate';
@@ -619,7 +629,7 @@ class LicensesList extends \WP_List_Table
         }
 
         // Set the admin notice
-        AdminNotice::add('success', $message);
+        AdminNotice::success($message);
 
         // Redirect and exit
         wp_redirect(
@@ -685,7 +695,7 @@ class LicensesList extends \WP_List_Table
         }
 
         // Set the admin notice
-        AdminNotice::add('success', $message);
+        AdminNotice::success($message);
 
         // Redirect and exit
         wp_redirect(
@@ -695,6 +705,19 @@ class LicensesList extends \WP_List_Table
         );
 
         exit();
+    }
+
+    private function exportLicenseKeys($type)
+    {
+        if ($type === 'PDF') {
+            $this->verifyNonce('export_pdf');
+            do_action('lmfwc_export_license_keys_pdf', (array)$_REQUEST['id']);
+        }
+
+        if ($type === 'CSV') {
+            $this->verifyNonce('export_csv');
+            do_action('lmfwc_export_license_keys_csv', (array)$_REQUEST['id']);
+        }
     }
 
     public static function isViewFilterActive()

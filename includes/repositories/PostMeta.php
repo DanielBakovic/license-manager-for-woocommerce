@@ -12,6 +12,8 @@
 
 namespace LicenseManagerForWooCommerce\Repositories;
 
+use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -46,7 +48,12 @@ class PostMeta
         $this->table = $wpdb->postmeta;
 
         // SELECT
-        add_filter('lmfwc_get_assigned_products', array($this, 'getAssignedProducts'), 10, 1);
+        add_filter(
+            'lmfwc_get_assigned_products',
+            array($this, 'getAssignedProducts'),
+            10,
+            1
+        );
     }
 
     /**
@@ -62,7 +69,7 @@ class PostMeta
         $clean_generator_id = $generator_id ? absint($generator_id) : null;
 
         if (!$clean_generator_id) {
-            throw new \Exception('Generator ID is invalid.', 1);
+            throw new LMFWC_Exception('Generator ID is invalid.');
         }
 
         global $wpdb;

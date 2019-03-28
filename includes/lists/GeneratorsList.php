@@ -5,6 +5,7 @@ namespace LicenseManagerForWooCommerce\Lists;
 use \LicenseManagerForWooCommerce\AdminMenus;
 use \LicenseManagerForWooCommerce\AdminNotice;
 use \LicenseManagerForWooCommerce\Setup;
+use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
 
 defined('ABSPATH') || exit;
 
@@ -120,7 +121,7 @@ class GeneratorsList extends \WP_List_Table
 
                 $expires_in = sprintf('%d %s', $item['expires_in'], __('day(s)', 'lmfwc'));
                 $expires_in .= '<br>';
-                $expires_in .= sprintf('<small>%s</small>', __('After purchase'));
+                $expires_in .= sprintf('<small>%s</small>', __('After purchase', 'lmfwc'));
 
                 return $expires_in;
             default:
@@ -213,9 +214,12 @@ class GeneratorsList extends \WP_List_Table
             !wp_verify_nonce($_REQUEST['_wpnonce'], $nonce_action) &&
             !wp_verify_nonce($_REQUEST['_wpnonce'], 'bulk-' . $this->_args['plural'])
         ) {
-            AdminNotice::addErrorSupportForum(8);
+            AdminNotice::error(
+                __('The nonce is invalid or has expired.', 'lmfwc')
+            );
             wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::GENERATORS_PAGE)));
-            wp_die();
+
+            exit();
         }
     }
 
@@ -245,8 +249,7 @@ class GeneratorsList extends \WP_List_Table
         );
 
         if ($result) {
-            AdminNotice::add(
-                'success',
+            AdminNotice::success(
                 sprintf(__('%d Generator(s) permanently deleted.', 'lmfwc'), $result)
             );
 
@@ -256,7 +259,9 @@ class GeneratorsList extends \WP_List_Table
                 )
             );
         } else {
-            AdminNotice::addErrorSupportForum(9);
+            AdminNotice::error(
+                __('There was a problem deleting the generators.', 'lmfwc')
+            );
 
             wp_redirect(
                 admin_url(

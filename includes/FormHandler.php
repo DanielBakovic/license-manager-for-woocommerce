@@ -13,6 +13,7 @@
 namespace LicenseManagerForWooCommerce;
 
 use \LicenseManagerForWooCommerce\Lists\LicensesList;
+use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
 use \LicenseManagerForWooCommerce\Enums\LicenseSource as LicenseSourceEnum;
 use \LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
 
@@ -104,7 +105,8 @@ class FormHandler
 
         // Validate request.
         if ($_POST['name'] == '' || !is_string($_POST['name'])) {
-            AdminNotice::add('error', __('Generator name is missing.', 'lmfwc'), 18);
+            AdminNotice::error(__('Generator name is missing.', 'lmfwc'));
+
             wp_redirect(
                 admin_url(
                     sprintf(
@@ -113,11 +115,12 @@ class FormHandler
                     )
                 )
             );
+
             exit();
         }
 
         if ($_POST['charset'] == '' || !is_string($_POST['charset'])) {
-            AdminNotice::add('error', __('The charset is invalid.', 'lmfwc'), 18);
+            AdminNotice::error(__('The charset is invalid.', 'lmfwc'));
             wp_redirect(
                 admin_url(
                     sprintf(
@@ -130,11 +133,10 @@ class FormHandler
         }
 
         if ($_POST['chunks'] == '' || !is_numeric($_POST['chunks'])) {
-            AdminNotice::add(
-                'error',
-                __('Only integer values allowed for chunks.', 'lmfwc'),
-                18
+            AdminNotice::error(
+                __('Only integer values allowed for chunks.', 'lmfwc')
             );
+
             wp_redirect(
                 admin_url(
                     sprintf(
@@ -148,11 +150,10 @@ class FormHandler
         }
 
         if ($_POST['chunk_length'] == '' || !is_numeric($_POST['chunk_length'])) {
-            AdminNotice::add(
-                'error',
-                __('Only integer values allowed for chunk length.', 'lmfwc'),
-                18
+            AdminNotice::error(
+                __('Only integer values allowed for chunk length.', 'lmfwc')
             );
+
             wp_redirect(
                 admin_url(
                     sprintf(
@@ -179,12 +180,13 @@ class FormHandler
         );
 
         if ($result) {
-            AdminNotice::add(
-                'success',
+            AdminNotice::success(
                 __('The generator was added successfully.', 'lmfwc')
             );
         } else {
-            AdminNotice::addErrorSupportForum(19);
+            AdminNotice::error(
+                __('There was a problem adding the generator.', 'lmfwc')
+            );
         }
 
         wp_redirect(
@@ -211,11 +213,8 @@ class FormHandler
 
         // Validate request.
         if ($_POST['name'] == '' || !is_string($_POST['name'])) {
-            AdminNotice::add(
-                'error',
-                __('The Generator name is invalid.', 'lmfwc'),
-                30
-            );
+            AdminNotice::error(__('The Generator name is invalid.', 'lmfwc'));
+
             wp_redirect(
                 admin_url(
                     sprintf(
@@ -229,11 +228,8 @@ class FormHandler
         }
 
         if ($_POST['charset'] == '' || !is_string($_POST['charset'])) {
-            AdminNotice::add(
-                'error',
-                __('The Generator charset is invalid.', 'lmfwc'),
-                31
-            );
+            AdminNotice::error(__('The Generator charset is invalid.', 'lmfwc'));
+
             wp_redirect(
                 admin_url(
                     sprintf(
@@ -247,11 +243,8 @@ class FormHandler
         }
 
         if ($_POST['chunks'] == '' || !is_numeric($_POST['chunks'])) {
-            AdminNotice::add(
-                'error',
-                __('The Generator chunks are invalid.', 'lmfwc'),
-                32
-            );
+            AdminNotice::error(__('The Generator chunks are invalid.', 'lmfwc'));
+
             wp_redirect(
                 admin_url(
                     sprintf(
@@ -265,10 +258,8 @@ class FormHandler
         }
 
         if ($_POST['chunk_length'] == '' || !is_numeric($_POST['chunk_length'])) {
-            AdminNotice::add(
-                'error',
-                __('The Generator chunk length is invalid.', 'lmfwc'),
-                33
+            AdminNotice::error(
+                __('The Generator chunk length is invalid.', 'lmfwc')
             );
             wp_redirect(
                 admin_url(
@@ -298,11 +289,12 @@ class FormHandler
 
         // Redirect according to $result.
         if (!$result) {
-            AdminNotice::addErrorSupportForum(34);
+            AdminNotice::error(
+                __('There was a problem updating the generator.', 'lmfwc')
+            );
         } else {
-            AdminNotice::add(
-                'success',
-                __('The Generator was updated successfully.')
+            AdminNotice::success(
+                __('The Generator was updated successfully.', 'lmfwc')
             );
         }
 
@@ -331,13 +323,17 @@ class FormHandler
         if (!in_array($ext, array('txt', 'csv'))
             || !in_array($_FILES['file']['type'], $mimes)
         ) {
-            AdminNotice::addErrorSupportForum(3);
+            AdminNotice::error(
+                __('Invalid file type, only TXT and CSV allowed.', 'lmfwc')
+            );
+
             wp_redirect(
                 sprintf(
                     'admin.php?page=%s&action=add',
                     AdminMenus::LICENSES_PAGE
                 )
             );
+
             exit();
         }
 
@@ -357,7 +353,8 @@ class FormHandler
 
             // Check for invalid file contents.
             if (!is_array($license_keys)) {
-                AdminNotice::addErrorSupportForum(3);
+                AdminNotice::error(__('Invalid file content.', 'lmfwc'));
+
                 wp_redirect(
                     sprintf(
                         'admin.php?page=%s&action=add',
@@ -400,7 +397,9 @@ class FormHandler
                 $_POST['valid_for']
             );
         } catch (\Exception $e) {
-            AdminNotice::addErrorSupportForum(3);
+            AdminNotice::error(
+                __('There was a problem importing the license keys.', 'lmfwc')
+            );
             wp_redirect(
                 sprintf(
                     'admin.php?page=%s&action=add',
@@ -415,7 +414,9 @@ class FormHandler
 
         // Redirect according to $result.
         if ($result['failed'] == 0 && $result['added'] == 0) {
-            AdminNotice::addErrorSupportForum(3);
+            AdminNotice::error(
+                __('There was a problem importing the license keys.', 'lmfwc')
+            );
             wp_redirect(
                 sprintf(
                     'admin.php?page=%s&action=add',
@@ -426,8 +427,7 @@ class FormHandler
         }
 
         if ($result['failed'] == 0 && $result['added'] > 0) {
-            AdminNotice::add(
-                'success',
+            AdminNotice::success(
                 sprintf(
                     __('%d License key(s) added successfully.', 'lmfwc'),
                     intval($result['added'])
@@ -443,7 +443,9 @@ class FormHandler
         }
 
         if ($result['failed'] > 0 && $result['added'] == 0) {
-            AdminNotice::addErrorSupportForum(4);
+            AdminNotice::error(
+                __('There was a problem importing the license keys.', 'lmfwc')
+            );
             wp_redirect(
                 sprintf(
                     'admin.php?page=%s&action=add',
@@ -454,20 +456,21 @@ class FormHandler
         }
 
         if ($result['failed'] > 0 && $result['added'] > 0) {
-            AdminNotice::add(
-                'warning',
+            AdminNotice::warning(
                 sprintf(
                     __('%d key(s) have been imported, while %d key(s) were not imported.', 'lmfwc'),
                     intval($result['added']),
                     intval($result['failed'])
                 )
             );
+
             wp_redirect(
                 sprintf(
                     'admin.php?page=%s&action=add',
                     AdminMenus::LICENSES_PAGE
                 )
             );
+
             exit();
         }
     }
@@ -503,12 +506,13 @@ class FormHandler
 
         // Redirect with message
         if ($result) {
-            AdminNotice::add(
-                'success',
+            AdminNotice::success(
                 __('1 License key(s) added successfully.', 'lmfwc')
             );
         } else {
-            AdminNotice::addErrorSupportForum(5);
+            AdminNotice::error(
+                __('There was a problem adding the license key.', 'lmfwc')
+            );
         }
 
         // Redirect
@@ -546,12 +550,13 @@ class FormHandler
 
         // Set the admin notice
         if ($result) {
-            AdminNotice::add(
-                'success',
+            AdminNotice::success(
                 __('Your license key has been updated successfully.', 'lmfwc')
             );
         } else {
-            AdminNotice::addErrorSupportForum(6);
+            AdminNotice::error(
+                __('There was a problem updating the license key.', 'lmfwc')
+            );
         }
 
         // Redirect
@@ -581,17 +586,14 @@ class FormHandler
 
         if (empty($_POST['description'])) {
             $error = __('Description is missing.', 'lmfwc');
-            $code = 10;
         }
 
         if (empty($_POST['user']) || $_POST['user'] == -1) {
             $error = __('User is missing.', 'lmfwc');
-            $code = 11;
         }
 
         if (empty($_POST['permissions'])) {
             $error = __('Permissions is missing.', 'lmfwc');
-            $code = 12;
         }
 
         $key_id      = absint($_POST['id']);
@@ -604,18 +606,19 @@ class FormHandler
         if ($user_id && !current_user_can('edit_user', $user_id)) {
             if (get_current_user_id() !== $user_id) {
                 $error = __('You do not have permission to assign API Keys to the selected user.', 'lmfwc');
-                $code = 13;
             }
         }
 
         if ($error) {
-            AdminNotice::add('error', $error, $code);
+            AdminNotice::error($error);
+
             wp_redirect(
                 sprintf(
                     'admin.php?page=%s&tab=rest_api&create_key=1',
                     AdminMenus::SETTINGS_PAGE
                 )
             );
+
             exit();
         }
 
@@ -628,13 +631,14 @@ class FormHandler
             );
 
             if ($data) {
-                AdminNotice::add(
-                    'success',
+                AdminNotice::success(
                     __('API Key generated successfully. Make sure to copy your new keys now as the secret key will be hidden once you leave this page.', 'lmfwc')
                 );
                 set_transient('lmfwc_api_key', $data, 60);
             } else {
-                AdminNotice::addErrorSupportForum(14);
+                AdminNotice::error(
+                    __('There was a problem generating the API key.', 'lmfwc')
+                );
             }
 
             wp_redirect(
@@ -655,12 +659,11 @@ class FormHandler
             );
 
             if ($update) {
-                AdminNotice::add(
-                    'success',
-                    __('API Key updated successfully.', 'lmfwc')
-                );
+                AdminNotice::success(__('API Key updated successfully.', 'lmfwc'));
             } else {
-                AdminNotice::addErrorSupportForum(16);
+                AdminNotice::error(
+                    __('There was a problem updating the API key.', 'lmfwc')
+                );
             }
 
             wp_redirect(

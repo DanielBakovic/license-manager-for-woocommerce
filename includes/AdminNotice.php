@@ -2,6 +2,8 @@
 
 namespace LicenseManagerForWooCommerce;
 
+use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -38,7 +40,7 @@ class AdminNotice
             echo sprintf(
                 self::MESSAGE_DISMISSIBLE,
                 self::NOTICE_ERROR,
-                $error->get_error_message()
+                $error
             );
 
             delete_transient('lmfwc_notice_error');
@@ -79,12 +81,11 @@ class AdminNotice
      * @param int $code
      * @param int $duration
      */
-    public static function add($level, $message, $code = -1, $duration = 60)
+    public static function add($level, $message, $code = 0, $duration = 60)
     {
         switch ($level) {
             case 'error':
-                Logger::exception(new \Exception($message, $code));
-                set_transient('lmfwc_notice_error', new \WP_Error($code, $message), $duration);
+                set_transient('lmfwc_notice_error', $message, $duration);
                 break;
             case 'success':
                 set_transient('lmfwc_notice_success', $message, $duration);
@@ -99,26 +100,61 @@ class AdminNotice
     }
 
     /**
-     * Adds a generic error notice to the dashboard which is then displayed on the next page reload.
-     *
-     * @since 1.1.0
-     *
-     * @param int $code
-     * @param int $duration
+     * Log and display exception
+     * 
+     * @param string  $message  The exception message
+     * @param integer $duration Transient lifespan in seconds
+     * 
+     * @return null
      */
-    public static function addErrorSupportForum($code = -1, $duration = 60)
+    public static function error($message, $duration = 60)
     {
-        self::add(
-            'error',
-            sprintf(
-                __(
-                    'Oops! Something went wrong. Let us know by sending an error report <a href="%s" target="_blank" rel="noopener">in the support forum</a>.',
-                    'lmfwc'
-                ),
-                'https://wordpress.org/support/plugin/license-manager-for-woocommerce/'
-            ),
-            $code,
-            $duration
+        $e = new LMFWC_Exception($message);
+
+        $message = '';
+        $message .= $e->getMessage();
+        $message .= ' ';
+        $message .= sprintf(
+            __('If you are having trouble solving the problem on your own, please let us know by sending an error report <a href="%s" target="_blank" rel="noopener">in the support forum</a>.', 'lmfwc'),
+            'https://wordpress.org/support/plugin/license-manager-for-woocommerce/'
         );
+
+        self::add('error', $message, $e->getCode(), $duration);
     }
+
+    /**
+     * Display a success message
+     * 
+     * @param string $message The success message to be display
+     * 
+     * @return null
+     */
+    public static function success($message)
+    {
+        self::add('success', $message);
+    } 
+
+    /**
+     * Display a warning message
+     * 
+     * @param string $message The warning message to be display
+     * 
+     * @return null
+     */
+    public static function warning($message)
+    {
+        self::add('warning', $message);
+    } 
+
+    /**
+     * Display a info message
+     * 
+     * @param string $message The info message to be display
+     * 
+     * @return null
+     */
+    public static function info($message)
+    {
+        self::add('info', $message);
+    } 
 }

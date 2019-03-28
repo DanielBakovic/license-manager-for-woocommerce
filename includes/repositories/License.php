@@ -14,6 +14,7 @@ namespace LicenseManagerForWooCommerce\Repositories;
 
 use \LicenseManagerForWooCommerce\Setup;
 use \LicenseManagerForWooCommerce\Logger;
+use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
 use \LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
 use \LicenseManagerForWooCommerce\Enums\LicenseSource as LicenseSourceEnum;
 
@@ -200,7 +201,7 @@ class License
         $clean_id = $id ? absint($id) : null;
 
         if (!$clean_id) {
-            throw new \Exception('Invalid License Key ID', 1);
+            throw new LMFWC_Exception('Invalid License Key ID');
         }
 
         global $wpdb;
@@ -246,7 +247,7 @@ class License
         $clean_status = $status ? absint($status) : null;
 
         if ($clean_status && !in_array($clean_status, LicenseStatusEnum::$status)) {
-            throw new \Exception('License Status is invalid', 1);
+            throw new LMFWC_Exception('License Status is invalid');
         }
 
         if (!$clean_status) {
@@ -275,7 +276,7 @@ class License
         $clean_product_id = $product_id ? absint($product_id) : null;
 
         if (!$clean_product_id) {
-            throw new \Exception('Product ID is invalid.', 1);
+            throw new LMFWC_Exception('Product ID is invalid.');
         }
 
         global $wpdb;
@@ -314,11 +315,11 @@ class License
         $clean_product_id = $product_id ? absint($product_id) : null;
 
         if (!$clean_order_id) {
-            throw new \Exception('Order ID is invalid', 1);
+            throw new LMFWC_Exception('Order ID is invalid');
         }
 
         if (!$clean_product_id) {
-            throw new \Exception("Product ID is invalid", 2);
+            throw new LMFWC_Exception("Product ID is invalid");
         }
 
         if ($clean_order_id) {
@@ -375,11 +376,11 @@ class License
         $clean_status     = $status     ? absint($status)     : null;
 
         if (!$clean_product_id) {
-            throw new \Exception('Product ID is invalid', 1);
+            throw new LMFWC_Exception('Product ID is invalid');
         }
 
         if (!$clean_status) {
-            throw new \Exception('Status is invalid', 2);
+            throw new LMFWC_Exception('Status is invalid');
         }
 
         if ($clean_product_id) {
@@ -387,7 +388,7 @@ class License
         }
 
         if (!in_array($clean_status, LicenseStatusEnum::$status)) {
-            throw new \Exception('Status is invalid', 3);
+            throw new LMFWC_Exception('Status is invalid');
         }
 
         global $wpdb;
@@ -435,7 +436,7 @@ class License
         $clean_license_key = $license_key ? sanitize_text_field($license_key) : null;
 
         if (!$clean_license_key) {
-            throw new \Exception('License Key is invalid.', 1);
+            throw new LMFWC_Exception('License Key is invalid.');
         }
 
         $hashed_license_key = apply_filters('lmfwc_hash', $clean_license_key);
@@ -498,23 +499,23 @@ class License
         }
 
         if (!$clean_license_key || strlen($clean_license_key) == 0) {
-            throw new \Exception('Invalid License Key', 1);
+            throw new LMFWC_Exception('Invalid License Key');
         }
 
         if (!$clean_source) {
-            throw new \Exception('Source Enumerator is missing', 2);
+            throw new LMFWC_Exception('Source Enumerator is missing');
         }
 
         if (!in_array($clean_source, LicenseSourceEnum::$sources)) {
-            throw new \Exception('Source Enumerator is invalid', 3);
+            throw new LMFWC_Exception('Source Enumerator is invalid');
         }
 
         if (!$clean_status) {
-            throw new \Exception('Status Enumerator is missing', 4);
+            throw new LMFWC_Exception('Status Enumerator is missing');
         }
 
         if (!in_array($clean_status, LicenseStatusEnum::$status)) {
-            throw new \Exception('Status Enumerator is invalid', 5);
+            throw new LMFWC_Exception('Status Enumerator is invalid');
         }
 
         $license_key_encrypted = apply_filters('lmfwc_encrypt', $clean_license_key);
@@ -577,11 +578,11 @@ class License
         if (!$clean_status
             || !in_array($clean_status, LicenseStatusEnum::$status)
         ) {
-            throw new \Exception('License Status is invalid.', 1);
+            throw new LMFWC_Exception('License Status is invalid.');
         }
 
         if (!is_array($license_keys)) {
-            throw new \Exception('License Keys must be provided as array', 2);
+            throw new LMFWC_Exception('License Keys must be provided as array');
         }
 
         foreach ($license_keys as $license_key) {
@@ -589,7 +590,7 @@ class License
         }
 
         if (count($clean_license_keys) === 0) {
-            throw new \Exception('No License Keys were provided', 3);
+            throw new LMFWC_Exception('No License Keys were provided');
         }
 
         global $wpdb;
@@ -688,15 +689,15 @@ class License
         $result             = array();
 
         if (!is_array($license_keys)) {
-            throw new \Exception('License Keys must be an array', 1);
+            throw new LMFWC_Exception('License Keys must be an array');
         }
 
         if (!$clean_status) {
-            throw new \Exception('Status enumerator is missing', 2);
+            throw new LMFWC_Exception('Status enumerator is missing');
         }
 
         if (!in_array($clean_status, LicenseStatusEnum::$status)) {
-            throw new \Exception('Status enumerator is invalid', 3);
+            throw new LMFWC_Exception('Status enumerator is invalid');
         }
 
         if ($product_id) {
@@ -771,7 +772,7 @@ class License
         $clean_status      = $status      ? absint($status)                   : null;
 
         if (!$clean_id) {
-            throw new \Exception('Invalid License Key ID', 1);
+            throw new LMFWC_Exception('Invalid License Key ID');
         }
 
         if ($clean_product_id) {
@@ -779,15 +780,15 @@ class License
         }
 
         if (!$clean_license_key || strlen($clean_license_key) == 0) {
-            throw new \Exception('Invalid License Key', 2);
+            throw new LMFWC_Exception('Invalid License Key');
         }
 
         if (!in_array($clean_source, LicenseSourceEnum::$sources)) {
-            throw new \Exception('Source Enumerator is invalid', 3);
+            throw new LMFWC_Exception('Source Enumerator is invalid');
         }
 
         if (!in_array($clean_status, LicenseStatusEnum::$status)) {
-            throw new \Exception('Status Enumerator is invalid', 4);
+            throw new LMFWC_Exception('Status Enumerator is invalid');
         }
 
         global $wpdb;
@@ -827,11 +828,11 @@ class License
         $clean_status = $status ? absint($status) : null;
 
         if (!$clean_id) {
-            throw new \Exception('Invalid License Key ID', 1);
+            throw new LMFWC_Exception('Invalid License Key ID');
         }
 
         if (!in_array($clean_status, LicenseStatusEnum::$status)) {
-            throw new \Exception('Status Enumerator is invalid', 2);
+            throw new LMFWC_Exception('Status Enumerator is invalid');
         }
 
         global $wpdb;
@@ -928,11 +929,11 @@ class License
         }
 
         if (!$clean_id) {
-            throw new \Exception('Invalid License Key ID', 1);
+            throw new LMFWC_Exception('Invalid License Key ID');
         }
 
         if (!$clean_license_key) {
-            throw new \Exception('Invalid License Key', 1);
+            throw new LMFWC_Exception('Invalid License Key');
         }
 
         if ($order_id == self::UNDEFINED
@@ -942,7 +943,7 @@ class License
             && $valid_for == self::UNDEFINED
             && $status == self::UNDEFINED
         ) {
-            throw new \Exception('No parameters provided', 2);
+            throw new LMFWC_Exception('No parameters provided');
         }
 
         global $wpdb;
@@ -1052,15 +1053,15 @@ class License
         $clean_amount       = $amount   ? absint($amount)   : null;
 
         if (!is_array($license_keys) || count($license_keys) <= 0) {
-            throw new \Exception('License Keys are invalid.', 1);
+            throw new LMFWC_Exception('License Keys are invalid.');
         }
 
         if (!$clean_order_id) {
-            throw new \Exception('Order ID is invalid.', 2);
+            throw new LMFWC_Exception('Order ID is invalid.');
         }
 
         if (!$clean_order_id) {
-            throw new \Exception('Amount is invalid.', 3);
+            throw new LMFWC_Exception('Amount is invalid.');
         }
 
         global $wpdb;
@@ -1108,15 +1109,15 @@ class License
         $clean_status      = $status      ? absint($status)                   : null;
 
         if (!$clean_column_name) {
-            throw new \Exception('Invalid column name.', 1);
+            throw new LMFWC_Exception('Invalid column name.');
         }
 
         if (!$clean_operator) {
-            throw new \Exception('Invalid operator.', 2);
+            throw new LMFWC_Exception('Invalid operator.');
         }
 
         if (!in_array($clean_status, LicenseStatusEnum::$status)) {
-            throw new \Exception('Invalid status.', 3);
+            throw new LMFWC_Exception('Invalid status.');
         }
 
         global $wpdb;
@@ -1160,7 +1161,7 @@ class License
         $clean_ids = array();
 
         if (!is_array($licenses)) {
-            throw new \Exception('Input parameter must be an array', 1);
+            throw new LMFWC_Exception('Input parameter must be an array');
         }
 
         foreach ($licenses as $id) {
@@ -1172,7 +1173,7 @@ class License
         }
 
         if (count($clean_ids) == 0) {
-            throw new \Exception('No valid IDs given', 2);
+            throw new LMFWC_Exception('No valid IDs given');
         }
 
         global $wpdb;
