@@ -38,7 +38,7 @@ class Setup
      *
      * @since 1.0.0
      */
-    const DB_VERSION = 101;
+    const DB_VERSION = 102;
 
     /**
      * Installation script.
@@ -67,7 +67,7 @@ class Setup
      *
      * @since 1.0.0
      */
-    public function uninstall()
+    public static function uninstall()
     {
         global $wpdb;
 
@@ -79,6 +79,26 @@ class Setup
 
         foreach ($tables as $table) {
             $wpdb->query("DROP TABLE IF EXISTS {$table}");
+        }
+    }
+
+    /**
+     * Migration script.
+     *
+     * @since 1.2.0
+     */
+    public static function migrate()
+    {
+        $current_db_version = get_option('lmfwc_db_version');
+
+        if ($current_db_version != self::DB_VERSION) {
+            if ($current_db_version < self::DB_VERSION) {
+                Migration::up($current_db_version);
+            }
+
+            if ($current_db_version > self::DB_VERSION) {
+                Migration::down($current_db_version);
+            }
         }
     }
 
@@ -104,11 +124,16 @@ class Setup
                 `product_id` BIGINT(20) NULL DEFAULT NULL COMMENT 'WC_Product ID',
                 `license_key` VARCHAR(4000) NOT NULL COMMENT 'Encrypted License Key',
                 `hash` VARCHAR(255) NOT NULL COMMENT 'Hashed License Key ID',
-                `created_at` DATETIME NOT NULL COMMENT 'Creation Date',
                 `expires_at` DATETIME NULL DEFAULT NULL COMMENT 'Expiration Date',
                 `valid_for` INT(32) NULL DEFAULT NULL COMMENT 'License Validity (in days)',
                 `source` VARCHAR(255) NOT NULL COMMENT 'Import or Generator',
                 `status` TINYINT(1) NOT NULL COMMENT 'Sold, Delivered, Active, Inactive',
+                `times_activated` INT(10) NULL DEFAULT NULL COMMENT 'Number of activations',
+                `times_activated_max` INT(10) NULL DEFAULT NULL COMMENT 'Maximum number of activations',
+                `created_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'Creation User',
+                `updated_at` DATETIME NULL DEFAULT NULL COMMENT 'Update timestamp',
+                `updated_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'Update user',
+                `created_at` DATETIME NOT NULL COMMENT 'Creation Date',
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
             CREATE TABLE IF NOT EXISTS $table2 (

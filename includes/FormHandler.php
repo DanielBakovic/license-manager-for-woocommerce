@@ -372,11 +372,10 @@ class FormHandler
             if (($handle = fopen(LMFWC_ASSETS_DIR . self::TEMP_IMPORT_FILE, 'r')) !== FALSE) {
                 while (($data = fgetcsv($handle, 1000, ',')) !== FALSE) {
                     if ($data && is_array($data) && count($data) > 0) {
-                        foreach ($data as $license_key) {
-                            array_push($license_keys, $license_key);
-                        }
+                        $license_keys[] = $data[0];
                     }
                 }
+
                 fclose($handle);
             }
         }

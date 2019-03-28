@@ -12,6 +12,10 @@
 
 namespace LicenseManagerForWooCommerce;
 
+use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
+use \LicenseManagerForWooCommerce\Enums\LicenseSource as LicenseSourceEnum;
+use \LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -60,7 +64,7 @@ class Export
         foreach ($ids as $license_key_id) {
             try {
                 $license = apply_filters('lmfwc_get_license_key', $license_key_id);
-            } catch (\Exception $e) {
+            } catch (LMFWC_Exception $e) {
                 continue;
             }
 
@@ -82,7 +86,6 @@ class Export
         ob_start();
 
         $pdf = new \FPDF('P', 'mm', 'A4');
-        //$pdf->AliasNbPages();
         $pdf->AddPage();
         $pdf->AddFont('Roboto-Bold', '', 'Roboto-Bold.php');
         $pdf->AddFont('Roboto-Regular', '', 'Roboto-Regular.php');
@@ -164,24 +167,21 @@ class Export
         foreach ($ids as $license_key_id) {
             try {
                 $license = apply_filters('lmfwc_get_license_key', $license_key_id);
-            } catch (\Exception $e) {
+            } catch (LMFWC_Exception $e) {
                 continue;
             }
 
             $license_keys[] = array(
-                'id' => $license['id'],
                 'order_id' => $license['order_id'],
                 'product_id' => $license['product_id'],
-                'license_key' => apply_filters('lmfwc_decrypt', $license['license_key'])
+                'license_key' => apply_filters('lmfwc_decrypt', $license['license_key']),
+                'created_at' => $license['created_at'],
+                'expires_at' => $license['expires_at'],
+                'valid_for' => $license['valid_for'],
+                'source' => LicenseSourceEnum::getExportLabel($license['source']),
+                'status' => LicenseStatusEnum::getExportLabel($license['status'])
             );
         }
-
-        $header = array(
-            'id' => __('ID', 'lmfwc'),
-            'order_id' => __('Order ID', 'lmwfc'),
-            'product_id' => __('Product ID', 'lmwfc'),
-            'license_key' => __('License Key', 'lmfwc')
-        );
 
         $filename = gmdate('Y_m_d-H_i_s-') . 'LICENSE_KEYS_EXPORT.csv';
 
@@ -212,6 +212,5 @@ class Export
         ob_end_flush();
 
         exit();
-
     }
 }

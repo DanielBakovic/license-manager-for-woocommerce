@@ -208,6 +208,8 @@ final class Main
      */
     public function init()
     {
+        Setup::migrate();
+
         new Crypto();
         new Export();
         new ProductManager();

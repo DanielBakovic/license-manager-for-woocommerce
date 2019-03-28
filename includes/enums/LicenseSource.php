@@ -24,4 +24,14 @@ abstract class LicenseSource
         self::API
     );
 
+    public static function getExportLabel($source)
+    {
+        $labels = array(
+            self::GENERATOR => 'GENERATOR',
+            self::IMPORT => 'IMPORT',
+            self::API => 'API'
+        );
+
+        return $labels[$source];
+    }
 }

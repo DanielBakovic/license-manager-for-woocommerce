@@ -67,7 +67,6 @@ class GeneratorsList extends \WP_List_Table
         _e('No generators found.', 'lmfwc');
     }
 
-
     public function column_name($item)
     {
         $products = apply_filters('lmfwc_get_assigned_products', $item['id']);

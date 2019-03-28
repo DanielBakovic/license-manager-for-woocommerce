@@ -447,17 +447,6 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
-        if (intval($license['status']) === LicenseStatusEnum::USED) {
-            return new \WP_Error(
-                'lmfwc_rest_data_error',
-                sprintf(
-                    'License Key with ID: %d has already been used.',
-                    $license_key_id
-                ),
-                array('status' => 404)
-            );
-        }
-
         if (intval($license['status']) === LicenseStatusEnum::DELIVERED) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',

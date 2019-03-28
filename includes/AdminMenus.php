@@ -51,7 +51,7 @@ class AdminMenus
     public function getPluginPageIDs()
     {
         return array(
-            'license-manager_page_lmfwc_licenses',
+            'toplevel_page_lmfwc_licenses',
             'license-manager_page_lmfwc_generators',
             'license-manager_page_lmfwc_settings'
         );

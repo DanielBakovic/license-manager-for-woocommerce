@@ -211,14 +211,6 @@ class LicensesList extends \WP_List_Table
                             __('Inactive', 'lmfwc')
                         );
                         break;
-                    case LicenseStatusEnum::USED:
-                        $status = sprintf(
-                            '<div class="lmfwc-status used"><span class="dashicons dashicons-marker"></span> %s</div>',
-                            __('Used', 'lmfwc')
-                        );
-                        break;
-
-                    // Default switch case
                     default:
                         $status = sprintf(
                             '<div class="lmfwc-status unknown">%s</div>',
@@ -263,7 +255,6 @@ class LicensesList extends \WP_List_Table
         // Edit
         if ($item['status'] != LicenseStatusEnum::SOLD
             && $item['status'] != LicenseStatusEnum::DELIVERED
-            && $item['status'] != LicenseStatusEnum::USED
         ) {
             $actions['edit'] = sprintf(
                 '<a href="%s">%s</a>',
@@ -296,7 +287,6 @@ class LicensesList extends \WP_List_Table
         // Activate, Deactivate, and Delete
         if ($item['status'] != LicenseStatusEnum::SOLD
             && $item['status'] != LicenseStatusEnum::DELIVERED
-            && $item['status'] != LicenseStatusEnum::USED
         ) {
             $actions['activate'] = sprintf(
                 '<a href="%s">%s</a>',
@@ -366,14 +356,12 @@ class LicensesList extends \WP_List_Table
         }
 
         $offset_seconds = floatval($this->gmt_offset) * 60 * 60;
-        $timestamp_created_at = strtotime($item['expires_at']) + $offset_seconds;
+        $timestamp_expires_at = strtotime($item['expires_at']) + $offset_seconds;
         $timestamp_now = strtotime('now') + $offset_seconds;
-        $datetime_string = date('Y-m-d H:i:s', $timestamp_created_at);
+        $datetime_string = date('Y-m-d H:i:s', $timestamp_expires_at);
         $date = new \DateTime($datetime_string);
 
-        if ($timestamp_now > $timestamp_created_at
-            && intval($item['status'] != LicenseStatusEnum::USED)
-        ) {
+        if ($timestamp_now > $timestamp_expires_at) {
             return sprintf(
                 '<span class="lmfwc-date lmfwc-status expired" title="%s">%s, %s</span><br>',
                 __('Expired'),

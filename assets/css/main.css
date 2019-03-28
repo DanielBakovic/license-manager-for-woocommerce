@@ -185,15 +185,6 @@ table.wp-list-table.licenses span.lmfwc-date {
 .lmfwc-status.inactive > span.dashicons {
 	color: var(--color-grey-1);
 }
-
-.lmfwc-status.used {
-	border: 2px solid var(--color-warning);
-	color: var(--color-warning);
-}
-.lmfwc-status.used > span.dashicons {
-	color: var(--color-warning);
-}
-
 .lmfwc-status.expired {
 	border: 2px solid var(--color-danger);
 	color: var(--color-danger);
