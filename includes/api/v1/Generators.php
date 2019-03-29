@@ -128,7 +128,7 @@ class Generators extends LMFWC_REST_Controller
             );
         }
 
-        return new \WP_REST_Response($result, 200);
+        return $this->response(true, $result, 200);
     }
 
     /**
@@ -170,7 +170,7 @@ class Generators extends LMFWC_REST_Controller
             );
         }
 
-        return new \WP_REST_Response($result, 200);
+        return $this->response(true, $result, 200);
     }
 
     /**
@@ -268,7 +268,7 @@ class Generators extends LMFWC_REST_Controller
             );
         }
 
-        return new \WP_REST_Response($generator, 200);
+        return $this->response(true, $generator, 200);
     }
 
     /**
@@ -445,6 +445,6 @@ class Generators extends LMFWC_REST_Controller
             );
         }
 
-        return new \WP_REST_Response($updated_generator, 200);
+        return $this->response(true, $updated_generator, 200);
     }
 }

@@ -228,6 +228,11 @@ class LicensesList extends \WP_List_Table
         return $item[$column_name];
     }
 
+    public function column_cb($item)
+    {
+        return sprintf('<input type="checkbox" name="id[]" value="%s" />', $item['id']);
+    }
+
     public function column_license_key($item)
     {
         if (Settings::get('lmfwc_hide_license_keys')) {
@@ -390,6 +395,7 @@ class LicensesList extends \WP_List_Table
         } else {
             $link = '';
         }
+
         if ($product = wc_get_product($item['product_id'])) {
             $link = sprintf(
                 '<a href="%s" target="_blank">%s</a>',
@@ -403,9 +409,21 @@ class LicensesList extends \WP_List_Table
         return $link;
     }
 
-    public function column_cb($item)
+    public function column_activation($item)
     {
-        return sprintf('<input type="checkbox" name="id[]" value="%s" />', $item['id']);
+        $html = '';
+
+        if ($item['times_activated']
+            && $item['times_activated_max']
+        ) {
+            $html = sprintf(
+                '<div>%d / %d</div>',
+                $item['times_activated'],
+                $item['times_activated_max']
+            );
+        }
+
+        return $html;
     }
 
     public function get_sortable_columns()
@@ -533,6 +551,7 @@ class LicensesList extends \WP_List_Table
             'license_key' => __('License Key', 'lmfwc'),
             'order_id'    => __('Order', 'lmfwc'),
             'product_id'  => __('Product', 'lmfwc'),
+            'activation'  => __('Activation', 'lmfwc'),
             'created_at'  => __('Created at', 'lmfwc'),
             'expires_at'  => __('Expires at', 'lmfwc'),
             'valid_for'   => __('Valid for', 'lmfwc'),
@@ -645,10 +664,7 @@ class LicensesList extends \WP_List_Table
         foreach ($license_ids as $license_id) {
             try {
                 // Retrieve full license info
-                $license = apply_filters(
-                    'lmfwc_get_license_key',
-                    $license_id
-                );
+                $license = apply_filters('lmfwc_get_license_key', $license_id);
 
                 // Skip if the license if it's already sold, delivered, or used
                 if (!in_array($license['status'], $status_whitelist)) {

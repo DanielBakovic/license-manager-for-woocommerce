@@ -58,6 +58,12 @@ class Authentication
             10,
             3
         );
+
+        add_filter(
+            'lmfwc_get_user_data_by_consumer_key',
+            array($this, 'getUserDataByConsumerKey'),
+            1
+        );
     }
 
     /**
@@ -90,7 +96,8 @@ class Authentication
             return $user_id;
         }
 
-        if (is_ssl()) {
+        if (1 == 1) {
+        //if (is_ssl()) {
             $user_id = $this->performBasicAuthentication();
         } else {
             $this->setError(
@@ -223,7 +230,7 @@ class Authentication
      * @param string $consumer_key Consumer key.
      * @return array
      */
-    private function getUserDataByConsumerKey($consumer_key) {
+    public function getUserDataByConsumerKey($consumer_key) {
         global $wpdb;
 
         $consumer_key = wc_api_hash(sanitize_text_field($consumer_key));

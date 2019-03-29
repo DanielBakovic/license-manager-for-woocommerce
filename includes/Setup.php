@@ -130,10 +130,10 @@ class Setup
                 `status` TINYINT(1) NOT NULL COMMENT 'Sold, Delivered, Active, Inactive',
                 `times_activated` INT(10) NULL DEFAULT NULL COMMENT 'Number of activations',
                 `times_activated_max` INT(10) NULL DEFAULT NULL COMMENT 'Maximum number of activations',
-                `created_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'Creation User',
-                `updated_at` DATETIME NULL DEFAULT NULL COMMENT 'Update timestamp',
-                `updated_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'Update user',
                 `created_at` DATETIME NOT NULL COMMENT 'Creation Date',
+                `created_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'WP User ID',
+                `updated_at` DATETIME NULL DEFAULT NULL COMMENT 'Update Date',
+                `updated_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'WP User ID',
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
             CREATE TABLE IF NOT EXISTS $table2 (

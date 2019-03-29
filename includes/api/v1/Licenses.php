@@ -130,7 +130,13 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
-        return new \WP_REST_Response($result, 200);
+        foreach ($result as $license) {
+            // Remove the hash and decrypt the license key
+            unset($license->hash);
+            $license->license_key = apply_filters('lmfwc_decrypt', $license->license_key);
+        }
+
+        return $this->response(true, $result, 200);
     }
 
     /**
@@ -172,7 +178,11 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
-        return new \WP_REST_Response($result, 200);
+        // Remove the hash and decrypt the license key
+        unset($result['hash']);
+        $result['license_key'] = apply_filters('lmfwc_decrypt', $result['license_key']);
+
+        return $this->response(true, $result, 200);
     }
 
     /**
@@ -220,6 +230,11 @@ class Licenses extends LMFWC_REST_Controller
             $status = LicenseStatusEnum::$values[$status_enum];
         }
 
+        $created_by_user = apply_filters(
+            'lmfwc_get_user_data_by_consumer_key',
+            $_SERVER['PHP_AUTH_USER']
+        );
+
         try {
             $license_key_id = apply_filters(
                 'lmfwc_insert_license_key',
@@ -228,7 +243,8 @@ class Licenses extends LMFWC_REST_Controller
                 $license_key,
                 $valid_for,
                 LicenseSourceEnum::API,
-                $status
+                $status,
+                $created_by_user->user_id
             );
         } catch (\Exception $e) {
             return new \WP_Error(
@@ -264,7 +280,14 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
-        return new \WP_REST_Response($license_key, 200);
+        // Remove the hash and decrypt the license key
+        unset($license_key['hash']);
+        $license_key['license_key'] = apply_filters(
+            'lmfwc_decrypt',
+            $license_key['license_key']
+        );
+
+        return $this->response(true, $license_key, 200);
     }
 
     /**
@@ -329,16 +352,6 @@ class Licenses extends LMFWC_REST_Controller
             $license_key = sanitize_text_field($body->license_key);
         } else {
             $license_key = self::UNDEFINED;
-        }
-
-        if (property_exists($body, 'expires_at')) {
-            if (is_null($body->expires_at)) {
-                $expires_at = null;
-            } else {
-                $expires_at = sanitize_text_field($body->expires_at);
-            }
-        } else {
-            $expires_at = self::UNDEFINED;
         }
 
         if (property_exists($body, 'valid_for')) {
@@ -458,6 +471,11 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
+        $updated_by_user = apply_filters(
+            'lmfwc_get_user_data_by_consumer_key',
+            $_SERVER['PHP_AUTH_USER']
+        );
+
         try {
             $updated_license_key = apply_filters(
                 'lmfwc_update_selective_license_key',
@@ -465,9 +483,9 @@ class Licenses extends LMFWC_REST_Controller
                 $order_id,
                 $product_id,
                 $license_key,
-                $expires_at,
                 $valid_for,
-                $status
+                $status,
+                $updated_by_user->user_id
             );
         } catch (\Exception $e) {
             return new \WP_Error(
@@ -477,6 +495,13 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
-        return new \WP_REST_Response($updated_license_key, 200);
+        // Remove the hash and decrypt the license key
+        unset($updated_license_key['hash']);
+        $updated_license_key['license_key'] = apply_filters(
+            'lmfwc_decrypt',
+            $updated_license_key['license_key']
+        );
+
+        return $this->response(true, $updated_license_key, 200);
     }
 }
