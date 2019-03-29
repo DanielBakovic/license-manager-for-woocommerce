@@ -102,6 +102,25 @@ class Licenses extends LMFWC_REST_Controller
                 )
             )
         );
+
+        /* PUT licenses/activate/{id}
+         * 
+         * Activates a license key
+         */
+        register_rest_route(
+            $this->namespace, '/' . $this->base . '/activate/(?P<license_key_id>[\w-]+)', array(
+                array(
+                    'methods'  => \WP_REST_Server::EDITABLE,
+                    'callback' => array($this, 'activateLicense'),
+                    'args'     => array(
+                        'license_key_id' => array(
+                            'description' => 'License Key ID',
+                            'type'        => 'integer',
+                        ),
+                    ),
+                )
+            )
+        );
     }
 
     /**
@@ -230,7 +249,7 @@ class Licenses extends LMFWC_REST_Controller
             $status = LicenseStatusEnum::$values[$status_enum];
         }
 
-        $created_by_user = apply_filters(
+        $api_user = apply_filters(
             'lmfwc_get_user_data_by_consumer_key',
             $_SERVER['PHP_AUTH_USER']
         );
@@ -244,7 +263,7 @@ class Licenses extends LMFWC_REST_Controller
                 $valid_for,
                 LicenseSourceEnum::API,
                 $status,
-                $created_by_user->user_id
+                $api_user->user_id
             );
         } catch (\Exception $e) {
             return new \WP_Error(
@@ -471,7 +490,7 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
-        $updated_by_user = apply_filters(
+        $api_user = apply_filters(
             'lmfwc_get_user_data_by_consumer_key',
             $_SERVER['PHP_AUTH_USER']
         );
@@ -485,7 +504,7 @@ class Licenses extends LMFWC_REST_Controller
                 $license_key,
                 $valid_for,
                 $status,
-                $updated_by_user->user_id
+                $api_user->user_id
             );
         } catch (\Exception $e) {
             return new \WP_Error(
@@ -503,5 +522,100 @@ class Licenses extends LMFWC_REST_Controller
         );
 
         return $this->response(true, $updated_license_key, 200);
+    }
+
+    /**
+     * Callback for the PUT licenses/activate{id} route. This will activate a license
+     * key (if possible)
+     * 
+     * @param  WP_REST_Request $request
+     * @return WP_REST_Response
+     */
+    public function activateLicense(\WP_REST_Request $request)
+    {
+        $license_key_id = absint($request->get_param('license_key_id'));
+
+        if (!$license_key_id) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                'License Key ID is invalid.',
+                array('status' => 404)
+            );
+        }
+
+        try {
+            $result = apply_filters('lmfwc_get_license_key', $license_key_id);
+        } catch (Exception $e) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                $e->getMessage(),
+                array('status' => 404)
+            );
+        }
+
+        if (!$result) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                sprintf(
+                    'License Key with ID: %d could not be found.',
+                    $license_key_id
+                ),
+                array('status' => 404)
+            );
+        }
+
+        // Check if the license key can be activated
+        $times_activated = absint($result['times_activated']);
+        $times_activated_max = absint($result['times_activated_max']);
+
+        if (!$times_activated_max) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                sprintf(
+                    'License Key with ID: %d can not be activated (times_activated_max not set).',
+                    $license_key_id
+                ),
+                array('status' => 404)
+            );
+        }
+
+        if ($times_activated_max
+            && ($times_activated >= $times_activated_max)
+        ) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                sprintf(
+                    'License Key with ID: %d reached maximum activation count.',
+                    $license_key_id
+                ),
+                array('status' => 404)
+            );
+        }
+
+        $api_user = apply_filters(
+            'lmfwc_get_user_data_by_consumer_key',
+            $_SERVER['PHP_AUTH_USER']
+        );
+
+        // Activate the license key
+        try {
+            $license_key = apply_filters(
+                'lmfwc_activate_license_key',
+                $license_key_id,
+                $api_user->user_id
+            );
+        } catch (\Exception $e) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                $e->getMessage(),
+                array('status' => 404)
+            );
+        }
+
+        // Remove the hash and decrypt the license key
+        unset($license_key['hash']);
+        $license_key['license_key'] = apply_filters('lmfwc_decrypt', $license_key['license_key']);
+
+        return $this->response(true, $license_key, 200);
     }
 }

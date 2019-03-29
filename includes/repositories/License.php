@@ -147,6 +147,12 @@ class License
             10,
             4
         );
+        add_filter(
+            'lmfwc_activate_license_key',
+            array($this, 'activateLicenseKey'),
+            10,
+            2
+        );
 
         // DELETE
         add_filter(
@@ -872,7 +878,6 @@ class License
             array('%d'),
             array('%d')
         );
-
     }
 
     /**
@@ -1096,7 +1101,7 @@ class License
     }
 
     /**
-     * Activates or Deactivates license keys.
+     * Toggles the license key activation status
      *
      * @param string  $column_name The column name by which to compare
      * @param string  $operator    The operator to use
@@ -1150,6 +1155,49 @@ class License
         }
 
         return $result;
+    }
+
+    /**
+     * Activates or Deactivates license keys.
+     *
+     * @param integer $id         License Key ID
+     * @param integer $updated_by WordPress User ID
+     *
+     * @since  1.2.0
+     * @throws Exception
+     * @return array
+     */
+    public function activateLicenseKey($id, $updated_by)
+    {
+        $clean_id         = $id         ? absint($id)         : null;
+        $clean_updated_by = $updated_by ? absint($updated_by) : null;
+
+        if (!$clean_id) {
+            throw new LMFWC_Exception('Invalid License Key ID');
+        }
+
+        if (!$clean_updated_by || !get_userdata($clean_updated_by)) {
+            throw new LMFWC_Exception('Updated by User ID is invalid');
+        }
+
+        global $wpdb;
+
+        $license = $this->getLicenseKey($clean_id);
+        $current = intval($license['times_activated']);
+
+        $wpdb->update(
+            $this->table,
+            array(
+                'times_activated' => ++$current,
+                'updated_at'      => gmdate('Y-m-d H:i:s'),
+                'updated_by'      => $clean_updated_by
+            ),
+            array('id' => $clean_id),
+            array('%d', '%s', '%d'),
+            array('%d')
+        );
+
+        return $this->getLicenseKey($clean_id); 
     }
 
     /**
