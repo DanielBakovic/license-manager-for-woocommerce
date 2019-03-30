@@ -4,7 +4,7 @@ Donate link: https://www.bebic.at/license-manager-for-woocommerce/donate
 Tags: license key, license, key, software license, serial key, manager, woocommerce
 Requires at least: 4.7
 Tested up to: 5.1
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -60,6 +60,9 @@ The plugin will create two files inside the `wp-content/uploads/lmfwc-files` fol
 Yes, there is! An extensive documentation describing the plugin features and functionality in detail can be found on the [plugin homepage](https://www.bebic.at/license-manager-for-woocommerce).
 
 == Changelog ==
+
+= 1.1.4 - 2019-03-30 =
+65	* Fix - Licenses keys will no longer be sent out more than once if you change the order status from "complete" to something else and then back to "complete".
 
 = 1.1.3 - 2019-03-24 =
 * Fix - On some environments the activate hook wouldn't work properly and the needed cryptographic secrets weren't generated. I negotiated a deal for this not to happen anymore.
