@@ -152,6 +152,7 @@ class AdminMenus
             $license_key = apply_filters('lmfwc_decrypt', $license_row['license_key']);
             $valid_for = $license_row['valid_for'];
             $activated = ($license_row['status'] == LicenseStatusEnum::ACTIVE) ? true : false;
+            $times_activated_max = $license_row['times_activated_max'];
             $product_id = absint($license_row['product_id']);
             $license_source = absint($license_row['source']);
             $status_active = LicenseStatusEnum::ACTIVE;

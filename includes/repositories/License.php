@@ -101,7 +101,7 @@ class License
             'lmfwc_insert_license_key',
             array($this, 'insertLicenseKey'),
             10,
-            7
+            8
         );
         add_filter(
             'lmfwc_insert_generated_license_keys',
@@ -113,7 +113,7 @@ class License
             'lmfwc_insert_imported_license_keys',
             array($this, 'insertImportedLicenseKeys'),
             10,
-            4
+            6
         );
 
         // UPDATE
@@ -121,7 +121,7 @@ class License
             'lmfwc_update_license_key',
             array($this, 'updateLicenseKey'),
             10,
-            6
+            8
         );
         add_filter(
             'lmfwc_update_license_key_status',
@@ -509,15 +509,17 @@ class License
         $valid_for,
         $source,
         $status,
+        $times_activated_max,
         $created_by
     ) {
-        $clean_order_id    = $order_id    ? absint($order_id)                 : null;
-        $clean_product_id  = $product_id  ? absint($product_id)               : null;
-        $clean_license_key = $license_key ? sanitize_text_field($license_key) : null;
-        $clean_valid_for   = $valid_for   ? absint($valid_for)                : null;
-        $clean_source      = $source      ? absint($source)                   : null;
-        $clean_status      = $status      ? absint($status)                   : null;
-        $clean_created_by  = $created_by  ? absint($created_by)               : null;
+        $clean_order_id            = $order_id            ? absint($order_id)                 : null;
+        $clean_product_id          = $product_id          ? absint($product_id)               : null;
+        $clean_license_key         = $license_key         ? sanitize_text_field($license_key) : null;
+        $clean_valid_for           = $valid_for           ? absint($valid_for)                : null;
+        $clean_source              = $source              ? absint($source)                   : null;
+        $clean_status              = $status              ? absint($status)                   : null;
+        $clean_times_activated_max = $times_activated_max ? absint($times_activated_max)      : null;
+        $clean_created_by          = $created_by          ? absint($created_by)               : null;
 
         if ($clean_order_id) {
             new \WC_Order($clean_order_id);
@@ -560,18 +562,19 @@ class License
         $insert = $wpdb->insert(
             $this->table,
             array(
-                'order_id'    => $clean_order_id,
-                'product_id'  => $clean_product_id,
-                'license_key' => $license_key_encrypted,
-                'hash'        => $license_key_hashed,
-                'expires_at'  => null,
-                'valid_for'   => $clean_valid_for,
-                'source'      => $clean_source,
-                'status'      => $clean_status,
-                'created_at'  => $created_at,
-                'created_by'  => $clean_created_by
+                'order_id'            => $clean_order_id,
+                'product_id'          => $clean_product_id,
+                'license_key'         => $license_key_encrypted,
+                'hash'                => $license_key_hashed,
+                'expires_at'          => null,
+                'valid_for'           => $clean_valid_for,
+                'source'              => $clean_source,
+                'status'              => $clean_status,
+                'times_activated_max' => $clean_times_activated_max,
+                'created_at'          => $created_at,
+                'created_by'          => $clean_created_by
             ),
-            array('%d', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%s', '%s')
+            array('%d', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%d')
         );
 
         if (!$insert) {
@@ -702,9 +705,12 @@ class License
     /**
      * Imports an array of un-encrypted license keys.
      *
-     * @param array   $license_keys License Keys to be added
-     * @param integer $status       License Status Enumerator value 
-     * @param int     $product_id   WooCommerce Product ID
+     * @param array   $license_keys        License Keys to be added
+     * @param integer $status              License Status Enumerator value 
+     * @param integer $product_id          WooCommerce Product ID
+     * @param integer $valid_for           Validity after purchase (in days)
+     * @param integer $times_activated_max Maximum activation count
+     * @param integer $created_by          WordPress User ID
      *
      * @since  1.1.0
      * @throws Exception
@@ -714,13 +720,17 @@ class License
         $license_keys,
         $status,
         $product_id,
-        $valid_for
+        $valid_for,
+        $times_activated_max,
+        $created_by
     ) {
-        $clean_license_keys = array();
-        $clean_status       = $status     ? absint($status)     : null;
-        $clean_product_id   = $product_id ? absint($product_id) : null;
-        $clean_valid_for    = $valid_for  ? absint($valid_for)  : null;
-        $result             = array();
+        $clean_license_keys        = array();
+        $clean_status              = $status              ? absint($status)              : null;
+        $clean_product_id          = $product_id          ? absint($product_id)          : null;
+        $clean_valid_for           = $valid_for           ? absint($valid_for)           : null;
+        $clean_times_activated_max = $times_activated_max ? absint($times_activated_max) : null;
+        $clean_created_by          = $created_by          ? absint($created_by)          : null;
+        $result                    = array();
 
         if (!is_array($license_keys)) {
             throw new LMFWC_Exception('License Keys must be an array');
@@ -738,6 +748,10 @@ class License
             new \WC_Product($clean_product_id);
         }
 
+        if (!$clean_created_by || !get_userdata($clean_created_by)) {
+            throw new LMFWC_Exception('Created by User ID is invalid');
+        }
+
         foreach ($license_keys as $license_key) {
             array_push($clean_license_keys, sanitize_text_field($license_key));
         }
@@ -753,17 +767,19 @@ class License
             $insert = $wpdb->insert(
                 $this->table,
                 array(
-                    'order_id'    => null,
-                    'product_id'  => $clean_product_id,
-                    'license_key' => apply_filters('lmfwc_encrypt', $license_key),
-                    'hash'        => apply_filters('lmfwc_hash', $license_key),
-                    'created_at'  => $created_at,
-                    'expires_at'  => null,
-                    'valid_for'   => $clean_valid_for,
-                    'source'      => LicenseSourceEnum::IMPORT,
-                    'status'      => $clean_status
+                    'order_id'            => null,
+                    'product_id'          => $clean_product_id,
+                    'license_key'         => apply_filters('lmfwc_encrypt', $license_key),
+                    'hash'                => apply_filters('lmfwc_hash', $license_key),
+                    'expires_at'          => null,
+                    'valid_for'           => $clean_valid_for,
+                    'source'              => LicenseSourceEnum::IMPORT,
+                    'status'              => $clean_status,
+                    'times_activated_max' => $clean_times_activated_max,
+                    'created_at'          => $created_at,
+                    'created_by'          => $clean_created_by
                 ),
-                array('%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%d')
+                array('%d', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%d')
             );
 
             if ($insert) {
@@ -779,12 +795,14 @@ class License
     /**
      * Updates the license key is a whole. All parameters are required.
      * 
-     * @param integer $id          ID of the edited License Key
-     * @param integer $product_id  WooCommerce Product ID
-     * @param string  $license_key Decrypted License Key
-     * @param integer $valid_for   Validity in days
-     * @param integer $source      Source enumerator
-     * @param integer $status      Status enumerator
+     * @param integer $id                  ID of the edited License Key
+     * @param integer $product_id          WooCommerce Product ID
+     * @param string  $license_key         Decrypted License Key
+     * @param integer $valid_for           Validity in days
+     * @param integer $source              Source enumerator
+     * @param integer $status              Status enumerator
+     * @param integer $times_activated_max Maximum activation count
+     * @param integer $updated_by          WordPress User ID
      *
      * @since  1.1.0
      * @throws Exception
@@ -796,14 +814,18 @@ class License
         $license_key,
         $valid_for,
         $source,
-        $status
+        $status,
+        $times_activated_max,
+        $updated_by
     ) {
-        $clean_id          = $id          ? absint($id)                       : null;
-        $clean_product_id  = $product_id  ? absint($product_id)               : null;
-        $clean_license_key = $license_key ? sanitize_text_field($license_key) : null;
-        $clean_valid_for   = $valid_for   ? absint($valid_for)                : null;
-        $clean_source      = $source      ? absint($source)                   : null;
-        $clean_status      = $status      ? absint($status)                   : null;
+        $clean_id                  = $id                  ? absint($id)                       : null;
+        $clean_product_id          = $product_id          ? absint($product_id)               : null;
+        $clean_license_key         = $license_key         ? sanitize_text_field($license_key) : null;
+        $clean_valid_for           = $valid_for           ? absint($valid_for)                : null;
+        $clean_source              = $source              ? absint($source)                   : null;
+        $clean_status              = $status              ? absint($status)                   : null;
+        $clean_times_activated_max = $times_activated_max ? absint($times_activated_max)      : null;
+        $clean_updated_by          = $updated_by          ? absint($updated_by)               : null;
 
         if (!$clean_id) {
             throw new LMFWC_Exception('Invalid License Key ID');
@@ -825,6 +847,10 @@ class License
             throw new LMFWC_Exception('Status Enumerator is invalid');
         }
 
+        if (!$clean_updated_by || !get_userdata($clean_updated_by)) {
+            throw new LMFWC_Exception('Updated by User ID is invalid');
+        }
+
         global $wpdb;
 
         $encrypted_license_key = apply_filters('lmfwc_encrypt', $clean_license_key);
@@ -833,15 +859,18 @@ class License
         return $wpdb->update(
             $this->table,
             array(
-                'product_id'  => $clean_product_id,
-                'license_key' => $encrypted_license_key,
-                'hash'        => $hashed_license_key,
-                'valid_for'   => $clean_valid_for,
-                'source'      => $clean_source,
-                'status'      => $clean_status
+                'product_id'          => $clean_product_id,
+                'license_key'         => $encrypted_license_key,
+                'hash'                => $hashed_license_key,
+                'valid_for'           => $clean_valid_for,
+                'source'              => $clean_source,
+                'status'              => $clean_status,
+                'times_activated_max' => $clean_times_activated_max,
+                'updated_at'          => gmdate('Y-m-d H:i:s'),
+                'updated_by'          => $clean_updated_by
             ),
             array('id' => $clean_id),
-            array('%d', '%s', '%s', '%d', '%d', '%d'),
+            array('%d', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%d'),
             array('%d')
         );
     }

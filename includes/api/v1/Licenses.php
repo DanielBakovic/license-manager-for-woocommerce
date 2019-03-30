@@ -121,6 +121,25 @@ class Licenses extends LMFWC_REST_Controller
                 )
             )
         );
+
+        /* PUT licenses/activate/{id}
+         * 
+         * Activates a license key
+         */
+        register_rest_route(
+            $this->namespace, '/' . $this->base . '/validate/(?P<license_key_id>[\w-]+)', array(
+                array(
+                    'methods'  => \WP_REST_Server::READABLE,
+                    'callback' => array($this, 'validateLicense'),
+                    'args'     => array(
+                        'license_key_id' => array(
+                            'description' => 'License Key ID',
+                            'type'        => 'integer',
+                        ),
+                    ),
+                )
+            )
+        );
     }
 
     /**
@@ -214,12 +233,13 @@ class Licenses extends LMFWC_REST_Controller
     {
         $body = $request->get_params();
 
-        $product_id  = isset($body['product_id'])  ? absint($body['product_id'])               : null;
-        $license_key = isset($body['license_key']) ? sanitize_text_field($body['license_key']) : null;
-        $valid_for   = isset($body['valid_for'])   ? absint($body['valid_for'])                : null;
-        $valid_for   = $valid_for                  ? $valid_for                                : null;
-        $status_enum = isset($body['status'])      ? sanitize_text_field($body['status'])      : null;
-        $status      = null;
+        $product_id          = isset($body['product_id'])          ? absint($body['product_id'])               : null;
+        $license_key         = isset($body['license_key'])         ? sanitize_text_field($body['license_key']) : null;
+        $valid_for           = isset($body['valid_for'])           ? absint($body['valid_for'])                : null;
+        $valid_for           = $valid_for                          ? $valid_for                                : null;
+        $status_enum         = isset($body['status'])              ? sanitize_text_field($body['status'])      : null;
+        $status              = null;
+        $times_activated_max = isset($body['times_activated_max']) ? absint($body['times_activated_max'])      : null;
 
         if ($product_id) {
             try {
@@ -263,6 +283,7 @@ class Licenses extends LMFWC_REST_Controller
                 $valid_for,
                 LicenseSourceEnum::API,
                 $status,
+                $times_activated_max,
                 $api_user->user_id
             );
         } catch (\Exception $e) {
@@ -617,5 +638,59 @@ class Licenses extends LMFWC_REST_Controller
         $license_key['license_key'] = apply_filters('lmfwc_decrypt', $license_key['license_key']);
 
         return $this->response(true, $license_key, 200);
+    }
+
+    /**
+     * Callback for the GET licenses/validate{id} route. This check and verfiy the
+     * activation status of a given license key.
+     * 
+     * @param  WP_REST_Request $request
+     * @return WP_REST_Response
+     */
+    public function validateLicense(\WP_REST_Request $request)
+    {
+        $license_key_id = absint($request->get_param('license_key_id'));
+
+        if (!$license_key_id) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                'License Key ID is invalid.',
+                array('status' => 404)
+            );
+        }
+
+        try {
+            $result = apply_filters('lmfwc_get_license_key', $license_key_id);
+        } catch (Exception $e) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                $e->getMessage(),
+                array('status' => 404)
+            );
+        }
+
+        if (!$result) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                sprintf(
+                    'License Key with ID: %d could not be found.',
+                    $license_key_id
+                ),
+                array('status' => 404)
+            );
+        }
+
+        // Check if the license key can be activated
+        $times_activated = intval($result['times_activated']);
+        $times_activated_max = intval($result['times_activated_max']);
+        $remaining_activations = $times_activated_max - $times_activated;
+
+        $result = array(
+            'times_activated' => $times_activated,
+            'times_activated_max' => $times_activated_max,
+            'remaining_activations' => $remaining_activations
+        );
+
+        return $this->response(true, $result, 200);
     }
 }

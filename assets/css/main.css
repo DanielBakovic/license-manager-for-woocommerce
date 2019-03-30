@@ -11,13 +11,6 @@
 	--color-grey-1: #E1E1E1;
 }
 
-@font-face {
-	font-family: 'Roboto Mono';
-	src: url('./fonts/Roboto_Mono/RobotoMono-Regular.ttf') format('truetype');
-	font-weight: 400;
-	font-style: normal;
-}
-
 /* Text colors */
 .text-primary {
 	color: var(--color-primary);
@@ -77,7 +70,7 @@ table.wp-list-table.licenses span.lmfwc-date {
 /** License Key Placeholder */
 .lmfwc-placeholder {
 	display: inline-block;
-	font-family: 'Roboto Mono';
+	font-family: 'Consolas';
 	font-weight: 400;
 	min-width: 150px;
 	min-height: 20px;
@@ -124,7 +117,7 @@ table.wp-list-table.licenses span.lmfwc-date {
 	margin-left: 5px;
 }
 .lmfwc-clipboard {
-	font-family: "Roboto Mono";
+	font-family: "Consolas";
 	background-color: #f0f0f0;
 	color: #334;
 	padding: 7px 14px;
@@ -153,6 +146,7 @@ table.wp-list-table.licenses span.lmfwc-date {
 	cursor: default;
 	border: 2px solid transparent;
 	color: #6f6f6f;
+	min-width: 90px;
 }
 .lmfwc-status.sold {
 	border: 2px solid var(--color-info);
@@ -193,8 +187,31 @@ table.wp-list-table.licenses span.lmfwc-date {
 	color: var(--color-danger);
 }
 
+.lmfwc-status.activation.done,
+.lmfwc-status.activation.done > span.dashicons {
+	color: var(--color-info);
+}
+
 /** My Account **/
 .lmfwc-myaccount-license-key {
-	font-family: 'Roboto Mono', 'Consolas', sans-serif;
+	font-family: 'Consolas', sans-serif;
 	font-size: 13px;
+}
+
+/** Custom icons **/
+.lmfwc-icons {
+	width: 20px;
+	height: 20px;
+	display: inline-block;
+}
+.lmfwc-icons:before {
+	font-family: 'woocommerce';
+	text-align: center;
+	display: inline-block;
+	width: 100%;
+	position: relative;
+	top: 1px;
+}
+.lmfwc-icons.delivered:before {
+	content: "\e01a";
 }

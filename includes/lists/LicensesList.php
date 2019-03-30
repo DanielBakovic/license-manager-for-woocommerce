@@ -152,50 +152,17 @@ class LicensesList extends \WP_List_Table
                     $link = '';
                 }
                 return $link;
-            case 'source':
-                switch ($item['source']) {
-                    case LicenseSourceEnum::GENERATOR:
-                        $status = sprintf(
-                            '<img class="lmfwc-source-icon" src="%s" alt="%s" title="%s">',
-                            LMFWC_IMG_URL . 'icons/ic_settings_black_24dp.png',
-                            __('Generator', 'lmfwc'),
-                            __('Generator', 'lmfwc')
-                        );
-                        break;
-                    case LicenseSourceEnum::IMPORT:
-                        $status = sprintf(
-                            '<img class="lmfwc-source-icon" src="%s" alt="%s" title="%s">',
-                            LMFWC_IMG_URL . 'icons/ic_import_export_black_24dp.png',
-                            __('Import', 'lmfwc'),
-                            __('Import', 'lmfwc')
-                        );
-                        break;
-                    case LicenseSourceEnum::API:
-                        $status = sprintf(
-                            '<img class="lmfwc-source-icon" src="%s" alt="%s" title="%s">',
-                            LMFWC_IMG_URL . 'icons/ic_cloud_black_24dp.png',
-                            __('API', 'lmfwc'),
-                            __('API', 'lmfwc')
-                        );
-                        break;
-
-                    // Default switch case
-                    default:
-                        $status = __('Unknown', 'lmfwc');
-                        break;
-                }
-                return $status;
             case 'status':
                 switch ($item['status']) {
                     case LicenseStatusEnum::SOLD:
                         $status = sprintf(
-                            '<div class="lmfwc-status sold"><span class="dashicons dashicons-marker"></span> %s</div>',
+                            '<div class="lmfwc-status sold"><span class="dashicons dashicons-yes"></span> %s</div>',
                             __('Sold', 'lmfwc')
                         );
                         break;
                     case LicenseStatusEnum::DELIVERED:
                         $status = sprintf(
-                            '<div class="lmfwc-status delivered"><span class="dashicons dashicons-marker"></span> %s</div>',
+                            '<div class="lmfwc-status delivered"><span class="lmfwc-icons delivered"></span> %s</div>',
                             __('Delivered', 'lmfwc')
                         );
                         break;
@@ -413,13 +380,24 @@ class LicensesList extends \WP_List_Table
     {
         $html = '';
 
-        if ($item['times_activated']
-            && $item['times_activated_max']
-        ) {
+        $times_activated = intval($item['times_activated']);
+        $times_activated_max = intval($item['times_activated_max']);
+
+        if ($times_activated == $times_activated_max) {
+            $icon = '<span class="dashicons dashicons-yes"></span>';
+            $status = 'activation done';
+        } else {
+            $icon = '';
+            $status = 'activation pending';
+        }
+
+        if ($times_activated || $times_activated_max) {
             $html = sprintf(
-                '<div>%d / %d</div>',
-                $item['times_activated'],
-                $item['times_activated_max']
+                '<div class="lmfwc-status %s">%s <small>%d</small> / <b>%d</b></div>',
+                $status,
+                $icon,
+                $times_activated,
+                $times_activated_max
             );
         }
 
@@ -432,10 +410,10 @@ class LicensesList extends \WP_List_Table
             'id'         => array('id', true),
             'order_id'   => array('order_id', true),
             'product_id' => array('product_id', true),
-            'created_at' => array('created_at', true),
             'expires_at' => array('expires_at', true),
-            'source'     => array('source', true),
-            'status'     => array('status', true)
+            'status'     => array('status', true),
+            'created_at' => array('created_at', true),
+            'activation' => array('times_activated_max', true)
         );
 
         return $sortable_columns;
@@ -555,8 +533,7 @@ class LicensesList extends \WP_List_Table
             'created_at'  => __('Created at', 'lmfwc'),
             'expires_at'  => __('Expires at', 'lmfwc'),
             'valid_for'   => __('Valid for', 'lmfwc'),
-            'status'      => __('Status', 'lmfwc'),
-            'source'      => __('Source', 'lmfwc')
+            'status'      => __('Status', 'lmfwc')
         );
 
         return $columns;

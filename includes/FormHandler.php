@@ -393,7 +393,9 @@ class FormHandler
                 $license_keys,
                 $status,
                 $_POST['product'],
-                $_POST['valid_for']
+                $_POST['valid_for'],
+                $_POST['times_activated_max'],
+                get_current_user_id()
             );
         } catch (\Exception $e) {
             AdminNotice::error(
@@ -500,7 +502,9 @@ class FormHandler
             $_POST['license_key'],
             $_POST['valid_for'],
             LicenseSourceEnum::IMPORT,
-            $status
+            $status,
+            $_POST['times_activated_max'],
+            get_current_user_id()
         );
 
         // Redirect with message
@@ -544,7 +548,9 @@ class FormHandler
             $_POST['license_key'],
             $_POST['valid_for'],
             $_POST['source'],
-            $_POST['status']
+            $_POST['status'],
+            $_POST['times_activated_max'],
+            get_current_user_id()
         );
 
         // Set the admin notice
