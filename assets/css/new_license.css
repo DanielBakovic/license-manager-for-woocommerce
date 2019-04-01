@@ -1,0 +1,51 @@
+@media screen and (min-width: 961px) {
+    .lmfwc-add-licenses-wrapper {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .lmfwc-add-licenses-container {
+        position: relative;
+    }
+    .lmfwc-card {
+        position: absolute;
+        background-color: #ffffff;
+        border: 1px solid rgba(0,0,0,.1);
+        border-top: 5px solid #ddd;
+        border-radius: 3px;
+        width: calc(50% - 1em);
+        margin: .5em;
+        padding: 1em;
+        text-align: center;
+        -webkit-box-sizing: border-box;
+           -moz-box-sizing: border-box;
+                box-sizing: border-box;
+        -webkit-box-shadow: 2px 2px 5px rgba(0,0,0,.05);
+                box-shadow: 2px 2px 5px rgba(0,0,0,.05);
+        -webkit-transition: all .3s ease-in-out;
+             -o-transition: all .3s ease-in-out;
+                transition: all .3s ease-in-out;
+    }
+    .lmfwc-card > h2 {
+        margin-top: .5em;
+    }
+    .lmfwc-card > span.dashicons {
+        height: 2em;
+    }
+    .lmfwc-card > span.dashicons:before {
+        font-size: 2em;
+    }
+    .lmfwc-card > button {
+    }
+
+    .lmfwc-card-content {
+        height: 0;
+        overflow: hidden;
+        -webkit-transition: height .3s ease-in-out;
+             -o-transition: height .3s ease-in-out;
+                transition: height .3s ease-in-out;
+    }
+
+    .lmfwc-card-content > form{
+        text-align: left;
+    }
+}

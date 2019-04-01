@@ -318,7 +318,7 @@ class FormHandler
         check_admin_referer('lmfwc_import_license_keys');
 
         $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
-        $mimes = array('application/vnd.ms-excel','text/plain','text/csv','text/tsv');
+        $mimes = array('application/vnd.ms-excel', 'text/plain', 'text/csv', 'text/tsv');
 
         if (!in_array($ext, array('txt', 'csv'))
             || !in_array($_FILES['file']['type'], $mimes)

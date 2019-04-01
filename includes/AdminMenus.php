@@ -115,6 +115,8 @@ class AdminMenus
 
     public function licensesPage()
     {
+        //WC()->mailer()->emails['LMFWC_Customer_Preorder_Complete']->trigger(1792, new \WC_Order(1792));
+        //WC()->mailer()->emails['LMFWC_Customer_Deliver_License_Keys']->trigger(1792, new \WC_Order(1792));
 
         $licenses = new \LicenseManagerForWooCommerce\Lists\LicensesList();
 

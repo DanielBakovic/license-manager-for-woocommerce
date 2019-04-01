@@ -53,6 +53,7 @@ final class Main
         $this->_initHooks();
 
         add_action('init', array($this, 'init'));
+        add_action('woocommerce_email_classes', array($this, 'registerEmails'), 90, 1);
 
         new API\Authentication();
     }
@@ -116,6 +117,11 @@ final class Main
 
         // JavaScript
         wp_enqueue_script('lmfwc_admin_js', LMFWC_JS_URL  . 'script.js');
+
+        if (isset($_GET['page']) && $_GET['page'] == AdminMenus::LICENSES_PAGE) {
+            wp_enqueue_style('lmfwc_new_license', LMFWC_CSS_URL . 'new_license.css');
+            wp_enqueue_script('lmfwc_new_license', LMFWC_JS_URL  . 'new_license.js');
+        }
 
         // Script localization
         wp_localize_script(
@@ -223,5 +229,13 @@ final class Main
         new Repositories\PostMeta();
         new FormHandler();
         new API\Setup();
+    }
+
+    public function registerEmails($emails)
+    {
+        $emails['LMFWC_Customer_Preorder_Complete'] = new \LicenseManagerForWooCommerce\Emails\CustomerPreorderComplete();
+        $emails['LMFWC_Customer_Deliver_License_Keys'] = new \LicenseManagerForWooCommerce\Emails\CustomerDeliverLicenseKeys();
+
+        return $emails;
     }
 }
