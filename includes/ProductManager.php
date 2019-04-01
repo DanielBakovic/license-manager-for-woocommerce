@@ -60,10 +60,11 @@ class ProductManager
     {
         global $post;
 
-        $licensed      = get_post_meta($post->ID, 'lmfwc_licensed_product',                    true);
-        $generator_id  = get_post_meta($post->ID, 'lmfwc_licensed_product_assigned_generator', true);
-        $use_generator = get_post_meta($post->ID, 'lmfwc_licensed_product_use_generator',      true);
-        $use_stock     = get_post_meta($post->ID, 'lmfwc_licensed_product_use_stock',          true);
+        $licensed          = get_post_meta($post->ID, 'lmfwc_licensed_product',                    true);
+        $deliverd_quantity = get_post_meta($post->ID, 'lmfwc_licensed_product_delivered_quantity', true);
+        $generator_id      = get_post_meta($post->ID, 'lmfwc_licensed_product_assigned_generator', true);
+        $use_generator     = get_post_meta($post->ID, 'lmfwc_licensed_product_use_generator',      true);
+        $use_stock         = get_post_meta($post->ID, 'lmfwc_licensed_product_use_stock',          true);
 
         $generator_options = array('' => __('Please select a generator', 'lmfwc'));
 
@@ -85,6 +86,21 @@ class ProductManager
                 'value'       => $licensed,
                 'cbvalue'     => 1,
                 'desc_tip'    => false
+            )
+        );
+
+        // Number "lmfwc_licensed_product_deliver_amount"
+        woocommerce_wp_text_input( 
+            array( 
+                'id'                => 'lmfwc_licensed_product_delivered_quantity',
+                'label'             => __('Delivered quantity', 'lmfwc'),
+                'value'             => $deliverd_quantity ? $deliverd_quantity : 1, 
+                'description'       => __('Defines the amount of license keys to be delivered upon purchase.', 'lmfwc'),
+                'type'              => 'number', 
+                'custom_attributes' => array(
+                        'step'  => 'any',
+                        'min'   => '1'
+                    ) 
             )
         );
 
@@ -164,6 +180,15 @@ class ProductManager
         } else {
             update_post_meta($post_id, 'lmfwc_licensed_product', 0);
         }
+
+        // Update delivered quantity, according to field.
+        $deliverd_quantity = absint($_POST['lmfwc_licensed_product_delivered_quantity']);
+
+        update_post_meta(
+            $post_id,
+            'lmfwc_licensed_product_delivered_quantity',
+            $deliverd_quantity ? $deliverd_quantity : 1
+        );
 
         // Update the use stock flag, according to checkbox.
         if (array_key_exists('lmfwc_licensed_product_use_stock', $_POST)) {

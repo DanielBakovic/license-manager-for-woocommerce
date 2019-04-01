@@ -69,6 +69,19 @@ class OrderManager
                 continue;
             }
 
+            // Determines how many times should the license key be delivered
+            if (!$delivered_quantity = absint(get_post_meta(
+                    $product->get_id(),
+                    'lmfwc_licensed_product_delivered_quantity',
+                    true
+                ))
+            ) {
+                $delivered_quantity = 1;
+            }
+
+            // Set the needed delivery amount
+            $needed_amount = absint($item_data->get_quantity()) * $delivered_quantity;
+
             // Sell license keys through available stock.
             if ($use_stock) {
                 // Retrieve the available license keys.
@@ -78,18 +91,19 @@ class OrderManager
                     LicenseStatusEnum::ACTIVE
                 );
 
+                // Retrieve the current stock amount
                 $available_stock = count($license_keys);
 
                 // There are enough keys.
-                if ($item_data->get_quantity() <= $available_stock) {
+                if ($needed_amount <= $available_stock) {
                     // Set the retrieved license keys as "SOLD".
                     apply_filters(
                         'lmfwc_sell_imported_license_keys',
                         $license_keys,
                         $order_id,
-                        $item_data->get_quantity()
+                        $needed_amount
                     );
-                // There aren't not enough keys.
+                // There are not enough keys.
                 } else {
                     // Set the available license keys as "SOLD".
                     apply_filters(
@@ -101,7 +115,7 @@ class OrderManager
 
                     // The "use generator" option is active, generate them
                     if ($use_generator) {
-                        $amount_to_generate = intval($item_data->get_quantity()) - intval($available_stock);
+                        $amount_to_generate = $needed_amount - $available_stock;
                         $generator_id = get_post_meta(
                             $product->get_id(),
                             'lmfwc_licensed_product_assigned_generator',
@@ -132,6 +146,10 @@ class OrderManager
                             LicenseStatusEnum::SOLD,
                             $generator
                         );
+
+                    // Create a backorder
+                    } else {
+                        // Coming soon...
                     }
                 }
 
@@ -143,7 +161,7 @@ class OrderManager
                 $generator = apply_filters('lmfwc_get_generator', $generator_id);
 
                 $licenses = apply_filters('lmfwc_create_license_keys', array(
-                    'amount'       => $item_data->get_quantity(),
+                    'amount'       => $needed_amount,
                     'charset'      => $generator->charset,
                     'chunks'       => $generator->chunks,
                     'chunk_length' => $generator->chunk_length,
