@@ -144,6 +144,7 @@ class OrderManager
                             $licenses['licenses'],
                             $licenses['expires_in'],
                             LicenseStatusEnum::SOLD,
+                            get_current_user_id(),
                             $generator
                         );
 
@@ -179,12 +180,13 @@ class OrderManager
                     $licenses['licenses'],
                     $licenses['expires_in'],
                     LicenseStatusEnum::SOLD,
+                    get_current_user_id(),
                     $generator
                 );
             }
 
             // Set the order as complete.
-            //update_post_meta($order_id, 'lmfwc_order_complete', 1);
+            update_post_meta($order_id, 'lmfwc_order_complete', 1);
 
             // Set status to delivered if the setting is on.
             if (Settings::get('lmfwc_auto_delivery')) {

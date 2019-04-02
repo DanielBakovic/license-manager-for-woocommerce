@@ -118,9 +118,15 @@ final class Main
         // JavaScript
         wp_enqueue_script('lmfwc_admin_js', LMFWC_JS_URL  . 'script.js');
 
+        // Licenses page
         if (isset($_GET['page']) && $_GET['page'] == AdminMenus::LICENSES_PAGE) {
             wp_enqueue_style('lmfwc_new_license', LMFWC_CSS_URL . 'new_license.css');
             wp_enqueue_script('lmfwc_new_license', LMFWC_JS_URL  . 'new_license.js');
+        }
+
+        // Generators page
+        if (isset($_GET['page']) && $_GET['page'] == AdminMenus::GENERATORS_PAGE) {
+            wp_enqueue_script('lmfwc_generate_licenses', LMFWC_JS_URL . 'generate_licenses.js');
         }
 
         // Script localization

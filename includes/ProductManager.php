@@ -69,13 +69,15 @@ class ProductManager
         $generator_options = array('' => __('Please select a generator', 'lmfwc'));
 
         foreach (apply_filters('lmfwc_get_generators', null) as $generator) {
-            $generator_options[$generator->id] = $generator->name;
+            $generator_options[$generator->id] = sprintf('(#%d)', $generator->id) . ' ' . $generator->name;
         }
 
         echo sprintf(
             '<div id="%s" class="panel woocommerce_options_panel"><div class="options_group">',
             self::ADMIN_TAB_TARGET
         );
+
+        echo '<input type="hidden" name="lmfwc_edit_flag" value="true" />';
 
         // Checkbox "lmfwc_licensed_product"
         woocommerce_wp_checkbox(
@@ -170,6 +172,7 @@ class ProductManager
         // This is not a product.
         if (!array_key_exists('post_type', $_POST)
             || $_POST['post_type'] != 'product'
+            || !array_key_exists('lmfwc_edit_flag', $_POST)
         ) {
             return;
         }
@@ -197,6 +200,13 @@ class ProductManager
             update_post_meta($post_id, 'lmfwc_licensed_product_use_stock', 0);
         }
 
+        // Update the assigned generator id, according to select field.
+        update_post_meta(
+            $post_id,
+            'lmfwc_licensed_product_assigned_generator',
+            intval($_POST['lmfwc_licensed_product_assigned_generator'])
+        );
+
         // Update the use generator flag, according to checkbox.
         if (array_key_exists('lmfwc_licensed_product_use_generator', $_POST)) {
             // You must select a generator if you wish to assign it to the product.
@@ -205,18 +215,13 @@ class ProductManager
 
                 set_transient('lmfwc_error', $error, 45);
                 update_post_meta($post_id, 'lmfwc_licensed_product_use_generator', 0);
+                update_post_meta($post_id, 'lmfwc_licensed_product_assigned_generator', 0);
             } else {
                 update_post_meta($post_id, 'lmfwc_licensed_product_use_generator', 1);
             }
         } else {
             update_post_meta($post_id, 'lmfwc_licensed_product_use_generator', 0);
+            update_post_meta($post_id, 'lmfwc_licensed_product_assigned_generator', 0);
         }
-
-        // Update the assigned generator id, according to checkbox.
-        update_post_meta(
-            $post_id,
-            'lmfwc_licensed_product_assigned_generator',
-            intval($_POST['lmfwc_licensed_product_assigned_generator'])
-        );
     }
 }

@@ -68,7 +68,7 @@ class Generator
             'lmfwc_insert_generator',
             array($this, 'insertGenerator'),
             10,
-            8
+            9
         );
 
         // UPDATE
@@ -76,13 +76,13 @@ class Generator
             'lmfwc_update_generator',
             array($this, 'updateGenerator'),
             10,
-            9
+            10
         );
         add_filter(
             'lmfwc_update_selective_generator',
             array($this, 'updateSelectiveGenerator'),
             10,
-            9
+            10
         );
 
         // DELETE
@@ -112,6 +112,7 @@ class Generator
                     , `charset`
                     , `chunks`
                     , `chunk_length`
+                    , `times_activated_max`
                     , `separator`
                     , `prefix`
                     , `suffix`
@@ -151,6 +152,7 @@ class Generator
                         , `charset`
                         , `chunks`
                         , `chunk_length`
+                        , `times_activated_max`
                         , `separator`
                         , `prefix`
                         , `suffix`
@@ -187,19 +189,21 @@ class Generator
         $charset,
         $chunks,
         $chunk_length,
+        $times_activated_max,
         $separator,
         $prefix,
         $suffix,
         $expires_in
     ) {
-        $clean_name         = $name         ? sanitize_text_field($name)      : null;
-        $clean_charset      = $charset      ? sanitize_text_field($charset)   : null;
-        $clean_chunks       = $chunks       ? absint($chunks)                 : null;
-        $clean_chunk_length = $chunk_length ? absint($chunk_length)           : null;
-        $clean_separator    = $separator    ? sanitize_text_field($separator) : null;
-        $clean_prefix       = $prefix       ? sanitize_text_field($prefix)    : null;
-        $clean_suffix       = $suffix       ? sanitize_text_field($suffix)    : null;
-        $clean_expires_in   = $expires_in   ? absint($expires_in)             : null;
+        $clean_name                = $name                ? sanitize_text_field($name)      : null;
+        $clean_charset             = $charset             ? sanitize_text_field($charset)   : null;
+        $clean_chunks              = $chunks              ? absint($chunks)                 : null;
+        $clean_chunk_length        = $chunk_length        ? absint($chunk_length)           : null;
+        $clean_times_activated_max = $times_activated_max ? absint($times_activated_max)    : null;
+        $clean_separator           = $separator           ? sanitize_text_field($separator) : null;
+        $clean_prefix              = $prefix              ? sanitize_text_field($prefix)    : null;
+        $clean_suffix              = $suffix              ? sanitize_text_field($suffix)    : null;
+        $clean_expires_in          = $expires_in          ? absint($expires_in)             : null;
 
         if (!$clean_name) {
             throw new LMFWC_Exception('Generator name is invalid');
@@ -222,16 +226,17 @@ class Generator
         $insert = $wpdb->insert(
             $this->table,
             array(
-                'name'         => $clean_name,
-                'charset'      => $clean_charset,
-                'chunks'       => $clean_chunks,
-                'chunk_length' => $clean_chunk_length,
-                'separator'    => $clean_separator,
-                'prefix'       => $clean_prefix,
-                'suffix'       => $clean_suffix,
-                'expires_in'   => $clean_expires_in
+                'name'                => $clean_name,
+                'charset'             => $clean_charset,
+                'chunks'              => $clean_chunks,
+                'chunk_length'        => $clean_chunk_length,
+                'times_activated_max' => $clean_times_activated_max,
+                'separator'           => $clean_separator,
+                'prefix'              => $clean_prefix,
+                'suffix'              => $clean_suffix,
+                'expires_in'          => $clean_expires_in
             ),
-            array('%s', '%s', '%d', '%d', '%s', '%s', '%s')
+            array('%s', '%s', '%d', '%d', '%d', '%s', '%s', '%s')
         );
 
         if (!$insert) {
@@ -263,20 +268,22 @@ class Generator
         $charset,
         $chunks,
         $chunk_length,
+        $times_activated_max,
         $separator,
         $prefix,
         $suffix,
         $expires_in
     ) {
-        $clean_id           = $id           ? absint($id)                     : null;
-        $clean_name         = $name         ? sanitize_text_field($name)      : null;
-        $clean_charset      = $charset      ? sanitize_text_field($charset)   : null;
-        $clean_chunks       = $chunks       ? absint($chunks)                 : null;
-        $clean_chunk_length = $chunk_length ? absint($chunk_length)           : null;
-        $clean_separator    = $separator    ? sanitize_text_field($separator) : null;
-        $clean_prefix       = $prefix       ? sanitize_text_field($prefix)    : null;
-        $clean_suffix       = $suffix       ? sanitize_text_field($suffix)    : null;
-        $clean_expires_in   = $expires_in   ? absint($expires_in)             : null;
+        $clean_id                  = $id                  ? absint($id)                     : null;
+        $clean_name                = $name                ? sanitize_text_field($name)      : null;
+        $clean_charset             = $charset             ? sanitize_text_field($charset)   : null;
+        $clean_chunks              = $chunks              ? absint($chunks)                 : null;
+        $clean_chunk_length        = $chunk_length        ? absint($chunk_length)           : null;
+        $clean_times_activated_max = $times_activated_max ? absint($times_activated_max)    : null;
+        $clean_separator           = $separator           ? sanitize_text_field($separator) : null;
+        $clean_prefix              = $prefix              ? sanitize_text_field($prefix)    : null;
+        $clean_suffix              = $suffix              ? sanitize_text_field($suffix)    : null;
+        $clean_expires_in          = $expires_in          ? absint($expires_in)             : null;
 
         if (!$clean_id) {
             throw new LMFWC_Exception('Generator ID is invalid');
@@ -303,17 +310,18 @@ class Generator
         return $wpdb->update(
             $this->table,
             array(
-                'name'         => $clean_name,
-                'charset'      => $clean_charset,
-                'chunks'       => $clean_chunks,
-                'chunk_length' => $clean_chunk_length,
-                'separator'    => $clean_separator,
-                'prefix'       => $clean_prefix,
-                'suffix'       => $clean_suffix,
-                'expires_in'   => $clean_expires_in
+                'name'                => $clean_name,
+                'charset'             => $clean_charset,
+                'chunks'              => $clean_chunks,
+                'chunk_length'        => $clean_chunk_length,
+                'times_activated_max' => $clean_times_activated_max,
+                'separator'           => $clean_separator,
+                'prefix'              => $clean_prefix,
+                'suffix'              => $clean_suffix,
+                'expires_in'          => $clean_expires_in
             ),
             array('id' => $clean_id),
-            array('%s', '%s', '%d', '%d', '%s', '%s', '%s', '%s'),
+            array('%s', '%s', '%d', '%d', '%d', '%s', '%s', '%s', '%s'),
             array('%d')
         );
     }
@@ -340,6 +348,7 @@ class Generator
         $charset,
         $chunks,
         $chunk_length,
+        $times_activated_max,
         $separator,
         $prefix,
         $suffix,
@@ -385,6 +394,14 @@ class Generator
             $clean_chunk_length = self::UNDEFINED;
         }
 
+        if ($times_activated_max && $times_activated_max != self::UNDEFINED) {
+            $clean_times_activated_max = absint($times_activated_max);
+        } elseif (is_null($times_activated_max)) {
+            $clean_times_activated_max = null;
+        } elseif ($times_activated_max == self::UNDEFINED) {
+            $clean_times_activated_max = self::UNDEFINED;
+        }
+
         if ($separator && $separator != self::UNDEFINED) {
             $clean_separator = sanitize_text_field($separator);
         } elseif (is_null($separator)) {
@@ -425,6 +442,7 @@ class Generator
             && $clean_charset == self::UNDEFINED
             && $clean_chunks == self::UNDEFINED
             && $clean_chunk_length == self::UNDEFINED
+            && $clean_times_activated_max == self::UNDEFINED
             && $clean_separator == self::UNDEFINED
             && $clean_prefix == self::UNDEFINED
             && $clean_suffix == self::UNDEFINED
@@ -491,6 +509,18 @@ class Generator
                 $sql .= '`chunk_length` = NULL';
             } else {
                 $sql .= $wpdb->prepare('`chunk_length` = %d', $clean_chunk_length);
+            }
+
+            $first = false;
+        }
+
+        if ($clean_times_activated_max != self::UNDEFINED) {
+            $sql .= $first ? ' SET ' : ', ';
+            
+            if (is_null($clean_times_activated_max)) {
+                $sql .= '`times_activated_max` = NULL';
+            } else {
+                $sql .= $wpdb->prepare('`times_activated_max` = %d', $clean_times_activated_max);
             }
 
             $first = false;

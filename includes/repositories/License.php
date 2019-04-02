@@ -107,7 +107,7 @@ class License
             'lmfwc_insert_generated_license_keys',
             array($this, 'insertGeneratedLicenseKeys'),
             10,
-            6
+            7
         );
         add_filter(
             'lmfwc_insert_imported_license_keys',
@@ -604,6 +604,7 @@ class License
         $license_keys,
         $expires_in,
         $status,
+        $created_by,
         $generator
     ) {
         $clean_order_id     = $order_id     ? absint($order_id)     : null;
@@ -611,6 +612,7 @@ class License
         $clean_license_keys = array();
         $clean_expires_in   = $expires_in   ? absint($expires_in)   : null;
         $clean_status       = $status       ? absint($status)       : null;
+        $clean_created_by   = $created_by   ? absint($created_by)   : null;
 
         if (!$clean_status
             || !in_array($clean_status, LicenseStatusEnum::$status)
@@ -628,6 +630,10 @@ class License
 
         if (count($clean_license_keys) === 0) {
             throw new LMFWC_Exception('No License Keys were provided');
+        }
+
+        if (!$clean_created_by || !get_userdata($clean_created_by)) {
+            throw new LMFWC_Exception('Created by User ID is invalid');
         }
 
         global $wpdb;
@@ -660,17 +666,19 @@ class License
             $wpdb->insert(
                 $this->table,
                 array(
-                    'order_id'    => $clean_order_id,
-                    'product_id'  => $clean_product_id,
-                    'license_key' => $encrypted_license_key,
-                    'hash'        => $hashed_license_key,
-                    'created_at'  => $created_at,
-                    'expires_at'  => $expires_at,
-                    'valid_for'   => $clean_expires_in,
-                    'source'      => LicenseSourceEnum::GENERATOR,
-                    'status'      => $clean_status
+                    'order_id'            => $clean_order_id,
+                    'product_id'          => $clean_product_id,
+                    'license_key'         => $encrypted_license_key,
+                    'hash'                => $hashed_license_key,
+                    'expires_at'          => $expires_at,
+                    'valid_for'           => $clean_expires_in,
+                    'source'              => LicenseSourceEnum::GENERATOR,
+                    'status'              => $clean_status,
+                    'times_activated_max' => $generator->times_activated_max,
+                    'created_at'          => gmdate('Y-m-d H:i:s'),
+                    'created_by'          => $clean_created_by
                 ),
-                array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
+                array('%d', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%d')
             );
         }
 

@@ -31,7 +31,7 @@
             <tr scope="row">
                 <th scope="row"><label><?php esc_html_e('Maximum activation count', 'lmfwc');?></label></th>
                 <td>
-                    <input name="times_activated_max" id="times_activated_max" class="regular-text" type="text">
+                    <input name="times_activated_max" id="times_activated_max" class="regular-text" type="number">
                     <p class="description" id="tagline-description"><?php esc_html_e('Define how many times the license key can be marked as "activated" by using the REST API. Leave blank if you do not use the API.', 'lmfwc');?></p>
                 </td>
             </tr>
