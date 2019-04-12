@@ -61,12 +61,16 @@ Yes, there is! An extensive documentation describing the plugin features and fun
 
 == Changelog ==
 
-= 1.2.0 - 2019-INSERT_MONTH-INSERT_DAY =
-* Enhancement - The old "Add/Import" page has been renamed "Add license" and reworked with an intuitive GUI.
-* Add - Backorder support.
-* Add - Preorder support.
-* Add - Editable, custom WooCommerce email templates for license key delivery.
-* Add - License key activation (via REST API). You can now define how many times a license key can be activated using the plugin REST API endpoints.
+= 1.2.0 - 2019-04-INSERT_DAY =
+* Add - You can now define how many times a license key can be activated using the plugin REST API endpoints.
+* Add - You can now define how many license keys will be delivered on purchase.
+* Add - Variable product support.
+* Add - Export license keys feature (CSV/PDF)
+* Add - License key activation REST API endpoint.
+* Add - License key validation REST API endpoint.
+* Enhancement - The old "Add/Import" page has been renamed to "Add license" and reworked with an intuitive GUI.
+* Enhancement - Various minor UI improvements across the plugin.
+* Tweak - Changes to the REST API response structure.
 * Tweak - Changes to the database structure.
 
 = 1.1.3 - 2019-03-24 =

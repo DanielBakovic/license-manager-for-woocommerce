@@ -2,6 +2,8 @@
 
 namespace LicenseManagerForWooCommerce\API;
 
+use \LicenseManagerForWooCommerce\Settings;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -88,6 +90,7 @@ class Authentication
      * Authenticate user.
      *
      * @param int|false $user_id User ID if one has been determined, false otherwise.
+     * 
      * @return int|false
      */
     public function authenticate($user_id) {
@@ -96,7 +99,7 @@ class Authentication
             return $user_id;
         }
 
-        if (is_ssl()) {
+        if (is_ssl() || Settings::get('lmfwc_disable_api_ssl')) {
             $user_id = $this->performBasicAuthentication();
         } else {
             $this->setError(
@@ -121,6 +124,7 @@ class Authentication
      * Check for authentication error.
      *
      * @param WP_Error|null|bool $error Error data.
+     * 
      * @return WP_Error|null|bool
      */
     public function checkAuthenticationError($error) {
@@ -227,6 +231,7 @@ class Authentication
      * Return the user data for the given consumer_key.
      *
      * @param string $consumer_key Consumer key.
+     * 
      * @return array
      */
     public function getUserDataByConsumerKey($consumer_key) {
@@ -251,6 +256,7 @@ class Authentication
      * Check that the API keys provided have the proper key-specific permissions to either read or write API resources.
      *
      * @param string $method Request method.
+     * 
      * @return bool|WP_Error
      */
     private function checkPermissions($method) {
@@ -314,6 +320,7 @@ class Authentication
      * key provided, then return the correct Basic headers and an error message.
      *
      * @param WP_REST_Response $response Current response being served.
+     * 
      * @return WP_REST_Response
      */
     public function sendUnauthorizedHeaders($response) {
@@ -331,6 +338,7 @@ class Authentication
      * @param mixed           $result  Response to replace the requested version with.
      * @param WP_REST_Server  $server  Server instance.
      * @param WP_REST_Request $request Request used to generate the response.
+     * 
      * @return mixed
      */
     public function checkUserPermissions($result, $server, $request) {

@@ -45,6 +45,13 @@ class Settings
             'lmfwc_security'
         );
         add_settings_field(
+            'lmfwc_disable_api_ssl',
+            __('API & SSL', 'lmfwc'),
+            array($this, 'lmfwcFieldEnableApiOnNonSsl'),
+            'lmfwc',
+            'lmfwc_security'
+        );
+        add_settings_field(
             'lmfwc_auto_delivery',
             __('Automatic Delivery', 'lmfwc'),
             array($this, 'lmfwcFieldAutoDelivery'),
@@ -83,8 +90,36 @@ class Settings
         $html .= sprintf('<span>%s</span>', __('Hide license keys in the admin dashboard.', 'lmfwc'));
         $html .= '</label>';
         $html .= sprintf(
-            '<p class="description" id="tagline-description">%s</p>',
+            '<p class="description">%s</p>',
             __('All licenses will be hidden and only displayed when the \'Show\' action is clicked.', 'lmfwc')
+        );
+        $html .= '</fieldset>';
+
+        echo $html;
+    }
+
+    /**
+     * Callback for the "lmfwc_disable_api_ssl" field.
+     *
+     * @since 1.0.0
+     */
+    public function lmfwcFieldEnableApiOnNonSsl()
+    {
+        $field = 'lmfwc_disable_api_ssl';
+        (array_key_exists('lmfwc_disable_api_ssl', $this->settings)) ? $value = true : $value = false;
+
+        $html = '<fieldset>';
+        $html .= sprintf('<label for="%s">', $field);
+        $html .= sprintf(
+            '<input id="%s" type="checkbox" name="lmfwc_settings[%s]" value="1"' . checked(true, $value, false) . '/>',
+            $field,
+            $field
+        );
+        $html .= sprintf('<span>%s</span>', __('Enable the plugin API endpoints over insecure HTTP connections.', 'lmfwc'));
+        $html .= '</label>';
+        $html .= sprintf(
+            '<p class="description">%s</p>',
+            __('This should only be activated for development purposes.', 'lmfwc')
         );
         $html .= '</fieldset>';
 
@@ -106,7 +141,7 @@ class Settings
         $html .= sprintf('<span>%s</span>', __('Automatically send license keys when an order is set to \'Complete\'.', 'lmfwc'));
         $html .= '</label>';
         $html .= sprintf(
-            '<p class="description" id="tagline-description">%s</p>',
+            '<p class="description">%s</p>',
             __('If this setting is off, you must manually send out all license keys for completed orders.', 'lmfwc')
         );
         $html .= '</fieldset>';
