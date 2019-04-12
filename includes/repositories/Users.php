@@ -21,9 +21,9 @@ defined('ABSPATH') || exit;
  * @package  LicenseManagerForWooCommerce
  * @author   Dražen Bebić <drazen.bebic@outlook.com>
  * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
- * @version  Release: <1.1.5>
+ * @version  Release: <1.2.0>
  * @link     https://www.bebic.at/license-manager-for-woocommerce
- * @since    1.1.5
+ * @since    1.2.0
  */
 class Users
 {
@@ -41,9 +41,7 @@ class Users
     /**
      * Retrieve assigned products for a specific generator.
      *
-     * @param int $generator_id ID of the given generator
-     *
-     * @since  1.0.0
+     * @since  1.2.0
      * @return array
      */
     public function getUsers()

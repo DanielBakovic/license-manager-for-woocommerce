@@ -335,15 +335,11 @@ class License
         }
 
         if (!$clean_product_id) {
-            throw new LMFWC_Exception("Product ID is invalid");
+            throw new LMFWC_Exception('Product ID is invalid');
         }
 
         if ($clean_order_id) {
             new \WC_Order($clean_order_id);
-        }
-
-        if ($clean_product_id) {
-            new \WC_Product($clean_product_id);
         }
 
         global $wpdb;
@@ -402,10 +398,6 @@ class License
 
         if (!$clean_status) {
             throw new LMFWC_Exception('Status is invalid');
-        }
-
-        if ($clean_product_id) {
-            new \WC_Product($product_id);
         }
 
         if (!in_array($clean_status, LicenseStatusEnum::$status)) {
@@ -523,10 +515,6 @@ class License
 
         if ($clean_order_id) {
             new \WC_Order($clean_order_id);
-        }
-
-        if ($clean_product_id) {
-            new \WC_Product($clean_product_id);
         }
 
         if (!$clean_license_key || strlen($clean_license_key) == 0) {
@@ -752,10 +740,6 @@ class License
             throw new LMFWC_Exception('Status enumerator is invalid');
         }
 
-        if ($product_id) {
-            new \WC_Product($clean_product_id);
-        }
-
         if (!$clean_created_by || !get_userdata($clean_created_by)) {
             throw new LMFWC_Exception('Created by User ID is invalid');
         }
@@ -837,10 +821,6 @@ class License
 
         if (!$clean_id) {
             throw new LMFWC_Exception('Invalid License Key ID');
-        }
-
-        if ($clean_product_id) {
-            new \WC_Product($clean_product_id);
         }
 
         if (!$clean_license_key || strlen($clean_license_key) == 0) {

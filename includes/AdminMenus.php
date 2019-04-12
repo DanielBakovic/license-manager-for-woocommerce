@@ -115,9 +115,6 @@ class AdminMenus
 
     public function licensesPage()
     {
-        //WC()->mailer()->emails['LMFWC_Customer_Preorder_Complete']->trigger(1792, new \WC_Order(1792));
-        //WC()->mailer()->emails['LMFWC_Customer_Deliver_License_Keys']->trigger(1792, new \WC_Order(1792));
-
         $licenses = new \LicenseManagerForWooCommerce\Lists\LicensesList();
 
         $action = $this->getCurrentAction($default = 'list');
@@ -135,30 +132,22 @@ class AdminMenus
             || $action === 'deactivate'
             || $action === 'delete'
         ) {
-            $products = new \WP_Query(
-                array(
-                    'post_type'      => 'product',
-                    'posts_per_page' => -1
-                )
-            );
+            $products = apply_filters('lmfwc_get_products_dropdown', null);
         } 
 
         if ($action === 'edit') {
-            $status_whitelist = array(
-                LicenseStatusEnum::ACTIVE,
-                LicenseStatusEnum::INACTIVE
-            );
-            $license_id = absint($_GET['id']);
-            $license_row = apply_filters('lmfwc_get_license_key', $license_id);
-            $license_status = absint($license_row['status']);
-            $license_key = apply_filters('lmfwc_decrypt', $license_row['license_key']);
-            $valid_for = $license_row['valid_for'];
-            $activated = ($license_row['status'] == LicenseStatusEnum::ACTIVE) ? true : false;
+            $status_whitelist    = array(LicenseStatusEnum::ACTIVE, LicenseStatusEnum::INACTIVE);
+            $license_id          = absint($_GET['id']);
+            $license_row         = apply_filters('lmfwc_get_license_key', $license_id);
+            $license_status      = absint($license_row['status']);
+            $license_key         = apply_filters('lmfwc_decrypt', $license_row['license_key']);
+            $valid_for           = $license_row['valid_for'];
+            $activated           = ($license_row['status'] == LicenseStatusEnum::ACTIVE) ? true : false;
             $times_activated_max = $license_row['times_activated_max'];
-            $product_id = absint($license_row['product_id']);
-            $license_source = absint($license_row['source']);
-            $status_active = LicenseStatusEnum::ACTIVE;
-            $status_inactive = LicenseStatusEnum::INACTIVE;
+            $product_id          = absint($license_row['product_id']);
+            $license_source      = absint($license_row['source']);
+            $status_active       = LicenseStatusEnum::ACTIVE;
+            $status_inactive     = LicenseStatusEnum::INACTIVE;
 
             if (!$license_id) {
                 wp_die(__('Invalid License Key ID', 'lmfwc'));

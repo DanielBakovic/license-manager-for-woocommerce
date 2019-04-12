@@ -54,15 +54,27 @@
             <tr scope="row">
                 <th scope="row"><label><?php esc_html_e('Product', 'lmfwc');?></label></th>
                 <td>
-                    <?php if ($products->have_posts()): ?>
+                    <?php if (!empty($products)): ?>
+
                         <select name="product" id="bulk__product" class="regular-text">
                             <option value=""><?php esc_html_e('Select a product...', 'lmfwc');?></option>
-                            <?php foreach($products->posts as $product): ?>
-                                <option value="<?=$product->ID;?>"><?=$product->post_title;?></option>
+
+                            <?php foreach ($products as $product): ?>
+                                <?php
+                                    echo sprintf(
+                                        '<option value="%d">#%d - %s</option>',
+                                        $product['id'],
+                                        $product['id'],
+                                        $product['name']
+                                    );
+                                ?>
                             <?php endforeach; ?>
                         </select>
+
                     <?php else: ?>
+
                         <label><?php esc_html_e('You do not have any products defined.', 'lmfwc');?></label>
+
                     <?php endif; ?>
                     <p class="description"><?php esc_html_e('The product to which the keys will be assigned. You can also leave this blank to manually assign them later.', 'lmfwc');?></p>
                 </td>

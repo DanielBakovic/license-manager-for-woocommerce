@@ -49,7 +49,7 @@ class OrderManager
         if (get_post_meta($order_id, 'lmfwc_order_complete')) return;
 
         $order    = new \WC_Order($order_id);
-        $licenses = [];
+        $licenses = array();
 
         // Loop through the order items
         foreach ($order->get_items() as $item_data) {
@@ -214,23 +214,29 @@ class OrderManager
     public function deliverLicenseKeys($order, $is_admin_email)
     {
         // Return if the order isn't complete.
-        if ($order->get_status() != 'completed' && !get_post_meta($order->get_id(), 'lmfwc_order_complete')) return;
+        if ($order->get_status() != 'completed'
+            && !get_post_meta($order->get_id(), 'lmfwc_order_complete')
+        ) {
+            return;
+        }
 
         // Send the keys out if the setting is active.
         if (Settings::get('lmfwc_auto_delivery')) {
-            $data = [];
+            $data = array();
 
             /**
              * @var $item_data WC_Order_Item_Product
              */
             foreach ($order->get_items() as $item_data) {
                 /**
-                 * @var $product WC_Product_Simple
+                 * @var WC_Product_Simple|WC_Product_Variation $product
                  */
                 $product = $item_data->get_product();
 
                 // Check if the product has been activated for selling.
-                if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)) break;
+                if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)) {
+                    break;
+                }
 
                 $data[$product->get_id()]['name'] = $product->get_name();
                 $data[$product->get_id()]['keys'] = apply_filters(
@@ -258,7 +264,11 @@ class OrderManager
     public function showBoughtLicenses($order)
     {
         // Return if the order isn't complete.
-        if ($order->get_status() != 'completed' && !get_post_meta($order->get_id(), 'lmfwc_order_complete')) return;
+        if ($order->get_status() != 'completed'
+            && !get_post_meta($order->get_id(), 'lmfwc_order_complete')
+        ) {
+            return;
+        }
 
         // Add missing style.
         if (!wp_style_is('lmfwc_admin_css', $list = 'enqueued' )) {
@@ -275,7 +285,9 @@ class OrderManager
             $product = $item_data->get_product();
 
             // Check if the product has been activated for selling.
-            if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)) break;
+            if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)) {
+                break;
+            }
 
             $data[$product->get_id()]['name'] = $product->get_name();
             $data[$product->get_id()]['keys'] = apply_filters(

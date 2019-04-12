@@ -70,15 +70,22 @@
             <tr scope="row">
                 <th scope="row"><label><?php esc_html_e('Product', 'lmfwc');?></label></th>
                 <td>
-                    <?php if ($products->have_posts()): ?>
+                    <?php if (!empty($products)): ?>
                         <select name="product" id="edit__product" class="regular-text">
                             <option value=""><?php esc_html_e('Select a product...');?></option>
-                            <?php /** @var $product WP_Post */ ?>
-                            <?php foreach ($products->posts as $product): ?>
-                                <?php $selected = selected($product->ID, $product_id, false); ?>
-                                <option value="<?=$product->ID;?>" <?php echo $selected; ?>>
-                                    <span><?php echo esc_html($product->post_title); ?></span>
-                                </option>
+
+                            <?php foreach ($products as $product): ?>
+                                <?php
+                                    $selected = selected($product['id'], $product_id, false);
+
+                                    echo sprintf(
+                                        '<option value="%d" %s>#%d - %s</option>',
+                                        $product['id'],
+                                        $selected,
+                                        $product['id'],
+                                        $product['name']
+                                    );
+                                ?>
                             <?php endforeach; ?>
                         </select>
                     <?php else: ?>

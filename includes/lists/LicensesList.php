@@ -381,11 +381,31 @@ class LicensesList extends \WP_List_Table
         $html = '';
 
         if ($product = wc_get_product($item['product_id'])) {
-            $html = sprintf(
-                '<a href="%s" target="_blank">%s</a>',
-                get_edit_post_link($item['product_id']),
-                $product->get_name()
-            );
+
+            if ($parent_id = $product->get_parent_id()) {
+                $html = sprintf(
+                    '<span>#%s - %s</span>',
+                    $product->get_id(),
+                    $product->get_name()
+                );
+
+                if ($parent = wc_get_product($parent_id)) {
+                    $html .= sprintf(
+                        '<br><small>%s <a href="%s" target="_blank">#%s - %s</a></small>',
+                        __('Variation of', 'lmfwc'),
+                        get_edit_post_link($parent->get_id()),
+                        $parent->get_id(),
+                        $parent->get_name()
+                    );
+                }
+            } else {
+                $html = sprintf(
+                    '<a href="%s" target="_blank">#%s - %s</a>',
+                    get_edit_post_link($item['product_id']),
+                    $product->get_id(),
+                    $product->get_name()
+                );
+            }
         }
 
         return $html;

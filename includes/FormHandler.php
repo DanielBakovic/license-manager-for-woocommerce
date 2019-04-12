@@ -761,7 +761,7 @@ class FormHandler
         $license_keys = apply_filters(
             'lmfwc_get_order_license_keys',
             $item->get_order_id(),
-            $item->get_product_id()
+            $product->get_id()
         );
 
         // No license keys? Nothing to do...

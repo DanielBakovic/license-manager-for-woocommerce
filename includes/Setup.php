@@ -121,7 +121,7 @@ class Setup
             CREATE TABLE IF NOT EXISTS $table1 (
                 `id` BIGINT(20) NOT NULL COMMENT 'Primary Key' AUTO_INCREMENT,
                 `order_id` BIGINT(20) NULL DEFAULT NULL COMMENT 'WC_Order ID',
-                `product_id` BIGINT(20) NULL DEFAULT NULL COMMENT 'WC_Product ID',
+                `product_id` BIGINT(20) NULL DEFAULT NULL COMMENT 'WC_Product or WC_Product_Variation ID',
                 `license_key` LONGTEXT NOT NULL COMMENT 'Encrypted License Key',
                 `hash` VARCHAR(255) NOT NULL COMMENT 'Hashed License Key ID',
                 `expires_at` DATETIME NULL DEFAULT NULL COMMENT 'Expiration Date',

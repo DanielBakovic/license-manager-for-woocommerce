@@ -241,17 +241,6 @@ class Licenses extends LMFWC_REST_Controller
         $status              = null;
         $times_activated_max = isset($body['times_activated_max']) ? absint($body['times_activated_max'])      : null;
 
-        if ($product_id) {
-            try {
-                $product = new \WC_Product($product_id);
-            } catch (\Exception $e) {
-                return new \WP_Error(
-                    'lmfwc_rest_data_error',
-                    $e->getMessage(),
-                    array('status' => 404)
-                );
-            }
-        }
         if (!$license_key) {
             return new \WP_Error(
                 'lmfwc_rest_data_error',
@@ -460,17 +449,6 @@ class Licenses extends LMFWC_REST_Controller
                 return new \WP_Error(
                     'lmfwc_rest_data_error',
                     sprintf('WooCommerce Order with ID: %d has already been completed.', $order_id),
-                    array('status' => 404)
-                );
-            }
-        }
-        if ($product_id && $product_id != self::UNDEFINED) {
-            try {
-                $product = new \WC_Product($product_id);
-            } catch (\Exception $e) {
-                return new \WP_Error(
-                    'lmfwc_rest_data_error',
-                    $e->getMessage(),
                     array('status' => 404)
                 );
             }

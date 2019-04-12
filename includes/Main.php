@@ -263,6 +263,7 @@ final class Main
         new Repositories\Generator();
         new Repositories\License();
         new Repositories\PostMeta();
+        new Repositories\Posts();
         new Repositories\Users();
         new FormHandler();
         new API\Setup();
