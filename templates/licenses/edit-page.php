@@ -12,27 +12,27 @@
     <table class="form-table">
         <tbody>
             <tr scope="row">
-                <th scope="row"><label><?php _e('ID', 'lmfwc');?></label></th>
+                <th scope="row"><label><?php esc_html_e('ID', 'lmfwc');?></label></th>
                 <td>
-                    <input name="license_id" id="license_id" class="regular-text" type="text" value="<?php echo esc_html($license_id); ?>" readonly>
+                    <input name="license_id" id="edit__license_id" class="regular-text" type="text" value="<?php echo esc_html($license_id); ?>" readonly>
                 </td>
             </tr>
 
             <!-- LICENSE KEY -->
             <tr scope="row">
-                <th scope="row"><label><?php _e('License Key', 'lmfwc');?></label></th>
+                <th scope="row"><label><?php esc_html_e('License Key', 'lmfwc');?></label></th>
                 <td>
-                    <input name="license_key" id="license_key" class="regular-text" type="text" value="<?php echo esc_html($license_key); ?>">
-                    <p class="description" id="tagline-description"><?php esc_html_e('The license key will be encrypted before it is stored inside the database.', 'lmfwc');?></p>
+                    <input name="license_key" id="edit__license_key" class="regular-text" type="text" value="<?php echo esc_html($license_key); ?>">
+                    <p class="description"><?php esc_html_e('The license key will be encrypted before it is stored inside the database.', 'lmfwc');?></p>
                 </td>
             </tr>
 
             <!-- VALID FOR -->
             <tr scope="row">
-                <th scope="row"><label><?php _e('Validity', 'lmfwc');?></label></th>
+                <th scope="row"><label><?php esc_html_e('Validity', 'lmfwc');?></label></th>
                 <td>
-                    <input name="valid_for" id="valid_for" class="regular-text" type="text" value="<?php echo esc_html($valid_for); ?>">
-                    <p class="description" id="tagline-description"><?php esc_html_e('Number of days for which the license key is valid after purchase. Leave blank if the license key does not expire.', 'lmfwc');?></p>
+                    <input name="valid_for" id="edit__valid_for" class="regular-text" type="text" value="<?php echo esc_html($valid_for); ?>">
+                    <p class="description"><?php esc_html_e('Number of days for which the license key is valid after purchase. Leave blank if the license key does not expire.', 'lmfwc');?></p>
                 </td>
             </tr>
 
@@ -40,8 +40,8 @@
             <tr scope="row">
                 <th scope="row"><label><?php esc_html_e('Maximum activation count', 'lmfwc');?></label></th>
                 <td>
-                    <input name="times_activated_max" id="times_activated_max" class="regular-text" type="number" value="<?php echo esc_html($times_activated_max); ?>">
-                    <p class="description" id="tagline-description"><?php esc_html_e('Define how many times the license key can be marked as "activated" by using the REST API. Leave blank if you do not use the API.', 'lmfwc');?></p>
+                    <input name="times_activated_max" id="edit__times_activated_max" class="regular-text" type="number" value="<?php echo esc_html($times_activated_max); ?>">
+                    <p class="description"><?php esc_html_e('Define how many times the license key can be marked as "activated" by using the REST API. Leave blank if you do not use the API.', 'lmfwc');?></p>
                 </td>
             </tr>
 
@@ -49,7 +49,7 @@
             <tr scope="row">
                 <th scope="row"><label><?php esc_html_e('Status', 'lmfwc');?></label></th>
                 <td>
-                    <select id="status" name="status" class="regular-text">
+                    <select id="edit__status" name="status" class="regular-text">
                         <option
                             value="<?php echo esc_html($status_active); ?>"
                             <?php selected($status_active, $license_status, true); ?>
@@ -71,7 +71,7 @@
                 <th scope="row"><label><?php esc_html_e('Product', 'lmfwc');?></label></th>
                 <td>
                     <?php if ($products->have_posts()): ?>
-                        <select name="product" id="product" class="regular-text">
+                        <select name="product" id="edit__product" class="regular-text">
                             <option value=""><?php esc_html_e('Select a product...');?></option>
                             <?php /** @var $product WP_Post */ ?>
                             <?php foreach ($products->posts as $product): ?>
@@ -84,7 +84,7 @@
                     <?php else: ?>
                         <label><?php esc_html_e('You do not have any products defined.', 'lmfwc');?></label>
                     <?php endif; ?>
-                    <p class="description" id="tagline-description"><?php esc_html_e('The product to which the keys will be assigned. You can also leave this blank to manually assign them later.', 'lmfwc');?></p>
+                    <p class="description"><?php esc_html_e('The product to which the keys will be assigned. You can also leave this blank to manually assign them later.', 'lmfwc');?></p>
                 </td>
             </tr>
         </tbody>

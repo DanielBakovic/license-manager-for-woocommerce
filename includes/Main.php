@@ -53,7 +53,7 @@ final class Main
         $this->_initHooks();
 
         add_action('init', array($this, 'init'));
-        add_action('woocommerce_email_classes', array($this, 'registerEmails'), 90, 1);
+        //add_action('woocommerce_email_classes', array($this, 'registerEmails'), 90, 1);
 
         new API\Authentication();
     }
@@ -112,21 +112,51 @@ final class Main
      */
     public function adminEnqueueScripts()
     {
+        // Select2
+        wp_register_style(
+            'lmfwc_select2_cdn',
+            'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css'
+        );
+        wp_register_style(
+            'lmfwc_select2',
+            LMFWC_CSS_URL . 'select2.css'
+        );
+        wp_register_script(
+            'lmfwc_select2_cdn',
+            'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js'
+        );
+
         // CSS
         wp_enqueue_style('lmfwc_admin_css', LMFWC_CSS_URL . 'main.css');
 
         // JavaScript
-        wp_enqueue_script('lmfwc_admin_js', LMFWC_JS_URL  . 'script.js');
+        wp_enqueue_script('lmfwc_admin_js', LMFWC_JS_URL . 'script.js');
+
+        if (isset($_GET['page']) && 
+            (
+                $_GET['page'] == AdminMenus::LICENSES_PAGE
+                || $_GET['page'] == AdminMenus::GENERATORS_PAGE
+                || $_GET['page'] == AdminMenus::SETTINGS_PAGE
+            )
+        ) {
+            wp_enqueue_script('lmfwc_select2_cdn');
+            wp_enqueue_style('lmfwc_select2_cdn');
+            wp_enqueue_style('lmfwc_select2');
+        }
 
         // Licenses page
         if (isset($_GET['page']) && $_GET['page'] == AdminMenus::LICENSES_PAGE) {
-            wp_enqueue_style('lmfwc_new_license', LMFWC_CSS_URL . 'new_license.css');
-            wp_enqueue_script('lmfwc_new_license', LMFWC_JS_URL  . 'new_license.js');
+            wp_enqueue_script('lmfwc_licenses_page_js', LMFWC_JS_URL . 'licenses_page.js');
         }
 
         // Generators page
         if (isset($_GET['page']) && $_GET['page'] == AdminMenus::GENERATORS_PAGE) {
-            wp_enqueue_script('lmfwc_generate_licenses', LMFWC_JS_URL . 'generate_licenses.js');
+            wp_enqueue_script('lmfwc_generators_page_js', LMFWC_JS_URL . 'generators_page.js');
+        }
+
+        // Settings page
+        if (isset($_GET['page']) && $_GET['page'] == AdminMenus::SETTINGS_PAGE) {
+            wp_enqueue_script('lmfwc_settings_page_js', LMFWC_JS_URL . 'settings_page.js');
         }
 
         // Script localization
@@ -233,6 +263,7 @@ final class Main
         new Repositories\Generator();
         new Repositories\License();
         new Repositories\PostMeta();
+        new Repositories\Users();
         new FormHandler();
         new API\Setup();
     }

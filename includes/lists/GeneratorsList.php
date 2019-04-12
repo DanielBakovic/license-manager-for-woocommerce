@@ -16,7 +16,7 @@ if (!class_exists('WP_List_Table')) {
 /**
  * Create the Generators list
  *
- * @since   1.0.0
+ * @since 1.0.0
  */
 class GeneratorsList extends \WP_List_Table
 {
@@ -53,7 +53,7 @@ class GeneratorsList extends \WP_List_Table
      * 
      * @return array
      */
-    public function get_orders($per_page = 20, $page_number = 1)
+    public function get_generators($per_page = 20, $page_number = 1)
     {
         global $wpdb;
 
@@ -255,6 +255,11 @@ class GeneratorsList extends \WP_List_Table
         return $item[$column_name];
     }
 
+    /**
+     * Set the table columns
+     * 
+     * @return null
+     */
     public function get_columns()
     {
         $columns = array(
@@ -350,7 +355,7 @@ class GeneratorsList extends \WP_List_Table
             'total_pages' => ceil($total_items / $per_page)
         ]);
 
-        $this->items = $this->get_orders($per_page, $current_page);
+        $this->items = $this->get_generators($per_page, $current_page);
     }
 
     /**

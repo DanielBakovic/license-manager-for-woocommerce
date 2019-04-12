@@ -10,8 +10,8 @@
             <tr scope="row">
                 <th scope="row"><label><?php esc_html_e('License key', 'lmfwc');?></label></th>
                 <td>
-                    <input name="license_key" id="license_key" class="regular-text" type="text">
-                    <p class="description" id="tagline-description"><?php esc_html_e('The license key will be encrypted before it is stored inside the database.', 'lmfwc');?></p>
+                    <input name="license_key" id="single__license_key" class="regular-text" type="text">
+                    <p class="description"><?php esc_html_e('The license key will be encrypted before it is stored inside the database.', 'lmfwc');?></p>
                 </td>
             </tr>
 
@@ -19,8 +19,8 @@
             <tr scope="row">
                 <th scope="row"><label><?php esc_html_e('Valid for (days)', 'lmfwc');?></label></th>
                 <td>
-                    <input name="valid_for" id="valid_for" class="regular-text" type="text">
-                    <p class="description" id="tagline-description"><?php esc_html_e('Number of days for which the license key is valid after purchase. Leave blank if the license key does not expire.', 'lmfwc');?></p>
+                    <input name="valid_for" id="single__valid_for" class="regular-text" type="text">
+                    <p class="description"><?php esc_html_e('Number of days for which the license key is valid after purchase. Leave blank if the license key does not expire.', 'lmfwc');?></p>
                 </td>
             </tr>
 
@@ -28,8 +28,8 @@
             <tr scope="row">
                 <th scope="row"><label><?php esc_html_e('Maximum activation count', 'lmfwc');?></label></th>
                 <td>
-                    <input name="times_activated_max" id="times_activated_max" class="regular-text" type="number">
-                    <p class="description" id="tagline-description"><?php esc_html_e('Define how many times the license key can be marked as "activated" by using the REST API. Leave blank if you do not use the API.', 'lmfwc');?></p>
+                    <input name="times_activated_max" id="single__times_activated_max" class="regular-text" type="number">
+                    <p class="description"><?php esc_html_e('Define how many times the license key can be marked as "activated" by using the REST API. Leave blank if you do not use the API.', 'lmfwc');?></p>
                 </td>
             </tr>
 
@@ -38,10 +38,10 @@
                 <th scope="row"><label><?php esc_html_e('Activate licenses', 'lmfwc');?></label></th>
                 <td>
                     <label for="activate">
-                        <input name="activate" id="activate" class="regular-text" type="checkbox" checked="checked">
+                        <input name="activate" id="single__activate" class="regular-text" type="checkbox" checked="checked">
                         <span><?php esc_html_e('Activate license immediately after import.', 'lmfwc');?></span>
                     </label>
-                    <p class="description" id="tagline-description">
+                    <p class="description">
                         <span><?php esc_html_e('Activated licenses are immediately availabale for sale, while inactive licenses must be activated manually.', 'lmfwc');?></span>
                     </p>
                 </td>
@@ -53,7 +53,7 @@
                 <td>
                     <?php if ($products->have_posts()): ?>
 
-                        <select name="product" id="product" class="regular-text">
+                        <select name="product" id="single__product" class="regular-text">
                             <option value=""><?php esc_html_e('Select a product...', 'lmfwc');?></option>
                             <?php foreach ($products->posts as $product): ?>
                                 <option value="<?=$product->ID;?>"><?=$product->post_title;?></option>
@@ -65,13 +65,13 @@
                         <label><?php esc_html_e('You do not have any products defined.', 'lmfwc');?></label>
 
                     <?php endif; ?>
-                    <p class="description" id="tagline-description"><?php esc_html_e('The product to which the keys will be assigned. You can also leave this blank to manually assign them later.', 'lmfwc');?></p>
+                    <p class="description"><?php esc_html_e('The product to which the keys will be assigned. You can also leave this blank to manually assign them later.', 'lmfwc');?></p>
                 </td>
             </tr>
         </tbody>
     </table>
 
     <p class="submit">
-        <input name="submit" id="submit" class="button button-primary" value="<?php esc_html_e('Add' ,'lmfwc');?>" type="submit">
+        <input name="submit" id="single__submit" class="button button-primary" value="<?php esc_html_e('Add' ,'lmfwc');?>" type="submit">
     </p>
 </form>

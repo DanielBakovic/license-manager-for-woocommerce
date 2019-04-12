@@ -30,23 +30,12 @@ defined('ABSPATH') || exit;
 class PostMeta
 {
     /**
-     * Prefixed table name.
-     * 
-     * @var string
-     */
-    protected $table;
-
-    /**
      * Adds all filters for interaction with the database table.
      * 
      * @return null
      */
     public function __construct()
     {
-        global $wpdb;
-
-        $this->table = $wpdb->postmeta;
-
         // SELECT
         add_filter(
             'lmfwc_get_assigned_products',

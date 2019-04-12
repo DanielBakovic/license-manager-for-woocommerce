@@ -195,6 +195,7 @@ class AdminMenus
                 $key_id      = isset($_GET['edit_key']) ? absint($_GET['edit_key']) : 0;
                 $key_data    = apply_filters('lmfwc_get_api_key', $key_id);
                 $user_id     = (int)$key_data['user_id'];
+                $users       = apply_filters('lmfwc_get_users', null);
                 $permissions = array(
                     'read'       => __('Read', 'lmfwc'),
                     'write'      => __('Write', 'lmfwc'),

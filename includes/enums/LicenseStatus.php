@@ -7,8 +7,7 @@ defined('ABSPATH') || exit;
 /**
  * License Status Enumerator.
  *
- * @version 1.1.0
- * @since   1.0.0
+ * @since 1.0.0
  */
 abstract class LicenseStatus
 {
@@ -21,8 +20,7 @@ abstract class LicenseStatus
         self::SOLD,
         self::DELIVERED,
         self::ACTIVE,
-        self::INACTIVE
-    );
+        self::INACTIVE    );
 
     public static $enum_array = array(
         'sold',
@@ -48,5 +46,12 @@ abstract class LicenseStatus
         );
 
         return $labels[$status];
+    }
+
+    public static function getConstants()
+    {
+        $o_class = new ReflectionClass(__CLASS__);
+
+        return $o_class->getConstants();
     }
 }
