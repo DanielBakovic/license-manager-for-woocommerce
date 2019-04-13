@@ -70,8 +70,10 @@ Yes, there is! An extensive documentation describing the plugin features and fun
 * Add - License key validation REST API endpoint.
 * Enhancement - The old "Add/Import" page has been renamed to "Add license" and reworked with an intuitive GUI.
 * Enhancement - Various minor UI improvements across the plugin.
+* Tweak - The GET license/{id} REST API endpoint now supports the license key as input parameter as well.
 * Tweak - Changes to the REST API response structure.
 * Tweak - Changes to the database structure.
+* Fix - The license key product settings will no longer be lost when using quick edit on products.
 
 = 1.1.3 - 2019-03-24 =
 * Fix - On some environments the activate hook wouldn't work properly and the needed cryptographic secrets weren't generated. I negotiated a deal for this not to happen anymore.

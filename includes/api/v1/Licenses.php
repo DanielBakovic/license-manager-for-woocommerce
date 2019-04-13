@@ -62,7 +62,7 @@ class Licenses extends LMFWC_REST_Controller
                     'args'     => array(
                         'license_key_id' => array(
                             'description' => 'License Key ID',
-                            'type'        => 'integer',
+                            'type'        => 'string',
                         ),
                     ),
                 )
@@ -145,8 +145,9 @@ class Licenses extends LMFWC_REST_Controller
     /**
      * Callback for the GET licenses route. Retrieves all license keys from the database.
      * 
-     * @param  WP_REST_Request $request
-     * @return WP_REST_Response
+     * @param WP_REST_Request $request
+     * 
+     * @return WP_REST_Response|WP_Error
      */
     public function getLicenses(\WP_REST_Request $request)
     {
@@ -180,10 +181,32 @@ class Licenses extends LMFWC_REST_Controller
     /**
      * Callback for the GET licenses/{id} route. Retrieves a single license key from the database.
      * 
-     * @param  WP_REST_Request $request
-     * @return WP_REST_Response
+     * @param WP_REST_Request $request
+     * 
+     * @return WP_REST_Response|WP_Error
      */
     public function getLicense(\WP_REST_Request $request)
+    {
+        $license_key = $request->get_param('license_key_id');
+
+        if (is_numeric($license_key)) {
+            $response = $this->getLicenseById($request);
+        } else {
+            $response = $this->getLicenseByLicenseKey($request);
+        }
+
+
+        return $response;
+    }
+
+    /**
+     * Class internal function used to retrieve the license key by its ID.
+     * 
+     * @param WP_REST_Request $request
+     * 
+     * @return WP_REST_Response|WP_Error
+     */
+    protected function getLicenseById(\WP_REST_Request $request)
     {
         $license_key_id = absint($request->get_param('license_key_id'));
 
@@ -224,10 +247,59 @@ class Licenses extends LMFWC_REST_Controller
     }
 
     /**
+     * Class internal function used to retrieve the license key by the license key
+     * itself
+     * 
+     * @param WP_REST_Request $request
+     * 
+     * @return WP_REST_Response|WP_Error
+     */
+    protected function getLicenseByLicenseKey(\WP_REST_Request $request)
+    {
+        $license_key = sanitize_text_field($request->get_param('license_key_id'));
+
+        if (!$license_key) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                'License Key ID invalid.',
+                array('status' => 404)
+            );
+        }
+
+        try {
+            $result = apply_filters('lmfwc_get_license_key_info', $license_key);
+        } catch (Exception $e) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                $e->getMessage(),
+                array('status' => 404)
+            );
+        }
+
+        if (!$result) {
+            return new \WP_Error(
+                'lmfwc_rest_data_error',
+                sprintf(
+                    'License Key: %s could not be found.',
+                    $license_key
+                ),
+                array('status' => 404)
+            );
+        }
+
+        // Remove the hash and decrypt the license key
+        unset($result['hash']);
+        $result['license_key'] = apply_filters('lmfwc_decrypt', $result['license_key']);
+
+        return $this->response(true, $result, 200);
+    }
+
+    /**
      * Callback for the POST licenses route. Creates a new license key in the database.
      * 
-     * @param  WP_REST_Request $request
-     * @return WP_REST_Response
+     * @param WP_REST_Request $request
+     * 
+     * @return WP_REST_Response|WP_Error
      */
     public function createLicense(\WP_REST_Request $request)
     {
@@ -322,8 +394,9 @@ class Licenses extends LMFWC_REST_Controller
     /**
      * Callback for the PUT licenses/{id} route. Updates an existing license key in the database.
      * 
-     * @param  WP_REST_Request $request
-     * @return WP_REST_Response
+     * @param WP_REST_Request $request
+     * 
+     * @return WP_REST_Response|WP_Error
      */
     public function updateLicense(\WP_REST_Request $request)
     {
@@ -527,8 +600,9 @@ class Licenses extends LMFWC_REST_Controller
      * Callback for the PUT licenses/activate{id} route. This will activate a license
      * key (if possible)
      * 
-     * @param  WP_REST_Request $request
-     * @return WP_REST_Response
+     * @param WP_REST_Request $request
+     * 
+     * @return WP_REST_Response|WP_Error
      */
     public function activateLicense(\WP_REST_Request $request)
     {
@@ -622,8 +696,9 @@ class Licenses extends LMFWC_REST_Controller
      * Callback for the GET licenses/validate{id} route. This check and verfiy the
      * activation status of a given license key.
      * 
-     * @param  WP_REST_Request $request
-     * @return WP_REST_Response
+     * @param WP_REST_Request $request
+     * 
+     * @return WP_REST_Response|WP_Error
      */
     public function validateLicense(\WP_REST_Request $request)
     {

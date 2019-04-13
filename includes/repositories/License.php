@@ -72,6 +72,12 @@ class License
             1
         );
         add_filter(
+            'lmfwc_get_license_key_info',
+            array($this, 'getLicenseKeyInfo'),
+            10,
+            1
+        );
+        add_filter(
             'lmfwc_get_available_stock',
             array($this, 'getAvailableStock'),
             10,
@@ -276,6 +282,55 @@ class License
                 )
             );
         }
+    }
+
+    /**
+     * Retrieves additional entries of the given license key
+     * 
+     * @param string $license_key Unencrypted license key
+     * 
+     * @since  1.2.0
+     * @throws Exception
+     * @return array
+     */
+    public function getLicenseKeyInfo($license_key)
+    {
+        $clean_license_key = $license_key ? sanitize_text_field($license_key) : null;
+
+        if (!$clean_license_key) {
+            throw new LMFWC_Exception('Invalid License Key');
+        }
+
+        global $wpdb;
+
+        return $wpdb->get_row(
+            $wpdb->prepare(
+                "
+                    SELECT
+                        `id`
+                        , `order_id`
+                        , `product_id`
+                        , `license_key`
+                        , `hash`
+                        , `expires_at`
+                        , `valid_for`
+                        , `source`
+                        , `status`
+                        , `times_activated`
+                        , `times_activated_max`
+                        , `created_at`
+                        , `created_by`
+                        , `updated_at`
+                        , `updated_by`
+                    FROM
+                        {$this->table}
+                    WHERE
+                        hash = %s
+                    ;
+                ",
+                apply_filters('lmfwc_hash', $clean_license_key)
+            ), ARRAY_A
+        );
     }
 
     /**
