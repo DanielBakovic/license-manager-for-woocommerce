@@ -37,12 +37,7 @@ class PostMeta
     public function __construct()
     {
         // SELECT
-        add_filter(
-            'lmfwc_get_assigned_products',
-            array($this, 'getAssignedProducts'),
-            10,
-            1
-        );
+        add_filter('lmfwc_get_assigned_products', array($this, 'getAssignedProducts'), 10, 1);
     }
 
     /**

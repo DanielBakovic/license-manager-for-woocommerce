@@ -1,35 +1,31 @@
 <?php
 /**
- * Cancelled Order sent to Customer.
+ * Deliver Order license key(s) to Customer.
  */
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-}
+defined('ABSPATH') || exit;
 
 /**
  * @hooked WC_Emails::email_header() Output the email header
  */
-do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
+do_action('woocommerce_email_header', $email_heading, $email);
 
-	<p><?php printf( __( 'The preorder #%d has been fulfilled. Order Details:', 'lmfwc' ), $order->get_order_number() ); ?></p>
+/**
+ * @hooked \LicenseManagerForWooCommerce\Emails\Main Adds the ordered license keys table.
+ */
+do_action('lmfwc_email_order_license_keys', $order, $sent_to_admin, $plain_text, $email);
 
-<?php
 /**
- * @hooked WC_Emails::order_details() Shows the order details table.
- * @hooked WC_Emails::order_schema_markup() Adds Schema.org markup.
- * @since 2.5.0
+ * @hooked \LicenseManagerForWooCommerce\Emails\Main Adds basic order details.
  */
-do_action( 'woocommerce_email_order_details', $order, $sent_to_admin, $plain_text, $email );
-/**
- * @hooked WC_Emails::order_meta() Shows order meta data.
- */
-do_action( 'woocommerce_email_order_meta', $order, $sent_to_admin, $plain_text, $email );
+do_action('lmfwc_email_order_details', $order, $sent_to_admin, $plain_text, $email);
+
 /**
  * @hooked WC_Emails::customer_details() Shows customer details
  * @hooked WC_Emails::email_address() Shows email address
  */
-do_action( 'woocommerce_email_customer_details', $order, $sent_to_admin, $plain_text, $email );
+do_action('woocommerce_email_customer_details', $order, $sent_to_admin, $plain_text, $email);
+
 /**
  * @hooked WC_Emails::email_footer() Output the email footer
  */
-do_action( 'woocommerce_email_footer', $email );
+do_action('woocommerce_email_footer', $email);

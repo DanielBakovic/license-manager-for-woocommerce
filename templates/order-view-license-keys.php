@@ -1,6 +1,6 @@
 <?php defined('ABSPATH') || exit; ?>
 
-<h2><?php esc_html_e('Your license key(s)', 'lmfwc');?></h2>
+<h2><?php esc_html_e($heading);?></h2>
 
 <?php foreach ($data as $product_id => $row): ?>
     <table class="shop_table">
@@ -14,6 +14,12 @@
                 <tr>
                     <td>
                         <span class="lmfwc-myaccount-license-key"><?php echo esc_html(apply_filters('lmfwc_decrypt', $entry->license_key)); ?></span>
+
+                        <?php if ($entry->expires_at): ?>
+                            <?php $date = new \DateTime($entry->expires_at); ?>
+                            <br>
+                            <small><strong><?php printf(__('Expires at: %s', 'lmwfc'), $date->format($date_format)); ?></strong></small>
+                        <?php endif; ?>
                     </td>
                 </tr>
             <?php endforeach; ?>

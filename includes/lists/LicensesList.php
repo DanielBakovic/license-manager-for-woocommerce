@@ -86,7 +86,7 @@ class LicensesList extends \WP_List_Table
         $this->table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
         $this->date_format = get_option('date_format');
         $this->time_format = get_option('time_format');
-        $this->gmt_offset = get_option('gmt_offset');
+        $this->gmt_offset  = get_option('gmt_offset');
     }
 
     /**
@@ -157,16 +157,16 @@ class LicensesList extends \WP_List_Table
         return $status_links;
     }
 
-    //protected function extra_tablenav($which)
-    //{
-    //    if ($which === 'top') {
-    //        echo '<div class="alignleft actions">';
-    //            $this->level_dropdown();
-    //            $this->source_dropdown();
-    //            submit_button(__( 'Filter', 'lmfwc' ), '', 'filter-action', false);
-    //        echo '</div>';
-    //    }
-    //}
+//    protected function extra_tablenav($which)
+//    {
+//        if ($which === 'top') {
+//            echo '<div class="alignleft actions">';
+//                $this->level_dropdown();
+//                $this->source_dropdown();
+//                submit_button(__( 'Filter', 'lmfwc' ), '', 'filter-action', false);
+//            echo '</div>';
+//        }
+//    }
 
     /**
      * Display level dropdown

@@ -109,6 +109,10 @@ class Crypto
      */
     public function decrypt($cipher)
     {
+        if (!$cipher) {
+            return '';
+        }
+
         try {
             return DefuseCrypto::decrypt($cipher, $this->loadEncryptionKeyFromConfig());
         } catch (WrongKeyOrModifiedCiphertextException $ex) {

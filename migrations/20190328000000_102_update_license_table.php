@@ -14,6 +14,7 @@ if ($migration_mode == 'up') {
     $sql = "
         ALTER TABLE {$table_licenses}
             CHANGE COLUMN `license_key` `license_key` LONGTEXT NOT NULL COMMENT 'Encrypted License Key' AFTER `product_id`,
+            CHANGE COLUMN `hash` `hash` LONGTEXT NOT NULL COMMENT 'Hashed License Key ID' AFTER `license_key`,
             ADD COLUMN `times_activated` INT(10) NULL DEFAULT NULL COMMENT 'Number of activations' AFTER `status`,
             ADD COLUMN `times_activated_max` INT(10) NULL DEFAULT NULL COMMENT 'Maximum number of activations' AFTER `times_activated`,
             CHANGE COLUMN `created_at` `created_at` DATETIME NOT NULL COMMENT 'Creation timestamp' AFTER `times_activated_max`,

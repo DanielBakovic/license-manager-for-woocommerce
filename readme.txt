@@ -68,8 +68,10 @@ Yes, there is! An extensive documentation describing the plugin features and fun
 * Add - Export license keys feature (CSV/PDF)
 * Add - License key activation REST API endpoint.
 * Add - License key validation REST API endpoint.
-* Enhancement - The old "Add/Import" page has been renamed to "Add license" and reworked with an intuitive GUI.
+* Add - New WooCommerce Order action to manually send out license keys.
+* Add - "Expires on" date to order emails and customer account.
 * Enhancement - Various minor UI improvements across the plugin.
+* Tweak - The "Add/Import" button and page have been renamed to "Add license"
 * Tweak - The GET license/{id} REST API endpoint now supports the license key as input parameter as well.
 * Tweak - Changes to the REST API response structure.
 * Tweak - Changes to the database structure.

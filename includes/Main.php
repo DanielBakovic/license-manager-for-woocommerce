@@ -53,7 +53,7 @@ final class Main
         $this->_initHooks();
 
         add_action('init', array($this, 'init'));
-        //add_action('woocommerce_email_classes', array($this, 'registerEmails'), 90, 1);
+        add_action('woocommerce_email_classes', array($this, 'registerEmails'), 90, 1);
 
         new API\Authentication();
     }
@@ -252,6 +252,8 @@ final class Main
     {
         Setup::migrate();
 
+        $this->publicHooks();
+
         new Crypto();
         new Export();
         new ProductManager();
@@ -271,9 +273,38 @@ final class Main
 
     public function registerEmails($emails)
     {
-        $emails['LMFWC_Customer_Preorder_Complete'] = new \LicenseManagerForWooCommerce\Emails\CustomerPreorderComplete();
-        $emails['LMFWC_Customer_Deliver_License_Keys'] = new \LicenseManagerForWooCommerce\Emails\CustomerDeliverLicenseKeys();
+        new Emails\TemplateParts();
 
-        return $emails;
+        $plugin_emails = array(
+            //'LMFWC_Customer_Preorder_Complete' => new \LicenseManagerForWooCommerce\Emails\CustomerPreorderComplete(),
+            'LMFWC_Customer_Deliver_License_Keys' => new Emails\CustomerDeliverLicenseKeys()
+        );
+
+        return array_merge($emails, $plugin_emails);
+    }
+
+    /**
+     * Defines all public hooks
+     * 
+     * @param string $text The new text to be used
+     * 
+     * @return string
+     */
+    protected function publicHooks()
+    {
+        add_filter(
+            'lmfwc_email_order_license_keys_heading',
+            function($text) {
+                $default = __('Your license key(s)', 'lmfwc');
+
+                if (!$text) {
+                    return $default;
+                }
+
+                return sanitize_text_field($text);
+            },
+            10,
+            1
+        );
     }
 }

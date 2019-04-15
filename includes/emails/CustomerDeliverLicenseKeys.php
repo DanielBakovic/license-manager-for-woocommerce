@@ -24,17 +24,10 @@ class CustomerDeliverLicenseKeys extends \WC_Email
 
         // For admin area to let the user know we are sending this email to customers.
         $this->customer_email = true;
-        $this->heading        = __('Deliver License Keys', 'lmfwc');
+        $this->heading        = __('License key delivery', 'lmfwc');
 
         // translators: placeholder is {blogname}, a variable that will be substituted when email is sent out
-        $this->subject = sprintf(
-            _x(
-                '[%s] - Here are your license keys!',
-                'default email subject for cancelled emails sent to the customer',
-                'lmfwc'
-            ),
-            '{blogname}'
-        );
+        $this->subject = sprintf(_x('Your license key(s) at %s are here', 'lmfwc'), '{blogname}');
     
         // Template paths.
         $this->template_html  = 'emails/customer-deliver-license-keys.php';

@@ -54,119 +54,31 @@ class License
         $this->table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
 
         // SELECT
-        add_filter(
-            'lmfwc_get_license_keys',
-            array($this, 'getLicenseKeys'),
-            10
-        );
-        add_filter(
-            'lmfwc_get_license_key',
-            array($this, 'getLicenseKey'),
-            10,
-            1
-        );
-        add_filter(
-            'lmfwc_get_license_key_count',
-            array($this, 'getLicenseKeyCount'),
-            10,
-            1
-        );
-        add_filter(
-            'lmfwc_get_license_key_info',
-            array($this, 'getLicenseKeyInfo'),
-            10,
-            1
-        );
-        add_filter(
-            'lmfwc_get_available_stock',
-            array($this, 'getAvailableStock'),
-            10,
-            1
-        );
-        add_filter(
-            'lmfwc_get_order_license_keys',
-            array($this, 'getOrderLicenseKeys'),
-            10,
-            2
-        );
-        add_filter(
-            'lmfwc_get_product_license_keys',
-            array($this, 'getProductLicenseKeys'),
-            10,
-            2
-        );
-        add_filter(
-            'lmfwc_license_key_exists',
-            array($this, 'licenseKeyExists'),
-            10,
-            1
-        );
+        add_filter('lmfwc_get_license_keys',          array($this, 'getLicenseKeys'),         10);
+        add_filter('lmfwc_get_license_key',           array($this, 'getLicenseKey'),          10, 1);
+        add_filter('lmfwc_get_license_key_count',     array($this, 'getLicenseKeyCount'),     10, 1);
+        add_filter('lmfwc_get_license_key_info',      array($this, 'getLicenseKeyInfo'),      10, 1);
+        add_filter('lmfwc_get_available_stock',       array($this, 'getAvailableStock'),      10, 1);
+        add_filter('lmfwc_get_order_license_keys',    array($this, 'getOrderLicenseKeys'),    10, 2);
+        add_filter('lmfwc_get_product_license_keys',  array($this, 'getProductLicenseKeys'),  10, 2);
+        add_filter('lmfwc_get_customer_license_keys', array($this, 'getCustomerLicenseKeys'), 10, 1);
+        add_filter('lmfwc_license_key_exists',        array($this, 'licenseKeyExists'),       10, 1);
 
         // INSERT
-        add_filter(
-            'lmfwc_insert_license_key',
-            array($this, 'insertLicenseKey'),
-            10,
-            8
-        );
-        add_filter(
-            'lmfwc_insert_generated_license_keys',
-            array($this, 'insertGeneratedLicenseKeys'),
-            10,
-            7
-        );
-        add_filter(
-            'lmfwc_insert_imported_license_keys',
-            array($this, 'insertImportedLicenseKeys'),
-            10,
-            6
-        );
+        add_filter('lmfwc_insert_license_key',            array($this, 'insertLicenseKey'),           10, 8);
+        add_filter('lmfwc_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 7);
+        add_filter('lmfwc_insert_imported_license_keys',  array($this, 'insertImportedLicenseKeys'),  10, 6);
 
         // UPDATE
-        add_filter(
-            'lmfwc_update_license_key',
-            array($this, 'updateLicenseKey'),
-            10,
-            8
-        );
-        add_filter(
-            'lmfwc_update_license_key_status',
-            array($this, 'updateLicenseKeyStatus'),
-            10,
-            2
-        );
-        add_filter(
-            'lmfwc_update_selective_license_key',
-            array($this, 'updateSelectiveLicenseKey'),
-            10,
-            7
-        );
-        add_action(
-            'lmfwc_sell_imported_license_keys',
-            array($this, 'sellImportedLicenseKeys'),
-            10,
-            3
-        );
-        add_filter(
-            'lmfwc_toggle_license_key_status',
-            array($this, 'toggleLicenseKeyStatus'),
-            10,
-            4
-        );
-        add_filter(
-            'lmfwc_activate_license_key',
-            array($this, 'activateLicenseKey'),
-            10,
-            2
-        );
+        add_filter('lmfwc_update_license_key',           array($this, 'updateLicenseKey'),          10, 8);
+        add_filter('lmfwc_update_license_key_status',    array($this, 'updateLicenseKeyStatus'),    10, 2);
+        add_filter('lmfwc_update_selective_license_key', array($this, 'updateSelectiveLicenseKey'), 10, 7);
+        add_action('lmfwc_sell_imported_license_keys',   array($this, 'sellImportedLicenseKeys'),   10, 3);
+        add_filter('lmfwc_toggle_license_key_status',    array($this, 'toggleLicenseKeyStatus'),    10, 4);
+        add_filter('lmfwc_activate_license_key',         array($this, 'activateLicenseKey'),        10, 2);
 
         // DELETE
-        add_filter(
-            'lmfwc_delete_license_keys',
-            array($this, 'deleteLicenseKeys'),
-            10,
-            1
-        );
+        add_filter('lmfwc_delete_license_keys', array($this, 'deleteLicenseKeys'), 10, 1);
     }
 
     /**
@@ -493,6 +405,38 @@ class License
             ),
             OBJECT
         );
+    }
+
+    /**
+     * Retrieves ordered license keys to be shown to the Customer.
+     * 
+     * @param WC_Order $order The WooCommerce Order
+     * 
+     * @return array
+     */
+    public function getCustomerLicenseKeys($order)
+    {
+        $data = array();
+
+        /**
+         * @var $item_data WC_Order_Item_Product
+         */
+        foreach ($order->get_items() as $item_data) {
+            /**
+             * @var WC_Product_Simple|WC_Product_Variation $product
+             */
+            $product = $item_data->get_product();
+
+            // Check if the product has been activated for selling.
+            if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)) {
+                continue;
+            }
+
+            $data[$product->get_id()]['name'] = $product->get_name();
+            $data[$product->get_id()]['keys'] = $this->getOrderLicenseKeys($order->get_id(), $product->get_id());
+        }
+
+        return $data;
     }
 
     /**
