@@ -293,7 +293,7 @@ final class Main
     protected function publicHooks()
     {
         add_filter(
-            'lmfwc_email_order_license_keys_heading',
+            'lmfwc_license_keys_table_heading',
             function($text) {
                 $default = __('Your license key(s)', 'lmfwc');
 

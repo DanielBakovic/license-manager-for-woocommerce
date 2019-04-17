@@ -21,6 +21,11 @@ if ($migration_mode == 'up') {
             ADD COLUMN `created_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'Creation User' AFTER `created_at`,
             ADD COLUMN `updated_at` DATETIME NULL DEFAULT NULL COMMENT 'Update timestamp' AFTER `created_by`,
             ADD COLUMN `updated_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'Update user' AFTER `updated_at`;
+    ";
+
+    $wpdb->query($sql);
+
+    $sql ="
         ALTER TABLE {$table_generators}
             ADD COLUMN `times_activated_max` INT(10) NULL DEFAULT NULL COMMENT 'Maximum number of activations' AFTER `chunk_length`;
     ";
@@ -41,7 +46,14 @@ if ($migration_mode == 'down') {
             DROP COLUMN `created_by`,
             DROP COLUMN `updated_at`,
             DROP COLUMN `updated_by`;
+    ";
+
+    $wpdb->query($sql);
+
+    $sql = "
         ALTER TABLE {$table_generators}
             DROP COLUMN `times_activated_max`;
     ";
+
+    $wpdb->query($sql);
 }

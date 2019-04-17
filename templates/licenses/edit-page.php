@@ -54,13 +54,13 @@
                             value="<?php echo esc_html($status_active); ?>"
                             <?php selected($status_active, $license_status, true); ?>
                         >
-                            <span><?php esc_html_e('Active', 'wcdpi'); ?></span>
+                            <span><?php esc_html_e('Active', 'lmfwc'); ?></span>
                         </option>
                         <option
                             value="<?php echo esc_html($status_inactive); ?>"
                             <?php selected($status_inactive, $license_status, true); ?>
                         >
-                            <span><?php esc_html_e('Inactive', 'wcdpi'); ?></span>
+                            <span><?php esc_html_e('Inactive', 'lmfwc'); ?></span>
                         </option>
                     </select>
                 </td>

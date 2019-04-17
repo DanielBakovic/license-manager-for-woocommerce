@@ -13,18 +13,20 @@ Easily sell and manage software license keys through your WooCommerce shop
 == Description ==
 The **License Manager for WooCommerce** allows you to easily sell and manage all of your digital license keys. With features like the bulk importer, automatic delivery, and database encryption, your shop will now run easier than ever.
 
-#### Plugin features
+#### Key plugin features
 
 * Automatically sell and deliver license keys through WooCommerce
+* Manually resend license keys
 * Add a single license key and assign it to a specific product
 * Add multiple license keys (by file upload) and assign them to a specific product
+* Export license keys as PDF or CSV
 * Manage the status of your license keys
 * Create license key generators with custom parameters
 * Assign a generator to one (or more!) WooCommerce product(s), these products then automatically create a license key whenever they are sold
 
 #### API
 
-The plugin also offers two additional routes for manipulating licenses and generator resources. These routes are authorized via API keys (generated through the plugin settings) and accessed via the WordPress API. Here you can [download the Postman collection](https://www.bebic.at/assets/lmfwc.postman_collection.json) (v2.1) for these new routes. An extensive [API documentation](https://www.bebic.at/license-manager-for-woocommerce/apidocs) is also available on the plugin homepage.
+The plugin also offers additional endpoints for manipulating licenses and generator resources. These routes are authorized via API keys (generated through the plugin settings) and accessed via the WordPress API. Here you can [download the Postman collection](https://www.bebic.at/assets/lmfwc.postman_collection.json) (v2.1) for these new routes. An extensive [API documentation](https://www.bebic.at/license-manager-for-woocommerce/apidocs) is also available on the plugin homepage.
 
 #### Support
 
@@ -59,9 +61,19 @@ The plugin will create two files inside the `wp-content/uploads/lmfwc-files` fol
 
 Yes, there is! An extensive documentation describing the plugin features and functionality in detail can be found on the [plugin homepage](https://www.bebic.at/license-manager-for-woocommerce).
 
+== Screenshots ==
+
+1. The license key overview page.
+2. Add a single license key.
+3. Add multiple license keys in bulk.
+4. WooCommerce simple product options.
+5. WooCommerce variable product options.
+6. The generators overview page.
+7. Create a new license key generator.
+
 == Changelog ==
 
-= 1.2.0 - 2019-04-INSERT_DAY =
+= 1.2.0 - 2019-04-17 =
 * Add - You can now define how many times a license key can be activated using the plugin REST API endpoints.
 * Add - You can now define how many license keys will be delivered on purchase.
 * Add - Variable product support.
@@ -69,8 +81,10 @@ Yes, there is! An extensive documentation describing the plugin features and fun
 * Add - License key activation REST API endpoint.
 * Add - License key validation REST API endpoint.
 * Add - New WooCommerce Order action to manually send out license keys.
-* Add - "Expires on" date to order emails and customer account.
-* Enhancement - Various minor UI improvements across the plugin.
+* Add - "Expires on" date to Customer order emails and Customer order page.
+* Add - Filter to replace the "Your License Key(s)" text in the customer email and "My account" page (`lmfwc_license_keys_table_heading`).
+* Add - Generators now display the number of products to which they are assigned next to their name.
+* Enhancement - Various UI improvements across the plugin.
 * Tweak - The "Add/Import" button and page have been renamed to "Add license"
 * Tweak - The GET license/{id} REST API endpoint now supports the license key as input parameter as well.
 * Tweak - Changes to the REST API response structure.

@@ -72,6 +72,7 @@ class Exception extends \Exception implements \Throwable
      */
     protected function mailException($e)
     {
+        // We won't do this yet
         if (1 == 1) {
             return;
         }

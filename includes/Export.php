@@ -83,7 +83,7 @@ class Export
             'license_key' => __('License Key', 'lmfwc')
         );
 
-        ob_start();
+        ob_clean();
 
         $pdf = new \FPDF('P', 'mm', 'A4');
         $pdf->AddPage();
@@ -148,9 +148,7 @@ class Export
             $pdf->Ln();
         }
 
-        $pdf->Output();
-
-        ob_end_flush();
+        $pdf->Output(date('YmdHis') . '_license_keys_export.pdf', 'D');
     }
 
     /**
@@ -183,7 +181,7 @@ class Export
             );
         }
 
-        $filename = gmdate('Y_m_d-H_i_s-') . 'LICENSE_KEYS_EXPORT.csv';
+        $filename = date('YmdHis') . '_license_keys_export.csv';
 
         // disable caching
         $now = gmdate("D, d M Y H:i:s");

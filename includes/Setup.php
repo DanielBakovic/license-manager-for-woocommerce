@@ -7,7 +7,6 @@ defined('ABSPATH') || exit;
 /**
  * LicenseManagerForWooCommerce Setup.
  *
- * @version 1.1.0
  * @since 1.0.0
  */
 class Setup
@@ -123,7 +122,7 @@ class Setup
                 `order_id` BIGINT(20) NULL DEFAULT NULL COMMENT 'WC_Order ID',
                 `product_id` BIGINT(20) NULL DEFAULT NULL COMMENT 'WC_Product or WC_Product_Variation ID',
                 `license_key` LONGTEXT NOT NULL COMMENT 'Encrypted License Key',
-                `hash` VARCHAR(255) NOT NULL COMMENT 'Hashed License Key ID',
+                `hash` LONGTEXT NOT NULL COMMENT 'Hashed License Key ID',
                 `expires_at` DATETIME NULL DEFAULT NULL COMMENT 'Expiration Date',
                 `valid_for` INT(32) NULL DEFAULT NULL COMMENT 'License Validity (in days)',
                 `source` VARCHAR(255) NOT NULL COMMENT 'Import or Generator',

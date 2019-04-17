@@ -8,26 +8,23 @@
             <tbody>
                 <thead>
                     <tr>
-                        <th class="td" scope="col" style="text-align: left;">
+                        <th class="td" scope="col" style="text-align: left;" colspan="2">
                             <span><?php echo esc_html($row['name']); ?></span>
                         </th>
                     </tr>
                 </thead>
                 <?php foreach ($row['keys'] as $entry): ?>
                     <tr>
-                        <td class="td" style="text-align: left; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
+                        <td class="td" style="text-align: left; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" colspan="<?php echo ($entry->expires_at) ? '1' : '2'; ?>">
                             <code><?php echo esc_html(apply_filters('lmfwc_decrypt', $entry->license_key)) ;?></code>
-
-                            <?php if ($entry->expires_at): ?>
-                                <?php $date = new \DateTime($entry->expires_at); ?>
-
-                                <div style="font-size: 0.66em; font-weight: 600; margin-top: 5px;">
-                                    <span><?php printf(__('Expires at: %s', 'lmfwc'), $date->format($date_format)); ?></span>
-                                </div>
-
-                            <?php endif; ?>
-
                         </td>
+
+                        <?php if ($entry->expires_at): ?>
+                            <?php $date = new \DateTime($entry->expires_at); ?>
+                            <td class="td" style="text-align: left; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
+                                <code><?php printf(__('Valid until <b>%s</b>', 'lmfwc'), $date->format($date_format)); ?></code>
+                            </td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
             </tbody>

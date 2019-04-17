@@ -883,7 +883,7 @@ class LicensesList extends \WP_List_Table
         if ($skipped > 0) {
             $message .= ' ';
             $message .= sprintf(
-                esc_html__('Skipped %d license key(s) due to their incompatible status.', 'wcdpi'),
+                esc_html__('Skipped %d license key(s) due to their incompatible status.', 'lmfwc'),
                 $skipped
             );
         }
@@ -951,7 +951,7 @@ class LicensesList extends \WP_List_Table
         if ($skipped > 0) {
             $message .= ' ';
             $message .= sprintf(
-                esc_html__('Skipped %d license key(s) due to their incompatible status.', 'wcdpi'),
+                esc_html__('Skipped %d license key(s) due to their incompatible status.', 'lmfwc'),
                 $skipped
             );
         }
