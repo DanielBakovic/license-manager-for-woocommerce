@@ -2,6 +2,8 @@
 
 namespace LicenseManagerForWooCommerce;
 
+use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -59,8 +61,16 @@ class Generator
      */
     public function __construct()
     {
-        add_filter('lmfwc_create_license_keys',     array($this, 'createLicenseKeys'    ), 10);
-        add_filter('lmfwc_generate_license_string', array($this, 'generateLicenseString'), 10);
+        add_filter(
+            'lmfwc_create_license_keys',
+            array($this, 'createLicenseKeys'),
+            10
+        );
+        add_filter(
+            'lmfwc_generate_license_string',
+            array($this, 'generateLicenseString'),
+            10
+        );
     }
 
     /**
@@ -68,13 +78,13 @@ class Generator
      *
      * @since 1.0.0
      *
-     * @param string $args['charset']      - Character map from which the license will be generated
-     * @param int    $args['chunks']       - Number of chunks
-     * @param int    $args['chunk_length'] - The length of an individual chunk
-     * @param string $args['separator']    - Separator used
-     * @param string $args['prefix']       - Prefix used
-     * @param string $args['suffix']       - Suffix used
-     * @param int    $args['expires_in']   - Number of days in which the license key expires
+     * @param string  $args['charset']      Character map from which the license will be generated
+     * @param integer $args['chunks']       Number of chunks
+     * @param integer $args['chunk_length'] The length of an individual chunk
+     * @param string  $args['separator']    Separator used
+     * @param string  $args['prefix']       Prefix used
+     * @param string  $args['suffix']       Suffix used
+     * @param integer $args['expires_in']   Number of days in which the license key expires
      *
      * @return string
      */
@@ -111,14 +121,14 @@ class Generator
      *
      * @since 1.0.0
      *
-     * @param int    $args['amount']       - Number of license keys to be generated.
-     * @param string $args['charset']      - Character map from which the license will be generated.
-     * @param int    $args['chunks']       - Number of chunks.
-     * @param int    $args['chunk_length'] - The length of an individual chunk.
-     * @param string $args['separator']    - Separator used.
-     * @param string $args['prefix']       - Prefix used.
-     * @param string $args['suffix']       - Suffix used.
-     * @param int    $args['expires_in']   - Number of days in which the license key expires.
+     * @param integer $args['amount']       Number of license keys to be generated.
+     * @param string  $args['charset']      Character map from which the license will be generated.
+     * @param integer $args['chunks']       Number of chunks.
+     * @param integer $args['chunk_length'] The length of an individual chunk.
+     * @param string  $args['separator']    Separator used.
+     * @param string  $args['prefix']       Prefix used.
+     * @param string  $args['suffix']       Suffix used.
+     * @param integer $args['expires_in']   Number of days in which the license key expires.
      *
      * @todo Improve the parameter input validation.
      *
@@ -138,13 +148,8 @@ class Generator
         $max_possible_keys = pow($unique_characters, $args['chunks'] * $args['chunk_length']);
 
         if ($amount > $max_possible_keys) {
-            $e = new \Exception(
-                __('It\'s not possible to generate that many keys with the given parameters, there are not enough combinations. Please review your inputs.', 'lmfwc'),
-                1
-            );
-            Logger::exception($e);
             Logger::exception($args);
-            throw $e;
+            throw new LMFWC_Exception('It\'s not possible to generate that many keys with the given parameters, there are not enough combinations. Please review your inputs.');
         }
 
         // Generate the license strings

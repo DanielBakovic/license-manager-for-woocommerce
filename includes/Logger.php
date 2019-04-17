@@ -2,6 +2,8 @@
 
 namespace LicenseManagerForWooCommerce;
 
+use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -219,7 +221,7 @@ class Logger
      */
     public static function exception($error)
     {
-        if ($error instanceof \Exception) {
+        if ($error instanceof \Exception || $error instanceof LMFWC_Exception) {
 
             $date = new \DateTime();
 
@@ -228,16 +230,7 @@ class Logger
             $message .= 'Code: ' . $error->getCode() . "\n";
             $message .= 'Thrown at: ' . $error->getFile() . ':' . $error->getLine() . "\n";
             $message .= "Trace:\n";
-
-            foreach ($error->getTrace() as $id => $trace) {
-                $message .= '    [' . $id . '] ';
-                if (isset($trace['class']) && isset($trace['type'])) {
-                    $message .= $trace['class'] . $trace['type'] . $trace['function'] . '() | ';
-                } else {
-                    $message .= $trace['function'] . '() | ';
-                }
-                $message .= $trace['file'] . ':' . $trace['line'] . "\n";
-            }
+            $message .= $error->getTraceAsString();
 
             self::file($message, self::ERROR_FILE);
         } else {

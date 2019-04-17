@@ -4,6 +4,7 @@ namespace LicenseManagerForWooCommerce\Lists;
 
 use \LicenseManagerForWooCommerce\AdminMenus;
 use \LicenseManagerForWooCommerce\AdminNotice;
+use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
 
 defined('ABSPATH') || exit;
 
@@ -345,9 +346,12 @@ class APIKeyList extends \WP_List_Table
             !wp_verify_nonce($_REQUEST['_wpnonce'], $nonce_action) &&
             !wp_verify_nonce($_REQUEST['_wpnonce'], 'bulk-' . $this->_args['plural'])
         ) {
-            AdminNotice::addErrorSupportForum(8);
-            wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::GENERATORS_PAGE)));
-            wp_die();
+            AdminNotice::error(__('The nonce is invalid or has expired.', 'lmfwc'));
+            wp_redirect(
+                admin_url(sprintf('admin.php?page=%s', AdminMenus::GENERATORS_PAGE))
+            );
+
+            exit();
         }
     }
 
@@ -356,12 +360,13 @@ class APIKeyList extends \WP_List_Table
         $keys = (array)$_REQUEST['key'];
 
         if ($count = apply_filters('lmfwc_delete_api_keys', $keys)) {
-            AdminNotice::add(
-                'success',
-                sprintf(__('%d API key(s) permanently revoked.'), $count)
+            AdminNotice::success(
+                sprintf(__('%d API key(s) permanently revoked.', 'lmfwc'), $count)
             );
         } else {
-            AdminNotice::addErrorSupportForum(15);
+            AdminNotice::error(
+                __('There was a problem revoking the API key(s).', 'lmfwc')
+            );
         }
 
         wp_redirect(sprintf('admin.php?page=%s&tab=rest_api', AdminMenus::SETTINGS_PAGE));

@@ -34,13 +34,23 @@
                     <span class="text-danger">*</span></label>
                 </th>
                 <td>
-                    <?php wp_dropdown_users(array(
-                        'show_option_none' => __('Please select a user...', 'lmfwc'),
-                        'show' => 'user_login',
-                        'class' => 'regular-text',
-                        'name' => 'user',
-                        'selected' => $user_id ? $user_id : false
-                    )); ?>
+                    <select id="user" class="regular-text" name="user">
+                        <option value=""><?php esc_html_e('Please select a user...', 'lmfwc'); ?></option>
+                        <?php
+                            foreach ($users as $user):
+                                $selected = ($user_id == $user->ID) ? 'selected="selected"' : '';
+
+                                echo sprintf(
+                                    '<option value="%s" %s>%s (#%d - %s)</option>',
+                                    $user->ID,
+                                    $selected,
+                                    $user->user_login,
+                                    $user->ID,
+                                    $user->user_email
+                                );
+                            endforeach;
+                        ?>
+                    </select>
                     <p class="description">
                         <b><?php esc_html_e('Required.', 'lmfwc');?></b>
                         <span><?php esc_html_e('Owner of these keys.', 'lmfwc');?></span>

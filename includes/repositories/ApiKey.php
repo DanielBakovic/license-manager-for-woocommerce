@@ -13,6 +13,7 @@
 namespace LicenseManagerForWooCommerce\Repositories;
 
 use \LicenseManagerForWooCommerce\Setup;
+use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
 
 defined('ABSPATH') || exit;
 
@@ -134,19 +135,19 @@ class ApiKey
         $clean_permissions = $permissions ? sanitize_text_field($permissions) : null;
 
         if (!$clean_user_id) {
-            throw new \Exception('API Key User ID is missing', 1);
+            throw new LMFWC_Exception('API Key User ID is missing');
         }
 
         if (!$clean_description) {
-            throw new \Exception('API Key Description is missing', 2);
+            throw new LMFWC_Exception('API Key Description is missing');
         }
 
         if (!$clean_permissions) {
-            throw new \Exception('API Key Permissions are missing', 3);
+            throw new LMFWC_Exception('API Key Permissions are missing');
         }
 
         if (!in_array($clean_permissions, $this->permission_whitelist)) {
-            throw new \Exception('API Key Permissions are invalid', 4);
+            throw new LMFWC_Exception('API Key Permissions are invalid');
         }
 
         global $wpdb;
@@ -193,23 +194,23 @@ class ApiKey
         $clean_permissions = $permissions ? sanitize_text_field($permissions) : null;
 
         if (!$clean_id) {
-            throw new \Exception('API Key ID is missing', 1);
+            throw new LMFWC_Exception('API Key ID is missing');
         }
 
         if (!$clean_user_id) {
-            throw new \Exception('API Key User ID is missing', 2);
+            throw new LMFWC_Exception('API Key User ID is missing');
         }
 
         if (!$clean_description) {
-            throw new \Exception('API Key Description is missing', 3);
+            throw new LMFWC_Exception('API Key Description is missing');
         }
 
         if (!$clean_permissions) {
-            throw new \Exception('API Key Permissions are missing', 4);
+            throw new LMFWC_Exception('API Key Permissions are missing');
         }
 
         if (!in_array($clean_permissions, $this->permission_whitelist)) {
-            throw new \Exception('API Key Permissions are invalid', 5);
+            throw new LMFWC_Exception('API Key Permissions are invalid');
         }
 
         global $wpdb;
@@ -240,7 +241,7 @@ class ApiKey
         $clean_ids = array();
 
         if (!is_array($keys)) {
-            throw new \Exception('Input parameter must be an array', 1);
+            throw new LMFWC_Exception('Input parameter must be an array');
         }
 
         foreach ($keys as $id) {
@@ -252,7 +253,7 @@ class ApiKey
         }
 
         if (count($clean_ids) == 0) {
-            throw new \Exception('No valid IDs given', 2);
+            throw new LMFWC_Exception('No valid IDs given');
         }
 
         global $wpdb;

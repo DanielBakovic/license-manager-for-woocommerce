@@ -51,7 +51,7 @@ class AdminMenus
     public function getPluginPageIDs()
     {
         return array(
-            'license-manager_page_lmfwc_licenses',
+            'toplevel_page_lmfwc_licenses',
             'license-manager_page_lmfwc_generators',
             'license-manager_page_lmfwc_settings'
         );
@@ -115,7 +115,6 @@ class AdminMenus
 
     public function licensesPage()
     {
-
         $licenses = new \LicenseManagerForWooCommerce\Lists\LicensesList();
 
         $action = $this->getCurrentAction($default = 'list');
@@ -133,29 +132,22 @@ class AdminMenus
             || $action === 'deactivate'
             || $action === 'delete'
         ) {
-            $products = new \WP_Query(
-                array(
-                    'post_type'      => 'product',
-                    'posts_per_page' => -1
-                )
-            );
+            $products = apply_filters('lmfwc_get_products_dropdown', null);
         } 
 
         if ($action === 'edit') {
-            $status_whitelist = array(
-                LicenseStatusEnum::ACTIVE,
-                LicenseStatusEnum::INACTIVE
-            );
-            $license_id = absint($_GET['id']);
-            $license_row = apply_filters('lmfwc_get_license_key', $license_id);
-            $license_status = absint($license_row['status']);
-            $license_key = apply_filters('lmfwc_decrypt', $license_row['license_key']);
-            $valid_for = $license_row['valid_for'];
-            $activated = ($license_row['status'] == LicenseStatusEnum::ACTIVE) ? true : false;
-            $product_id = absint($license_row['product_id']);
-            $license_source = absint($license_row['source']);
-            $status_active = LicenseStatusEnum::ACTIVE;
-            $status_inactive = LicenseStatusEnum::INACTIVE;
+            $status_whitelist    = array(LicenseStatusEnum::ACTIVE, LicenseStatusEnum::INACTIVE);
+            $license_id          = absint($_GET['id']);
+            $license_row         = apply_filters('lmfwc_get_license_key', $license_id);
+            $license_status      = absint($license_row['status']);
+            $license_key         = apply_filters('lmfwc_decrypt', $license_row['license_key']);
+            $valid_for           = $license_row['valid_for'];
+            $activated           = ($license_row['status'] == LicenseStatusEnum::ACTIVE) ? true : false;
+            $times_activated_max = $license_row['times_activated_max'];
+            $product_id          = absint($license_row['product_id']);
+            $license_source      = absint($license_row['source']);
+            $status_active       = LicenseStatusEnum::ACTIVE;
+            $status_inactive     = LicenseStatusEnum::INACTIVE;
 
             if (!$license_id) {
                 wp_die(__('Invalid License Key ID', 'lmfwc'));
@@ -192,6 +184,7 @@ class AdminMenus
                 $key_id      = isset($_GET['edit_key']) ? absint($_GET['edit_key']) : 0;
                 $key_data    = apply_filters('lmfwc_get_api_key', $key_id);
                 $user_id     = (int)$key_data['user_id'];
+                $users       = apply_filters('lmfwc_get_users', null);
                 $permissions = array(
                     'read'       => __('Read', 'lmfwc'),
                     'write'      => __('Write', 'lmfwc'),

@@ -128,7 +128,7 @@ class Generators extends LMFWC_REST_Controller
             );
         }
 
-        return new \WP_REST_Response($result, 200);
+        return $this->response(true, $result, 200);
     }
 
     /**
@@ -170,7 +170,7 @@ class Generators extends LMFWC_REST_Controller
             );
         }
 
-        return new \WP_REST_Response($result, 200);
+        return $this->response(true, $result, 200);
     }
 
     /**
@@ -183,14 +183,15 @@ class Generators extends LMFWC_REST_Controller
     {
         $body = $request->get_params();
 
-        $name         = isset($body['name'])         ? sanitize_text_field($body['name'])      : null;
-        $charset      = isset($body['charset'])      ? sanitize_text_field($body['charset'])   : null;
-        $chunks       = isset($body['chunks'])       ? absint($body['chunks'])                 : null;
-        $chunk_length = isset($body['chunk_length']) ? absint($body['chunk_length'])           : null;
-        $separator    = isset($body['separator'])    ? sanitize_text_field($body['separator']) : null;
-        $prefix       = isset($body['prefix'])       ? sanitize_text_field($body['prefix'])    : null;
-        $suffix       = isset($body['suffix'])       ? sanitize_text_field($body['suffix'])    : null;
-        $expires_in   = isset($body['expires_in'])   ? absint($body['expires_in'])             : null;
+        $name                = isset($body['name'])                ? sanitize_text_field($body['name'])      : null;
+        $charset             = isset($body['charset'])             ? sanitize_text_field($body['charset'])   : null;
+        $chunks              = isset($body['chunks'])              ? absint($body['chunks'])                 : null;
+        $chunk_length        = isset($body['chunk_length'])        ? absint($body['chunk_length'])           : null;
+        $times_activated_max = isset($body['times_activated_max']) ? absint($body['times_activated_max'])    : null;
+        $separator           = isset($body['separator'])           ? sanitize_text_field($body['separator']) : null;
+        $prefix              = isset($body['prefix'])              ? sanitize_text_field($body['prefix'])    : null;
+        $suffix              = isset($body['suffix'])              ? sanitize_text_field($body['suffix'])    : null;
+        $expires_in          = isset($body['expires_in'])          ? absint($body['expires_in'])             : null;
 
         if (!$name) {
             return new \WP_Error(
@@ -228,6 +229,7 @@ class Generators extends LMFWC_REST_Controller
                 $charset,
                 $chunks,
                 $chunk_length,
+                $times_activated_max,
                 $separator,
                 $prefix,
                 $suffix,
@@ -268,7 +270,7 @@ class Generators extends LMFWC_REST_Controller
             );
         }
 
-        return new \WP_REST_Response($generator, 200);
+        return $this->response(true, $generator, 200);
     }
 
     /**
@@ -330,6 +332,16 @@ class Generators extends LMFWC_REST_Controller
             $chunk_length = absint($body->chunk_length);
         } else {
             $chunk_length = self::UNDEFINED;
+        }
+
+        if (property_exists($body, 'times_activated_max')) {
+            if (is_null($body->times_activated_max)) {
+                $times_activated_max = null;
+            } else {
+                $times_activated_max = absint($body->times_activated_max);
+            }
+        } else {
+            $times_activated_max = self::UNDEFINED;
         }
 
         if (property_exists($body, 'separator')) {
@@ -432,6 +444,7 @@ class Generators extends LMFWC_REST_Controller
                 $charset,
                 $chunks,
                 $chunk_length,
+                $times_activated_max,
                 $separator,
                 $prefix,
                 $suffix,
@@ -445,6 +458,6 @@ class Generators extends LMFWC_REST_Controller
             );
         }
 
-        return new \WP_REST_Response($updated_generator, 200);
+        return $this->response(true, $updated_generator, 200);
     }
 }

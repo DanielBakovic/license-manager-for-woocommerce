@@ -14,6 +14,7 @@ namespace LicenseManagerForWooCommerce\Repositories;
 
 use \LicenseManagerForWooCommerce\Setup;
 use \LicenseManagerForWooCommerce\Logger;
+use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
 use \LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
 use \LicenseManagerForWooCommerce\Enums\LicenseSource as LicenseSourceEnum;
 
@@ -53,107 +54,31 @@ class License
         $this->table = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
 
         // SELECT
-        add_filter(
-            'lmfwc_get_license_keys',
-            array($this, 'getLicenseKeys'),
-            10
-        );
-        add_filter(
-            'lmfwc_get_license_key',
-            array($this, 'getLicenseKey'),
-            10,
-            1
-        );
-        add_filter(
-            'lmfwc_get_license_key_count',
-            array($this, 'getLicenseKeyCount'),
-            10,
-            1
-        );
-        add_filter(
-            'lmfwc_get_available_stock',
-            array($this, 'getAvailableStock'),
-            10,
-            1
-        );
-        add_filter(
-            'lmfwc_get_order_license_keys',
-            array($this, 'getOrderLicenseKeys'),
-            10,
-            2
-        );
-        add_filter(
-            'lmfwc_get_product_license_keys',
-            array($this, 'getProductLicenseKeys'),
-            10,
-            2
-        );
-        add_filter(
-            'lmfwc_license_key_exists',
-            array($this, 'licenseKeyExists'),
-            10,
-            1
-        );
+        add_filter('lmfwc_get_license_keys',          array($this, 'getLicenseKeys'),         10);
+        add_filter('lmfwc_get_license_key',           array($this, 'getLicenseKey'),          10, 1);
+        add_filter('lmfwc_get_license_key_count',     array($this, 'getLicenseKeyCount'),     10, 1);
+        add_filter('lmfwc_get_license_key_info',      array($this, 'getLicenseKeyInfo'),      10, 1);
+        add_filter('lmfwc_get_available_stock',       array($this, 'getAvailableStock'),      10, 1);
+        add_filter('lmfwc_get_order_license_keys',    array($this, 'getOrderLicenseKeys'),    10, 2);
+        add_filter('lmfwc_get_product_license_keys',  array($this, 'getProductLicenseKeys'),  10, 2);
+        add_filter('lmfwc_get_customer_license_keys', array($this, 'getCustomerLicenseKeys'), 10, 1);
+        add_filter('lmfwc_license_key_exists',        array($this, 'licenseKeyExists'),       10, 1);
 
         // INSERT
-        add_filter(
-            'lmfwc_insert_license_key',
-            array($this, 'insertLicenseKey'),
-            10,
-            6
-        );
-        add_filter(
-            'lmfwc_insert_generated_license_keys',
-            array($this, 'insertGeneratedLicenseKeys'),
-            10,
-            6
-        );
-        add_filter(
-            'lmfwc_insert_imported_license_keys',
-            array($this, 'insertImportedLicenseKeys'),
-            10,
-            4
-        );
+        add_filter('lmfwc_insert_license_key',            array($this, 'insertLicenseKey'),           10, 8);
+        add_filter('lmfwc_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 7);
+        add_filter('lmfwc_insert_imported_license_keys',  array($this, 'insertImportedLicenseKeys'),  10, 6);
 
         // UPDATE
-        add_filter(
-            'lmfwc_update_license_key',
-            array($this, 'updateLicenseKey'),
-            10,
-            6
-        );
-        add_filter(
-            'lmfwc_update_license_key_status',
-            array($this, 'updateLicenseKeyStatus'),
-            10,
-            2
-        );
-        add_filter(
-            'lmfwc_update_selective_license_key',
-            array($this, 'updateSelectiveLicenseKey'),
-            10,
-            7
-        );
-        add_action(
-            'lmfwc_sell_imported_license_keys',
-            array($this, 'sellImportedLicenseKeys'),
-            10,
-            3
-        );
-        add_filter(
-            'lmfwc_toggle_license_key_status',
-            array($this, 'toggleLicenseKeyStatus'),
-            10,
-            4
-        );
+        add_filter('lmfwc_update_license_key',           array($this, 'updateLicenseKey'),          10, 8);
+        add_filter('lmfwc_update_license_key_status',    array($this, 'updateLicenseKeyStatus'),    10, 2);
+        add_filter('lmfwc_update_selective_license_key', array($this, 'updateSelectiveLicenseKey'), 10, 7);
+        add_action('lmfwc_sell_imported_license_keys',   array($this, 'sellImportedLicenseKeys'),   10, 3);
+        add_filter('lmfwc_toggle_license_key_status',    array($this, 'toggleLicenseKeyStatus'),    10, 4);
+        add_filter('lmfwc_activate_license_key',         array($this, 'activateLicenseKey'),        10, 2);
 
         // DELETE
-        add_filter(
-            'lmfwc_delete_license_keys',
-            array($this, 'deleteLicenseKeys'),
-            10,
-            1
-        );
+        add_filter('lmfwc_delete_license_keys', array($this, 'deleteLicenseKeys'), 10, 1);
     }
 
     /**
@@ -174,11 +99,16 @@ class License
                     , `product_id`
                     , `license_key`
                     , `hash`
-                    , `created_at`
                     , `expires_at`
                     , `valid_for`
                     , `source`
                     , `status`
+                    , `times_activated`
+                    , `times_activated_max`
+                    , `created_at`
+                    , `created_by`
+                    , `updated_at`
+                    , `updated_by`
                 FROM
                     {$this->table}
                 ;
@@ -200,7 +130,7 @@ class License
         $clean_id = $id ? absint($id) : null;
 
         if (!$clean_id) {
-            throw new \Exception('Invalid License Key ID', 1);
+            throw new LMFWC_Exception('Invalid License Key ID');
         }
 
         global $wpdb;
@@ -214,11 +144,16 @@ class License
                         , `product_id`
                         , `license_key`
                         , `hash`
-                        , `created_at`
                         , `expires_at`
                         , `valid_for`
                         , `source`
                         , `status`
+                        , `times_activated`
+                        , `times_activated_max`
+                        , `created_at`
+                        , `created_by`
+                        , `updated_at`
+                        , `updated_by`
                     FROM
                         {$this->table}
                     WHERE
@@ -246,7 +181,7 @@ class License
         $clean_status = $status ? absint($status) : null;
 
         if ($clean_status && !in_array($clean_status, LicenseStatusEnum::$status)) {
-            throw new \Exception('License Status is invalid', 1);
+            throw new LMFWC_Exception('License Status is invalid');
         }
 
         if (!$clean_status) {
@@ -259,6 +194,55 @@ class License
                 )
             );
         }
+    }
+
+    /**
+     * Retrieves additional entries of the given license key
+     * 
+     * @param string $license_key Unencrypted license key
+     * 
+     * @since  1.2.0
+     * @throws Exception
+     * @return array
+     */
+    public function getLicenseKeyInfo($license_key)
+    {
+        $clean_license_key = $license_key ? sanitize_text_field($license_key) : null;
+
+        if (!$clean_license_key) {
+            throw new LMFWC_Exception('Invalid License Key');
+        }
+
+        global $wpdb;
+
+        return $wpdb->get_row(
+            $wpdb->prepare(
+                "
+                    SELECT
+                        `id`
+                        , `order_id`
+                        , `product_id`
+                        , `license_key`
+                        , `hash`
+                        , `expires_at`
+                        , `valid_for`
+                        , `source`
+                        , `status`
+                        , `times_activated`
+                        , `times_activated_max`
+                        , `created_at`
+                        , `created_by`
+                        , `updated_at`
+                        , `updated_by`
+                    FROM
+                        {$this->table}
+                    WHERE
+                        hash = %s
+                    ;
+                ",
+                apply_filters('lmfwc_hash', $clean_license_key)
+            ), ARRAY_A
+        );
     }
 
     /**
@@ -275,7 +259,7 @@ class License
         $clean_product_id = $product_id ? absint($product_id) : null;
 
         if (!$clean_product_id) {
-            throw new \Exception('Product ID is invalid.', 1);
+            throw new LMFWC_Exception('Product ID is invalid.');
         }
 
         global $wpdb;
@@ -314,19 +298,15 @@ class License
         $clean_product_id = $product_id ? absint($product_id) : null;
 
         if (!$clean_order_id) {
-            throw new \Exception('Order ID is invalid', 1);
+            throw new LMFWC_Exception('Order ID is invalid');
         }
 
         if (!$clean_product_id) {
-            throw new \Exception("Product ID is invalid", 2);
+            throw new LMFWC_Exception('Product ID is invalid');
         }
 
         if ($clean_order_id) {
             new \WC_Order($clean_order_id);
-        }
-
-        if ($clean_product_id) {
-            new \WC_Product($clean_product_id);
         }
 
         global $wpdb;
@@ -335,16 +315,21 @@ class License
             $wpdb->prepare(
                 "
                     SELECT
-                        id
-                        , order_id
-                        , product_id
-                        , license_key
-                        , hash
-                        , created_at
-                        , expires_at
-                        , valid_for
-                        , source
-                        , status
+                        `id`
+                        , `order_id`
+                        , `product_id`
+                        , `license_key`
+                        , `hash`
+                        , `expires_at`
+                        , `valid_for`
+                        , `source`
+                        , `status`
+                        , `times_activated`
+                        , `times_activated_max`
+                        , `created_at`
+                        , `created_by`
+                        , `updated_at`
+                        , `updated_by`
                     FROM
                         {$this->table}
                     WHERE
@@ -375,19 +360,15 @@ class License
         $clean_status     = $status     ? absint($status)     : null;
 
         if (!$clean_product_id) {
-            throw new \Exception('Product ID is invalid', 1);
+            throw new LMFWC_Exception('Product ID is invalid');
         }
 
         if (!$clean_status) {
-            throw new \Exception('Status is invalid', 2);
-        }
-
-        if ($clean_product_id) {
-            new \WC_Product($product_id);
+            throw new LMFWC_Exception('Status is invalid');
         }
 
         if (!in_array($clean_status, LicenseStatusEnum::$status)) {
-            throw new \Exception('Status is invalid', 3);
+            throw new LMFWC_Exception('Status is invalid');
         }
 
         global $wpdb;
@@ -396,16 +377,21 @@ class License
             $wpdb->prepare(
                 "
                     SELECT
-                        id
-                        , order_id
-                        , product_id
-                        , license_key
-                        , hash
-                        , created_at
-                        , expires_at
-                        , valid_for
-                        , source
-                        , status
+                        `id`
+                        , `order_id`
+                        , `product_id`
+                        , `license_key`
+                        , `hash`
+                        , `expires_at`
+                        , `valid_for`
+                        , `source`
+                        , `status`
+                        , `times_activated`
+                        , `times_activated_max`
+                        , `created_at`
+                        , `created_by`
+                        , `updated_at`
+                        , `updated_by`
                     FROM
                         {$this->table}
                     WHERE
@@ -422,6 +408,38 @@ class License
     }
 
     /**
+     * Retrieves ordered license keys to be shown to the Customer.
+     * 
+     * @param WC_Order $order The WooCommerce Order
+     * 
+     * @return array
+     */
+    public function getCustomerLicenseKeys($order)
+    {
+        $data = array();
+
+        /**
+         * @var $item_data WC_Order_Item_Product
+         */
+        foreach ($order->get_items() as $item_data) {
+            /**
+             * @var WC_Product_Simple|WC_Product_Variation $product
+             */
+            $product = $item_data->get_product();
+
+            // Check if the product has been activated for selling.
+            if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)) {
+                continue;
+            }
+
+            $data[$product->get_id()]['name'] = $product->get_name();
+            $data[$product->get_id()]['keys'] = $this->getOrderLicenseKeys($order->get_id(), $product->get_id());
+        }
+
+        return $data;
+    }
+
+    /**
      * Check if the license key already exists in the database.
      *
      * @param string $license_key Unencrypted License Key
@@ -435,7 +453,7 @@ class License
         $clean_license_key = $license_key ? sanitize_text_field($license_key) : null;
 
         if (!$clean_license_key) {
-            throw new \Exception('License Key is invalid.', 1);
+            throw new LMFWC_Exception('License Key is invalid.');
         }
 
         $hashed_license_key = apply_filters('lmfwc_hash', $clean_license_key);
@@ -469,6 +487,7 @@ class License
      * @param integer $valid_for   Validity after purchase (in days)
      * @param integer $source      Source enumerator value
      * @param integer $status      Status enumerator value
+     * @param integer $created_by  WordPress User ID
      * 
      * @since  1.1.0
      * @throws Exception
@@ -480,41 +499,45 @@ class License
         $license_key,
         $valid_for,
         $source,
-        $status
+        $status,
+        $times_activated_max,
+        $created_by
     ) {
-        $clean_order_id    = $order_id    ? absint($order_id)                 : null;
-        $clean_product_id  = $product_id  ? absint($product_id)               : null;
-        $clean_license_key = $license_key ? sanitize_text_field($license_key) : null;
-        $clean_valid_for   = $valid_for   ? absint($valid_for)                : null;
-        $clean_source      = $source      ? absint($source)                   : null;
-        $clean_status      = $status      ? absint($status)                   : null;
+        $clean_order_id            = $order_id            ? absint($order_id)                 : null;
+        $clean_product_id          = $product_id          ? absint($product_id)               : null;
+        $clean_license_key         = $license_key         ? sanitize_text_field($license_key) : null;
+        $clean_valid_for           = $valid_for           ? absint($valid_for)                : null;
+        $clean_source              = $source              ? absint($source)                   : null;
+        $clean_status              = $status              ? absint($status)                   : null;
+        $clean_times_activated_max = $times_activated_max ? absint($times_activated_max)      : null;
+        $clean_created_by          = $created_by          ? absint($created_by)               : null;
 
         if ($clean_order_id) {
             new \WC_Order($clean_order_id);
         }
 
-        if ($clean_product_id) {
-            new \WC_Product($clean_product_id);
-        }
-
         if (!$clean_license_key || strlen($clean_license_key) == 0) {
-            throw new \Exception('Invalid License Key', 1);
+            throw new LMFWC_Exception('Invalid License Key');
         }
 
         if (!$clean_source) {
-            throw new \Exception('Source Enumerator is missing', 2);
+            throw new LMFWC_Exception('Source Enumerator is missing');
         }
 
         if (!in_array($clean_source, LicenseSourceEnum::$sources)) {
-            throw new \Exception('Source Enumerator is invalid', 3);
+            throw new LMFWC_Exception('Source Enumerator is invalid');
         }
 
         if (!$clean_status) {
-            throw new \Exception('Status Enumerator is missing', 4);
+            throw new LMFWC_Exception('Status Enumerator is missing');
         }
 
         if (!in_array($clean_status, LicenseStatusEnum::$status)) {
-            throw new \Exception('Status Enumerator is invalid', 5);
+            throw new LMFWC_Exception('Status Enumerator is invalid');
+        }
+
+        if (!$clean_created_by || !get_userdata($clean_created_by)) {
+            throw new LMFWC_Exception('Created by User ID is invalid');
         }
 
         $license_key_encrypted = apply_filters('lmfwc_encrypt', $clean_license_key);
@@ -526,17 +549,19 @@ class License
         $insert = $wpdb->insert(
             $this->table,
             array(
-                'order_id'    => $clean_order_id,
-                'product_id'  => $clean_product_id,
-                'license_key' => $license_key_encrypted,
-                'hash'        => $license_key_hashed,
-                'created_at'  => $created_at,
-                'expires_at'  => null,
-                'valid_for'   => $clean_valid_for,
-                'source'      => $clean_source,
-                'status'      => $clean_status
+                'order_id'            => $clean_order_id,
+                'product_id'          => $clean_product_id,
+                'license_key'         => $license_key_encrypted,
+                'hash'                => $license_key_hashed,
+                'expires_at'          => null,
+                'valid_for'           => $clean_valid_for,
+                'source'              => $clean_source,
+                'status'              => $clean_status,
+                'times_activated_max' => $clean_times_activated_max,
+                'created_at'          => $created_at,
+                'created_by'          => $clean_created_by
             ),
-            array('%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%d')
+            array('%d', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%d')
         );
 
         if (!$insert) {
@@ -566,6 +591,7 @@ class License
         $license_keys,
         $expires_in,
         $status,
+        $created_by,
         $generator
     ) {
         $clean_order_id     = $order_id     ? absint($order_id)     : null;
@@ -573,15 +599,16 @@ class License
         $clean_license_keys = array();
         $clean_expires_in   = $expires_in   ? absint($expires_in)   : null;
         $clean_status       = $status       ? absint($status)       : null;
+        $clean_created_by   = $created_by   ? absint($created_by)   : null;
 
         if (!$clean_status
             || !in_array($clean_status, LicenseStatusEnum::$status)
         ) {
-            throw new \Exception('License Status is invalid.', 1);
+            throw new LMFWC_Exception('License Status is invalid.');
         }
 
         if (!is_array($license_keys)) {
-            throw new \Exception('License Keys must be provided as array', 2);
+            throw new LMFWC_Exception('License Keys must be provided as array');
         }
 
         foreach ($license_keys as $license_key) {
@@ -589,7 +616,11 @@ class License
         }
 
         if (count($clean_license_keys) === 0) {
-            throw new \Exception('No License Keys were provided', 3);
+            throw new LMFWC_Exception('No License Keys were provided');
+        }
+
+        if (!$clean_created_by || !get_userdata($clean_created_by)) {
+            throw new LMFWC_Exception('Created by User ID is invalid');
         }
 
         global $wpdb;
@@ -622,17 +653,19 @@ class License
             $wpdb->insert(
                 $this->table,
                 array(
-                    'order_id'    => $clean_order_id,
-                    'product_id'  => $clean_product_id,
-                    'license_key' => $encrypted_license_key,
-                    'hash'        => $hashed_license_key,
-                    'created_at'  => $created_at,
-                    'expires_at'  => $expires_at,
-                    'valid_for'   => $clean_expires_in,
-                    'source'      => LicenseSourceEnum::GENERATOR,
-                    'status'      => $clean_status
+                    'order_id'            => $clean_order_id,
+                    'product_id'          => $clean_product_id,
+                    'license_key'         => $encrypted_license_key,
+                    'hash'                => $hashed_license_key,
+                    'expires_at'          => $expires_at,
+                    'valid_for'           => $clean_expires_in,
+                    'source'              => LicenseSourceEnum::GENERATOR,
+                    'status'              => $clean_status,
+                    'times_activated_max' => $generator->times_activated_max,
+                    'created_at'          => gmdate('Y-m-d H:i:s'),
+                    'created_by'          => $clean_created_by
                 ),
-                array('%d', '%d', '%s', '%s', '%s', '%s', '%d')
+                array('%d', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%d')
             );
         }
 
@@ -667,9 +700,12 @@ class License
     /**
      * Imports an array of un-encrypted license keys.
      *
-     * @param array   $license_keys License Keys to be added
-     * @param integer $status       License Status Enumerator value 
-     * @param int     $product_id   WooCommerce Product ID
+     * @param array   $license_keys        License Keys to be added
+     * @param integer $status              License Status Enumerator value 
+     * @param integer $product_id          WooCommerce Product ID
+     * @param integer $valid_for           Validity after purchase (in days)
+     * @param integer $times_activated_max Maximum activation count
+     * @param integer $created_by          WordPress User ID
      *
      * @since  1.1.0
      * @throws Exception
@@ -679,28 +715,32 @@ class License
         $license_keys,
         $status,
         $product_id,
-        $valid_for
+        $valid_for,
+        $times_activated_max,
+        $created_by
     ) {
-        $clean_license_keys = array();
-        $clean_status       = $status     ? absint($status)     : null;
-        $clean_product_id   = $product_id ? absint($product_id) : null;
-        $clean_valid_for    = $valid_for  ? absint($valid_for)  : null;
-        $result             = array();
+        $clean_license_keys        = array();
+        $clean_status              = $status              ? absint($status)              : null;
+        $clean_product_id          = $product_id          ? absint($product_id)          : null;
+        $clean_valid_for           = $valid_for           ? absint($valid_for)           : null;
+        $clean_times_activated_max = $times_activated_max ? absint($times_activated_max) : null;
+        $clean_created_by          = $created_by          ? absint($created_by)          : null;
+        $result                    = array();
 
         if (!is_array($license_keys)) {
-            throw new \Exception('License Keys must be an array', 1);
+            throw new LMFWC_Exception('License Keys must be an array');
         }
 
         if (!$clean_status) {
-            throw new \Exception('Status enumerator is missing', 2);
+            throw new LMFWC_Exception('Status enumerator is missing');
         }
 
         if (!in_array($clean_status, LicenseStatusEnum::$status)) {
-            throw new \Exception('Status enumerator is invalid', 3);
+            throw new LMFWC_Exception('Status enumerator is invalid');
         }
 
-        if ($product_id) {
-            new \WC_Product($clean_product_id);
+        if (!$clean_created_by || !get_userdata($clean_created_by)) {
+            throw new LMFWC_Exception('Created by User ID is invalid');
         }
 
         foreach ($license_keys as $license_key) {
@@ -718,17 +758,19 @@ class License
             $insert = $wpdb->insert(
                 $this->table,
                 array(
-                    'order_id'    => null,
-                    'product_id'  => $clean_product_id,
-                    'license_key' => apply_filters('lmfwc_encrypt', $license_key),
-                    'hash'        => apply_filters('lmfwc_hash', $license_key),
-                    'created_at'  => $created_at,
-                    'expires_at'  => null,
-                    'valid_for'   => $clean_valid_for,
-                    'source'      => LicenseSourceEnum::IMPORT,
-                    'status'      => $clean_status
+                    'order_id'            => null,
+                    'product_id'          => $clean_product_id,
+                    'license_key'         => apply_filters('lmfwc_encrypt', $license_key),
+                    'hash'                => apply_filters('lmfwc_hash', $license_key),
+                    'expires_at'          => null,
+                    'valid_for'           => $clean_valid_for,
+                    'source'              => LicenseSourceEnum::IMPORT,
+                    'status'              => $clean_status,
+                    'times_activated_max' => $clean_times_activated_max,
+                    'created_at'          => $created_at,
+                    'created_by'          => $clean_created_by
                 ),
-                array('%d', '%d', '%s', '%s', '%s', '%s', '%d', '%d', '%d')
+                array('%d', '%d', '%s', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%d')
             );
 
             if ($insert) {
@@ -744,12 +786,14 @@ class License
     /**
      * Updates the license key is a whole. All parameters are required.
      * 
-     * @param integer $id          ID of the edited License Key
-     * @param integer $product_id  WooCommerce Product ID
-     * @param string  $license_key Decrypted License Key
-     * @param integer $valid_for   Validity in days
-     * @param integer $source      Source enumerator
-     * @param integer $status      Status enumerator
+     * @param integer $id                  ID of the edited License Key
+     * @param integer $product_id          WooCommerce Product ID
+     * @param string  $license_key         Decrypted License Key
+     * @param integer $valid_for           Validity in days
+     * @param integer $source              Source enumerator
+     * @param integer $status              Status enumerator
+     * @param integer $times_activated_max Maximum activation count
+     * @param integer $updated_by          WordPress User ID
      *
      * @since  1.1.0
      * @throws Exception
@@ -761,33 +805,37 @@ class License
         $license_key,
         $valid_for,
         $source,
-        $status
+        $status,
+        $times_activated_max,
+        $updated_by
     ) {
-        $clean_id          = $id          ? absint($id)                       : null;
-        $clean_product_id  = $product_id  ? absint($product_id)               : null;
-        $clean_license_key = $license_key ? sanitize_text_field($license_key) : null;
-        $clean_valid_for   = $valid_for   ? absint($valid_for)                : null;
-        $clean_source      = $source      ? absint($source)                   : null;
-        $clean_status      = $status      ? absint($status)                   : null;
+        $clean_id                  = $id                  ? absint($id)                       : null;
+        $clean_product_id          = $product_id          ? absint($product_id)               : null;
+        $clean_license_key         = $license_key         ? sanitize_text_field($license_key) : null;
+        $clean_valid_for           = $valid_for           ? absint($valid_for)                : null;
+        $clean_source              = $source              ? absint($source)                   : null;
+        $clean_status              = $status              ? absint($status)                   : null;
+        $clean_times_activated_max = $times_activated_max ? absint($times_activated_max)      : null;
+        $clean_updated_by          = $updated_by          ? absint($updated_by)               : null;
 
         if (!$clean_id) {
-            throw new \Exception('Invalid License Key ID', 1);
-        }
-
-        if ($clean_product_id) {
-            new \WC_Product($clean_product_id);
+            throw new LMFWC_Exception('Invalid License Key ID');
         }
 
         if (!$clean_license_key || strlen($clean_license_key) == 0) {
-            throw new \Exception('Invalid License Key', 2);
+            throw new LMFWC_Exception('Invalid License Key');
         }
 
         if (!in_array($clean_source, LicenseSourceEnum::$sources)) {
-            throw new \Exception('Source Enumerator is invalid', 3);
+            throw new LMFWC_Exception('Source Enumerator is invalid');
         }
 
         if (!in_array($clean_status, LicenseStatusEnum::$status)) {
-            throw new \Exception('Status Enumerator is invalid', 4);
+            throw new LMFWC_Exception('Status Enumerator is invalid');
+        }
+
+        if (!$clean_updated_by || !get_userdata($clean_updated_by)) {
+            throw new LMFWC_Exception('Updated by User ID is invalid');
         }
 
         global $wpdb;
@@ -798,15 +846,18 @@ class License
         return $wpdb->update(
             $this->table,
             array(
-                'product_id'  => $clean_product_id,
-                'license_key' => $encrypted_license_key,
-                'hash'        => $hashed_license_key,
-                'valid_for'   => $clean_valid_for,
-                'source'      => $clean_source,
-                'status'      => $clean_status
+                'product_id'          => $clean_product_id,
+                'license_key'         => $encrypted_license_key,
+                'hash'                => $hashed_license_key,
+                'valid_for'           => $clean_valid_for,
+                'source'              => $clean_source,
+                'status'              => $clean_status,
+                'times_activated_max' => $clean_times_activated_max,
+                'updated_at'          => gmdate('Y-m-d H:i:s'),
+                'updated_by'          => $clean_updated_by
             ),
             array('id' => $clean_id),
-            array('%d', '%s', '%s', '%d', '%d', '%d'),
+            array('%d', '%s', '%s', '%d', '%d', '%d', '%d', '%s', '%d'),
             array('%d')
         );
     }
@@ -827,11 +878,11 @@ class License
         $clean_status = $status ? absint($status) : null;
 
         if (!$clean_id) {
-            throw new \Exception('Invalid License Key ID', 1);
+            throw new LMFWC_Exception('Invalid License Key ID');
         }
 
         if (!in_array($clean_status, LicenseStatusEnum::$status)) {
-            throw new \Exception('Status Enumerator is invalid', 2);
+            throw new LMFWC_Exception('Status Enumerator is invalid');
         }
 
         global $wpdb;
@@ -843,7 +894,6 @@ class License
             array('%d'),
             array('%d')
         );
-
     }
 
     /**
@@ -854,9 +904,9 @@ class License
      * @param integer $order_id    The WooCommerce Order ID
      * @param integer $product_id  The WooCommerce Product ID
      * @param string  $license_key License Key
-     * @param string  $expires_at  Timestamp of license expiry
      * @param integer $valid_for   Validity in days
      * @param integer $status      Status enumerator
+     * @param integer $updated_by  WordPress User ID
      *
      * @since  1.1.0
      * @throws Exception
@@ -867,10 +917,16 @@ class License
         $order_id,
         $product_id,
         $license_key,
-        $expires_at,
         $valid_for,
-        $status
+        $status,
+        $updated_by
     ) {
+        $clean_updated_by = $updated_by ? absint($updated_by) : null;
+
+        if (!$clean_updated_by || !get_userdata($clean_updated_by)) {
+            throw new LMFWC_Exception('Updated by User ID is invalid');
+        }
+
         if ($id && $id != self::UNDEFINED) {
             $clean_id = absint($id);
         } elseif (is_null($id)) {
@@ -903,14 +959,6 @@ class License
             $clean_license_key = self::UNDEFINED;
         }
 
-        if ($expires_at && $expires_at != self::UNDEFINED) {
-            $clean_expires_at = sanitize_text_field($expires_at);
-        } elseif (is_null($expires_at)) {
-            $clean_expires_at = null;
-        } elseif ($expires_at == self::UNDEFINED) {
-            $clean_expires_at = self::UNDEFINED;
-        }
-
         if ($valid_for && $valid_for != self::UNDEFINED) {
             $clean_valid_for = absint($valid_for);
         } elseif (is_null($valid_for)) {
@@ -928,103 +976,82 @@ class License
         }
 
         if (!$clean_id) {
-            throw new \Exception('Invalid License Key ID', 1);
+            throw new LMFWC_Exception('Invalid License Key ID');
         }
 
         if (!$clean_license_key) {
-            throw new \Exception('Invalid License Key', 1);
+            throw new LMFWC_Exception('Invalid License Key');
         }
 
         if ($order_id == self::UNDEFINED
             && $product_id == self::UNDEFINED
             && $license_key == self::UNDEFINED
-            && $expires_at == self::UNDEFINED
             && $valid_for == self::UNDEFINED
             && $status == self::UNDEFINED
         ) {
-            throw new \Exception('No parameters provided', 2);
+            throw new LMFWC_Exception('No parameters provided');
         }
 
         global $wpdb;
 
-        $first = true;
-        $sql = "UPDATE {$this->table}";
+        $sql = $wpdb->prepare(
+            "
+                UPDATE
+                    {$this->table}
+                SET
+                    `updated_at` = %s,
+                    `updated_by` = %d
+            ",
+            gmdate('Y-m-d H:i:s'),
+            $clean_updated_by
+        );
 
         // Order ID
         if ($clean_order_id != self::UNDEFINED) {
             if (is_null($clean_order_id)) {
-                $sql .= ' SET `order_id` = NULL';
+                $sql .= ', `order_id` = NULL';
             } else {
-                $sql .= $wpdb->prepare(' SET `order_id` = %d', $clean_order_id);
+                $sql .= $wpdb->prepare(', `order_id` = %d', $clean_order_id);
             }
-
-            $first = false;
         }
 
         // Product ID
         if ($clean_product_id != self::UNDEFINED) {
-            $sql .= $first ? ' SET ' : ', ';
-            
             if (is_null($clean_product_id)) {
-                $sql .= '`product_id` = NULL';
+                $sql .= ', `product_id` = NULL';
             } else {
                 $sql .= $wpdb->prepare('`product_id` = %d', $clean_product_id);
             }
-
-            $first = false;
         }
 
         // License Key
         if ($clean_license_key != self::UNDEFINED) {
-            $sql .= $first ? ' SET ' : ', ';
             $license_key_encrypted = apply_filters('lmfwc_encrypt', $clean_license_key);
             $license_key_hashed = apply_filters('lmfwc_hash', $clean_license_key);
 
             $sql .= $wpdb->prepare(
-                '`license_key` = %s, `hash` = %s',
+                ', `license_key` = %s, `hash` = %s',
                 $license_key_encrypted,
                 $license_key_hashed
             );
-            $first = false;
-        }
-
-        // Expires at
-        if ($clean_expires_at != self::UNDEFINED) {
-            $sql .= $first ? ' SET ' : ', ';
-            
-            if (is_null($clean_expires_at)) {
-                $sql .= '`expires_at` = NULL';
-            } else {
-                $sql .= $wpdb->prepare('`expires_at` = %s', $clean_expires_at);
-            }
-
-            $first = false;
         }
 
         // Valid for
         if ($clean_valid_for != self::UNDEFINED) {
-            $sql .= $first ? ' SET ' : ', ';
-            
             if (is_null($clean_valid_for)) {
-                $sql .= '`valid_for` = NULL';
+                $sql .= ', `valid_for` = NULL';
             } else {
-                $sql .= $wpdb->prepare('`valid_for` = %d', $clean_valid_for);
+                $sql .= $wpdb->prepare(', `valid_for` = %d', $clean_valid_for);
             }
-
-            $first = false;
         }
 
         // Status
         if ($clean_status != self::UNDEFINED) {
-            $sql .= $first ? ' SET ' : ', ';
-            
             if (is_null($clean_status)) {
-                $sql .= '`status` = NULL';
+                $sql .= ', `status` = NULL';
             } else {
-                $sql .= $wpdb->prepare('`status` = %d', $clean_status);
+                $sql .= $wpdb->prepare(', `status` = %d', $clean_status);
             }
-
-            $first = false;
         }
 
         $sql .= $wpdb->prepare(' WHERE id = %d;', $id);
@@ -1052,15 +1079,15 @@ class License
         $clean_amount       = $amount   ? absint($amount)   : null;
 
         if (!is_array($license_keys) || count($license_keys) <= 0) {
-            throw new \Exception('License Keys are invalid.', 1);
+            throw new LMFWC_Exception('License Keys are invalid.');
         }
 
         if (!$clean_order_id) {
-            throw new \Exception('Order ID is invalid.', 2);
+            throw new LMFWC_Exception('Order ID is invalid.');
         }
 
         if (!$clean_order_id) {
-            throw new \Exception('Amount is invalid.', 3);
+            throw new LMFWC_Exception('Amount is invalid.');
         }
 
         global $wpdb;
@@ -1090,7 +1117,7 @@ class License
     }
 
     /**
-     * Activates or Deactivates license keys.
+     * Toggles the license key activation status
      *
      * @param string  $column_name The column name by which to compare
      * @param string  $operator    The operator to use
@@ -1108,15 +1135,15 @@ class License
         $clean_status      = $status      ? absint($status)                   : null;
 
         if (!$clean_column_name) {
-            throw new \Exception('Invalid column name.', 1);
+            throw new LMFWC_Exception('Invalid column name.');
         }
 
         if (!$clean_operator) {
-            throw new \Exception('Invalid operator.', 2);
+            throw new LMFWC_Exception('Invalid operator.');
         }
 
         if (!in_array($clean_status, LicenseStatusEnum::$status)) {
-            throw new \Exception('Invalid status.', 3);
+            throw new LMFWC_Exception('Invalid status.');
         }
 
         global $wpdb;
@@ -1147,6 +1174,49 @@ class License
     }
 
     /**
+     * Activates or Deactivates license keys.
+     *
+     * @param integer $id         License Key ID
+     * @param integer $updated_by WordPress User ID
+     *
+     * @since  1.2.0
+     * @throws Exception
+     * @return array
+     */
+    public function activateLicenseKey($id, $updated_by)
+    {
+        $clean_id         = $id         ? absint($id)         : null;
+        $clean_updated_by = $updated_by ? absint($updated_by) : null;
+
+        if (!$clean_id) {
+            throw new LMFWC_Exception('Invalid License Key ID');
+        }
+
+        if (!$clean_updated_by || !get_userdata($clean_updated_by)) {
+            throw new LMFWC_Exception('Updated by User ID is invalid');
+        }
+
+        global $wpdb;
+
+        $license = $this->getLicenseKey($clean_id);
+        $current = intval($license['times_activated']);
+
+        $wpdb->update(
+            $this->table,
+            array(
+                'times_activated' => ++$current,
+                'updated_at'      => gmdate('Y-m-d H:i:s'),
+                'updated_by'      => $clean_updated_by
+            ),
+            array('id' => $clean_id),
+            array('%d', '%s', '%d'),
+            array('%d')
+        );
+
+        return $this->getLicenseKey($clean_id); 
+    }
+
+    /**
      * Deletes License Key(s) by an array of IDs
      *
      * @param array $licenses Array of License Key ID's to be deleted
@@ -1160,7 +1230,7 @@ class License
         $clean_ids = array();
 
         if (!is_array($licenses)) {
-            throw new \Exception('Input parameter must be an array', 1);
+            throw new LMFWC_Exception('Input parameter must be an array');
         }
 
         foreach ($licenses as $id) {
@@ -1172,7 +1242,7 @@ class License
         }
 
         if (count($clean_ids) == 0) {
-            throw new \Exception('No valid IDs given', 2);
+            throw new LMFWC_Exception('No valid IDs given');
         }
 
         global $wpdb;

@@ -18,22 +18,11 @@ class OrderManager
      * Class constructor.
      */
     public function __construct() {
-        add_action(
-            'woocommerce_order_status_completed',
-            array($this, 'generateOrderLicenses')
-        );
-        add_action(
-            'woocommerce_email_after_order_table',
-            array($this, 'deliverLicenseKeys'),
-            10,
-            2
-        );
-        add_action(
-            'woocommerce_order_details_after_order_table',
-            array($this, 'showBoughtLicenses'),
-            10,
-            1
-        );
+        add_action('woocommerce_order_status_completed',               array($this, 'generateOrderLicenses'));
+        add_action('woocommerce_email_after_order_table',              array($this, 'deliverLicenseKeys'),       10, 4);
+        add_action('woocommerce_order_details_after_order_table',      array($this, 'showBoughtLicenses'),       10, 1);
+        add_filter('woocommerce_order_actions',                        array($this, 'addSendLicenseKeysAction'), 10, 1);
+        add_action('woocommerce_order_action_lmfwc_send_license_keys', array($this, 'processSendLicenseKeysAction'));
     }
 
     /**
@@ -49,7 +38,7 @@ class OrderManager
         if (get_post_meta($order_id, 'lmfwc_order_complete')) return;
 
         $order    = new \WC_Order($order_id);
-        $licenses = [];
+        $licenses = array();
 
         // Loop through the order items
         foreach ($order->get_items() as $item_data) {
@@ -69,6 +58,19 @@ class OrderManager
                 continue;
             }
 
+            // Determines how many times should the license key be delivered
+            if (!$delivered_quantity = absint(get_post_meta(
+                    $product->get_id(),
+                    'lmfwc_licensed_product_delivered_quantity',
+                    true
+                ))
+            ) {
+                $delivered_quantity = 1;
+            }
+
+            // Set the needed delivery amount
+            $needed_amount = absint($item_data->get_quantity()) * $delivered_quantity;
+
             // Sell license keys through available stock.
             if ($use_stock) {
                 // Retrieve the available license keys.
@@ -78,18 +80,19 @@ class OrderManager
                     LicenseStatusEnum::ACTIVE
                 );
 
+                // Retrieve the current stock amount
                 $available_stock = count($license_keys);
 
                 // There are enough keys.
-                if ($item_data->get_quantity() <= $available_stock) {
+                if ($needed_amount <= $available_stock) {
                     // Set the retrieved license keys as "SOLD".
                     apply_filters(
                         'lmfwc_sell_imported_license_keys',
                         $license_keys,
                         $order_id,
-                        $item_data->get_quantity()
+                        $needed_amount
                     );
-                // There aren't not enough keys.
+                // There are not enough keys.
                 } else {
                     // Set the available license keys as "SOLD".
                     apply_filters(
@@ -101,7 +104,7 @@ class OrderManager
 
                     // The "use generator" option is active, generate them
                     if ($use_generator) {
-                        $amount_to_generate = intval($item_data->get_quantity()) - intval($available_stock);
+                        $amount_to_generate = $needed_amount - $available_stock;
                         $generator_id = get_post_meta(
                             $product->get_id(),
                             'lmfwc_licensed_product_assigned_generator',
@@ -130,8 +133,13 @@ class OrderManager
                             $licenses['licenses'],
                             $licenses['expires_in'],
                             LicenseStatusEnum::SOLD,
+                            get_current_user_id(),
                             $generator
                         );
+
+                    // Create a backorder
+                    } else {
+                        // Coming soon...
                     }
                 }
 
@@ -143,7 +151,7 @@ class OrderManager
                 $generator = apply_filters('lmfwc_get_generator', $generator_id);
 
                 $licenses = apply_filters('lmfwc_create_license_keys', array(
-                    'amount'       => $item_data->get_quantity(),
+                    'amount'       => $needed_amount,
                     'charset'      => $generator->charset,
                     'chunks'       => $generator->chunks,
                     'chunk_length' => $generator->chunk_length,
@@ -161,6 +169,7 @@ class OrderManager
                     $licenses['licenses'],
                     $licenses['expires_in'],
                     LicenseStatusEnum::SOLD,
+                    get_current_user_id(),
                     $generator
                 );
             }
@@ -185,46 +194,77 @@ class OrderManager
      * Adds the bought license keys to the "Order complete" email, or displays a
      * notice - depending on the settings.
      *
-     * @param integer $order          WC_Order
-     * @param integer $is_admin_email Either true or false
+     * @param WC_Order $order          The WooCommerce Order object
+     * @param boolean  $is_admin_email Either true or false
+     * @param boolean  $plain_text     Plain text or HTML email identifier
+     * @param WC_Email $email          The WooCommerce Email object
      *
-     * @since  1.0.0
-     * @return null
+     * @since 1.0.0
      */
-    public function deliverLicenseKeys($order, $is_admin_email)
+    public function deliverLicenseKeys($order, $is_admin_email, $plain_text, $email)
     {
         // Return if the order isn't complete.
-        if ($order->get_status() != 'completed' && !get_post_meta($order->get_id(), 'lmfwc_order_complete')) return;
+        if ($order->get_status() != 'completed'
+            && !get_post_meta($order->get_id(), 'lmfwc_order_complete')
+        ) {
+            return;
+        }
 
-        // Send the keys out if the setting is active.
         if (Settings::get('lmfwc_auto_delivery')) {
-            $data = [];
 
-            /**
-             * @var $item_data WC_Order_Item_Product
-             */
-            foreach ($order->get_items() as $item_data) {
-                /**
-                 * @var $product WC_Product_Simple
-                 */
-                $product = $item_data->get_product();
-
-                // Check if the product has been activated for selling.
-                if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)) break;
-
-                $data[$product->get_id()]['name'] = $product->get_name();
-                $data[$product->get_id()]['keys'] = apply_filters(
-                    'lmfwc_get_order_license_keys',
-                    $order->get_id(),
-                    $product->get_id()
+            // Send the keys out if the setting is active.
+            if ($plain_text) {
+                echo wc_get_template(
+                    'emails/plain/email-order-license-keys.php',
+                    array(
+                        'heading'       => apply_filters('lmfwc_license_keys_table_heading', null),
+                        'data'          => apply_filters('lmfwc_get_customer_license_keys', $order),
+                        'date_format'   => get_option('date_format'),
+                        'order'         => $order,
+                        'sent_to_admin' => $is_admin_email,
+                        'plain_text'    => true,
+                        'email'         => $email
+                    ),
+                    '',
+                    LMFWC_TEMPLATES_DIR
+                );
+            } else {
+                echo wc_get_template_html(
+                    'emails/email-order-license-keys.php',
+                    array(
+                        'heading'       => apply_filters('lmfwc_license_keys_table_heading', null),
+                        'data'          => apply_filters('lmfwc_get_customer_license_keys', $order),
+                        'date_format'   => get_option('date_format'),
+                        'order'         => $order,
+                        'sent_to_admin' => $is_admin_email,
+                        'plain_text'    => false,
+                        'email'         => $email
+                    ),
+                    '',
+                    LMFWC_TEMPLATES_DIR
                 );
             }
 
-            include LMFWC_TEMPLATES_DIR . 'emails/email-order-license-keys.php';
-
-        // Only display a notice.
         } else {
-            include LMFWC_TEMPLATES_DIR . 'emails/email-order-license-notice.php';
+
+            // Only display a notice.
+            if ($plain_text) {
+                echo wc_get_template(
+                    'emails/plain/email-order-license-notice.php',
+                    array(),
+                    '',
+                    LMFWC_TEMPLATES_DIR
+                );
+            } else {
+                echo wc_get_template_html(
+                    'emails/email-order-license-notice.php',
+                    array(),
+                    '',
+                    LMFWC_TEMPLATES_DIR
+                );
+            }
+
+            include LMFWC_TEMPLATES_DIR . '';
         }
     }
 
@@ -238,34 +278,47 @@ class OrderManager
     public function showBoughtLicenses($order)
     {
         // Return if the order isn't complete.
-        if ($order->get_status() != 'completed' && !get_post_meta($order->get_id(), 'lmfwc_order_complete')) return;
+        if ($order->get_status() != 'completed'
+            && !get_post_meta($order->get_id(), 'lmfwc_order_complete')
+        ) {
+            return;
+        }
 
         // Add missing style.
         if (!wp_style_is('lmfwc_admin_css', $list = 'enqueued' )) {
             wp_enqueue_style('lmfwc_admin_css', LMFWC_CSS_URL . 'main.css');
         }
 
-        /**
-         * @var $item_data WC_Order_Item_Product
-         */
-        foreach ($order->get_items() as $item_data) {
-            /**
-             * @var $product WC_Product_Simple
-             */
-            $product = $item_data->get_product();
-
-            // Check if the product has been activated for selling.
-            if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)) break;
-
-            $data[$product->get_id()]['name'] = $product->get_name();
-            $data[$product->get_id()]['keys'] = apply_filters(
-                'lmfwc_get_order_license_keys',
-                $order->get_id(),
-                $product->get_id()
-            );
-        }
+        $data = apply_filters('lmfwc_get_customer_license_keys', $order);
+        $date_format = get_option('date_format');
+        $heading = apply_filters('lmfwc_license_keys_table_heading', null);
 
         include LMFWC_TEMPLATES_DIR . 'order-view-license-keys.php';
     }
 
+    /**
+     * Adds a new order action used to resend the sold license keys
+     * 
+     * @param array $actions Currently available order actions
+     * 
+     * @return array
+     */
+    public function addSendLicenseKeysAction($actions)
+    {
+        if (1 == 1) {
+            $actions['lmfwc_send_license_keys'] = __('Send license key(s) to customer', 'lmfwc');
+        }
+
+        return $actions;
+    }
+
+    /**
+     * Sends out the ordered license keys.
+     * 
+     * @param WC_Order $order The WooCommerce order on which the action is being performed
+     */
+    public function processSendLicenseKeysAction($order)
+    {
+        \WC()->mailer()->emails['LMFWC_Customer_Deliver_License_Keys']->trigger($order->get_id(), $order);
+    }
 }

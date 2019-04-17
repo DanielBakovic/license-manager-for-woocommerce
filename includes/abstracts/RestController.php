@@ -20,6 +20,24 @@ class RestController extends \WP_REST_Controller
     const UNDEFINED = -1;
 
     /**
+     * Returns a standardized REST response
+     * 
+     * @param boolean $success
+     * @param array   $data Response
+     * @param integer $code HTTP status code
+     * 
+     * @return WP_REST_Response
+     */
+    protected function response($success, $data, $code = 200)
+    {
+        return new \WP_REST_Response(array(
+            'success' => $success,
+            'data' => $data
+        ), $code);
+    }
+
+
+    /**
      * Determines if the string is a JSON object
      * 
      * @param string $string Possible JSON object
