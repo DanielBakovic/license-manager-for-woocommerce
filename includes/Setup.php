@@ -116,7 +116,7 @@ class Setup
         $table2 = $wpdb->prefix . self::GENERATORS_TABLE_NAME;
         $table3 = $wpdb->prefix . self::API_KEYS_TABLE_NAME;
 
-        $tables = "
+        $table1_sql = "
             CREATE TABLE IF NOT EXISTS $table1 (
                 `id` BIGINT(20) NOT NULL COMMENT 'Primary Key' AUTO_INCREMENT,
                 `order_id` BIGINT(20) NULL DEFAULT NULL COMMENT 'WC_Order ID',
@@ -135,6 +135,11 @@ class Setup
                 `updated_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'WP User ID',
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+        ";
+
+        \dbDelta($table1_sql);
+
+        $table2_sql = "
             CREATE TABLE IF NOT EXISTS $table2 (
                 `id` INT(20) NOT NULL AUTO_INCREMENT,
                 `name` VARCHAR(255) NOT NULL,
@@ -148,6 +153,11 @@ class Setup
                 `expires_in` INT(10) NULL DEFAULT NULL,
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+        ";
+
+        \dbDelta($table2_sql);
+
+        $table3_sql = "
             CREATE TABLE IF NOT EXISTS $table3 (
                 `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `user_id` BIGINT(20) UNSIGNED NOT NULL,
@@ -164,7 +174,7 @@ class Setup
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         ";
 
-        \dbDelta($tables);
+        \dbDelta($table3_sql);
     }
 
     public static function setDefaultFilesAndFolders()

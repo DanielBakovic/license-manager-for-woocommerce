@@ -4,7 +4,7 @@ Donate link: https://www.bebic.at/license-manager-for-woocommerce/donate
 Tags: license key, license, key, software license, serial key, manager, woocommerce
 Requires at least: 4.7
 Tested up to: 5.1
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -73,6 +73,10 @@ Yes, there is! An extensive documentation describing the plugin features and fun
 
 == Changelog ==
 
+= 1.2.1 - 2019-04-18 =
+
+* Fix - "There was a problem adding the license key." error message should not appear any more when adding a license key.
+
 = 1.2.0 - 2019-04-17 =
 * Add - You can now define how many times a license key can be activated using the plugin REST API endpoints.
 * Add - You can now define how many license keys will be delivered on purchase.
@@ -122,6 +126,9 @@ Yes, there is! An extensive documentation describing the plugin features and fun
 * Initial release.
 
 == Upgrade Notice ==
+
+= 1.2.1 =
+Please deactivate the plugin and reactivate it.
 
 = 1.1.1 =
 Copy your previously backed up `defuse.txt` and `secret.txt` to the `wp-content/uploads/lmfwc-files/` folder. Overwrite the existing files, as those are incompatible with the keys you already have in your database. If you did not backup these files previously, then you will need to completely delete (not deactivate!) and install the plugin anew.
