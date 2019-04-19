@@ -26,7 +26,7 @@ The **License Manager for WooCommerce** allows you to easily sell and manage all
 
 #### API
 
-The plugin also offers additional endpoints for manipulating licenses and generator resources. These routes are authorized via API keys (generated through the plugin settings) and accessed via the WordPress API. Here you can [download the Postman collection](https://www.bebic.at/assets/lmfwc.postman_collection.json) (v2.1) for these new routes. An extensive [API documentation](https://www.bebic.at/license-manager-for-woocommerce/apidocs) is also available on the plugin homepage.
+The plugin also offers additional endpoints for manipulating licenses and generator resources. These routes are authorized via API keys (generated through the plugin settings) and accessed via the WordPress API. An extensive [API documentation](https://documenter.getpostman.com/view/6103231/S1ETQGZ1) is also available.
 
 #### Support
 
@@ -60,6 +60,10 @@ The plugin will create two files inside the `wp-content/uploads/lmfwc-files` fol
 = Is there a documentation? =
 
 Yes, there is! An extensive documentation describing the plugin features and functionality in detail can be found on the [plugin homepage](https://www.bebic.at/license-manager-for-woocommerce).
+
+= What about the API documentation? =
+
+Again, yes! Here you can find the [API Documentation](https://documenter.getpostman.com/view/6103231/S1ETQGZ1) detailing all the new endpoint requests and responses. Have fun!
 
 == Screenshots ==
 
