@@ -1,6 +1,6 @@
 <?php defined('ABSPATH') || exit; ?>
 
-<h1 class="wp-heading-inline"><?php esc_html_e('Licenses', 'lmfwc'); ?></h1>
+<h1 class="wp-heading-inline"><?php esc_html_e('License keys', 'lmfwc'); ?></h1>
 <a class="page-title-action" href="<?php echo esc_url($add_license_url); ?>">
     <span><?php esc_html_e('Add new', 'lmfwc');?></span>
 </a>

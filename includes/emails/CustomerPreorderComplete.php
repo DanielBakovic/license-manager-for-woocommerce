@@ -24,7 +24,7 @@ class CustomerPreorderComplete extends \WC_Email
 
         // For admin area to let the user know we are sending this email to customers.
         $this->customer_email = true;
-        $this->heading        = __('Preorder Complete', 'lmfwc');
+        $this->heading        = __('Preorder complete', 'lmfwc');
 
         // translators: placeholder is {blogname}, a variable that will be substituted when email is sent out
         $this->subject = sprintf(

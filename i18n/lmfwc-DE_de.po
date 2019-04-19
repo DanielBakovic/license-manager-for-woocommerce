@@ -1,691 +1,1112 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: License Manager for WooCommerce\n"
-"POT-Creation-Date: 2019-02-24 23:47+0100\n"
-"PO-Revision-Date: 2019-02-24 23:49+0100\n"
+"POT-Creation-Date: 2019-04-19 23:28+0200\n"
+"PO-Revision-Date: 2019-04-19 23:28+0200\n"
 "Last-Translator: \n"
 "Language-Team: https://www.bebic.at\n"
-"Language: de\n"
+"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.2.1\n"
 "X-Poedit-Basepath: ..\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-KeywordsList: __;_e;esc_html_e;esc_html__\n"
+"X-Poedit-KeywordsList: __;_e;esc_html_e;esc_html__;_x\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-SearchPath-0: includes\n"
 "X-Poedit-SearchPath-1: templates\n"
 
-#: includes/AdminMenus.php:70 includes/AdminMenus.php:71
-#: includes/AdminMenus.php:80
+#: includes/AdminMenus.php:64 includes/AdminMenus.php:65
+#: includes/AdminMenus.php:74 includes/ProductManager.php:61
 msgid "License Manager"
-msgstr "Lizenz-Manager"
+msgstr "Lizenzmanager"
 
-#: includes/AdminMenus.php:81 includes/ProductManager.php:46
-#: includes/lists/LicensesList.php:45 templates/licenses-page.php:5
-msgid "Licenses"
-msgstr "Lizenzen"
+#: includes/AdminMenus.php:75 includes/lists/LicensesList.php:81
+#: templates/licenses/list-page.php:3
+msgid "License keys"
+msgstr "Lizenzschlüssel"
 
-#: includes/AdminMenus.php:90
-msgid "License Manager - Import"
-msgstr "Lizenz-Manager - Import"
-
-#: includes/AdminMenus.php:91 includes/lists/LicensesList.php:187
-#: templates/licenses-add-import-page.php:60
-msgid "Import"
-msgstr "Importieren"
-
-#: includes/AdminMenus.php:99
+#: includes/AdminMenus.php:85
 msgid "License Manager - Generators"
-msgstr "Lizenz-Manager - Generatoren"
+msgstr "Lizenzmanager - Generatoren"
 
-#: includes/AdminMenus.php:100 includes/lists/GeneratorsList.php:32
-#: templates/generators-page.php:5
+#: includes/AdminMenus.php:86 includes/lists/GeneratorsList.php:41
+#: templates/generators/list-page.php:3
 msgid "Generators"
 msgstr "Generatoren"
 
-#: includes/AdminMenus.php:109
-msgid "License Manager - Add New Generator"
-msgstr "Lizenz-Manager - Neuen Generator Hinzufügen"
-
-#: includes/AdminMenus.php:110 templates/generators-add-new.php:5
-msgid "Add New Generator"
-msgstr "Neuen Generator Hinzufügen"
-
-#: includes/AdminMenus.php:118
-msgid "License Manager - Edit Generator"
-msgstr "Lizenz-Manager - Generator Editieren"
-
-#: includes/AdminMenus.php:119 templates/generators-edit.php:5
-msgid "Edit Generator"
-msgstr "Generator Editieren"
-
-#: includes/AdminMenus.php:127
+#: includes/AdminMenus.php:96
 msgid "License Manager - Settings"
-msgstr "Lizenz-Manager - Einstellungen"
+msgstr "Lizenzmanager - Einstellungen"
 
-#: includes/AdminMenus.php:128
+#: includes/AdminMenus.php:97
 msgid "Settings"
 msgstr "Einstellungen"
 
-#: includes/AdminMenus.php:193 includes/lists/APIKeyList.php:198
+#: includes/AdminMenus.php:108
+msgid "License keys per page"
+msgstr "Lizenzschlüssel pro Seite"
+
+#: includes/AdminMenus.php:153
+msgid "Invalid license key ID"
+msgstr "Ungültige Lizenzschlüssel-ID"
+
+#: includes/AdminMenus.php:157
+msgid "This license key can no longer be edited"
+msgstr "Dieser Lizenzschlüssel kann nicht mehr bearbeitet werden"
+
+#: includes/AdminMenus.php:189 includes/lists/APIKeyList.php:181
 msgid "Read"
-msgstr "Read"
+msgstr "Lesen"
 
-#: includes/AdminMenus.php:194 includes/lists/APIKeyList.php:199
+#: includes/AdminMenus.php:190 includes/lists/APIKeyList.php:182
 msgid "Write"
-msgstr "Write"
+msgstr "Schreiben"
 
-#: includes/AdminMenus.php:195 includes/lists/APIKeyList.php:200
+#: includes/AdminMenus.php:191 includes/lists/APIKeyList.php:183
 msgid "Read/Write"
-msgstr "Read/Write"
+msgstr "Lesen/Schreiben"
 
-#: includes/AdminMenus.php:199 includes/lists/APIKeyList.php:222
+#: includes/AdminMenus.php:194 includes/lists/APIKeyList.php:203
 #, php-format
 msgid "%1$s at %2$s"
 msgstr "%1$s um %2$s"
 
-#: includes/AdminMenus.php:206
+#: includes/AdminMenus.php:201
 msgid "You do not have permission to edit this API Key"
-msgstr ""
+msgstr "Sie haben keine Berechtigung zum Bearbeiten dieses API-Schlüssels"
 
-#: includes/AdminMenus.php:284
+#: includes/AdminMenus.php:260
+msgid "Generators per page"
+msgstr "Generatoren pro Seite"
+
+#: includes/AdminMenus.php:310
 #, php-format
 msgid ""
 "If you like %1$s please leave us a %2$s rating. A huge thanks in advance!"
 msgstr ""
+"Wenn Sie%1$s mögen, geben Sie uns bitte eine %2$s Bewertung. Vielen Dank im "
+"Voraus!"
 
-#: includes/AdminMenus.php:285
+#: includes/AdminMenus.php:311 includes/ProductManager.php:267
 msgid "License Manager for WooCommerce"
-msgstr "Lizenz-Manager für WooCommerce"
+msgstr "Lizenzmanager für WooCommerce"
 
-#: includes/AdminNotice.php:114
+#: includes/AdminNotice.php:118
 #, php-format
 msgid ""
-"Oops! Something went wrong. Let us know by sending an error report <a href="
-"\"%s\" target=\"_blank\" rel=\"noopener\">in the support forum</a>."
+"If you are having trouble solving the problem on your own, please let us "
+"know by sending an error report <a href=\"%s\" target=\"_blank\" rel="
+"\"noopener\">in the support forum</a>."
 msgstr ""
+"Falls Sie Probleme haben, das Problem selbst zu lösen, schreiben Sie uns "
+"bitte <a href=\"%s\" target=\"_blank\" rel=\"noopener\">im Support-Forum</a>."
 
-#: includes/FormHandler.php:208
+#: includes/Export.php:80 templates/licenses/edit-page.php:15
+msgid "ID"
+msgstr "ID"
+
+#: includes/Export.php:81
+msgid "Order ID"
+msgstr "Bestellnummer"
+
+#: includes/Export.php:82
+msgid "Product ID"
+msgstr "Produktnummer"
+
+#: includes/Export.php:83 includes/lists/LicensesList.php:80
+#: includes/lists/LicensesList.php:790 templates/licenses/edit-page.php:23
+#: templates/licenses/forms/single-text.php:11
+msgid "License key"
+msgstr "Lizenzschlüssel"
+
+#: includes/FormHandler.php:108
+msgid "Generator name is missing."
+msgstr "Generatorname fehlt."
+
+#: includes/FormHandler.php:123
+msgid "The charset is invalid."
+msgstr "Der Zeichensatz ist ungültig."
+
+#: includes/FormHandler.php:137
+msgid "Only integer values allowed for chunks."
+msgstr "Für Blöcke sind nur ganzzahlige Werte zulässig."
+
+#: includes/FormHandler.php:154
+msgid "Only integer values allowed for chunk length."
+msgstr "Es sind nur ganzzahlige Werte für die Blocklänge zulässig."
+
+#: includes/FormHandler.php:185
+msgid "The generator was added successfully."
+msgstr "Der Generator wurde erfolgreich hinzugefügt."
+
+#: includes/FormHandler.php:189
+msgid "There was a problem adding the generator."
+msgstr "Beim Hinzufügen des Generators ist ein Problem aufgetreten."
+
+#: includes/FormHandler.php:217
+msgid "The Generator name is invalid."
+msgstr "Der Generatorname ist ungültig."
+
+#: includes/FormHandler.php:232
+msgid "The Generator charset is invalid."
+msgstr "Der Generator Zeichensatz ist ungültig."
+
+#: includes/FormHandler.php:247
+msgid "The Generator chunks are invalid."
+msgstr "Die Generator Blöcke sind ungültig."
+
+#: includes/FormHandler.php:263
+msgid "The Generator chunk length is invalid."
+msgstr "Die Generator Blocklänge ist ungültig."
+
+#: includes/FormHandler.php:295
+msgid "There was a problem updating the generator."
+msgstr "Beim Aktualisieren des Generators ist ein Problem aufgetreten."
+
+#: includes/FormHandler.php:299
+msgid "The Generator was updated successfully."
+msgstr "Der Generator wurde erfolgreich aktualisiert."
+
+#: includes/FormHandler.php:329
+msgid "Invalid file type, only TXT and CSV allowed."
+msgstr "Ungültiger Dateityp, nur TXT und CSV zulässig."
+
+#: includes/FormHandler.php:358
+msgid "Invalid file content."
+msgstr "Ungültiger Dateiinhalt."
+
+#: includes/FormHandler.php:404 includes/FormHandler.php:421
+#: includes/FormHandler.php:450
+msgid "There was a problem importing the license keys."
+msgstr "Beim Importieren der Lizenzschlüssel ist ein Problem aufgetreten."
+
+#: includes/FormHandler.php:435
 #, php-format
-msgid "%d key(s) have been imported successfully."
-msgstr ""
+msgid "%d license key(s) added successfully."
+msgstr "%d Lizenzschlüssel wurde(n) erfolgreich hinzugefügt."
 
-#: includes/FormHandler.php:226
+#: includes/FormHandler.php:464
 #, php-format
-msgid "%d key(s) have been imported and %d key(s) were not imported."
+msgid "%d key(s) have been imported, while %d key(s) were not imported."
 msgstr ""
+"%d Lizenzschlüssel wurden importiert, %d Lizenzschlüssel wurde nicht "
+"importiert."
 
-#: includes/FormHandler.php:257
-msgid "Your license key has been added successfully."
-msgstr ""
+#: includes/FormHandler.php:515
+msgid "1 license key(s) added successfully."
+msgstr "1 Lizenzschlüssel wurde(n) erfolgreich hinzugefügt."
 
-#: includes/FormHandler.php:279
+#: includes/FormHandler.php:519
+msgid "There was a problem adding the license key."
+msgstr "Beim Hinzufügen des Lizenzschlüssels ist ein Problem aufgetreten."
+
+#: includes/FormHandler.php:561
+msgid "Your license key has been updated successfully."
+msgstr "Ihr Lizenzschlüssel wurde erfolgreich aktualisiert."
+
+#: includes/FormHandler.php:565
+msgid "There was a problem updating the license key."
+msgstr "Beim Aktualisieren des Lizenzschlüssels ist ein Problem aufgetreten."
+
+#: includes/FormHandler.php:595
 msgid "Description is missing."
 msgstr "Beschreibung fehlt."
 
-#: includes/FormHandler.php:283
+#: includes/FormHandler.php:599
 msgid "User is missing."
 msgstr "Benutzer fehlt."
 
-#: includes/FormHandler.php:287
-msgid "Permissions is missing."
-msgstr ""
+#: includes/FormHandler.php:603
+msgid "Permissions are missing."
+msgstr "Berechtigungen fehlen."
 
-#: includes/FormHandler.php:300
-msgid "You do not have permission to assign API Keys to the selected user."
+#: includes/FormHandler.php:615
+msgid "You do not have permission to assign API keys to the selected user."
 msgstr ""
+"Sie haben keine Berechtigung, dem ausgewählten Benutzer API-Schlüssel "
+"zuzuweisen."
 
-#: includes/FormHandler.php:326 includes/FormHandler.php:339
-msgid "Invalid request."
-msgstr ""
-
-#: includes/FormHandler.php:368
-msgid "<p>The following license keys have been sold by this order:</p>"
-msgstr ""
-
-#: includes/FormHandler.php:394
-msgid "Show License Key(s)"
-msgstr ""
-
-#: includes/FormHandler.php:400
-msgid "Hide License Key(s)"
-msgstr ""
-
-#: includes/Generator.php:142
+#: includes/FormHandler.php:642
 msgid ""
-"It's not possible to generate that many keys with the given parameters, "
-"there are not enough combinations. Please review your inputs."
+"API key generated successfully. Make sure to copy your new keys now as the "
+"secret key will be hidden once you leave this page."
 msgstr ""
+"API-Schlüssel wurde erfolgreich generiert. Kopieren Sie bitte Ihre API-"
+"Schlüssel, da diese nach verlassen dieser Seiter nicht wieder aufrufbar sind."
 
-#: includes/Main.php:121
+#: includes/FormHandler.php:647
+msgid "There was a problem generating the API key."
+msgstr "Beim Generieren des API-Schlüssels ist ein Problem aufgetreten."
+
+#: includes/FormHandler.php:669
+msgid "API key updated successfully."
+msgstr "API-Schlüssel wurde erfolgreich aktualisiert."
+
+#: includes/FormHandler.php:672
+msgid "There was a problem updating the API key."
+msgstr "Beim Aktualisieren des API-Schlüssels ist ein Problem aufgetreten."
+
+#: includes/FormHandler.php:699 includes/FormHandler.php:721
+msgid "Invalid request."
+msgstr "Ungültige Anfrage."
+
+#: includes/FormHandler.php:772
+msgid "The following license keys have been sold by this order"
+msgstr "Die folgenden Lizenzschlüssel wurden mit dieser Bestellung verkauft"
+
+#: includes/FormHandler.php:798
+msgid "Show license key(s)"
+msgstr "Lizenzschlüssel anzeigen"
+
+#: includes/FormHandler.php:804
+msgid "Hide license key(s)"
+msgstr "Lizenzschlüssel ausblenden"
+
+#: includes/Main.php:192
 msgid "Documentation"
 msgstr "Dokumentation"
 
-#: includes/Main.php:126
+#: includes/Main.php:197
 msgid "Donate"
-msgstr ""
+msgstr "Spenden"
 
-#: includes/ProductManager.php:64
+#: includes/Main.php:309
+msgid "Your license key(s)"
+msgstr "Ihre Lizenzschlüssel"
+
+#: includes/OrderManager.php:309
+msgid "Send license key(s) to customer"
+msgstr "Lizenzschlüssel an den Kunden senden"
+
+#: includes/ProductManager.php:80 includes/ProductManager.php:255
 msgid "Please select a generator"
-msgstr ""
+msgstr "Bitte wählen Sie einen Generator aus"
 
-#: includes/ProductManager.php:83
-msgid "Sell licenses"
-msgstr ""
+#: includes/ProductManager.php:101
+msgid "Sell license keys"
+msgstr "Lizenzschlüssel verkaufen"
 
-#: includes/ProductManager.php:84
+#: includes/ProductManager.php:102
 msgid "Sell license keys for this product"
-msgstr ""
+msgstr "Lizenzschlüssel für dieses Produkt verkaufen"
 
-#: includes/ProductManager.php:97
-msgid "Generate licenses"
-msgstr ""
+#: includes/ProductManager.php:113 includes/ProductManager.php:287
+msgid "Delivered quantity"
+msgstr "Liefermenge"
 
-#: includes/ProductManager.php:98
-msgid "Automatically generate license keys with each sold product."
-msgstr ""
+#: includes/ProductManager.php:115 includes/ProductManager.php:289
+msgid "Defines the amount of license keys to be delivered upon purchase."
+msgstr "Legt die Anzahl der beim Kauf zu liefernden Lizenzschlüssel fest."
 
-#: includes/ProductManager.php:109
+#: includes/ProductManager.php:130 includes/ProductManager.php:304
+msgid "Generate license keys"
+msgstr "Lizenzschlüssel generieren"
+
+#: includes/ProductManager.php:131
+msgid "Automatically generate license keys with each sold product"
+msgstr "Generieren Sie automatisch Lizenzschlüssel für jedes verkaufte Produkt"
+
+#: includes/ProductManager.php:142 includes/ProductManager.php:316
 msgid "Assign generator"
-msgstr ""
+msgstr "Generator zuweisen"
 
-#: includes/ProductManager.php:120
+#: includes/ProductManager.php:154 includes/ProductManager.php:328
 msgid "Sell from stock"
-msgstr ""
+msgstr "Aus Vorrat verkaufen"
 
-#: includes/ProductManager.php:121
-msgid "Sell added/imported license keys."
-msgstr ""
+#: includes/ProductManager.php:155 includes/ProductManager.php:329
+msgid "Sell license keys from the available stock."
+msgstr "Lizenzschlüssel aus dem verfügbaren Lagerbestand verkaufen."
 
-#: includes/ProductManager.php:130
+#: includes/ProductManager.php:164 includes/ProductManager.php:338
 msgid "Available"
 msgstr "Verfügbar"
 
-#: includes/ProductManager.php:132
-msgid "License key(s) in stock and available for sale."
-msgstr ""
+#: includes/ProductManager.php:166
+msgid "License key(s) in stock and available for sale"
+msgstr "Lizenzschlüssel auf Lager und zum Verkauf verfügbar"
 
-#: includes/ProductManager.php:175
+#: includes/ProductManager.php:230 includes/ProductManager.php:390
 msgid ""
 "Assign a generator if you wish to sell automatically generated licenses for "
 "this product."
 msgstr ""
+"Wählen Sie einen Generator, der zum automatischen Generieren von "
+"Lizenzschlüsseln für dieses Produkt benutzt wird."
+
+#: includes/ProductManager.php:275
+msgid "Sell license key(s)"
+msgstr "Lizenzschlüssel verkaufen"
+
+#: includes/ProductManager.php:276
+msgid "Sell license keys for this variation"
+msgstr "Lizenzschlüssel für diese Variation verkaufen"
+
+#: includes/ProductManager.php:305
+msgid "Automatically generate license keys with each sold variation"
+msgstr ""
+"Generieren Sie automatisch Lizenzschlüssel für jede verkaufte Produktvariante"
+
+#: includes/ProductManager.php:340
+msgid "License key(s) in stock and available for sale."
+msgstr "Lizenzschlüssel auf Lager und zum Verkauf verfügbar."
 
 #: includes/Settings.php:37
 msgid "Security"
 msgstr "Sicherheit"
 
 #: includes/Settings.php:42
-msgid "Obscure Licenses"
-msgstr ""
+msgid "Obscure licenses"
+msgstr "Lizenzschlüssel ausblenden"
 
 #: includes/Settings.php:49
-msgid "Automatic Delivery"
-msgstr ""
+msgid "API & SSL"
+msgstr "API und SSL"
 
-#: includes/Settings.php:63
+#: includes/Settings.php:56
+msgid "Automatic delivery"
+msgstr "Automatische Lieferung"
+
+#: includes/Settings.php:70
 msgid "Please read the description of each field before making any changes."
 msgstr ""
+"Bitte lesen Sie die Beschreibung jedes Feldes, bevor Sie Änderungen "
+"vornehmen."
 
-#: includes/Settings.php:83
+#: includes/Settings.php:90
 msgid "Hide license keys in the admin dashboard."
-msgstr ""
+msgstr "Blenden Sie die Lizenzschlüssel im Admin-Dashboard aus."
 
-#: includes/Settings.php:87
+#: includes/Settings.php:94
 msgid ""
-"All licenses will be hidden and only displayed when the 'Show' action is "
+"All license keys will be hidden and only displayed when the 'Show' action is "
 "clicked."
 msgstr ""
+"Alle Lizenzschlüssel werden ausgeblendet und nur angezeigt, wenn auf die "
+"\"Anzeigen\" Aktion geklickt wird."
 
-#: includes/Settings.php:106
+#: includes/Settings.php:118
+msgid "Enable the plugin API endpoints over insecure HTTP connections."
+msgstr ""
+"Aktivieren Sie die Plugin-API-Endpunkte über unsichere HTTP-Verbindungen."
+
+#: includes/Settings.php:122
+msgid "This should only be activated for development purposes."
+msgstr "Dies sollte nur zu Entwicklungszwecken aktiviert werden."
+
+#: includes/Settings.php:141
 msgid "Automatically send license keys when an order is set to 'Complete'."
 msgstr ""
+"Automatisches Senden von Lizenzschlüsseln, wenn eine Bestellung auf "
+"'Abgeschlossen' gesetzt ist."
 
-#: includes/Settings.php:110
+#: includes/Settings.php:145
 msgid ""
 "If this setting is off, you must manually send out all license keys for "
 "completed orders."
 msgstr ""
+"Wenn diese Einstellung deaktiviert ist, müssen Sie alle Lizenzschlüssel für "
+"abgeschlossene Bestellungen manuell senden."
 
-#: includes/api/v1/Generators.php:50 includes/api/v1/Licenses.php:50
-msgid "Hashed license key."
+#: includes/api/Authentication.php:108
+msgid "The connection is not secure, therefore the API cannot be used."
 msgstr ""
+"Die Verbindung ist nicht sicher, daher kann die API nicht verwendet werden."
 
-#: includes/lists/APIKeyList.php:42
+#: includes/api/Authentication.php:192
+msgid "Consumer key or secret is missing."
+msgstr "Verbraucherschlüssel oder -geheimnis fehlt."
+
+#: includes/api/Authentication.php:206
+msgid "Consumer key is invalid."
+msgstr "Verbraucherschlüssel ist ungültig."
+
+#: includes/api/Authentication.php:219
+msgid "Consumer secret is invalid."
+msgstr "API-Schlüssel ist ungültig."
+
+#: includes/api/Authentication.php:271
+msgid "The API key provided does not have read permissions."
+msgstr ""
+"Der bereitgestellte API-Schlüssel verfügt nicht über Leseberechtigungen."
+
+#: includes/api/Authentication.php:283
+msgid "The API key provided does not have write permissions."
+msgstr ""
+"Der bereitgestellte API-Schlüssel verfügt nicht über Schreibberechtigungen."
+
+#: includes/api/Authentication.php:294
+msgid "Unknown request method."
+msgstr "Unbekannte Anforderungsmethode."
+
+#: includes/api/Authentication.php:328
+msgid ""
+"License Manager for WooCommerce API. Use a consumer key in the username "
+"field and a consumer secret in the password field."
+msgstr ""
+"Lizenzmanager für WooCommerce API. Verwenden Sie im Feld für den "
+"Benutzernamen den API-Schlüssel und im Passwortfeld das API-Geheimwort."
+
+#: includes/api/v1/Generators.php:199
+msgid "The Generator name is missing from the request."
+msgstr "Der Generatorname fehlt im Request."
+
+#: includes/api/v1/Generators.php:206
+msgid "The Generator charset is missing from the request."
+msgstr "Der Generator-Zeichensatz fehlt im Request."
+
+#: includes/api/v1/Generators.php:213
+msgid "The Generator chunks is missing from the request."
+msgstr "Die Generator Blöcke fehlen im Request."
+
+#: includes/api/v1/Generators.php:220
+msgid "The Generator chunk length is missing from the request."
+msgstr "Die Generator Blöcklänge fehlt im Request."
+
+#: includes/api/v1/Generators.php:250
+msgid "The Generator could not be added to the database."
+msgstr "Der Generator konnte nicht zur Datenbank hinzugefügt werden."
+
+#: includes/api/v1/Generators.php:268
+msgid "The newly added Generator could not be retrieved from the database."
+msgstr ""
+"Der neu hinzugefügte Generator konnte aus der Datenbank nicht abgerufen "
+"werden."
+
+#: includes/api/v1/Generators.php:300
+msgid "The Generator ID is missing from the request."
+msgstr "Die Generator-ID fehlt im Request."
+
+#: includes/emails/CustomerDeliverLicenseKeys.php:22
+msgid "Deliver license keys"
+msgstr "Lizenzschlüssel ausliefern"
+
+#: includes/emails/CustomerDeliverLicenseKeys.php:23
+msgid "A manual email to send out license keys to the customer."
+msgstr "Eine manuelle E-Mail zum Versenden von Lizenzschlüsseln an den Kunden."
+
+#: includes/emails/CustomerDeliverLicenseKeys.php:27
+msgid "License key delivery"
+msgstr "Lizenzschlüssel-Lieferung"
+
+#: includes/emails/CustomerDeliverLicenseKeys.php:30
+#, php-format
+msgid "Your license key(s) at %s are here"
+msgstr "Ihre Lizenzschlüssel von %s sind hier"
+
+#: includes/emails/CustomerPreorderComplete.php:22
+msgid "Completed preorder"
+msgstr "Vorbestellung abgeschlossen"
+
+#: includes/emails/CustomerPreorderComplete.php:23
+msgid "An email sent to the customer when a license key preorder is complete."
+msgstr ""
+"Eine E-Mail, die an den Kunden gesendet wird, wenn eine Vorbestellung des "
+"Lizenzschlüssels abgeschlossen ist."
+
+#: includes/emails/CustomerPreorderComplete.php:27
+msgid "Preorder complete"
+msgstr "Vorbestellung abgeschlossen"
+
+#: includes/emails/CustomerPreorderComplete.php:32
+#, php-format
+msgid "[%s] - Your preorder has arrived!"
+msgstr "[%s] - Ihre Vorbestellung ist da!"
+
+#: includes/lists/APIKeyList.php:28
 msgid "Key"
 msgstr "Schlüssel"
 
-#: includes/lists/APIKeyList.php:43
+#: includes/lists/APIKeyList.php:29
 msgid "Keys"
 msgstr "Schlüssel"
 
-#: includes/lists/APIKeyList.php:56
+#: includes/lists/APIKeyList.php:41
 msgid "No keys found."
-msgstr ""
+msgstr "Keine Schlüssel gefunden."
 
-#: includes/lists/APIKeyList.php:68 templates/settings/rest-api-key.php:13
+#: includes/lists/APIKeyList.php:53 templates/settings/rest-api-key.php:14
 msgid "Description"
 msgstr "Beschreibung"
 
-#: includes/lists/APIKeyList.php:69 templates/settings/rest-api-key.php:74
+#: includes/lists/APIKeyList.php:54 templates/settings/rest-api-key.php:85
 msgid "Consumer key ending in"
-msgstr ""
+msgstr "Verbraucherschlüssel endet in"
 
-#: includes/lists/APIKeyList.php:70 templates/settings/rest-api-key.php:32
+#: includes/lists/APIKeyList.php:55 templates/settings/rest-api-key.php:33
 msgid "User"
 msgstr "Benutzer"
 
-#: includes/lists/APIKeyList.php:71 templates/settings/rest-api-key.php:51
+#: includes/lists/APIKeyList.php:56 templates/settings/rest-api-key.php:62
 msgid "Permissions"
-msgstr ""
+msgstr "Berechtigungen"
 
-#: includes/lists/APIKeyList.php:72 templates/settings/rest-api-key.php:82
+#: includes/lists/APIKeyList.php:57 templates/settings/rest-api-key.php:93
 msgid "Last access"
 msgstr "Letzter Zugriff"
 
-#: includes/lists/APIKeyList.php:112
+#: includes/lists/APIKeyList.php:96
 msgid "API key"
 msgstr "API Schlüssel"
 
-#: includes/lists/APIKeyList.php:126
+#: includes/lists/APIKeyList.php:109 includes/lists/GeneratorsList.php:126
+#: includes/lists/LicensesList.php:271
 #, php-format
 msgid "ID: %d"
 msgstr "ID: %d"
 
-#: includes/lists/APIKeyList.php:130
+#: includes/lists/APIKeyList.php:113
 msgid "View/Edit"
-msgstr ""
+msgstr "Anzeigen/Bearbeiten"
 
-#: includes/lists/APIKeyList.php:139 includes/lists/APIKeyList.php:245
+#: includes/lists/APIKeyList.php:125 includes/lists/APIKeyList.php:226
 msgid "Revoke"
-msgstr ""
+msgstr "Widerrufen"
 
-#: includes/lists/APIKeyList.php:230 includes/lists/LicensesList.php:228
-#: templates/settings/rest-api-key.php:89
+#: includes/lists/APIKeyList.php:211 includes/lists/LicensesList.php:544
+#: includes/lists/LicensesList.php:574 templates/settings/rest-api-key.php:100
 msgid "Unknown"
 msgstr "Unbekannt"
 
-#: includes/lists/GeneratorsList.php:31 includes/lists/LicensesList.php:181
+#: includes/lists/APIKeyList.php:349 includes/lists/GeneratorsList.php:375
+#: includes/lists/LicensesList.php:817
+msgid "The nonce is invalid or has expired."
+msgstr "Die Nonce ist ungültig oder abgelaufen."
+
+#: includes/lists/APIKeyList.php:364
+#, php-format
+msgid "%d API key(s) permanently revoked."
+msgstr "%d API-Schlüssel wurden permanent widerrufen."
+
+#: includes/lists/APIKeyList.php:368
+msgid "There was a problem revoking the API key(s)."
+msgstr "Beim Wiederruf der API-Schlüssel ist ein Problem aufgetreten."
+
+#: includes/lists/GeneratorsList.php:40
 msgid "Generator"
-msgstr ""
+msgstr "Generator"
 
-#: includes/lists/GeneratorsList.php:67
+#: includes/lists/GeneratorsList.php:90
 msgid "No generators found."
-msgstr ""
+msgstr "Keine Generatoren gefunden."
 
-#: includes/lists/GeneratorsList.php:82 includes/lists/GeneratorsList.php:157
-#: includes/lists/LicensesList.php:297 includes/lists/LicensesList.php:329
+#: includes/lists/GeneratorsList.php:121
+msgid "Number of products assigned to this generator"
+msgstr "Anzahl der diesem Generator zugeordneten Produkte"
+
+#: includes/lists/GeneratorsList.php:135 includes/lists/GeneratorsList.php:308
+#: includes/lists/LicensesList.php:343 includes/lists/LicensesList.php:625
 msgid "Delete"
 msgstr "Löschen"
 
-#: includes/lists/GeneratorsList.php:90
+#: includes/lists/GeneratorsList.php:145 includes/lists/LicensesList.php:289
 msgid "Edit"
-msgstr ""
+msgstr "Bearbeiten"
 
-#: includes/lists/GeneratorsList.php:113
-msgid "non-expiring"
-msgstr ""
-
-#: includes/lists/GeneratorsList.php:113
+#: includes/lists/GeneratorsList.php:238 includes/lists/LicensesList.php:527
 msgid "day(s)"
-msgstr ""
+msgstr "Tag(e)"
 
-#: includes/lists/GeneratorsList.php:131 includes/lists/LicensesList.php:423
-msgid "ID"
-msgstr "ID"
+#: includes/lists/GeneratorsList.php:240 includes/lists/LicensesList.php:528
+msgid "After purchase"
+msgstr "Nach dem kauf"
 
-#: includes/lists/GeneratorsList.php:132 templates/generators-add-new.php:15
-#: templates/generators-edit.php:16
+#: includes/lists/GeneratorsList.php:267 templates/generators/add-page.php:15
+#: templates/generators/edit-page.php:16
 msgid "Name"
 msgstr "Name"
 
-#: includes/lists/GeneratorsList.php:133 templates/generators-add-new.php:28
-#: templates/generators-edit.php:29
+#: includes/lists/GeneratorsList.php:268 templates/generators/add-page.php:39
+#: templates/generators/edit-page.php:40
 msgid "Character map"
-msgstr ""
+msgstr "Zeichensatz"
 
-#: includes/lists/GeneratorsList.php:134 templates/generators-add-new.php:41
-#: templates/generators-edit.php:42
+#: includes/lists/GeneratorsList.php:269 templates/generators/add-page.php:54
+#: templates/generators/edit-page.php:55
 msgid "Number of chunks"
-msgstr ""
+msgstr "Anzahl der Blöcke"
 
-#: includes/lists/GeneratorsList.php:135 templates/generators-add-new.php:54
-#: templates/generators-edit.php:55
+#: includes/lists/GeneratorsList.php:270 templates/generators/add-page.php:69
+#: templates/generators/edit-page.php:70
 msgid "Chunk length"
-msgstr ""
+msgstr "Blocklänge"
 
-#: includes/lists/GeneratorsList.php:136 templates/generators-add-new.php:66
-#: templates/generators-edit.php:67
+#: includes/lists/GeneratorsList.php:271 templates/generators/add-page.php:29
+#: templates/generators/edit-page.php:30 templates/licenses/edit-page.php:41
+#: templates/licenses/forms/bulk-text.php:32
+#: templates/licenses/forms/single-text.php:29
+msgid "Maximum activation count"
+msgstr "Maximale Aktivierungsanzahl"
+
+#: includes/lists/GeneratorsList.php:272 templates/generators/add-page.php:83
+#: templates/generators/edit-page.php:84
 msgid "Separator"
-msgstr ""
+msgstr "Trennzeichen"
 
-#: includes/lists/GeneratorsList.php:137 templates/generators-add-new.php:76
-#: templates/generators-edit.php:77
+#: includes/lists/GeneratorsList.php:273 templates/generators/add-page.php:95
+#: templates/generators/edit-page.php:96
 msgid "Prefix"
-msgstr ""
+msgstr "Präfix"
 
-#: includes/lists/GeneratorsList.php:138 templates/generators-add-new.php:86
-#: templates/generators-edit.php:87
+#: includes/lists/GeneratorsList.php:274 templates/generators/add-page.php:107
+#: templates/generators/edit-page.php:108
 msgid "Suffix"
-msgstr ""
+msgstr "Suffix"
 
-#: includes/lists/GeneratorsList.php:139 templates/generators-add-new.php:96
-#: templates/generators-edit.php:97
+#: includes/lists/GeneratorsList.php:275 templates/generators/add-page.php:119
+#: templates/generators/edit-page.php:120
 msgid "Expires in"
-msgstr ""
+msgstr "Läuft ab in"
 
-#: includes/lists/LicensesList.php:44
-msgid "License"
-msgstr ""
+#: includes/lists/GeneratorsList.php:408
+#, php-format
+msgid "%d generator(s) permanently deleted."
+msgstr "%d Generator(en) dauerhaft gelöscht."
 
-#: includes/lists/LicensesList.php:65
+#: includes/lists/GeneratorsList.php:418
+msgid "There was a problem deleting the generators."
+msgstr "Beim Löschen der Generatoren ist ein Problem aufgetreten."
+
+#: includes/lists/LicensesList.php:109
 msgid "All"
 msgstr "Alle"
 
-#: includes/lists/LicensesList.php:76 includes/lists/LicensesList.php:202
+#: includes/lists/LicensesList.php:120 includes/lists/LicensesList.php:550
 msgid "Sold"
-msgstr ""
+msgstr "Verkauft"
 
-#: includes/lists/LicensesList.php:87 includes/lists/LicensesList.php:208
+#: includes/lists/LicensesList.php:131 includes/lists/LicensesList.php:556
 msgid "Delivered"
 msgstr "Zugestellt"
 
-#: includes/lists/LicensesList.php:98 includes/lists/LicensesList.php:214
+#: includes/lists/LicensesList.php:142 includes/lists/LicensesList.php:562
+#: templates/licenses/edit-page.php:57
 msgid "Active"
 msgstr "Aktiv"
 
-#: includes/lists/LicensesList.php:109 includes/lists/LicensesList.php:220
+#: includes/lists/LicensesList.php:153 includes/lists/LicensesList.php:568
+#: templates/licenses/edit-page.php:63
 msgid "Inactive"
 msgstr "Inaktiv"
 
-#: includes/lists/LicensesList.php:171
-#, php-format
-msgid "%d Day(s)"
-msgstr ""
+#: includes/lists/LicensesList.php:208
+msgid "Filter by order"
+msgstr "Nach Bestellung filtern"
 
-#: includes/lists/LicensesList.php:256
+#: includes/lists/LicensesList.php:212
+msgid "All orders"
+msgstr "Alle Bestellungen"
+
+#: includes/lists/LicensesList.php:297
 msgid "Show"
-msgstr ""
+msgstr "Anzeigen"
 
-#: includes/lists/LicensesList.php:261
+#: includes/lists/LicensesList.php:302
 msgid "Hide"
-msgstr ""
+msgstr "Ausblenden"
 
-#: includes/lists/LicensesList.php:273 includes/lists/LicensesList.php:327
+#: includes/lists/LicensesList.php:319 includes/lists/LicensesList.php:623
 msgid "Activate"
 msgstr "Aktivieren"
 
-#: includes/lists/LicensesList.php:285 includes/lists/LicensesList.php:328
+#: includes/lists/LicensesList.php:331 includes/lists/LicensesList.php:624
 msgid "Deactivate"
 msgstr "Deaktivieren"
 
-#: includes/lists/LicensesList.php:416
-msgid "No licenses found."
-msgstr ""
+#: includes/lists/LicensesList.php:395
+msgid "Variation of"
+msgstr "Variation von"
 
-#: includes/lists/LicensesList.php:424
-msgid "License Key"
-msgstr ""
+#: includes/lists/LicensesList.php:499
+msgid "Expired"
+msgstr "Abgelaufen"
 
-#: includes/lists/LicensesList.php:425
+#: includes/lists/LicensesList.php:626
+msgid "Export (CSV)"
+msgstr "Exportieren (CSV)"
+
+#: includes/lists/LicensesList.php:627
+msgid "Export (PDF)"
+msgstr "Exportieren (PDF)"
+
+#: includes/lists/LicensesList.php:778
+msgid "No license keys found."
+msgstr "Keine Lizenzschlüssel gefunden."
+
+#: includes/lists/LicensesList.php:791
 msgid "Order"
-msgstr ""
+msgstr "Bestellung"
 
-#: includes/lists/LicensesList.php:426
-#: templates/licenses-add-import-page.php:41
-#: templates/licenses-add-import-page.php:107
+#: includes/lists/LicensesList.php:792
+#: templates/emails/email-order-details.php:23
+#: templates/licenses/edit-page.php:71
+#: templates/licenses/forms/bulk-text.php:55
+#: templates/licenses/forms/single-text.php:52
 msgid "Product"
-msgstr ""
+msgstr "Produkt"
 
-#: includes/lists/LicensesList.php:427
+#: includes/lists/LicensesList.php:793
+msgid "Activation"
+msgstr "Aktivierung"
+
+#: includes/lists/LicensesList.php:794
 msgid "Created at"
-msgstr ""
+msgstr "Erstellt am"
 
-#: includes/lists/LicensesList.php:428
+#: includes/lists/LicensesList.php:795
 msgid "Expires at"
-msgstr ""
+msgstr "Läuft ab am"
 
-#: includes/lists/LicensesList.php:429
+#: includes/lists/LicensesList.php:796
 msgid "Valid for"
-msgstr ""
+msgstr "Gültig für"
 
-#: includes/lists/LicensesList.php:430
-msgid "Source"
-msgstr ""
-
-#: includes/lists/LicensesList.php:431
+#: includes/lists/LicensesList.php:797 templates/licenses/edit-page.php:50
 msgid "Status"
 msgstr "Status"
 
-#: includes/lists/LicensesList.php:467
-msgid "Your license key(s) have been altered successfully."
-msgstr ""
+#: includes/lists/LicensesList.php:872
+#, php-format
+msgid "%d license key(s) activated successfully."
+msgstr "%d Lizenzschlüssel erfolgreich aktiviert."
 
-#: includes/lists/LicensesList.php:488
-msgid "Your license key(s) have been deleted successfully."
-msgstr ""
+#: includes/lists/LicensesList.php:877
+#, php-format
+msgid "%d license key(s) deactivated successfully."
+msgstr "%d Lizenzschlüssel erfolgreich deaktiviert."
 
-#: templates/emails/email-order-license-keys.php:3
-#: templates/emails/email-order-license-notice.php:3
-#: templates/order-view-license-keys.php:3
-msgid "Your License Key(s)"
+#: includes/lists/LicensesList.php:886 includes/lists/LicensesList.php:954
+#, php-format
+msgid "Skipped %d license key(s) due to their incompatible status."
 msgstr ""
+"%d Lizenzschlüssel wurden wegen ihres inkompatiblen Status übersprungen."
 
-#: templates/emails/email-order-license-notice.php:4
+#: includes/lists/LicensesList.php:946
+#, php-format
+msgid "%d license key(s) permanently deleted."
+msgstr "%d Lizenzschlüssel permanent gelöscht."
+
+#: templates/emails/customer-preorder-complete.php:14
+#, php-format
+msgid "The preorder #%d has been fulfilled. Order Details:"
+msgstr "Die Vorbestellung #%d wurde erfüllt. Bestelldetails:"
+
+#: templates/emails/email-order-details.php:9
+#, php-format
+msgid "(Order #%s)"
+msgstr "(Bestellung #%s)"
+
+#: templates/emails/email-order-details.php:24
+msgid "Quantity"
+msgstr "Menge"
+
+#: templates/emails/email-order-details.php:25
+msgid "Price"
+msgstr "Preis"
+
+#: templates/emails/email-order-details.php:62
+msgid "Note"
+msgstr "Anmerkung"
+
+#: templates/emails/email-order-license-keys.php:25
+#: templates/order-view-license-keys.php:21
+#, php-format
+msgid "Valid until <b>%s</b>"
+msgstr "Gültig bis <b>%s</b>"
+
+#: templates/emails/email-order-license-notice.php:5
 msgid ""
 "Your license keys will shortly be delivered. It can take up to 24 hours, but "
 "usually doesn't take longer than a few minutes. Thank you for your patience."
 msgstr ""
+"Ihre Lizenzschlüssel werden in Kürze geliefert. Es kann bis zu 24 Stunden "
+"dauern, dauert aber normalerweise nicht länger als einige Minuten. Vielen "
+"Dank für Ihre Geduld."
 
-#: templates/generators-add-new.php:21 templates/generators-add-new.php:34
-#: templates/generators-add-new.php:47 templates/generators-add-new.php:60
-#: templates/generators-edit.php:22 templates/generators-edit.php:35
-#: templates/generators-edit.php:48 templates/generators-edit.php:61
-#: templates/settings/rest-api-key.php:25
-#: templates/settings/rest-api-key.php:44
-#: templates/settings/rest-api-key.php:66
+#: templates/generators/add-page.php:3
+msgid "Add new generator"
+msgstr "Neuen Generator hinzufügen"
+
+#: templates/generators/add-page.php:21 templates/generators/add-page.php:45
+#: templates/generators/add-page.php:60 templates/generators/add-page.php:75
+#: templates/generators/edit-page.php:22 templates/generators/edit-page.php:46
+#: templates/generators/edit-page.php:61 templates/generators/edit-page.php:76
+#: templates/settings/rest-api-key.php:26
+#: templates/settings/rest-api-key.php:55
+#: templates/settings/rest-api-key.php:77
 msgid "Required."
-msgstr ""
+msgstr "Erforderlich."
 
-#: templates/generators-add-new.php:22 templates/generators-edit.php:23
+#: templates/generators/add-page.php:22 templates/generators/edit-page.php:23
 msgid "A short name to describe the generator."
-msgstr ""
+msgstr "Ein kurzer Name, um den Generator zu beschreiben."
 
-#: templates/generators-add-new.php:35
+#: templates/generators/add-page.php:32 templates/generators/edit-page.php:33
+#: templates/licenses/edit-page.php:44
+#: templates/licenses/forms/bulk-text.php:35
+#: templates/licenses/forms/single-text.php:32
+msgid ""
+"Define how many times the license key can be marked as \"activated\" by "
+"using the REST API. Leave blank if you do not use the API."
+msgstr ""
+"Legen Sie fest, wie oft der Lizenzschlüssel mit der REST-API als \"aktiviert"
+"\" markiert werden kann. Lassen Sie das Feld leer, wenn Sie die API nicht "
+"verwenden."
+
+#: templates/generators/add-page.php:46
 msgid "i.e. for \"12-AB-34-CD\" the character map is <kbd>ABCD1234</kbd>."
-msgstr ""
+msgstr "z. B. für \"12-AB-34-CD\" lautet der Zeichensatz <kbd>ABCD1234 </kbd>."
 
-#: templates/generators-add-new.php:48
+#: templates/generators/add-page.php:61
 msgid "i.e. for \"12-AB-34-CD\" the number of chunks is <kbd>4</kbd>."
-msgstr ""
+msgstr "z. B. für \"12-AB-34-CD\" gibt es <kbd>ABCD1234</kbd> Blöcke."
 
-#: templates/generators-add-new.php:61
+#: templates/generators/add-page.php:76
 msgid "i.e. for \"12-AB-34-CD\" the chunk length is <kbd>2</kbd>."
-msgstr ""
+msgstr "z. B. für \"12-AB-34-CD\" ist die Blocklänge <kbd>2</kbd>."
 
-#: templates/generators-add-new.php:70 templates/generators-add-new.php:80
-#: templates/generators-add-new.php:90 templates/generators-add-new.php:100
-#: templates/generators-edit.php:71 templates/generators-edit.php:81
-#: templates/generators-edit.php:91 templates/generators-edit.php:101
+#: templates/generators/add-page.php:87 templates/generators/add-page.php:99
+#: templates/generators/add-page.php:111 templates/generators/add-page.php:123
+#: templates/generators/edit-page.php:88 templates/generators/edit-page.php:100
+#: templates/generators/edit-page.php:112
+#: templates/generators/edit-page.php:124
 msgid "Optional."
-msgstr ""
+msgstr "Optional."
 
-#: templates/generators-add-new.php:71
+#: templates/generators/add-page.php:88
 msgid "i.e. for \"12-AB-34-CD\" the separator is <kbd>-</kbd>."
-msgstr ""
+msgstr "z. B. für \"12-AB-34-CD\" lautet das Trennzeichen <kbd>-</kbd>."
 
-#: templates/generators-add-new.php:81
+#: templates/generators/add-page.php:100
 msgid ""
 "Adds a word at the start (separator <b>not</b> included), i.e. <kbd><b>PRE-</"
 "b>12-AB-34-CD</kbd>."
 msgstr ""
+"Fügt am Anfang ein Wort hinzu (Trennzeichen <b>nicht</b> enthalten), z. B. "
+"<kbd><b>PRE-</b>12-AB-34-CD</kbd>."
 
-#: templates/generators-add-new.php:91
+#: templates/generators/add-page.php:112
 msgid ""
 "Adds a word at the end (separator <b>not</b> included), i.e. <kbd>12-AB-34-"
 "CD<b>-SUF</b></kbd>."
 msgstr ""
+"Fügt am Ende ein Wort hinzu (Trennzeichen <b>nicht</b> enthalten), z. B. "
+"<kbd>12-AB-34-CD<b>-SUF</b></kbd>."
 
-#: templates/generators-add-new.php:101 templates/generators-edit.php:102
+#: templates/generators/add-page.php:124 templates/generators/edit-page.php:125
 msgid ""
-"Number of days for which the license is valid after generation. Leave blank "
-"if it doesn't expire."
+"The number of days for which the license key is valid after purchase. Leave "
+"blank if it doesn't expire."
 msgstr ""
+"Die Anzahl der Tage, für die der Lizenzschlüssel nach dem Verkauf gültig "
+"ist. Lassen Sie das Feld leer, falls der Lizenzschlüssel nicht abläuft."
 
-#: templates/generators-add-new.php:108
+#: templates/generators/add-page.php:131 templates/licenses/edit-page.php:100
 msgid "Save"
-msgstr ""
+msgstr "Speichern"
 
-#: templates/generators-edit.php:36
+#: templates/generators/edit-page.php:3
+msgid "Edit generator"
+msgstr "Generator bearbeiten"
+
+#: templates/generators/edit-page.php:47
 msgid ""
 "The characters which will be used for generating a license key, i.e. for "
 "<code>12-AB-34-CD</code> the character map is <code>ABCD1234</code>."
 msgstr ""
+"Der Zeichensatz, der zum Erzeugen eines Lizenzschlüssels verwendet wird, z. "
+"B. für <code>12-AB-34-CD</code> ist der Zeichensatz <code>ABCD1234</code>."
 
-#: templates/generators-edit.php:49
+#: templates/generators/edit-page.php:62
 msgid ""
 "The number of separated character sets, i.e. for <code>12-AB-34-CD</code> "
 "the number of chunks is <code>4</code>."
 msgstr ""
+"Die Anzahl der getrennten Blöcke, z. B. für <code>12-AB-34-CD</code> ist die "
+"Anzahl der Blöcke<code>4</code>."
 
-#: templates/generators-edit.php:62
+#: templates/generators/edit-page.php:77
 msgid ""
 "The character length of an individual chunk, i.e. for <code>12-AB-34-CD</"
 "code> the chunk length is <code>2</code>."
 msgstr ""
+"Die individuelle Blocklänge, z. B. Für <code>12-AB-34-CD</code> beträgt die "
+"Blocklänge <code>2</code>."
 
-#: templates/generators-edit.php:72
+#: templates/generators/edit-page.php:89
 msgid ""
 "The special character separating the individual chunks, i.e. for <code>12-"
 "AB-34-CD</code> the separator is <code>-</code>."
 msgstr ""
+"Das Sonderzeichen, welches die einzelnen Blöcke trennt, z. B. Für <code>12-"
+"AB-34-CD</code> ist das Trennzeichen <code>-</code>."
 
-#: templates/generators-edit.php:82
+#: templates/generators/edit-page.php:101
 msgid ""
 "Adds a character set at the start of a license key (separator <b>not</b> "
 "included), i.e. for <code>PRE-12-AB-34-CD</code> the prefix is <code>PRE-</"
 "code>."
 msgstr ""
+"Fügt einen Zeichensatz am Anfang eines Lizenzschlüssels hinzu (Trennzeichen "
+"<b>nicht</b> enthalten), z. B. für <code>PRE-12-AB-34-CD</code> lautet der "
+"Präfix <code>-PRE</code>."
 
-#: templates/generators-edit.php:92
+#: templates/generators/edit-page.php:113
 msgid ""
 "Adds a character set at the end of a license key (separator <b>not</b> "
 "included), i.e. for <code>12-AB-34-CD-SUF</code> the suffix is <code>-SUF</"
 "code>."
 msgstr ""
+"Fügt einen Zeichensatz am Ende eines Lizenzschlüssels hinzu (Trennzeichen "
+"<b>nicht</b> enthalten), z. B. für <code>12-AB-34-CD-SUF</code> lautet der "
+"Suffix <code>-SUF</code>."
 
-#: templates/generators-edit.php:110
+#: templates/generators/edit-page.php:133
 msgid "Update"
 msgstr "Aktualisieren"
 
-#: templates/generators-edit.php:115
-msgid "Assigned Products"
-msgstr ""
+#: templates/generators/edit-page.php:138
+msgid "Assigned products"
+msgstr "Zugeordnete Produkte"
 
-#: templates/generators-edit.php:118
-msgid "The generator is assigned to the following product(s):"
-msgstr ""
+#: templates/generators/edit-page.php:141
+msgid "The generator is assigned to the following product(s)"
+msgstr "Der Generator ist den folgenden Produkten zugeordnet"
 
-#: templates/generators-edit.php:130
+#: templates/generators/edit-page.php:153
 msgid "The generator does not have any products assigned to it."
-msgstr ""
+msgstr "Dem Generator sind keine Produkte zugeordnet."
 
-#: templates/generators-page.php:6
+#: templates/generators/list-page.php:5 templates/licenses/list-page.php:5
 msgid "Add new"
-msgstr ""
+msgstr "Hinzufügen"
 
-#: templates/generators-page.php:8
-msgid "Important:"
-msgstr ""
+#: templates/generators/list-page.php:8
+#: templates/licenses/forms/bulk-text.php:15
+msgid "Important"
+msgstr "Wichtig"
 
-#: templates/generators-page.php:9
+#: templates/generators/list-page.php:9
 msgid ""
 "You can not delete generators which are still assigned to active products! "
 "To delete those, please remove the generator from all of its assigned "
 "products first."
 msgstr ""
+"Generatoren, die noch aktiven Produkten zugeordnet sind, können nicht "
+"gelöscht werden! Um diese zu löschen, entfernen Sie zuerst den Generator aus "
+"allen zugewiesenen Produkten."
 
-#: templates/licenses-add-import-page.php:5
-msgid "Import Licence Keys"
-msgstr ""
+#: templates/licenses/add-page.php:3
+msgid "Add new licens key(s)"
+msgstr "Neue Lizenzschlüssel hinzufügen"
 
-#: templates/licenses-add-import-page.php:16
-msgid "File (CSV/TXT)"
-msgstr ""
+#: templates/licenses/add-page.php:6
+msgid "Add a single license key"
+msgstr "Lizenzschlüssel einzeln hinzufügen"
 
-#: templates/licenses-add-import-page.php:20
+#: templates/licenses/add-page.php:9
+msgid "Add license keys in bulk"
+msgstr "Mehrere Lizenzschlüssel hinzufügen"
+
+#: templates/licenses/edit-page.php:3
+msgid "Edit license key"
+msgstr "Lizenzschlüssel editieren"
+
+#: templates/licenses/edit-page.php:26
+#: templates/licenses/forms/single-text.php:14
 msgid ""
-"<b class=\"text-danger\">Important:</b> One line per key. Keys must be un-"
-"encrypted."
+"The license key will be encrypted before it is stored inside the database."
 msgstr ""
+"Der Lizenzschlüssel wird verschlüsselt, bevor er in der Datenbank "
+"gespeichert wird."
 
-#: templates/licenses-add-import-page.php:27
-#: templates/licenses-add-import-page.php:93
-msgid "Activate licenses"
-msgstr ""
-
-#: templates/licenses-add-import-page.php:31
-msgid "Activate licenses immediatelly after import."
-msgstr ""
-
-#: templates/licenses-add-import-page.php:34
-#: templates/licenses-add-import-page.php:100
-msgid ""
-"Activated licenses are immediatelly availabale for sale, while inactive "
-"licenses must be activated manually."
-msgstr ""
-
-#: templates/licenses-add-import-page.php:45
-#: templates/licenses-add-import-page.php:111
-msgid "Select a product..."
-msgstr ""
-
-#: templates/licenses-add-import-page.php:51
-#: templates/licenses-add-import-page.php:117
-msgid "You do not have any products defined."
-msgstr ""
-
-#: templates/licenses-add-import-page.php:53
-#: templates/licenses-add-import-page.php:119
-msgid ""
-"The product to which the keys will be assigned. You can also leave this "
-"blank to manually assign them later."
-msgstr ""
-
-#: templates/licenses-add-import-page.php:64
-msgid "Add Licence Key"
-msgstr ""
-
-#: templates/licenses-add-import-page.php:75
-msgid "Licence Key"
-msgstr ""
-
-#: templates/licenses-add-import-page.php:78
-msgid "The license key will be encrypted before saving to the database."
-msgstr ""
-
-#: templates/licenses-add-import-page.php:84
+#: templates/licenses/edit-page.php:32
 msgid "Validity"
-msgstr ""
+msgstr "Gültigkeit"
 
-#: templates/licenses-add-import-page.php:87
+#: templates/licenses/edit-page.php:35
+#: templates/licenses/forms/bulk-text.php:26
+#: templates/licenses/forms/single-text.php:23
 msgid ""
-"Number of days for which the license key is valid. Leave blank if the "
-"license key does not expire."
+"Number of days for which the license key is valid after purchase. Leave "
+"blank if the license key does not expire."
 msgstr ""
+"Anzahl der Tage, für die der Lizenzschlüssel nach dem Kauf gültig ist. "
+"Lassen Sie das Feld leer, wenn der Lizenzschlüssel nicht abläuft."
 
-#: templates/licenses-add-import-page.php:97
-msgid "Activate license immediatelly after import."
+#: templates/licenses/edit-page.php:75
+#: templates/licenses/forms/bulk-text.php:60
+#: templates/licenses/forms/single-text.php:57
+msgid "Select a product..."
+msgstr "Produkt wählen..."
+
+#: templates/licenses/edit-page.php:92
+#: templates/licenses/forms/bulk-text.php:76
+#: templates/licenses/forms/single-text.php:73
+msgid "You do not have any products defined."
+msgstr "Sie haben keine Produkte definiert."
+
+#: templates/licenses/edit-page.php:94
+#: templates/licenses/forms/bulk-text.php:79
+#: templates/licenses/forms/single-text.php:76
+msgid ""
+"The product to which the license keys will be assigned. You can also leave "
+"this blank to manually assign them later."
 msgstr ""
+"Das Produkt, dem der Lizenzschlüssel zugewiesen wird. Sie können dieses Feld "
+"auch leer lassen, oder später zuweisen."
 
-#: templates/licenses-add-import-page.php:126
+#: templates/licenses/forms/bulk-text.php:11
+msgid "File"
+msgstr "Datei"
+
+#: templates/licenses/forms/bulk-text.php:16
+msgid "One line per license key."
+msgstr "Eine Zeile pro Lizenzschlüssel."
+
+#: templates/licenses/forms/bulk-text.php:23
+#: templates/licenses/forms/single-text.php:20
+msgid "Valid for (days)"
+msgstr "Gültig für (Tage)"
+
+#: templates/licenses/forms/bulk-text.php:41
+msgid "Activate license keys"
+msgstr "Lizenzschlüssel aktivieren"
+
+#: templates/licenses/forms/bulk-text.php:45
+msgid "Activate license keys immediately after import."
+msgstr "Lizenzschlüssel sofort nach dem Import aktivieren."
+
+#: templates/licenses/forms/bulk-text.php:48
+#: templates/licenses/forms/single-text.php:45
+msgid ""
+"Activated license keys are immediately availabale for sale, while inactive "
+"license keys must be activated manually."
+msgstr ""
+"Aktivierte Lizenzschlüssel stehen sofort zum Verkauf zur Verfügung, inaktive "
+"Lizenzschlüssel müssen dagegen manuell aktiviert werden."
+
+#: templates/licenses/forms/bulk-text.php:86
+msgid "Import"
+msgstr "Importieren"
+
+#: templates/licenses/forms/single-text.php:38
+msgid "Activate license key"
+msgstr "Lizenzschlüssel aktivieren"
+
+#: templates/licenses/forms/single-text.php:42
+msgid "Activate license key immediately after import."
+msgstr "Lizenzschlüssel sofort nach dem Import aktivieren."
+
+#: templates/licenses/forms/single-text.php:83
 msgid "Add"
 msgstr "Hinzufügen"
 
-#: templates/licenses-page.php:7
-msgid "Add/Import"
-msgstr "Hinzufügen/Importieren"
+#: templates/licenses/list-page.php:18
+msgid "Copied to clipboard"
+msgstr "In die Zwischenablage kopiert"
 
 #: templates/settings-page.php:9
 msgid "General"
@@ -695,37 +1116,38 @@ msgstr "Allgemein"
 msgid "REST API"
 msgstr "REST API"
 
-#: templates/settings/rest-api-key.php:1
+#: templates/settings/rest-api-key.php:1 templates/settings/rest-api-show.php:1
 msgid "Key details"
-msgstr ""
+msgstr "Lizenzschlüssel details"
 
-#: templates/settings/rest-api-key.php:26
+#: templates/settings/rest-api-key.php:27
 msgid "Friendly name for identifying this key."
-msgstr ""
+msgstr "Anzeigename zur Identifizierung dieses Schlüssels."
 
-#: templates/settings/rest-api-key.php:37
+#: templates/settings/rest-api-key.php:38
 msgid "Please select a user..."
-msgstr ""
+msgstr "Bitte wählen Sie einen Benutzer…"
 
-#: templates/settings/rest-api-key.php:45
+#: templates/settings/rest-api-key.php:56
 msgid "Owner of these keys."
-msgstr ""
+msgstr "Besitzer dieser Schlüssel."
 
-#: templates/settings/rest-api-key.php:67
+#: templates/settings/rest-api-key.php:78
 msgid "Select the access type of these keys."
-msgstr ""
+msgstr "Wählen Sie den Zugriffstyp dieser Schlüssel."
 
-#: templates/settings/rest-api-key.php:99
+#: templates/settings/rest-api-key.php:110
 msgid "Generate API key"
-msgstr ""
+msgstr "API-Schlüssel generieren"
 
-#: templates/settings/rest-api-key.php:102
+#: templates/settings/rest-api-key.php:113
 msgid "Save changes"
-msgstr ""
+msgstr "Änderungen speichern"
 
-#: templates/settings/rest-api-key.php:118
+#: templates/settings/rest-api-key.php:132
+#: templates/settings/rest-api-show.php:60
 msgid "Revoke key"
-msgstr ""
+msgstr "Schlüssel widerrufen"
 
 #: templates/settings/rest-api-list.php:4
 msgid "Add key"
@@ -734,3 +1156,33 @@ msgstr "Schlüssel hinzufügen"
 #: templates/settings/rest-api-list.php:12
 msgid "Search key"
 msgstr "Schlüssel suchen"
+
+#: templates/settings/rest-api-show.php:13
+msgid "Consumer key"
+msgstr "API Schlüssel"
+
+#: templates/settings/rest-api-show.php:28
+msgid "Consumer secret"
+msgstr "API Geheimwort"
+
+#: templates/settings/rest-api-show.php:67
+msgid "Nothing to see here..."
+msgstr "Nichts zu sehen..."
+
+#~ msgid "License Key"
+#~ msgstr "Lizenzschlüssel"
+
+#~ msgid "Licenses"
+#~ msgstr "Lizenzen"
+
+#~ msgid "License Manager - Import"
+#~ msgstr "Lizenz-Manager - Import"
+
+#~ msgid "License Manager - Add New Generator"
+#~ msgstr "Lizenz-Manager - Neuen Generator Hinzufügen"
+
+#~ msgid "License Manager - Edit Generator"
+#~ msgstr "Lizenz-Manager - Generator Editieren"
+
+#~ msgid "Add/Import"
+#~ msgstr "Hinzufügen/Importieren"

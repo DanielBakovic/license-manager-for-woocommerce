@@ -59,7 +59,7 @@
             if ($order->get_customer_note()) {
                 ?>
                 <tr>
-                    <th class="td" scope="row" colspan="2" style="text-align: left;"><?php esc_html_e('Note:', 'lmfwc'); ?></th>
+                    <th class="td" scope="row" colspan="2" style="text-align: left;"><?php esc_html_e('Note', 'lmfwc'); ?>></th>
                     <td class="td" style="text-align: left;"><?php echo wp_kses_post(wptexturize($order->get_customer_note())); ?></td>
                 </tr>
                 <?php

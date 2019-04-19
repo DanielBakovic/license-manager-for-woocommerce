@@ -77,8 +77,8 @@ class LicensesList extends \WP_List_Table
 
         parent::__construct(
             array(
-                'singular' => __('License', 'lmfwc'),
-                'plural'   => __('Licenses', 'lmfwc'),
+                'singular' => __('License key', 'lmfwc'),
+                'plural'   => __('License keys', 'lmfwc'),
                 'ajax'     => false
             )
         );
@@ -775,7 +775,7 @@ class LicensesList extends \WP_List_Table
      */
     public function no_items()
     {
-        _e('No licenses found.', 'lmfwc');
+        _e('No license keys found.', 'lmfwc');
     }
 
     /**
@@ -787,7 +787,7 @@ class LicensesList extends \WP_List_Table
     {
         $columns = array(
             'cb'          => '<input type="checkbox" />',
-            'license_key' => __('License Key', 'lmfwc'),
+            'license_key' => __('License key', 'lmfwc'),
             'order_id'    => __('Order', 'lmfwc'),
             'product_id'  => __('Product', 'lmfwc'),
             'activation'  => __('Activation', 'lmfwc'),
@@ -869,12 +869,12 @@ class LicensesList extends \WP_List_Table
 
         if ($nonce_action == 'activate') {
             $message = sprintf(
-                esc_html__('%d License key(s) activated successfully.', 'lmfwc'),
+                esc_html__('%d license key(s) activated successfully.', 'lmfwc'),
                 $count
             );
         } elseif ($nonce_action == 'deactivate') {
             $message = sprintf(
-                esc_html__('%d License key(s) deactivated successfully.', 'lmfwc'),
+                esc_html__('%d license key(s) deactivated successfully.', 'lmfwc'),
                 $count
             );
         }
@@ -943,7 +943,7 @@ class LicensesList extends \WP_List_Table
         );
 
         $message = sprintf(
-            esc_html__('%d License key(s) permanently deleted.', 'lmfwc'),
+            esc_html__('%d license key(s) permanently deleted.', 'lmfwc'),
             $result
         );
 

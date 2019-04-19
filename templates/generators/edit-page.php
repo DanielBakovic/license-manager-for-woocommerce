@@ -1,6 +1,6 @@
 <?php defined('ABSPATH') || exit; ?>
 
-<h1 class="wp-heading-inline"><?php esc_html_e('Edit Generator', 'lmfwc'); ?></h1>
+<h1 class="wp-heading-inline"><?php esc_html_e('Edit generator', 'lmfwc'); ?></h1>
 <hr class="wp-header-end">
 
 <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
@@ -122,7 +122,7 @@
                     <input name="expires_in" id="expires_in" class="regular-text" type="text" value="<?php echo esc_html($generator->expires_in); ?>">
                     <p class="description" id="tagline-description">
                         <b><?php esc_html_e('Optional.', 'lmfwc');?></b>
-                        <span><?php esc_html_e('Number of days for which the license is valid after generation. Leave blank if it doesn\'t expire.', 'lmfwc');?></span>
+                        <span><?php esc_html_e('The number of days for which the license key is valid after purchase. Leave blank if it doesn\'t expire.', 'lmfwc');?></span>
                     </p>
                 </td>
             </tr>
@@ -135,7 +135,7 @@
 
 </form>
 
-<h2><?php esc_html_e('Assigned Products', 'lmfwc');?></h2>
+<h2><?php esc_html_e('Assigned products', 'lmfwc');?></h2>
 
 <?php if ($products): ?>
     <p><?php esc_html_e('The generator is assigned to the following product(s)', 'lmfwc');?>:</p>

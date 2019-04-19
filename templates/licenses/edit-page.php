@@ -1,6 +1,6 @@
 <?php defined('ABSPATH') || exit; ?>
 
-<h1 class="wp-heading-inline"><?php esc_html_e('Edit License Key', 'lmfwc'); ?></h1>
+<h1 class="wp-heading-inline"><?php esc_html_e('Edit license key', 'lmfwc'); ?></h1>
 <hr class="wp-header-end">
 
 <form method="post" action="<?php echo admin_url('admin-post.php');?>">
@@ -20,7 +20,7 @@
 
             <!-- LICENSE KEY -->
             <tr scope="row">
-                <th scope="row"><label><?php esc_html_e('License Key', 'lmfwc');?></label></th>
+                <th scope="row"><label><?php esc_html_e('License key', 'lmfwc');?></label></th>
                 <td>
                     <input name="license_key" id="edit__license_key" class="regular-text" type="text" value="<?php echo esc_html($license_key); ?>">
                     <p class="description"><?php esc_html_e('The license key will be encrypted before it is stored inside the database.', 'lmfwc');?></p>
@@ -91,7 +91,7 @@
                     <?php else: ?>
                         <label><?php esc_html_e('You do not have any products defined.', 'lmfwc');?></label>
                     <?php endif; ?>
-                    <p class="description"><?php esc_html_e('The product to which the keys will be assigned. You can also leave this blank to manually assign them later.', 'lmfwc');?></p>
+                    <p class="description"><?php esc_html_e('The product to which the license keys will be assigned. You can also leave this blank to manually assign them later.', 'lmfwc');?></p>
                 </td>
             </tr>
         </tbody>

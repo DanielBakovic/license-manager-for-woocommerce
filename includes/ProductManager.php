@@ -58,7 +58,7 @@ class ProductManager
     public function simpleProductLicenseManagerTab($tabs)
     {
         $tabs[self::ADMIN_TAB_NAME] = array(
-            'label' => __('Licenses', 'lmfwc'),
+            'label' => __('License Manager', 'lmfwc'),
             'target' => self::ADMIN_TAB_TARGET,
             'class' => array('show_if_simple'),
             'priority' => 21
@@ -98,7 +98,7 @@ class ProductManager
         woocommerce_wp_checkbox(
             array(
                 'id'          => 'lmfwc_licensed_product',
-                'label'       => __('Sell licenses', 'lmfwc'),
+                'label'       => __('Sell license keys', 'lmfwc'),
                 'description' => __('Sell license keys for this product', 'lmfwc'),
                 'value'       => $licensed,
                 'cbvalue'     => 1,
@@ -127,7 +127,7 @@ class ProductManager
         woocommerce_wp_checkbox(
             array(
                 'id'          => 'lmfwc_licensed_product_use_generator',
-                'label'       => __('Generate licenses', 'lmfwc'),
+                'label'       => __('Generate license keys', 'lmfwc'),
                 'description' => __('Automatically generate license keys with each sold product', 'lmfwc'),
                 'value'       => $use_generator,
                 'cbvalue'     => 1,
@@ -152,7 +152,7 @@ class ProductManager
             array(
                 'id'          => 'lmfwc_licensed_product_use_stock',
                 'label'       => __('Sell from stock', 'lmfwc'),
-                'description' => __('Sell added/imported license keys.', 'lmfwc'),
+                'description' => __('Sell license keys from the available stock.', 'lmfwc'),
                 'value'       => $use_stock,
                 'cbvalue'     => 1,
                 'desc_tip'    => false
@@ -272,7 +272,7 @@ class ProductManager
         woocommerce_wp_checkbox(
             array(
                 'id'          => 'lmfwc_licensed_product',
-                'label'       => __('Sell licenses', 'lmfwc'),
+                'label'       => __('Sell license key(s)', 'lmfwc'),
                 'description' => __('Sell license keys for this variation', 'lmfwc'),
                 'value'       => $licensed,
                 'cbvalue'     => 1,
@@ -301,7 +301,7 @@ class ProductManager
         woocommerce_wp_checkbox(
             array(
                 'id'          => 'lmfwc_licensed_product_use_generator',
-                'label'       => __('Generate licenses', 'lmfwc'),
+                'label'       => __('Generate license keys', 'lmfwc'),
                 'description' => __('Automatically generate license keys with each sold variation', 'lmfwc'),
                 'value'       => $use_generator,
                 'cbvalue'     => 1,
@@ -326,7 +326,7 @@ class ProductManager
             array(
                 'id'          => 'lmfwc_licensed_product_use_stock',
                 'label'       => __('Sell from stock', 'lmfwc'),
-                'description' => __('Sell added/imported license keys.', 'lmfwc'),
+                'description' => __('Sell license keys from the available stock.', 'lmfwc'),
                 'value'       => $use_stock,
                 'cbvalue'     => 1,
                 'desc_tip'    => false
@@ -337,7 +337,7 @@ class ProductManager
             '<p class="form-field"><label>%s</label><span class="description">%d %s</span></p>',
             __('Available', 'lmfwc'),
             apply_filters('lmfwc_get_available_stock', $post_id),
-            __('License key(s) in stock and available for sale', 'lmfwc')
+            __('License key(s) in stock and available for sale.', 'lmfwc')
         );
 
         echo '</div></div>';

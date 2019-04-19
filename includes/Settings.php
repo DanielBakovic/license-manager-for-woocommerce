@@ -39,7 +39,7 @@ class Settings
         // lmfwc_security section fields.
         add_settings_field(
             'lmfwc_hide_license_keys',
-            __('Obscure Licenses', 'lmfwc'),
+            __('Obscure licenses', 'lmfwc'),
             array($this, 'lmfwcFieldHideLicenseKeys'),
             'lmfwc',
             'lmfwc_security'
@@ -53,7 +53,7 @@ class Settings
         );
         add_settings_field(
             'lmfwc_auto_delivery',
-            __('Automatic Delivery', 'lmfwc'),
+            __('Automatic delivery', 'lmfwc'),
             array($this, 'lmfwcFieldAutoDelivery'),
             'lmfwc',
             'lmfwc_security'
@@ -91,7 +91,7 @@ class Settings
         $html .= '</label>';
         $html .= sprintf(
             '<p class="description">%s</p>',
-            __('All licenses will be hidden and only displayed when the \'Show\' action is clicked.', 'lmfwc')
+            __('All license keys will be hidden and only displayed when the \'Show\' action is clicked.', 'lmfwc')
         );
         $html .= '</fieldset>';
 

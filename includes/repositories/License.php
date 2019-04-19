@@ -130,7 +130,7 @@ class License
         $clean_id = $id ? absint($id) : null;
 
         if (!$clean_id) {
-            throw new LMFWC_Exception('Invalid License Key ID');
+            throw new LMFWC_Exception('Invalid license key ID');
         }
 
         global $wpdb;
@@ -819,7 +819,7 @@ class License
         $clean_updated_by          = $updated_by          ? absint($updated_by)               : null;
 
         if (!$clean_id) {
-            throw new LMFWC_Exception('Invalid License Key ID');
+            throw new LMFWC_Exception('Invalid license key ID');
         }
 
         if (!$clean_license_key || strlen($clean_license_key) == 0) {
@@ -878,7 +878,7 @@ class License
         $clean_status = $status ? absint($status) : null;
 
         if (!$clean_id) {
-            throw new LMFWC_Exception('Invalid License Key ID');
+            throw new LMFWC_Exception('Invalid license key ID');
         }
 
         if (!in_array($clean_status, LicenseStatusEnum::$status)) {
@@ -976,7 +976,7 @@ class License
         }
 
         if (!$clean_id) {
-            throw new LMFWC_Exception('Invalid License Key ID');
+            throw new LMFWC_Exception('Invalid license key ID');
         }
 
         if (!$clean_license_key) {
@@ -1189,7 +1189,7 @@ class License
         $clean_updated_by = $updated_by ? absint($updated_by) : null;
 
         if (!$clean_id) {
-            throw new LMFWC_Exception('Invalid License Key ID');
+            throw new LMFWC_Exception('Invalid license key ID');
         }
 
         if (!$clean_updated_by || !get_userdata($clean_updated_by)) {

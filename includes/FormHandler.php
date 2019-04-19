@@ -432,7 +432,7 @@ class FormHandler
         if ($result['failed'] == 0 && $result['added'] > 0) {
             AdminNotice::success(
                 sprintf(
-                    __('%d License key(s) added successfully.', 'lmfwc'),
+                    __('%d license key(s) added successfully.', 'lmfwc'),
                     intval($result['added'])
                 )
             );
@@ -512,7 +512,7 @@ class FormHandler
         // Redirect with message
         if ($result) {
             AdminNotice::success(
-                __('1 License key(s) added successfully.', 'lmfwc')
+                __('1 license key(s) added successfully.', 'lmfwc')
             );
         } else {
             AdminNotice::error(
@@ -600,7 +600,7 @@ class FormHandler
         }
 
         if (empty($_POST['permissions'])) {
-            $error = __('Permissions is missing.', 'lmfwc');
+            $error = __('Permissions are missing.', 'lmfwc');
         }
 
         $key_id      = absint($_POST['id']);
@@ -612,7 +612,7 @@ class FormHandler
         // Check if current user can edit other users.
         if ($user_id && !current_user_can('edit_user', $user_id)) {
             if (get_current_user_id() !== $user_id) {
-                $error = __('You do not have permission to assign API Keys to the selected user.', 'lmfwc');
+                $error = __('You do not have permission to assign API keys to the selected user.', 'lmfwc');
             }
         }
 
@@ -639,7 +639,7 @@ class FormHandler
 
             if ($data) {
                 AdminNotice::success(
-                    __('API Key generated successfully. Make sure to copy your new keys now as the secret key will be hidden once you leave this page.', 'lmfwc')
+                    __('API key generated successfully. Make sure to copy your new keys now as the secret key will be hidden once you leave this page.', 'lmfwc')
                 );
                 set_transient('lmfwc_api_key', $data, 60);
             } else {
@@ -666,7 +666,7 @@ class FormHandler
             );
 
             if ($update) {
-                AdminNotice::success(__('API Key updated successfully.', 'lmfwc'));
+                AdminNotice::success(__('API key updated successfully.', 'lmfwc'));
             } else {
                 AdminNotice::error(
                     __('There was a problem updating the API key.', 'lmfwc')
@@ -769,7 +769,7 @@ class FormHandler
             return;
         }
 
-        $html = __('<p>The following license keys have been sold by this order:</p>', 'lmfwc');
+        $html = sprintf('<p>%s:</p>', __('The following license keys have been sold by this order', 'lmfwc'));
         $html .= '<ul class="lmfwc-license-list">';
 
         if (!Settings::get('lmfwc_hide_license_keys')) {
@@ -795,13 +795,13 @@ class FormHandler
             $html .= sprintf(
                 '<a class="button lmfwc-license-keys-show-all" data-order-id="%d">%s</a>',
                 $item->get_order_id(),
-                __('Show License Key(s)', 'lmfwc')
+                __('Show license key(s)', 'lmfwc')
             );
 
             $html .= sprintf(
                 '<a class="button lmfwc-license-keys-hide-all" data-order-id="%d">%s</a>',
                 $item->get_order_id(),
-                __('Hide License Key(s)', 'lmfwc')
+                __('Hide license key(s)', 'lmfwc')
             );
 
             $html .= sprintf(

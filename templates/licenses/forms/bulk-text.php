@@ -13,7 +13,7 @@
                     <input name="file" id="bulk__file" class="regular-text" type="file" accept=".csv,.txt">
                     <p class="description">
                         <b class="text-danger"><?php esc_html_e('Important', 'lmfwc'); ?>:</b>
-                        <span><?php esc_html_e('One line per key. Keys must be decrypted.', 'lmfwc');?></span>
+                        <span><?php esc_html_e('One line per license key.', 'lmfwc');?></span>
                     </p>
                 </td>
             </tr>
@@ -38,14 +38,14 @@
 
             <!-- ACTIVATION STATUS -->
             <tr scope="row">
-                <th scope="row"><label><?php esc_html_e('Activate licenses', 'lmfwc');?></label></th>
+                <th scope="row"><label><?php esc_html_e('Activate license keys', 'lmfwc');?></label></th>
                 <td>
                     <label for="activate">
                         <input name="activate" id="bulk__activate" class="regular-text" type="checkbox" checked="checked">
-                        <span><?php esc_html_e('Activate licenses immediately after import.', 'lmfwc');?></span>
+                        <span><?php esc_html_e('Activate license keys immediately after import.', 'lmfwc');?></span>
                     </label>
                     <p class="description">
-                        <span><?php esc_html_e('Activated licenses are immediately availabale for sale, while inactive licenses must be activated manually.', 'lmfwc');?></span>
+                        <span><?php esc_html_e('Activated license keys are immediately availabale for sale, while inactive license keys must be activated manually.', 'lmfwc');?></span>
                     </p>
                 </td>
             </tr>
@@ -76,7 +76,7 @@
                         <label><?php esc_html_e('You do not have any products defined.', 'lmfwc');?></label>
 
                     <?php endif; ?>
-                    <p class="description"><?php esc_html_e('The product to which the keys will be assigned. You can also leave this blank to manually assign them later.', 'lmfwc');?></p>
+                    <p class="description"><?php esc_html_e('The product to which the license keys will be assigned. You can also leave this blank to manually assign them later.', 'lmfwc');?></p>
                 </td>
             </tr>
         </tbody>

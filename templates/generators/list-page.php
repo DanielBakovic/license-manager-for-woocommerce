@@ -5,7 +5,7 @@
     <span><?php esc_html_e('Add new', 'lmfwc');?></span>
 </a>
 <p>
-    <b><?php esc_html_e('Important:', 'lmfwc');?></b>
+    <b><?php esc_html_e('Important', 'lmfwc');?>:</b>
     <span><?php esc_html_e('You can not delete generators which are still assigned to active products! To delete those, please remove the generator from all of its assigned products first.', 'lmfwc');?></span>
 </p>
 <hr class="wp-header-end">

@@ -80,7 +80,7 @@ class Export
             'id' => __('ID', 'lmfwc'),
             'order_id' => __('Order ID', 'lmwfc'),
             'product_id' => __('Product ID', 'lmwfc'),
-            'license_key' => __('License Key', 'lmfwc')
+            'license_key' => __('License key', 'lmfwc')
         );
 
         ob_clean();

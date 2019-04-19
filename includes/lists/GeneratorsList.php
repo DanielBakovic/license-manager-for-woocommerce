@@ -405,7 +405,7 @@ class GeneratorsList extends \WP_List_Table
 
         if ($result) {
             AdminNotice::success(
-                sprintf(__('%d Generator(s) permanently deleted.', 'lmfwc'), $result)
+                sprintf(__('%d generator(s) permanently deleted.', 'lmfwc'), $result)
             );
 
             wp_redirect(

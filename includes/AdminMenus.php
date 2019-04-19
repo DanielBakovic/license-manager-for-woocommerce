@@ -72,7 +72,7 @@ class AdminMenus
         $licenses_hook = add_submenu_page(
             self::LICENSES_PAGE,
             __('License Manager', 'lmfwc'),
-            __('Licenses', 'lmfwc'),
+            __('License keys', 'lmfwc'),
             'manage_options',
             self::LICENSES_PAGE,
             array($this, 'licensesPage')
@@ -105,7 +105,7 @@ class AdminMenus
     {
         $option = 'per_page';
         $args = array(
-            'label' => __('Licenses per page', 'lmfwc'),
+            'label' => __('License keys per page', 'lmfwc'),
             'default' => 10,
             'option' => 'lmfwc_licenses_per_page'
         );
@@ -150,11 +150,11 @@ class AdminMenus
             $status_inactive     = LicenseStatusEnum::INACTIVE;
 
             if (!$license_id) {
-                wp_die(__('Invalid License Key ID', 'lmfwc'));
+                wp_die(__('Invalid license key ID', 'lmfwc'));
             }
 
             if (!in_array($license_status, $status_whitelist)) {
-                wp_die(__('This License Key can no longer be edited', 'lmfwc'));
+                wp_die(__('This license key can no longer be edited', 'lmfwc'));
             }
         }
 

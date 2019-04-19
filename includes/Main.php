@@ -32,7 +32,7 @@ final class Main
      *
      * @var string
      */
-    public $version = '1.2.1';
+    public $version = '1.2.2';
 
     /**
      * The single instance of the class.
@@ -52,6 +52,7 @@ final class Main
         $this->_defineConstants();
         $this->_initHooks();
 
+        add_action('init', array($this, 'loadPluginTextDomain'));
         add_action('init', array($this, 'init'));
         add_action('woocommerce_email_classes', array($this, 'registerEmails'), 90, 1);
 
@@ -241,6 +242,16 @@ final class Main
 
         add_action('admin_enqueue_scripts', array($this, 'adminEnqueueScripts'));
         add_filter('plugin_row_meta', array($this, 'pluginRowMeta'), 10, 2);
+    }
+
+    /**
+     * Adds the i18n translations to the plugin
+     * 
+     * @return null
+     */
+    public function loadPluginTextDomain()
+    {
+        load_plugin_textdomain('lmfwc', false, 'license-manager-for-woocommerce/i18n/');
     }
 
     /**
