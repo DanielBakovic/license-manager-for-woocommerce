@@ -39,12 +39,15 @@
 
 /* Table auto-width fix */
 table.wp-list-table.generators,
-table.wp-list-table.licenses {
+table.wp-list-table.generatoren,
+table.wp-list-table.licensekeys,
+table.wp-list-table.lizenzschlssel {
 	table-layout: auto !important;
 }
 
 /* Licence table */
-table.wp-list-table.licenses td.source.column-source > span {
+table.wp-list-table.licensekeys td.source.column-source > span,
+table.wp-list-table.lizenzschlssel td.source.column-source > span {
 	font-size: 2em;
 }
 .lmfwc-license-key-show,
@@ -52,16 +55,20 @@ table.wp-list-table.licenses td.source.column-source > span {
 	cursor: pointer;
 }
 
-table.wp-list-table.licenses td.source.column-source,
-table.wp-list-table.licenses td.valid_for.column-valid_for {
+table.wp-list-table.licensekeys td.source.column-source,
+table.wp-list-table.lizenzschlssel td.source.column-source,
+table.wp-list-table.licensekeys td.valid_for.column-valid_for,
+table.wp-list-table.lizenzschlssel td.valid_for.column-valid_for {
 	vertical-align: middle;
 	text-align: center;
 }
-table.wp-list-table.licenses td.status.column-status {
+table.wp-list-table.licensekeys td.status.column-status,
+table.wp-list-table.lizenzschlssel td.status.column-status {
 	vertical-align: middle;
 	text-align: left;
 }
-table.wp-list-table.licenses span.lmfwc-date {
+table.wp-list-table.licensekeys span.lmfwc-date,
+table.wp-list-table.lizenzschlssel span.lmfwc-date {
 	display: inline-block;
 	min-width: 100px;
 	text-align: center;
