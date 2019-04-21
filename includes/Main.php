@@ -317,5 +317,20 @@ final class Main
             10,
             1
         );
+
+        add_filter(
+            'lmfwc_license_keys_table_valid_until',
+            function($text) {
+                $default = __('Valid until', 'lmfwc');
+
+                if (!$text) {
+                    return $default;
+                }
+
+                return sanitize_text_field($text);
+            },
+            10,
+            1
+        );
     }
 }

@@ -22,7 +22,9 @@
                         <?php if ($entry->expires_at): ?>
                             <?php $date = new \DateTime($entry->expires_at); ?>
                             <td class="td" style="text-align: left; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
-                                <code><?php printf(__('Valid until <b>%s</b>', 'lmfwc'), $date->format($date_format)); ?></code>
+                                <code><?php
+                                    printf('%s <b>%s</b>', $valid_until, $date->format($date_format));
+                                ?></code>
                             </td>
                         <?php endif; ?>
                     </tr>

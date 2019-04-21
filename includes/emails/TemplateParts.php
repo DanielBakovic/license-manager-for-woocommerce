@@ -71,6 +71,7 @@ class TemplateParts
                 'emails/plain/email-order-license-keys.php',
                 array(
                     'heading'       => apply_filters('lmfwc_license_keys_table_heading', null),
+                    'valid_until'   => apply_filters('lmfwc_license_keys_table_valid_until', null),
                     'data'          => apply_filters('lmfwc_get_customer_license_keys', $order),
                     'date_format'   => get_option('date_format'),
                     'order'         => $order,
@@ -86,6 +87,7 @@ class TemplateParts
                 'emails/email-order-license-keys.php',
                 array(
                     'heading'       => apply_filters('lmfwc_license_keys_table_heading', null),
+                    'valid_until'   => apply_filters('lmfwc_license_keys_table_valid_until', null),
                     'data'          => apply_filters('lmfwc_get_customer_license_keys', $order),
                     'date_format'   => get_option('date_format'),
                     'order'         => $order,

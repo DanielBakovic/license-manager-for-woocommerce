@@ -23,14 +23,8 @@ class ProductManager
         /**
          * @see https://www.proy.info/woocommerce-admin-custom-product-data-tab/
          */
-        add_filter(
-            'woocommerce_product_data_tabs',
-            array($this, 'simpleProductLicenseManagerTab')
-        );
-        add_action(
-            'woocommerce_product_data_panels',
-            array($this, 'simpleProductLicenseManagerPanel')
-        );
+        add_filter('woocommerce_product_data_tabs',   array($this, 'simpleProductLicenseManagerTab'));
+        add_action('woocommerce_product_data_panels', array($this, 'simpleProductLicenseManagerPanel'));
 
         /**
          * @see

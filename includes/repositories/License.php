@@ -1093,13 +1093,13 @@ class License
         global $wpdb;
 
         for ($i = 0; $i < $clean_amount; $i++) {
-            $date       = new \DateTime();
             $valid_for  = intval($clean_license_keys[$i]->valid_for);
             $expires_at = null;
 
-            if (is_numeric($valid_for)) {
+            if ($valid_for) {
+                $date          = new \DateTime();
                 $date_interval = new \DateInterval('P' . $valid_for . 'D');
-                $expires_at = $date->add($date_interval)->format('Y-m-d H:i:s');
+                $expires_at    = $date->add($date_interval)->format('Y-m-d H:i:s');
             }
 
             $wpdb->update(

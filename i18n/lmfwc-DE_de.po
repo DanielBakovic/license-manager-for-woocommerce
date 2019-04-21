@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: License Manager for WooCommerce\n"
-"POT-Creation-Date: 2019-04-19 23:28+0200\n"
-"PO-Revision-Date: 2019-04-19 23:28+0200\n"
+"POT-Creation-Date: 2019-04-21 11:27+0200\n"
+"PO-Revision-Date: 2019-04-21 11:27+0200\n"
 "Last-Translator: \n"
 "Language-Team: https://www.bebic.at\n"
 "Language: de_DE\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Poedit-SearchPath-1: templates\n"
 
 #: includes/AdminMenus.php:64 includes/AdminMenus.php:65
-#: includes/AdminMenus.php:74 includes/ProductManager.php:61
+#: includes/AdminMenus.php:74 includes/ProductManager.php:55
 msgid "License Manager"
 msgstr "Lizenzmanager"
 
@@ -89,7 +89,7 @@ msgstr ""
 "Wenn Sie%1$s mögen, geben Sie uns bitte eine %2$s Bewertung. Vielen Dank im "
 "Voraus!"
 
-#: includes/AdminMenus.php:311 includes/ProductManager.php:267
+#: includes/AdminMenus.php:311 includes/ProductManager.php:261
 msgid "License Manager for WooCommerce"
 msgstr "Lizenzmanager für WooCommerce"
 
@@ -276,59 +276,63 @@ msgstr "Spenden"
 msgid "Your license key(s)"
 msgstr "Ihre Lizenzschlüssel"
 
-#: includes/OrderManager.php:309
+#: includes/Main.php:324
+msgid "Valid until"
+msgstr "Gültig bis"
+
+#: includes/OrderManager.php:315
 msgid "Send license key(s) to customer"
 msgstr "Lizenzschlüssel an den Kunden senden"
 
-#: includes/ProductManager.php:80 includes/ProductManager.php:255
+#: includes/ProductManager.php:74 includes/ProductManager.php:249
 msgid "Please select a generator"
 msgstr "Bitte wählen Sie einen Generator aus"
 
-#: includes/ProductManager.php:101
+#: includes/ProductManager.php:95
 msgid "Sell license keys"
 msgstr "Lizenzschlüssel verkaufen"
 
-#: includes/ProductManager.php:102
+#: includes/ProductManager.php:96
 msgid "Sell license keys for this product"
 msgstr "Lizenzschlüssel für dieses Produkt verkaufen"
 
-#: includes/ProductManager.php:113 includes/ProductManager.php:287
+#: includes/ProductManager.php:107 includes/ProductManager.php:281
 msgid "Delivered quantity"
 msgstr "Liefermenge"
 
-#: includes/ProductManager.php:115 includes/ProductManager.php:289
+#: includes/ProductManager.php:109 includes/ProductManager.php:283
 msgid "Defines the amount of license keys to be delivered upon purchase."
 msgstr "Legt die Anzahl der beim Kauf zu liefernden Lizenzschlüssel fest."
 
-#: includes/ProductManager.php:130 includes/ProductManager.php:304
+#: includes/ProductManager.php:124 includes/ProductManager.php:298
 msgid "Generate license keys"
 msgstr "Lizenzschlüssel generieren"
 
-#: includes/ProductManager.php:131
+#: includes/ProductManager.php:125
 msgid "Automatically generate license keys with each sold product"
 msgstr "Generieren Sie automatisch Lizenzschlüssel für jedes verkaufte Produkt"
 
-#: includes/ProductManager.php:142 includes/ProductManager.php:316
+#: includes/ProductManager.php:136 includes/ProductManager.php:310
 msgid "Assign generator"
 msgstr "Generator zuweisen"
 
-#: includes/ProductManager.php:154 includes/ProductManager.php:328
+#: includes/ProductManager.php:148 includes/ProductManager.php:322
 msgid "Sell from stock"
 msgstr "Aus Vorrat verkaufen"
 
-#: includes/ProductManager.php:155 includes/ProductManager.php:329
+#: includes/ProductManager.php:149 includes/ProductManager.php:323
 msgid "Sell license keys from the available stock."
 msgstr "Lizenzschlüssel aus dem verfügbaren Lagerbestand verkaufen."
 
-#: includes/ProductManager.php:164 includes/ProductManager.php:338
+#: includes/ProductManager.php:158 includes/ProductManager.php:332
 msgid "Available"
 msgstr "Verfügbar"
 
-#: includes/ProductManager.php:166
+#: includes/ProductManager.php:160
 msgid "License key(s) in stock and available for sale"
 msgstr "Lizenzschlüssel auf Lager und zum Verkauf verfügbar"
 
-#: includes/ProductManager.php:230 includes/ProductManager.php:390
+#: includes/ProductManager.php:224 includes/ProductManager.php:384
 msgid ""
 "Assign a generator if you wish to sell automatically generated licenses for "
 "this product."
@@ -336,20 +340,20 @@ msgstr ""
 "Wählen Sie einen Generator, der zum automatischen Generieren von "
 "Lizenzschlüsseln für dieses Produkt benutzt wird."
 
-#: includes/ProductManager.php:275
+#: includes/ProductManager.php:269
 msgid "Sell license key(s)"
 msgstr "Lizenzschlüssel verkaufen"
 
-#: includes/ProductManager.php:276
+#: includes/ProductManager.php:270
 msgid "Sell license keys for this variation"
 msgstr "Lizenzschlüssel für diese Variation verkaufen"
 
-#: includes/ProductManager.php:305
+#: includes/ProductManager.php:299
 msgid "Automatically generate license keys with each sold variation"
 msgstr ""
 "Generieren Sie automatisch Lizenzschlüssel für jede verkaufte Produktvariante"
 
-#: includes/ProductManager.php:340
+#: includes/ProductManager.php:334
 msgid "License key(s) in stock and available for sale."
 msgstr "Lizenzschlüssel auf Lager und zum Verkauf verfügbar."
 
@@ -809,12 +813,6 @@ msgstr "Preis"
 #: templates/emails/email-order-details.php:62
 msgid "Note"
 msgstr "Anmerkung"
-
-#: templates/emails/email-order-license-keys.php:25
-#: templates/order-view-license-keys.php:21
-#, php-format
-msgid "Valid until <b>%s</b>"
-msgstr "Gültig bis <b>%s</b>"
 
 #: templates/emails/email-order-license-notice.php:5
 msgid ""

@@ -77,9 +77,11 @@ Again, yes! Here you can find the [API Documentation](https://documenter.getpost
 
 == Changelog ==
 
-= 1.2.3 - 2019-04-19 =
+= 1.2.3 - 2019-04-21 =
 
+* Add - Filter to change the "Valid until" text inside the emails (`lmfwc_license_keys_table_valid_until`).
 * Fix - Minor CSS fixes.
+* Fix - When selling license keys, the "Expires at" field would be set even when not applicable. This does not happen anymore.
 
 = 1.2.2 - 2019-04-19 =
 

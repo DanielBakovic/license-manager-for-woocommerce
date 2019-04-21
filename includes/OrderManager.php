@@ -28,9 +28,10 @@ class OrderManager
     /**
      * Generate licenses for a given order when the status changes to 'completed'
      *
-     * @since 1.0.0
+     * @param integer $order_id WooCommerce Order ID
      *
-     * @param int $order_id - WooCommerce Order ID
+     * @since  1.0.0
+     * @return null
      */
     public function generateOrderLicenses($order_id)
     {
@@ -48,7 +49,9 @@ class OrderManager
             $product = $item_data->get_product();
 
             // Skip this product because it's not a licensed product.
-            if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)) continue;
+            if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)){
+                continue;
+            }
 
             $use_stock = get_post_meta($product->get_id(), 'lmfwc_licensed_product_use_stock', true);
             $use_generator = get_post_meta($product->get_id(), 'lmfwc_licensed_product_use_generator', true);
@@ -218,6 +221,7 @@ class OrderManager
                     'emails/plain/email-order-license-keys.php',
                     array(
                         'heading'       => apply_filters('lmfwc_license_keys_table_heading', null),
+                        'valid_until'   => apply_filters('lmfwc_license_keys_table_valid_until', null),
                         'data'          => apply_filters('lmfwc_get_customer_license_keys', $order),
                         'date_format'   => get_option('date_format'),
                         'order'         => $order,
@@ -233,6 +237,7 @@ class OrderManager
                     'emails/email-order-license-keys.php',
                     array(
                         'heading'       => apply_filters('lmfwc_license_keys_table_heading', null),
+                        'valid_until'   => apply_filters('lmfwc_license_keys_table_valid_until', null),
                         'data'          => apply_filters('lmfwc_get_customer_license_keys', $order),
                         'date_format'   => get_option('date_format'),
                         'order'         => $order,
@@ -292,6 +297,7 @@ class OrderManager
         $data = apply_filters('lmfwc_get_customer_license_keys', $order);
         $date_format = get_option('date_format');
         $heading = apply_filters('lmfwc_license_keys_table_heading', null);
+        $valid_until = apply_filters('lmfwc_license_keys_table_valid_until', null);
 
         include LMFWC_TEMPLATES_DIR . 'order-view-license-keys.php';
     }

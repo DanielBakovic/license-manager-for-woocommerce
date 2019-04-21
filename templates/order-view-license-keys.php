@@ -18,7 +18,9 @@
                     <?php if ($entry->expires_at): ?>
                         <?php $date = new \DateTime($entry->expires_at); ?>
                         <td>
-                        <span class="lmfwc-myaccount-license-key"><?php printf(__('Valid until <b>%s</b>', 'lmwfc'), $date->format($date_format)); ?></span>
+                        <span class="lmfwc-myaccount-license-key"><?php
+                            printf('%s <b>%s</b>', $valid_until, $date->format($date_format));
+                        ?></span>
                         </td>
                     <?php endif; ?>
                 </tr>
