@@ -1,18 +1,16 @@
 <?php
 
-namespace LicenseManagerForWooCommerce\Emails;
+namespace LicenseManagerForWooCommerce\Integrations\WooCommerce\Emails;
+
+use WC_Email;
+use WC_Order;
 
 defined('ABSPATH') || exit;
 
-/**
- * LicenseManagerForWooCommerce TemplateParts.
- *
- * @since 1.2.0
- */
-class TemplateParts
+class Templates
 {
     /**
-     * Create an instance of the class.
+     * Templates constructor.
      */
     function __construct() {
         add_action('lmfwc_email_order_details',      array($this, 'addOrderDetails'),     10, 4);
@@ -21,15 +19,15 @@ class TemplateParts
 
     /**
      * Adds the ordered license keys to the email body
-     * 
-     * @param WC_Order $order         The WooCommerce Order object
-     * @param boolean  $sent_to_admin Should the admin receive a copy?
-     * @param boolean  $plain_text    Is this a plain text email?
-     * @param WC_Email $email         The plugin email object
+     *
+     * @param WC_Order $order
+     * @param bool     $sentToAdmin
+     * @param bool     $plainText
+     * @param WC_Email $email
      */
-    public function addOrderDetails($order, $sent_to_admin, $plain_text, $email)
+    public function addOrderDetails($order, $sentToAdmin, $plainText, $email)
     {
-        if ($plain_text) {
+        if ($plainText) {
             echo wc_get_template(
                 'emails/plain/email-order-details.php',
                 array(
@@ -58,15 +56,15 @@ class TemplateParts
 
     /**
      * Adds basic order info to the email body
-     * 
-     * @param WC_Order $order         The WooCommerce Order object
-     * @param boolean  $sent_to_admin Should the admin receive a copy?
-     * @param boolean  $plain_text    Is this a plain text email?
-     * @param WC_Email $email         The plugin email object
+     *
+     * @param WC_Order $order
+     * @param bool     $sentToAdmin
+     * @param bool     $plainText
+     * @param WC_Email $email
      */
-    public function addOrderLicenseKeys($order, $sent_to_admin, $plain_text, $email)
+    public function addOrderLicenseKeys($order, $sentToAdmin, $plainText, $email)
     {
-        if ($plain_text) {
+        if ($plainText) {
             echo wc_get_template(
                 'emails/plain/email-order-license-keys.php',
                 array(

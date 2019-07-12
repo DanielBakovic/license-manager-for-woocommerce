@@ -12,10 +12,16 @@
 
 namespace LicenseManagerForWooCommerce;
 
-use \LicenseManagerForWooCommerce\Lists\LicensesList;
-use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
-use \LicenseManagerForWooCommerce\Enums\LicenseSource as LicenseSourceEnum;
-use \LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
+use LicenseManagerForWooCommerce\Enums\LicenseSource;
+use LicenseManagerForWooCommerce\Lists\LicensesList;
+use LicenseManagerForWooCommerce\Enums\LicenseStatus;
+use LicenseManagerForWooCommerce\Models\Resources\ApiKey as ApiKeyResourceModel;
+use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
+use LicenseManagerForWooCommerce\Repositories\Resources\ApiKey as ApiKeyResourceRepository;
+use LicenseManagerForWooCommerce\Repositories\Resources\Generator as GeneratorResourceRepository;
+use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResourceRepository;
+use WC_Order_Item_Product;
+use WC_Product_Simple;
 
 defined('ABSPATH') || exit;
 
@@ -167,20 +173,21 @@ class FormHandler
         }
 
         // Save the generator.
-        $result = apply_filters(
-            'lmfwc_insert_generator',
-            $_POST['name'],
-            $_POST['charset'],
-            $_POST['chunks'],
-            $_POST['chunk_length'],
-            $_POST['times_activated_max'],
-            $_POST['separator'],
-            $_POST['prefix'],
-            $_POST['suffix'],
-            $_POST['expires_in']
+        $generator = GeneratorResourceRepository::instance()->insert(
+            array(
+                'name'                => $_POST['name'],
+                'charset'             => $_POST['charset'],
+                'chunks'              => $_POST['chunks'],
+                'chunk_length'        => $_POST['chunk_length'],
+                'times_activated_max' => $_POST['times_activated_max'],
+                'separator'           => $_POST['separator'],
+                'prefix'              => $_POST['prefix'],
+                'suffix'              => $_POST['suffix'],
+                'expires_in'          => $_POST['expires_in']
+            )
         );
 
-        if ($result) {
+        if ($generator) {
             AdminNotice::success(
                 __('The generator was added successfully.', 'lmfwc')
             );
@@ -201,16 +208,13 @@ class FormHandler
 
     /**
      * Update an existing generator.
-     *
-     * @since  1.0.0
-     * @return null
      */
     public function updateGenerator()
     {
         // Verify the nonce.
         check_admin_referer('lmfwc_update_generator');
 
-        $generator_id = absint($_POST['id']);
+        $generatorId = absint($_POST['id']);
 
         // Validate request.
         if ($_POST['name'] == '' || !is_string($_POST['name'])) {
@@ -221,7 +225,7 @@ class FormHandler
                     sprintf(
                         'admin.php?page=%s&action=edit&id=%d',
                         AdminMenus::GENERATORS_PAGE,
-                        $generator_id
+                        $generatorId
                     )
                 )
             );
@@ -236,7 +240,7 @@ class FormHandler
                     sprintf(
                         'admin.php?page=%s&action=edit&id=%d',
                         AdminMenus::GENERATORS_PAGE,
-                        $generator_id
+                        $generatorId
                     )
                 )
             );
@@ -251,7 +255,7 @@ class FormHandler
                     sprintf(
                         'admin.php?page=%s&action=edit&id=%d',
                         AdminMenus::GENERATORS_PAGE,
-                        $generator_id
+                        $generatorId
                     )
                 )
             );
@@ -267,7 +271,7 @@ class FormHandler
                     sprintf(
                         'admin.php?page=%s&action=edit&id=%d',
                         AdminMenus::GENERATORS_PAGE,
-                        $generator_id
+                        $generatorId
                     )
                 )
             );
@@ -275,22 +279,23 @@ class FormHandler
         }
 
         // Update the generator.
-        $result = apply_filters(
-            'lmfwc_update_generator',
+        $generator = GeneratorResourceRepository::instance()->update(
             $_POST['id'],
-            $_POST['name'],
-            $_POST['charset'],
-            $_POST['chunks'],
-            $_POST['chunk_length'],
-            $_POST['times_activated_max'],
-            $_POST['separator'],
-            $_POST['prefix'],
-            $_POST['suffix'],
-            $_POST['expires_in']
+            array(
+                'name'                => $_POST['name'],
+                'charset'             => $_POST['charset'],
+                'chunks'              => $_POST['chunks'],
+                'chunk_length'        => $_POST['chunk_length'],
+                'times_activated_max' => $_POST['times_activated_max'],
+                'separator'           => $_POST['separator'],
+                'prefix'              => $_POST['prefix'],
+                'suffix'              => $_POST['suffix'],
+                'expires_in'          => $_POST['expires_in']
+            )
         );
 
         // Redirect according to $result.
-        if (!$result) {
+        if (!$generator) {
             AdminNotice::error(
                 __('There was a problem updating the generator.', 'lmfwc')
             );
@@ -310,9 +315,6 @@ class FormHandler
 
     /**
      * Import licenses from a compatible CSV or TXT file into the database.
-     *
-     * @since  1.0.0
-     * @return null
      */
     public function importLicenseKeys()
     {
@@ -339,22 +341,22 @@ class FormHandler
             exit();
         }
 
-        $file_name = $_FILES['file']['tmp_name'];
-        $file_path = LMFWC_ASSETS_DIR . self::TEMP_IMPORT_FILE;
+        $fileName = $_FILES['file']['tmp_name'];
+        $filePath = LMFWC_ASSETS_DIR . self::TEMP_IMPORT_FILE;
 
         // File upload file, return with error.
-        if (!move_uploaded_file($file_name, $file_path)) {
+        if (!move_uploaded_file($fileName, $filePath)) {
             return null;
         }
 
         // Handle TXT file uploads
         if ($ext == 'txt') {
-            $license_keys = file(
+            $licenseKeys = file(
                 LMFWC_ASSETS_DIR . self::TEMP_IMPORT_FILE, FILE_IGNORE_NEW_LINES
             );
 
             // Check for invalid file contents.
-            if (!is_array($license_keys)) {
+            if (!is_array($licenseKeys)) {
                 AdminNotice::error(__('Invalid file content.', 'lmfwc'));
 
                 wp_redirect(
@@ -369,12 +371,12 @@ class FormHandler
 
         // Handle CSV file uploads
         if ($ext == 'csv') {
-            $license_keys = array();
+            $licenseKeys = array();
 
             if (($handle = fopen(LMFWC_ASSETS_DIR . self::TEMP_IMPORT_FILE, 'r')) !== FALSE) {
                 while (($data = fgetcsv($handle, 1000, ',')) !== FALSE) {
                     if ($data && is_array($data) && count($data) > 0) {
-                        $license_keys[] = $data[0];
+                        $licenseKeys[] = $data[0];
                     }
                 }
 
@@ -383,21 +385,20 @@ class FormHandler
         }
 
         if (array_key_exists('activate', $_POST)) {
-            $status = LicenseStatusEnum::ACTIVE;
+            $status = LicenseStatus::ACTIVE;
         } else {
-            $status = LicenseStatusEnum::INACTIVE;
+            $status = LicenseStatus::INACTIVE;
         }
 
         // Save the imported keys.
         try {
             $result = apply_filters(
                 'lmfwc_insert_imported_license_keys',
-                $license_keys,
+                $licenseKeys,
                 $status,
                 $_POST['product'],
                 $_POST['valid_for'],
-                $_POST['times_activated_max'],
-                get_current_user_id()
+                $_POST['times_activated_max']
             );
         } catch (\Exception $e) {
             AdminNotice::error(
@@ -480,9 +481,6 @@ class FormHandler
 
     /**
      * Add a single license key to the database.
-     *
-     * @since  1.0.0
-     * @return null
      */
     public function addLicenseKey()
     {
@@ -491,26 +489,26 @@ class FormHandler
 
         // Set the proper license key status
         if (array_key_exists('activate', $_POST)) {
-            $status = LicenseStatusEnum::ACTIVE;
+            $status = LicenseStatus::ACTIVE;
         } else {
-            $status = LicenseStatusEnum::INACTIVE;
+            $status = LicenseStatus::INACTIVE;
         }
 
-        // Insert the license key
-        $result = apply_filters(
-            'lmfwc_insert_license_key',
-            null,
-            $_POST['product'],
-            $_POST['license_key'],
-            $_POST['valid_for'],
-            LicenseSourceEnum::IMPORT,
-            $status,
-            $_POST['times_activated_max'],
-            get_current_user_id()
+        /** @var LicenseResourceModel $license */
+        $license = LicenseResourceRepository::instance()->insert(
+            array(
+                'product_id'          => $_POST['product'],
+                'license_key'         => apply_filters('lmfwc_encrypt', $_POST['license_key']),
+                'hash'                => apply_filters('lmfwc_hash', $_POST['license_key']),
+                'valid_for'           => $_POST['valid_for'],
+                'source'              => LicenseSource::IMPORT,
+                'status'              => $status,
+                'times_activated_max' => $_POST['times_activated_max']
+            )
         );
 
         // Redirect with message
-        if ($result) {
+        if ($license) {
             AdminNotice::success(
                 __('1 license key(s) added successfully.', 'lmfwc')
             );
@@ -533,30 +531,29 @@ class FormHandler
 
     /**
      * Updates an existing license keys.
-     * 
-     * @since  1.1.0
-     * @return null
      */
     public function updateLicenseKey()
     {
         // Check the nonce
         check_admin_referer('lmfwc_update_license_key');
 
-        // Update the License
-        $result = apply_filters(
-            'lmfwc_update_license_key',
+        /** @var LicenseResourceModel $license */
+        $license = LicenseResourceRepository::instance()->update(
             $_POST['license_id'],
-            $_POST['product'],
-            $_POST['license_key'],
-            $_POST['valid_for'],
-            $_POST['source'],
-            $_POST['status'],
-            $_POST['times_activated_max'],
-            get_current_user_id()
+            array(
+                'order_id'            => $_POST['order_id'],
+                'product_id'          => $_POST['product'],
+                'license_key'         => apply_filters('lmfwc_encrypt', $_POST['license_key']),
+                'hash'                => apply_filters('lmfwc_hash', $_POST['license_key']),
+                'valid_for'           => $_POST['valid_for'],
+                'source'              => $_POST['source'],
+                'status'              => $_POST['status'],
+                'times_activated_max' => $_POST['times_activated_max']
+            )
         );
 
         // Set the admin notice
-        if ($result) {
+        if ($license) {
             AdminNotice::success(
                 __('Your license key has been updated successfully.', 'lmfwc')
             );
@@ -580,9 +577,6 @@ class FormHandler
 
     /**
      * Store a created API key to the database or updates an existing key.
-     *
-     * @since  1.1.0
-     * @return null
      */
     public function apiKeyUpdate()
     {
@@ -603,15 +597,15 @@ class FormHandler
             $error = __('Permissions are missing.', 'lmfwc');
         }
 
-        $key_id      = absint($_POST['id']);
+        $keyId       = absint($_POST['id']);
         $description = sanitize_text_field(wp_unslash($_POST['description']));
         $permissions = (in_array($_POST['permissions'], array('read', 'write', 'read_write'))) ? sanitize_text_field($_POST['permissions']) : 'read';
-        $user_id     = absint($_POST['user']);
+        $userId      = absint($_POST['user']);
         $action      = sanitize_text_field(wp_unslash($_POST['lmfwc_action']));
 
         // Check if current user can edit other users.
-        if ($user_id && !current_user_can('edit_user', $user_id)) {
-            if (get_current_user_id() !== $user_id) {
+        if ($userId && !current_user_can('edit_user', $userId)) {
+            if (get_current_user_id() !== $userId) {
                 $error = __('You do not have permission to assign API keys to the selected user.', 'lmfwc');
             }
         }
@@ -629,19 +623,27 @@ class FormHandler
             exit();
         }
 
-        if ($action == 'create') {
-            $data = apply_filters(
-                'lmfwc_insert_api_key',
-                $user_id,
-                $description,
-                $permissions
+        if ($action === 'create') {
+            $consumerKey    = 'ck_' . wc_rand_hash();
+            $consumerSecret = 'cs_' . wc_rand_hash();
+
+            /** @var ApiKeyResourceModel $apiKey */
+            $apiKey = ApiKeyResourceRepository::instance()->insert(
+                array(
+                    'user_id'         => $userId,
+                    'description'     => $description,
+                    'permissions'     => $permissions,
+                    'consumer_key'    => wc_api_hash($consumerKey),
+                    'consumer_secret' => $consumerSecret,
+                    'truncated_key'   => substr($consumerKey, -7),
+                )
             );
 
-            if ($data) {
+            if ($apiKey) {
                 AdminNotice::success(
                     __('API key generated successfully. Make sure to copy your new keys now as the secret key will be hidden once you leave this page.', 'lmfwc')
                 );
-                set_transient('lmfwc_api_key', $data, 60);
+                set_transient('lmfwc_api_key', $apiKey, 60);
             } else {
                 AdminNotice::error(
                     __('There was a problem generating the API key.', 'lmfwc')
@@ -656,16 +658,17 @@ class FormHandler
             );
 
             exit();
-        } elseif ($action == 'edit') {
-            $update = apply_filters(
-                'lmfwc_update_api_key',
-                $key_id,
-                $user_id,
-                $description,
-                $permissions
+        } elseif ($action === 'edit') {
+            $apiKey = ApiKeyResourceRepository::instance()->update(
+                $keyId,
+                array(
+                    'user_id'     => $userId,
+                    'description' => $description,
+                    'permissions' => $permissions
+                )
             );
 
-            if ($update) {
+            if ($apiKey) {
                 AdminNotice::success(__('API key updated successfully.', 'lmfwc'));
             } else {
                 AdminNotice::error(
@@ -686,86 +689,72 @@ class FormHandler
 
     /**
      * Show a single license key.
-     *
-     * @since  1.0.0
-     * @return null
      */
     public function showLicenseKey()
     {
         // Validate request.
         check_ajax_referer('lmfwc_show_license_key', 'show');
 
-        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             wp_die(__('Invalid request.', 'lmfwc'));
         }
 
-        $license_row = apply_filters('lmfwc_get_license_key', $_POST['id']);
-        $license_key = apply_filters('lmfwc_decrypt', $license_row['license_key']);
+        /** @var LicenseResourceModel $license */
+        $license = LicenseResourceRepository::instance()->findBy(array('id' => $_POST['id']));
 
-        wp_send_json($license_key);
+        wp_send_json($license->getDecryptedLicenseKey());
 
         wp_die();
     }
 
     /**
-     * Show all visible license keys.
-     *
-     * @since  1.0.0
-     * @return null
+     * Shows all visible license keys.
      */
     public function showAllLicenseKeys()
     {
         // Validate request.
         check_ajax_referer('lmfwc_show_all_license_keys', 'show_all');
+
         if ($_SERVER['REQUEST_METHOD'] != 'POST') {
             wp_die(__('Invalid request.', 'lmfwc'));
         }
 
-        $license_keys = array();
+        $licenseKeysIds = array();
 
-        foreach (json_decode($_POST['ids']) as $license_key_id) {
-            $license_row = apply_filters(
-                'lmfwc_get_license_key',
-                $license_key_id
-            );
-            $license_key = apply_filters(
-                'lmfwc_decrypt',
-                $license_row['license_key']
-            );
+        foreach (json_decode($_POST['ids']) as $licenseKeyId) {
+            /** @var LicenseResourceModel $license */
+            $license = LicenseResourceRepository::instance()->find($licenseKeyId);
 
-            $license_keys[$license_key_id] = $license_key;
+            $licenseKeysIds[$licenseKeyId] = $license->getDecryptedLicenseKey();
         }
 
-        wp_send_json($license_keys);
-
-        wp_die();
+        wp_send_json($licenseKeysIds);
     }
 
     /**
      * Hook into the WordPress Order Item Meta Box and display the license key(s)
      *
-     * @param int                   $item_id ID
-     * @param WC_Order_Item_Product $item    The WooCommerce Item Product object
-     * @param WC_Product_Simple     $product The WooCommerce Product object
-     * 
-     * @since  1.0.0
-     * @return null
+     * @param int                   $itemId
+     * @param WC_Order_Item_Product $item
+     * @param WC_Product_Simple     $product
      */
-    public function showOrderedLicenses($item_id, $item, $product)
+    public function showOrderedLicenses($itemId, $item, $product)
     {
         // Not a WC_Order_Item_Product object? Nothing to do...
-        if (!($item instanceof \WC_Order_Item_Product)) {
+        if (!($item instanceof WC_Order_Item_Product)) {
             return;
         }
 
-        $license_keys = apply_filters(
-            'lmfwc_get_order_license_keys',
-            $item->get_order_id(),
-            $product->get_id()
+        /** @var LicenseResourceModel[] $licenses */
+        $licenses = LicenseResourceRepository::instance()->findAllBy(
+            array(
+                'order_id' => $item->get_order_id(),
+                'product_id' => $product->get_id()
+            )
         );
 
         // No license keys? Nothing to do...
-        if (!$license_keys) {
+        if (!$licenses) {
             return;
         }
 
@@ -773,19 +762,22 @@ class FormHandler
         $html .= '<ul class="lmfwc-license-list">';
 
         if (!Settings::get('lmfwc_hide_license_keys')) {
-            foreach ($license_keys as $license_key) {
+
+            /** @var LicenseResourceModel $license */
+            foreach ($licenses as $license) {
                 $html .= sprintf(
                     '<li></span> <code class="lmfwc-placeholder">%s</code></li>',
-                    apply_filters('lmfwc_decrypt', $license_key->license_key)
+                    $license->getDecryptedLicenseKey()
                 );
             }
 
             $html .= '</ul>';
         } else {
-            foreach ($license_keys as $license_key) {
+            /** @var LicenseResourceModel $license */
+            foreach ($licenses as $license) {
                 $html .= sprintf(
                     '<li><code class="lmfwc-placeholder empty" data-id="%d"></code></li>',
-                    $license_key->id
+                    $license->getId()
                 );
             }
 
@@ -805,8 +797,8 @@ class FormHandler
             );
 
             $html .= sprintf(
-                '<img class="lmfwc-spinner" data-id="%d" src="%s">',
-                $license_key->id, LicensesList::SPINNER_URL
+                '<img class="lmfwc-spinner" src="%s">',
+                LicensesList::SPINNER_URL
             );
 
             $html .= '</p>';

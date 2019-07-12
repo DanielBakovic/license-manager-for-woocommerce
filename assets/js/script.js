@@ -1,88 +1,3 @@
-/**
- * Simulates the jQuery $.ajax() function.
- * 
- * @param {Object} option
- * 
- * @return {Void}
- */
-function lmfwcAjax(option)
-{
-    if (typeof(option.url) == 'undefined') {
-        try {
-            option.url = location.href;
-        } catch(e) {
-            var ajaxLocation;
-            ajaxLocation = document.createElement('a');
-            ajaxLocation.href = '';
-            option.url = ajaxLocation.href;
-        }
-    }
-    if (typeof(option.type) == 'undefined') {
-        option.type = 'GET';
-    }
-    if (typeof(option.data) == 'undefined') {
-        option.data = null;
-    } else {
-        var data = '';
-        for (x in option.data) {
-            if (data != '') {
-                data += '&';
-            }
-            data += encodeURIComponent(x)+'='+encodeURIComponent(option.data[x]);
-        };
-        option.data = data;
-    }
-    if (typeof(option.statusCode) == 'undefined') {
-        option.statusCode = {};
-    }
-    if (typeof(option.beforeSend) == 'undefined') {
-        option.beforeSend = function () {};
-    }
-    if (typeof(option.success) == 'undefined') {
-        option.success = function () {};
-    }
-    if (typeof(option.error) == 'undefined') {
-        option.error = function () {};
-    }
-    if (typeof(option.complete) == 'undefined') {
-        option.complete = function () {};
-    }
-    typeof(option.statusCode['404']);
-
-    var xhr = null;
-
-    if (window.XMLHttpRequest || window.ActiveXObject) {
-        if (window.ActiveXObject) { try { xhr = new ActiveXObject('Msxml2.XMLHTTP'); } catch(e) { xhr = new ActiveXObject('Microsoft.XMLHTTP'); } }
-        else { xhr = new XMLHttpRequest(); }
-    } else { alert('Your browser does not support XMLHTTPRequest object...'); return null; }
-
-    xhr.onreadystatechange = function() {
-        if (xhr.readyState == 1) {
-            option.beforeSend();
-        }
-        if (xhr.readyState == 4) {
-            option.complete(xhr, xhr.status);
-            if (xhr.status == 200 || xhr.status == 0) {
-                option.success(xhr.responseText);
-            } else {
-                option.error(xhr.status);
-                if (typeof(option.statusCode[xhr.status]) != 'undefined') {
-                    option.statusCode[xhr.status]();
-                }
-            }
-        }
-    };
-
-    if (option.type == 'POST') {
-        xhr.open(option.type, option.url, true);
-        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8');
-        xhr.send(option.data);
-    } else {
-        xhr.open(option.type, option.url+option.data, true);
-        xhr.send(null);
-    }
-}
-
 document.addEventListener('DOMContentLoaded', function(event) {
 
     var licenseTable = {
@@ -130,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
             spinner.style.opacity = 1;
 
-            lmfwcAjax({
+            jQuery.ajax({
                 url: ajaxurl,
                 type: 'POST',
                 data: {
@@ -140,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 },
                 success: function(response) {
                     code.classList.remove('empty');
-                    code.innerText = JSON.parse(response);
+                    code.innerText = response;
                 },
                 error: function(response) {
                     console.log(response);
@@ -183,7 +98,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
             copied.innerText = document.querySelector('.lmfwc-txt-copied-to-clipboard').innerText.toString();
             document.body.appendChild(copied);
 
-            //copied.style.opacity = 0;
             setTimeout(function() {
                 copied.style.opacity = '0';
             }, 700);
@@ -194,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         init: function() {
             this.bindEventListeners();
         }
-    }
+    };
 
     var orderLicenses = {
         btnShow: document.querySelector('.lmfwc-license-keys-show-all'),
@@ -218,7 +132,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
             this.btnShow.addEventListener('click', function() {
                 spinner.style.opacity = 1;
 
-                lmfwcAjax({
+                jQuery.ajax({
                     url: ajaxurl,
                     type: 'POST',
                     data: {
@@ -227,7 +141,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
                         ids: JSON.stringify(licenseKeyIds)
                     },
                     success: function(response) {
-                        var licenseKeys = JSON.parse(response);
+                        var licenseKeys = response;
 
                         for (var id in licenseKeys) {
                             var licenseKey = document.querySelector('.lmfwc-placeholder[data-id="' + id +'"]');
@@ -261,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
             this.bindShow();
             this.bindHide();
         }
-    }
+    };
 
     licenseTable.init();
     orderLicenses.init();

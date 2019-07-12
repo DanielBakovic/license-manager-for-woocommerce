@@ -1,8 +1,12 @@
-<?php defined('ABSPATH') || exit; ?>
+<?php
 
-<h2><?php esc_html_e($heading);?></h2>
+use LicenseManagerForWooCommerce\Models\Resources\License;
 
-<?php foreach ($data as $product_id => $row): ?>
+defined('ABSPATH') || exit; ?>
+
+<h2><?php esc_html_e($heading); ?></h2>
+
+<?php foreach ($data as $productId => $row): ?>
     <table class="shop_table">
         <tbody>
             <thead>
@@ -10,13 +14,21 @@
                     <th colspan="2"><?php echo esc_html($row['name']); ?></th>
                 </tr>
             </thead>
-            <?php foreach ($row['keys'] as $entry): ?>
+            <?php
+                /** @var License $license */
+                foreach ($row['keys'] as $license):
+            ?>
                 <tr>
-                    <td colspan="<?php echo ($entry->expires_at) ? '1' : '2'; ?>">
-                        <span class="lmfwc-myaccount-license-key"><?php echo esc_html(apply_filters('lmfwc_decrypt', $entry->license_key)); ?></span>
+                    <td colspan="<?php echo ($license->getExpiresAt()) ? '1' : '2'; ?>">
+                        <span class="lmfwc-myaccount-license-key"><?php echo esc_html($license->getDecryptedLicenseKey()); ?></span>
                     </td>
-                    <?php if ($entry->expires_at): ?>
-                        <?php $date = new \DateTime($entry->expires_at); ?>
+                    <?php if ($license->getExpiresAt()): ?>
+                        <?php
+                            try {
+                                $date = new DateTime($license->getExpiresAt());
+                            } catch (Exception $e) {
+                            }
+                        ?>
                         <td>
                         <span class="lmfwc-myaccount-license-key"><?php
                             printf('%s <b>%s</b>', $valid_until, $date->format($date_format));

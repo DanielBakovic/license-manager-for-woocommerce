@@ -49,11 +49,18 @@ class Crypto
     private $key_ascii;
 
     /**
+     * The hashing key
+     * 
+     * @var string
+     */
+    private $key_secret;
+
+    /**
      * Directory path to the plugin folder inside wp-content/uploads
      * 
      * @var string
      */
-    private $lmfwc_uploads_dir;
+    private $uploads_dir;
 
     /**
      * Setup Constructor.
@@ -62,14 +69,39 @@ class Crypto
     {
         $uploads = wp_upload_dir(null, false);
 
-        $this->lmfwc_uploads_dir = $uploads['basedir'] . '/lmfwc-files/';
-        $this->key_ascii = file_get_contents(
-            $this->lmfwc_uploads_dir . self::DEFUSE_FILE
-        );
+        $this->uploads_dir = $uploads['basedir'] . '/lmfwc-files/';
+        $this->setDefuse();
+        $this->setSecret();
 
         add_filter('lmfwc_encrypt', array($this, 'encrypt'), 10, 1);
         add_filter('lmfwc_decrypt', array($this, 'decrypt'), 10, 1);
         add_filter('lmfwc_hash',    array($this, 'hash'),    10, 1);
+    }
+
+    private function setDefuse()
+    {
+        /* When the cryptographic secrets are loaded into these constants, no other files are needed */
+        if (defined('LMFWC_PLUGIN_DEFUSE')) {
+            $this->key_ascii = LMFWC_PLUGIN_DEFUSE;
+            return;
+        }
+
+        if (file_exists($this->uploads_dir . self::DEFUSE_FILE)) {
+            $this->key_ascii = file_get_contents($this->uploads_dir . self::DEFUSE_FILE);
+        }
+    }
+
+    private function setSecret()
+    {
+        /* When the cryptographic secrets are loaded into these constants, no other files are needed */
+        if (defined('LMFWC_PLUGIN_SECRET')) {
+            $this->key_secret = LMFWC_PLUGIN_SECRET;
+            return;
+        }
+
+        if (file_exists($this->uploads_dir . self::SECRET_FILE)) {
+            $this->key_secret = file_get_contents($this->uploads_dir . self::SECRET_FILE);
+        }
     }
 
     /**
@@ -81,6 +113,10 @@ class Crypto
      */
     private function loadEncryptionKeyFromConfig()
     {
+        if (!$this->key_ascii) {
+            return;
+        }
+
         return Key::loadFromAsciiSafeString($this->key_ascii);
     }
 
@@ -123,10 +159,6 @@ class Crypto
 
     public function hash($value)
     {
-        return hash_hmac(
-            'sha256',
-            $value,
-            file_get_contents($this->lmfwc_uploads_dir . self::SECRET_FILE)
-        );
+        return hash_hmac('sha256', $value, $this->key_secret);
     }
 }

@@ -77,7 +77,7 @@ table.wp-list-table.lizenzschlssel span.lmfwc-date {
 /** License Key Placeholder */
 .lmfwc-placeholder {
 	display: inline-block;
-	font-family: 'Consolas';
+	font-family: Consolas, monospace;
 	font-weight: 400;
 	min-width: 150px;
 	min-height: 20px;
@@ -124,7 +124,7 @@ table.wp-list-table.lizenzschlssel span.lmfwc-date {
 	margin-left: 5px;
 }
 .lmfwc-clipboard {
-	font-family: "Consolas";
+	font-family: Consolas, monospace;
 	background-color: #f0f0f0;
 	color: #334;
 	padding: 7px 14px;
@@ -201,7 +201,7 @@ table.wp-list-table.lizenzschlssel span.lmfwc-date {
 
 /** My Account **/
 .lmfwc-myaccount-license-key {
-	font-family: 'Consolas', sans-serif;
+	font-family: Consolas, monospace;
 	font-size: 13px;
 }
 
@@ -212,7 +212,7 @@ table.wp-list-table.lizenzschlssel span.lmfwc-date {
 	display: inline-block;
 }
 .lmfwc-icons:before {
-	font-family: 'woocommerce';
+	font-family: woocommerce;
 	text-align: center;
 	display: inline-block;
 	width: 100%;

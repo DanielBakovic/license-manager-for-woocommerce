@@ -2,65 +2,57 @@
 
 namespace LicenseManagerForWooCommerce;
 
+use DateTime;
 use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
 
 defined('ABSPATH') || exit;
 
-/**
- * LicenseManagerForWooCommerce Logger.
- *
- * @version 1.0.0
- * @since 1.0.0
- */
 class Logger
 {
     /**
-     * Directory containing the log files (inside the main plugin folder)
-     *
-     * @since 1.0.0
+     * @var string
      */
     const LOG_DIR = 'logs';
 
     /**
-     * Debug file name
-     *
-     * @since 1.0.0
+     * @var string
      */
     const DEBUG_FILE = 'debug.log';
 
     /**
-     * Error file name
-     *
-     * @since 1.0.0
+     * @var string
      */
     const ERROR_FILE = 'error.log';
 
     /**
      * Helper function for converting any PHP value into a string.
      *
-     * @since 1.0.0
+     * @param mixed $object
+     * @param bool  $jsCode
+     *
+     * @return mixed
      */
-    protected static function objectToString($object, $JSCode = false)
+    protected static function objectToString($object, $jsCode = false)
     {
-        static $object_to_string_map = null;
+        static $objectToStringMap = null;
 
-        if (is_null($object_to_string_map)) {
+        if (is_null($objectToStringMap)) {
             // https://secure.php.net/manual/en/function.gettype.php#refsect1-function.gettype-returnvalues
-            $object_to_string_map = array(
-                'boolean' => function (&$object, &$JSCode) {
+            $objectToStringMap = array(
+                'boolean' => function (&$object, &$jsCode) {
                     return $object ? 'true' : 'false';
                 },
-                'integer' => function (&$object, &$JSCode) {
+                'integer' => function (&$object, &$jsCode) {
                     return strval($object);
                 },
-                'double' => function (&$object, &$JSCode) {
+                'double' => function (&$object, &$jsCode) {
                     return strval($object);
                 },
-                'string' => function (&$object, &$JSCode) {
-                    return $JSCode ? json_encode($object) : $object;
+                'string' => function (&$object, &$jsCode) {
+                    return $jsCode ? json_encode($object) : $object;
                 },
-                'array' => function (&$object, &$JSCode) {
-                    return $JSCode ?
+                'array' => function (&$object, &$jsCode) {
+                    return $jsCode ?
                         'JSON.parse(' . json_encode(json_encode(
                             $object,
                             JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
@@ -70,32 +62,34 @@ class Logger
                             JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
                         );
                 },
-                'object' => function (&$object, &$JSCode) {
-                    return $JSCode ?
+                'object' => function (&$object, &$jsCode) {
+                    return $jsCode ?
                         json_encode(print_r($object, true)) :
                         print_r($object, true);
                 },
-                'resource' => function (&$object, &$JSCode) {
-                    return $JSCode ?
+                'resource' => function (&$object, &$jsCode) {
+                    return $jsCode ?
                         json_encode('Resource of type "' . get_resource_type($object) . '"') :
                         'Resource of type "' . get_resource_type($object) . '"';
                 },
-                'NULL' => function (&$object, &$JSCode) {
+                'NULL' => function (&$object, &$jsCode) {
                     return 'null';
                 },
-                'unknown type' => function (&$object, &$JSCode) {
-                    return $JSCode ? json_encode('unknown type') : 'unknown type';
+                'unknown type' => function (&$object, &$jsCode) {
+                    return $jsCode ? json_encode('unknown type') : 'unknown type';
                 }
             );
         }
 
-        return $object_to_string_map[gettype($object)]($object, $JSCode);
+        return $objectToStringMap[gettype($object)]($object, $jsCode);
     }
 
     /**
      * Helper function for getting a log label from the backtrace.
      *
-     * @since 1.0.0
+     * @param array $backtrace
+     *
+     * @return string
      */
     protected static function labelFromBacktrace($backtrace)
     {
@@ -105,7 +99,8 @@ class Logger
     /**
      * Log a value to the browser console.
      *
-     * @since 1.0.0
+     * @param mixed $object
+     * @param null  $label
      */
     public static function console($object, $label = null)
     {
@@ -127,32 +122,39 @@ class Logger
     /**
      * Log the backtrace to the browser console.
      *
-     * @since 1.0.0
+     * @param bool $chronological
+     * @param null $label
      */
     public static function consoleBacktrace($chronological = true, $label = null)
     {
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+
         if (gettype($label) !== 'string') {
             $label = self::labelFromBacktrace($backtrace);
         }
+
         foreach ($backtrace as &$entry) {
             if (isset($entry['file'])) {
                 $entry['file'] = substr($entry['file'], ABSPATH_LENGTH);
             }
         }
+
         if ($chronological) {
             $backtrace = array_reverse($backtrace);
             array_pop($backtrace);
         } else {
             array_shift($backtrace);
         }
+
         self::console($backtrace, $label);
     }
 
     /**
      * Log a value to a file.
      *
-     * @since 1.0.0
+     * @param mixed  $object
+     * @param string $filename
+     * @param null   $label
      */
     public static function file($object, $filename = self::DEBUG_FILE, $label = null)
     {
@@ -188,7 +190,9 @@ class Logger
     /**
      * Log the backtrace to a file.
      *
-     * @since 1.0.0
+     * @param bool   $chronological
+     * @param string $filename
+     * @param null   $label
      */
     public static function fileBacktrace($chronological = true, $filename = self::DEBUG_FILE, $label = null)
     {
@@ -217,13 +221,14 @@ class Logger
     /**
      * Log error messages or exception to the exception log.
      *
-     * @since 1.0.0
+     * @param $error
+     * @throws \Exception
      */
     public static function exception($error)
     {
         if ($error instanceof \Exception || $error instanceof LMFWC_Exception) {
 
-            $date = new \DateTime();
+            $date = new DateTime();
 
             $message = sprintf("Exception thrown at: %s\n", $date->format('Y-m-d H:i'));
             $message .= 'Message: ' . $error->getMessage() . "\n";
@@ -241,7 +246,7 @@ class Logger
     /**
      * Perform a preformatted var_dump.
      *
-     * @since 1.0.0
+     * @param mixed $variable
      */
     public static function var_dump_pre($variable)
     {

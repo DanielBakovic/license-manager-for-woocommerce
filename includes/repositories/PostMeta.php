@@ -1,38 +1,15 @@
 <?php
-/**
- * Post Meta repository
- * PHP Version: 5.6
- * 
- * @category WordPress
- * @package  LicenseManagerForWooCommerce
- * @author   Dražen Bebić <drazen.bebic@outlook.com>
- * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
- * @link     https://www.bebic.at/license-manager-for-woocommerce
- */
 
 namespace LicenseManagerForWooCommerce\Repositories;
 
-use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
+use LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
 
 defined('ABSPATH') || exit;
 
-/**
- * Post Meta database connector.
- *
- * @category WordPress
- * @package  LicenseManagerForWooCommerce
- * @author   Dražen Bebić <drazen.bebic@outlook.com>
- * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
- * @version  Release: <1.1.0>
- * @link     https://www.bebic.at/license-manager-for-woocommerce
- * @since    1.0.0
- */
 class PostMeta
 {
     /**
      * Adds all filters for interaction with the database table.
-     * 
-     * @return null
      */
     public function __construct()
     {
@@ -43,10 +20,10 @@ class PostMeta
     /**
      * Retrieve assigned products for a specific generator.
      *
-     * @param int $generator_id ID of the given generator
+     * @param int $generator_id
      *
-     * @since  1.0.0
      * @return array
+     * @throws LMFWC_Exception
      */
     public function getAssignedProducts($generator_id)
     {

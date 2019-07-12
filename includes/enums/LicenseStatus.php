@@ -20,7 +20,8 @@ abstract class LicenseStatus
         self::SOLD,
         self::DELIVERED,
         self::ACTIVE,
-        self::INACTIVE    );
+        self::INACTIVE
+    );
 
     public static $enum_array = array(
         'sold',
@@ -46,6 +47,28 @@ abstract class LicenseStatus
         );
 
         return $labels[$status];
+    }
+
+    public static function dropdown()
+    {
+        return array(
+            array(
+                'value' => self::SOLD,
+                'name' => __('Sold', 'lmfwc')
+            ),
+            array(
+                'value' => self::DELIVERED,
+                'name' => __('Delivered', 'lmfwc')
+            ),
+            array(
+                'value' => self::ACTIVE,
+                'name' => __('Active', 'lmfwc')
+            ),
+            array(
+                'value' => self::INACTIVE,
+                'name' => __('Inactive', 'lmfwc')
+            )
+        );
     }
 
     public static function getConstants()

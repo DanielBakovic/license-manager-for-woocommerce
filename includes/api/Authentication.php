@@ -2,75 +2,45 @@
 
 namespace LicenseManagerForWooCommerce\API;
 
-use \LicenseManagerForWooCommerce\Settings;
+use LicenseManagerForWooCommerce\Settings;
+use stdClass;
+use WP_Error;
+use WP_REST_Request;
+use WP_REST_Response;
+use WP_REST_Server;
 
 defined('ABSPATH') || exit;
 
-/**
- * Authentication for the API endpoints
- *
- * @version 1.0.0
- * @since 1.1.0
- */
 class Authentication
 {
     /**
-     * Authentication error.
-     *
      * @var WP_Error
      */
     protected $error = null;
 
     /**
-     * Logged in user data.
-     *
      * @var stdClass
      */
     protected $user = null;
 
     /**
-     * Current authentication method.
-     *
      * @var string
      */
-    protected $auth_method = '';
+    protected $authMethod = '';
 
     /**
-     * Initialize authentication actions.
+     * Authentication constructor.
      */
     public function __construct() {
-        add_filter(
-            'determine_current_user',
-            array($this, 'authenticate'),
-            15
-        );
-        add_filter(
-            'rest_authentication_errors',
-            array($this, 'checkAuthenticationError'),
-            15
-        );
-        add_filter(
-            'rest_post_dispatch',
-            array($this, 'sendUnauthorizedHeaders'),
-            50
-        );
-        add_filter(
-            'rest_pre_dispatch',
-            array($this, 'checkUserPermissions'),
-            10,
-            3
-        );
+        add_filter('determine_current_user',     array($this, 'authenticate'),             15);
+        add_filter('rest_authentication_errors', array($this, 'checkAuthenticationError'), 15);
+        add_filter('rest_post_dispatch',         array($this, 'sendUnauthorizedHeaders'),  50);
+        add_filter('rest_pre_dispatch',          array($this, 'checkUserPermissions'),     10, 3);
 
-        add_filter(
-            'lmfwc_get_user_data_by_consumer_key',
-            array($this, 'getUserDataByConsumerKey'),
-            1
-        );
+        add_filter('lmfwc_get_user_data_by_consumer_key', array($this, 'getUserDataByConsumerKey'), 1);
     }
 
     /**
-     * Check if is request to our REST API.
-     *
      * @return bool
      */
     protected function isRequestToRestApi() {
@@ -78,10 +48,10 @@ class Authentication
             return false;
         }
 
-        $rest_prefix = trailingslashit(rest_get_url_prefix());
+        $restPrefix = trailingslashit(rest_get_url_prefix());
 
         // Check if our endpoint.
-        $lmfwc = (false !== strpos($_SERVER['REQUEST_URI'], $rest_prefix . 'lmfwc/'));
+        $lmfwc = (false !== strpos($_SERVER['REQUEST_URI'], $restPrefix . 'lmfwc/'));
 
         return $lmfwc;
     }
@@ -89,21 +59,21 @@ class Authentication
     /**
      * Authenticate user.
      *
-     * @param int|false $user_id User ID if one has been determined, false otherwise.
+     * @param int|false $userId
      * 
      * @return int|false
      */
-    public function authenticate($user_id) {
+    public function authenticate($userId) {
         // Do not authenticate twice and check if is a request to our endpoint in the WP REST API.
-        if (!empty($user_id) || !$this->isRequestToRestApi()) {
-            return $user_id;
+        if (!empty($userId) || !$this->isRequestToRestApi()) {
+            return $userId;
         }
 
         if (is_ssl() || Settings::get('lmfwc_disable_api_ssl')) {
-            $user_id = $this->performBasicAuthentication();
+            $userId = $this->performBasicAuthentication();
         } else {
             $this->setError(
-                new \WP_Error(
+                new WP_Error(
                     'lmfwc_rest_no_ssl_error',
                     __('The connection is not secure, therefore the API cannot be used.', 'lmfwc'),
                     array('status' => 403)
@@ -113,8 +83,8 @@ class Authentication
             return false;
         }
 
-        if ($user_id) {
-            return $user_id;
+        if ($userId) {
+            return $userId;
         }
 
         return false;
@@ -123,7 +93,7 @@ class Authentication
     /**
      * Check for authentication error.
      *
-     * @param WP_Error|null|bool $error Error data.
+     * @param WP_Error|null|bool $error
      * 
      * @return WP_Error|null|bool
      */
@@ -151,7 +121,7 @@ class Authentication
     /**
      * Get authentication error.
      *
-     * @return WP_Error|null.
+     * @return WP_Error|null
      */
     protected function getError() {
         return $this->error;
@@ -168,26 +138,26 @@ class Authentication
      * @return int|bool
      */
     private function performBasicAuthentication() {
-        $this->auth_method = 'basic_auth';
-        $consumer_key      = '';
-        $consumer_secret   = '';
+        $this->authMethod = 'basic_auth';
+        $consumerKey      = '';
+        $consumerSecret   = '';
 
         // If the $_GET parameters are present, use those first.
         if (!empty($_GET['consumer_key']) && !empty($_GET['consumer_secret'])) {
-            $consumer_key    = $_GET['consumer_key'];
-            $consumer_secret = $_GET['consumer_secret'];
+            $consumerKey    = $_GET['consumer_key'];
+            $consumerSecret = $_GET['consumer_secret'];
         }
 
         // If the above is not present, we will do full basic auth.
-        if (!$consumer_key && !empty($_SERVER['PHP_AUTH_USER']) && !empty($_SERVER['PHP_AUTH_PW'])) {
-            $consumer_key    = $_SERVER['PHP_AUTH_USER'];
-            $consumer_secret = $_SERVER['PHP_AUTH_PW'];
+        if (!$consumerKey && !empty($_SERVER['PHP_AUTH_USER']) && !empty($_SERVER['PHP_AUTH_PW'])) {
+            $consumerKey    = $_SERVER['PHP_AUTH_USER'];
+            $consumerSecret = $_SERVER['PHP_AUTH_PW'];
         }
 
-        // Stop if don't have any key.
-        if (!$consumer_key || !$consumer_secret) {
+        // Stop if we don't have any key.
+        if (!$consumerKey || !$consumerSecret) {
             $this->setError(
-                new \WP_Error(
+                new WP_Error(
                     'lmfwc_rest_authentication_error',
                     __('Consumer key or secret is missing.', 'lmfwc'),
                     array('status' => 401)
@@ -198,10 +168,11 @@ class Authentication
         }
 
         // Get user data.
-        $this->user = $this->getUserDataByConsumerKey($consumer_key);
+        $this->user = $this->getUserDataByConsumerKey($consumerKey);
+
         if (empty($this->user)) {
             $this->setError(
-                new \WP_Error(
+                new WP_Error(
                     'lmfwc_rest_authentication_error',
                     __('Consumer key is invalid.', 'lmfwc'),
                     array('status' => 401)
@@ -212,9 +183,9 @@ class Authentication
         }
 
         // Validate user secret.
-        if (!hash_equals($this->user->consumer_secret, $consumer_secret)) {
+        if (!hash_equals($this->user->consumer_secret, $consumerSecret)) {
             $this->setError(
-                new \WP_Error(
+                new WP_Error(
                     'lmfwc_rest_authentication_error',
                     __('Consumer secret is invalid.', 'lmfwc'),
                     array('status' => 401)
@@ -230,7 +201,7 @@ class Authentication
     /**
      * Return the user data for the given consumer_key.
      *
-     * @param string $consumer_key Consumer key.
+     * @param string $consumer_key
      * 
      * @return array
      */
@@ -241,10 +212,10 @@ class Authentication
         $user         = $wpdb->get_row(
             $wpdb->prepare(
                 "
-            SELECT id, user_id, permissions, consumer_key, consumer_secret, nonces
-            FROM {$wpdb->prefix}lmfwc_api_keys
-            WHERE consumer_key = %s
-        ",
+                    SELECT id, user_id, permissions, consumer_key, consumer_secret, nonces
+                    FROM {$wpdb->prefix}lmfwc_api_keys
+                    WHERE consumer_key = %s
+                ",
                 $consumer_key
             )
         );
@@ -255,7 +226,7 @@ class Authentication
     /**
      * Check that the API keys provided have the proper key-specific permissions to either read or write API resources.
      *
-     * @param string $method Request method.
+     * @param string $method
      * 
      * @return bool|WP_Error
      */
@@ -266,7 +237,7 @@ class Authentication
             case 'HEAD':
             case 'GET':
                 if ('read' !== $permissions && 'read_write' !== $permissions) {
-                    return new \WP_Error(
+                    return new WP_Error(
                         'lmfwc_rest_authentication_error',
                         __('The API key provided does not have read permissions.', 'lmfwc'),
                         array('status' => 401)
@@ -278,7 +249,7 @@ class Authentication
             case 'PATCH':
             case 'DELETE':
                 if ('write' !== $permissions && 'read_write' !== $permissions) {
-                    return new \WP_Error(
+                    return new WP_Error(
                         'lmfwc_rest_authentication_error',
                         __('The API key provided does not have write permissions.', 'lmfwc'),
                         array('status' => 401)
@@ -289,7 +260,7 @@ class Authentication
                 return true;
 
             default:
-                return new \WP_Error(
+                return new WP_Error(
                     'lmfwc_rest_authentication_error',
                     __('Unknown request method.', 'lmfwc'),
                     array('status' => 401)
@@ -319,14 +290,14 @@ class Authentication
      * and the Basic auth headers are either not present or the consumer secret does not match the consumer
      * key provided, then return the correct Basic headers and an error message.
      *
-     * @param WP_REST_Response $response Current response being served.
+     * @param WP_REST_Response $response
      * 
      * @return WP_REST_Response
      */
     public function sendUnauthorizedHeaders($response) {
-        if (is_wp_error($this->getError()) && 'basic_auth' === $this->auth_method) {
-            $auth_message = __('License Manager for WooCommerce API. Use a consumer key in the username field and a consumer secret in the password field.', 'lmfwc');
-            $response->header('WWW-Authenticate', 'Basic realm="' . $auth_message . '"', true);
+        if (is_wp_error($this->getError()) && 'basic_auth' === $this->authMethod) {
+            $authMessage = __('License Manager for WooCommerce API. Use a consumer key in the username field and a consumer secret in the password field.', 'lmfwc');
+            $response->header('WWW-Authenticate', 'Basic realm="' . $authMessage . '"', true);
         }
 
         return $response;
@@ -335,9 +306,9 @@ class Authentication
     /**
      * Check for user permissions and register last access.
      *
-     * @param mixed           $result  Response to replace the requested version with.
-     * @param WP_REST_Server  $server  Server instance.
-     * @param WP_REST_Request $request Request used to generate the response.
+     * @param mixed           $result
+     * @param WP_REST_Server  $server
+     * @param WP_REST_Request $request
      * 
      * @return mixed
      */

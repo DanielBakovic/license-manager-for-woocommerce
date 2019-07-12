@@ -4,6 +4,7 @@ namespace LicenseManagerForWooCommerce\Lists;
 
 use \LicenseManagerForWooCommerce\AdminMenus;
 use \LicenseManagerForWooCommerce\AdminNotice;
+use LicenseManagerForWooCommerce\Repositories\Resources\Generator as GeneratorResourceRepository;
 use \LicenseManagerForWooCommerce\Setup;
 use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
 
@@ -13,24 +14,15 @@ if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
-/**
- * Create the Generators list
- *
- * @since 1.0.0
- */
 class GeneratorsList extends \WP_List_Table
 {
     /**
-     * Prefixed generator table name
-     * 
      * @var string
      */
     protected $table;
 
     /**
-     * Class constructor
-     * 
-     * @return null
+     * GeneratorsList constructor.
      */
     public function __construct()
     {
@@ -82,8 +74,6 @@ class GeneratorsList extends \WP_List_Table
 
     /**
      * Output in case no items exist
-     * 
-     * @return null
      */
     public function no_items()
     {
@@ -257,8 +247,6 @@ class GeneratorsList extends \WP_List_Table
 
     /**
      * Set the table columns
-     * 
-     * @return null
      */
     public function get_columns()
     {
@@ -313,8 +301,6 @@ class GeneratorsList extends \WP_List_Table
 
     /**
      * Processes the currently selected action
-     * 
-     * @return null
      */
     public function process_bulk_action()
     {
@@ -332,8 +318,6 @@ class GeneratorsList extends \WP_List_Table
 
     /**
      * Initialization function
-     * 
-     * @return null
      */
     public function prepare_items()
     {
@@ -387,21 +371,18 @@ class GeneratorsList extends \WP_List_Table
      */
     public function delete_generators()
     {
-        $selected_generators = (array)$_REQUEST['id'];
-        $generators_to_delete = array();
+        $selectedGenerators = (array)$_REQUEST['id'];
+        $generatorsToDelete = array();
 
-        foreach ($selected_generators as $generator_id) {
-            if ($products = apply_filters('lmfwc_get_assigned_products', $generator_id)) {
+        foreach ($selectedGenerators as $generatorId) {
+            if ($products = apply_filters('lmfwc_get_assigned_products', $generatorId)) {
                 continue;
             } else {
-                array_push($generators_to_delete, $generator_id);
+                array_push($generatorsToDelete, $generatorId);
             }
         }
 
-        $result = apply_filters(
-            'lmfwc_delete_generators',
-            $generators_to_delete
-        );
+        $result = GeneratorResourceRepository::instance()->delete($generatorsToDelete);
 
         if ($result) {
             AdminNotice::success(

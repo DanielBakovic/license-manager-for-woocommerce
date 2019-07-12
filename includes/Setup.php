@@ -2,59 +2,44 @@
 
 namespace LicenseManagerForWooCommerce;
 
+use function dbDelta;
+
 defined('ABSPATH') || exit;
 
-/**
- * LicenseManagerForWooCommerce Setup.
- *
- * @since 1.0.0
- */
 class Setup
 {
     /**
-     * License table name.
-     *
-     * @since 1.0.0
+     * @var string
      */
     const LICENSES_TABLE_NAME = 'lmfwc_licenses';
 
     /**
-     * Generators table name.
-     *
-     * @since 1.0.0
+     * @var string
      */
     const GENERATORS_TABLE_NAME = 'lmfwc_generators';
 
     /**
-     * REST API keys table name.
-     *
-     * @since 1.0.0
+     * @var string
      */
     const API_KEYS_TABLE_NAME = 'lmfwc_api_keys';
 
     /**
-     * Database version.
-     *
-     * @since 1.0.0
+     * @var int
      */
-    const DB_VERSION = 102;
+    const DB_VERSION = 103;
 
     /**
      * Installation script.
-     *
-     * @since 1.0.0
      */
     public static function install()
     {
         self::createTables();
         self::setDefaultFilesAndFolders();
-        self::setDefaulOptions();
+        self::setDefaultOptions();
     }
 
     /**
      * Deactivation script.
-     *
-     * @since 1.0.0
      */
     public static function deactivate()
     {
@@ -62,9 +47,7 @@ class Setup
     }
 
     /**
-     * Uninstallation script.
-     *
-     * @since 1.0.0
+     * Uninstall script.
      */
     public static function uninstall()
     {
@@ -83,8 +66,6 @@ class Setup
 
     /**
      * Migration script.
-     *
-     * @since 1.2.0
      */
     public static function migrate()
     {
@@ -103,8 +84,6 @@ class Setup
 
     /**
      * Create the necessary database tables.
-     *
-     * @since 1.0.0
      */
     public static function createTables()
     {
@@ -129,7 +108,7 @@ class Setup
                 `status` TINYINT(1) NOT NULL COMMENT 'Sold, Delivered, Active, Inactive',
                 `times_activated` INT(10) NULL DEFAULT NULL COMMENT 'Number of activations',
                 `times_activated_max` INT(10) NULL DEFAULT NULL COMMENT 'Maximum number of activations',
-                `created_at` DATETIME NOT NULL COMMENT 'Creation Date',
+                `created_at` DATETIME NULL COMMENT 'Creation Date',
                 `created_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'WP User ID',
                 `updated_at` DATETIME NULL DEFAULT NULL COMMENT 'Update Date',
                 `updated_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'WP User ID',
@@ -137,7 +116,7 @@ class Setup
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         ";
 
-        \dbDelta($table1_sql);
+        dbDelta($table1_sql);
 
         $table2_sql = "
             CREATE TABLE IF NOT EXISTS $table2 (
@@ -151,11 +130,15 @@ class Setup
                 `prefix` VARCHAR(255) NULL DEFAULT NULL,
                 `suffix` VARCHAR(255) NULL DEFAULT NULL,
                 `expires_in` INT(10) NULL DEFAULT NULL,
+                `created_at` DATETIME NULL COMMENT 'Creation Date',
+                `created_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'WP User ID',
+                `updated_at` DATETIME NULL DEFAULT NULL COMMENT 'Update Date',
+                `updated_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'WP User ID',
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         ";
 
-        \dbDelta($table2_sql);
+        dbDelta($table2_sql);
 
         $table3_sql = "
             CREATE TABLE IF NOT EXISTS $table3 (
@@ -168,17 +151,26 @@ class Setup
                 `nonces` LONGTEXT NULL,
                 `truncated_key` CHAR(7) NOT NULL,
                 `last_access` DATETIME NULL DEFAULT NULL,
+                `created_at` DATETIME NULL COMMENT 'Creation Date',
+                `created_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'WP User ID',
+                `updated_at` DATETIME NULL DEFAULT NULL COMMENT 'Update Date',
+                `updated_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'WP User ID',
                 PRIMARY KEY (`id`),
                 INDEX `consumer_key` (`consumer_key`),
                 INDEX `consumer_secret` (`consumer_secret`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
         ";
 
-        \dbDelta($table3_sql);
+        dbDelta($table3_sql);
     }
 
     public static function setDefaultFilesAndFolders()
     {
+        /* When the cryptographic secrets are loaded into these constants, no other files are needed */
+        if (defined('LMFWC_PLUGIN_SECRET') && defined('LMFWC_PLUGIN_DEFUSE')) {
+            return;
+        }
+
         $uploads = wp_upload_dir(null, false);
         $dir_lmfwc = $uploads['basedir'] . '/lmfwc-files';
         $file_htaccess = $dir_lmfwc . '/.htaccess';
@@ -256,7 +248,7 @@ class Setup
         umask($old_mask);
     }
 
-    public static function setDefaulOptions()
+    public static function setDefaultOptions()
     {
         $defaults = array(
             'lmfwc_hide_license_keys' => 0,

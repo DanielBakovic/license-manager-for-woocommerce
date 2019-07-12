@@ -21,31 +21,24 @@ defined('ABSPATH') || exit;
  * @package  LicenseManagerForWooCommerce
  * @author   Dražen Bebić <drazen.bebic@outlook.com>
  * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
- * @version  Release: <1.2.0>
+ * @version  Release: <1.3.0>
  * @link     https://www.bebic.at/license-manager-for-woocommerce
  * @since    1.0.0
  */
 final class Main
 {
     /**
-     * LicenseManagerForWooCommerce version.
-     *
      * @var string
      */
-    public $version = '1.2.3';
+    public $version = '1.3.0';
 
     /**
-     * The single instance of the class.
-     *
-     * @var   LicenseManagerForWooCommerce
-     * @since 1.0.0
+     * @var $this
      */
     protected static $instance = null;
 
     /**
-     * LicenseManagerForWooCommerce Constructor.
-     * 
-     * @return null
+     * Main constructor.
      */
     private function __construct()
     {
@@ -54,20 +47,14 @@ final class Main
 
         add_action('init', array($this, 'loadPluginTextDomain'));
         add_action('init', array($this, 'init'));
-        add_action('woocommerce_email_classes', array($this, 'registerEmails'), 90, 1);
 
         new API\Authentication();
     }
 
     /**
-     * Main LicenseManagerForWooCommerce Instance.
+     * Ensures only one instance of LicenseManagerForWooCommerce is loaded or can be loaded.
      *
-     * Ensures only one instance of LicenseManagerForWooCommerce is loaded or can be
-     * loaded.
-     *
-     * @since  1.0.0
-     * @static
-     * @return LicenseManagerForWooCommerce - Main instance.
+     * @return $this
      */
     public static function instance()
     {
@@ -80,36 +67,34 @@ final class Main
 
     /**
      * Define plugin constants.
-     * 
-     * @return null
      */
     private function _defineConstants()
     {
-        $this->_define('ABSPATH_LENGTH',        strlen(ABSPATH));
-        $this->_define('LMFWC_VERSION',         $this->version);
-        $this->_define('LMFWC_ABSPATH',         dirname(LMFWC_PLUGIN_FILE) . '/');
-        $this->_define('LMFWC_PLUGIN_BASENAME', plugin_basename(LMFWC_PLUGIN_FILE));
+        if (!defined('ABSPATH_LENGTH')) {
+            define('ABSPATH_LENGTH', strlen(ABSPATH));
+        }
+
+        define('LMFWC_VERSION',         $this->version);
+        define('LMFWC_ABSPATH',         dirname(LMFWC_PLUGIN_FILE) . '/');
+        define('LMFWC_PLUGIN_BASENAME', plugin_basename(LMFWC_PLUGIN_FILE));
 
         // Directories
-        $this->_define('LMFWC_ASSETS_DIR',     LMFWC_ABSPATH       . 'assets/');
-        $this->_define('LMFWC_LOG_DIR',        LMFWC_ABSPATH       . 'logs/');
-        $this->_define('LMFWC_TEMPLATES_DIR',  LMFWC_ABSPATH       . 'templates/');
-        $this->_define('LMFWC_MIGRATIONS_DIR', LMFWC_ABSPATH       . 'migrations/');
-        $this->_define('LMFWC_CSS_DIR',        LMFWC_ASSETS_DIR    . 'css/');
+        define('LMFWC_ASSETS_DIR',     LMFWC_ABSPATH       . 'assets/');
+        define('LMFWC_LOG_DIR',        LMFWC_ABSPATH       . 'logs/');
+        define('LMFWC_TEMPLATES_DIR',  LMFWC_ABSPATH       . 'templates/');
+        define('LMFWC_MIGRATIONS_DIR', LMFWC_ABSPATH       . 'migrations/');
+        define('LMFWC_CSS_DIR',        LMFWC_ASSETS_DIR    . 'css/');
 
         // URL's
-        $this->_define('LMFWC_ASSETS_URL', LMFWC_PLUGIN_URL . 'assets/');
-        $this->_define('LMFWC_ETC_URL',    LMFWC_ASSETS_URL . 'etc/');
-        $this->_define('LMFWC_CSS_URL',    LMFWC_ASSETS_URL . 'css/');
-        $this->_define('LMFWC_JS_URL',     LMFWC_ASSETS_URL . 'js/');
-        $this->_define('LMFWC_IMG_URL',    LMFWC_ASSETS_URL . 'img/');
+        define('LMFWC_ASSETS_URL', LMFWC_PLUGIN_URL . 'assets/');
+        define('LMFWC_ETC_URL',    LMFWC_ASSETS_URL . 'etc/');
+        define('LMFWC_CSS_URL',    LMFWC_ASSETS_URL . 'css/');
+        define('LMFWC_JS_URL',     LMFWC_ASSETS_URL . 'js/');
+        define('LMFWC_IMG_URL',    LMFWC_ASSETS_URL . 'img/');
     }
-
 
     /**
      * Include JS and CSS files.
-     * 
-     * @return null
      */
     public function adminEnqueueScripts()
     {
@@ -205,25 +190,7 @@ final class Main
     }
 
     /**
-     * Define constant if not already set.
-     *
-     * @param string      $name  Constant name.
-     * @param string|bool $value Constant value.
-     * 
-     * @return null
-     */
-    private function _define($name, $value)
-    {
-        if (!defined($name)) {
-            define($name, $value);
-        }
-    }
-
-    /**
      * Hook into actions and filters.
-     *
-     * @since  1.0.0
-     * @return null;
      */
     private function _initHooks()
     {
@@ -246,8 +213,6 @@ final class Main
 
     /**
      * Adds the i18n translations to the plugin
-     * 
-     * @return null
      */
     public function loadPluginTextDomain()
     {
@@ -256,8 +221,6 @@ final class Main
 
     /**
      * Init LicenseManagerForWooCommerce when WordPress Initialises.
-     * 
-     * @return null
      */
     public function init()
     {
@@ -267,39 +230,22 @@ final class Main
 
         new Crypto();
         new Export();
-        new ProductManager();
         new AdminMenus();
         new AdminNotice();
         new Generator();
-        new OrderManager();
-        new Repositories\ApiKey();
-        new Repositories\Generator();
-        new Repositories\License();
         new Repositories\PostMeta();
         new Repositories\Posts();
         new Repositories\Users();
         new FormHandler();
         new API\Setup();
-    }
 
-    public function registerEmails($emails)
-    {
-        new Emails\TemplateParts();
-
-        $plugin_emails = array(
-            //'LMFWC_Customer_Preorder_Complete' => new \LicenseManagerForWooCommerce\Emails\CustomerPreorderComplete(),
-            'LMFWC_Customer_Deliver_License_Keys' => new Emails\CustomerDeliverLicenseKeys()
-        );
-
-        return array_merge($emails, $plugin_emails);
+        if ($this->isWooCommerceActive()) {
+            new Integrations\WooCommerce\Controller();
+        }
     }
 
     /**
      * Defines all public hooks
-     * 
-     * @param string $text The new text to be used
-     * 
-     * @return string
      */
     protected function publicHooks()
     {
@@ -331,6 +277,17 @@ final class Main
             },
             10,
             1
+        );
+    }
+
+    /**
+     * @return bool
+     */
+    private function isWooCommerceActive()
+    {
+        return in_array(
+            'woocommerce/woocommerce.php',
+            apply_filters('active_plugins', get_option('active_plugins'))
         );
     }
 }

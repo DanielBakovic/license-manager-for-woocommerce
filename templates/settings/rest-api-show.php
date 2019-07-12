@@ -1,3 +1,13 @@
+<?php
+
+use LicenseManagerForWooCommerce\Models\Resources\ApiKey as ApiKeyResourceModel;
+
+defined('ABSPATH') || exit;
+
+/** @var ApiKeyResourceModel $key_data */
+
+?>
+
 <h2><?php esc_html_e('Key details', 'lmfwc');?></h2>
 <hr class="wp-header-end">
 
@@ -18,7 +28,7 @@
                             class="regular-text"
                             name="consumer_key"
                             type="text"
-                            value="<?php echo esc_attr($key_data['consumer_key']); ?>"
+                            value="<?php echo esc_attr($key_data->getConsumerKey()); ?>"
                             readonly="readonly"
                         >
                     </td>
@@ -33,7 +43,7 @@
                             class="regular-text"
                             name="consumer_secret"
                             type="text"
-                            value="<?php echo esc_attr($key_data['consumer_secret']); ?>"
+                            value="<?php echo esc_attr($key_data->getConsumerSecret()); ?>"
                             readonly="readonly"
                         >
                     </td>
@@ -49,7 +59,7 @@
                         add_query_arg(
                             array(
                                 'action' => 'revoke',
-                                'key' => $key_data['key_id']
+                                'key' => $key_data->getId()
                             ),
                             sprintf(admin_url('admin.php?page=%s&tab=rest_api'), \LicenseManagerForWooCommerce\AdminMenus::SETTINGS_PAGE)
                         ),

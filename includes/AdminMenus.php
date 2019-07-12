@@ -2,7 +2,15 @@
 
 namespace LicenseManagerForWooCommerce;
 
-use \LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
+use LicenseManagerForWooCommerce\Enums\LicenseStatus;
+use LicenseManagerForWooCommerce\Lists\APIKeyList;
+use LicenseManagerForWooCommerce\Lists\GeneratorsList;
+use LicenseManagerForWooCommerce\Lists\LicensesList;
+use LicenseManagerForWooCommerce\Models\Resources\ApiKey as ApiKeyResourceModel;
+use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
+use LicenseManagerForWooCommerce\Repositories\Resources\ApiKey as ApiKeyResourceRepository;
+use LicenseManagerForWooCommerce\Repositories\Resources\Generator as GeneratorResourceRepository;
+use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResourceRepository;
 
 defined('ABSPATH') || exit;
 
@@ -10,12 +18,6 @@ if (class_exists('AdminMenus', false)) {
     return new AdminMenus();
 }
 
-/**
- * Setup menus in WP admin.
- *
- * @version 1.0.0
- * @since 1.0.0
- */
 class AdminMenus
 {
     private $tab_whitelist;
@@ -115,10 +117,9 @@ class AdminMenus
 
     public function licensesPage()
     {
-        $licenses = new \LicenseManagerForWooCommerce\Lists\LicensesList();
-
-        $action = $this->getCurrentAction($default = 'list');
-        $add_license_url = admin_url(
+        $licenses = new LicensesList();
+        $action   = $this->getCurrentAction($default = 'list');
+        $addLicenseUrl = admin_url(
             sprintf(
                 'admin.php?page=%s&action=add&_wpnonce=%s',
                 self::LICENSES_PAGE,
@@ -136,26 +137,20 @@ class AdminMenus
         } 
 
         if ($action === 'edit') {
-            $status_whitelist    = array(LicenseStatusEnum::ACTIVE, LicenseStatusEnum::INACTIVE);
-            $license_id          = absint($_GET['id']);
-            $license_row         = apply_filters('lmfwc_get_license_key', $license_id);
-            $license_status      = absint($license_row['status']);
-            $license_key         = apply_filters('lmfwc_decrypt', $license_row['license_key']);
-            $valid_for           = $license_row['valid_for'];
-            $activated           = ($license_row['status'] == LicenseStatusEnum::ACTIVE) ? true : false;
-            $times_activated_max = $license_row['times_activated_max'];
-            $product_id          = absint($license_row['product_id']);
-            $license_source      = absint($license_row['source']);
-            $status_active       = LicenseStatusEnum::ACTIVE;
-            $status_inactive     = LicenseStatusEnum::INACTIVE;
+            if (!current_user_can('manage_options')) {
+                wp_die(__('Insufficient permission', 'lmfwc'));
+            }
 
-            if (!$license_id) {
+            /** @var LicenseResourceModel $license */
+            $license = LicenseResourceRepository::instance()->find(absint($_GET['id']));
+
+            if (!$license) {
                 wp_die(__('Invalid license key ID', 'lmfwc'));
             }
 
-            if (!in_array($license_status, $status_whitelist)) {
-                wp_die(__('This license key can no longer be edited', 'lmfwc'));
-            }
+            $licenseKey    = $license->getDecryptedLicenseKey();
+            $statusOptions = LicenseStatus::dropdown();
+            $orders        = wc_get_orders(array('limit' => -1));
         }
 
         include LMFWC_TEMPLATES_DIR . 'licenses-page.php';
@@ -181,19 +176,32 @@ class AdminMenus
             }
 
             if ($action === 'create' || $action === 'edit') {
-                $key_id      = isset($_GET['edit_key']) ? absint($_GET['edit_key']) : 0;
-                $key_data    = apply_filters('lmfwc_get_api_key', $key_id);
-                $user_id     = (int)$key_data['user_id'];
+
+                $key_id = 0;
+                $key_data = new ApiKeyResourceModel();
+                $user_id = null;
+                $date = null;
+
+                if (array_key_exists('edit_key', $_GET)) {
+                    $key_id = absint($_GET['edit_key']);
+                }
+
+                if ($key_id !== 0) {
+                    /** @var ApiKeyResourceModel $key_data */
+                    $key_data    = ApiKeyResourceRepository::instance()->find($key_id);
+                    $user_id     = (int)$key_data->getUserId();
+                    $date = sprintf(
+                        esc_html__('%1$s at %2$s', 'lmfwc'),
+                        date_i18n(wc_date_format(), strtotime($key_data->getLastAccess())),
+                        date_i18n(wc_time_format(), strtotime($key_data->getLastAccess()))
+                    );
+                }
+
                 $users       = apply_filters('lmfwc_get_users', null);
                 $permissions = array(
                     'read'       => __('Read', 'lmfwc'),
                     'write'      => __('Write', 'lmfwc'),
                     'read_write' => __('Read/Write', 'lmfwc'),
-                );
-                $date = sprintf(
-                    esc_html__('%1$s at %2$s', 'lmfwc'),
-                    date_i18n(wc_date_format(), strtotime($key_data['last_access'])),
-                    date_i18n(wc_time_format(), strtotime($key_data['last_access']))
                 );
 
                 if ($key_id && $user_id && ! current_user_can('edit_user', $user_id)) {
@@ -202,7 +210,7 @@ class AdminMenus
                     }
                 }
             } elseif ($action === 'list') {
-                $keys = new \LicenseManagerForWooCommerce\Lists\APIKeyList();
+                $keys = new APIKeyList();
             } elseif ($action === 'show') {
                 $key_data = get_transient('lmfwc_api_key');
                 delete_transient('lmfwc_api_key');
@@ -222,10 +230,8 @@ class AdminMenus
 
     public function generatorsPage()
     {
-        $generators = new \LicenseManagerForWooCommerce\Lists\GeneratorsList();
-
-
-        $action = $this->getCurrentAction($default = 'list');
+        $generators = new GeneratorsList();
+        $action     = $this->getCurrentAction($default = 'list');
 
         if ($action == 'list') {
             $add_generator_url = wp_nonce_url(
@@ -233,7 +239,7 @@ class AdminMenus
                     admin_url('admin.php?page=%s&action=add'),
                     self::GENERATORS_PAGE
                 ),
-                'lmwfc_add_generator'
+                'lmfwc_add_generator'
             );
         }
 
@@ -242,12 +248,11 @@ class AdminMenus
                 return;
             }
 
-            if (!$generator = apply_filters('lmfwc_get_generator', $_GET['id'])) {
+            if (!$generator = GeneratorResourceRepository::instance()->find($_GET['id'])) {
                return;
             }
 
             $products = apply_filters('lmfwc_get_assigned_products', $_GET['id']);
-
         }
 
         include LMFWC_TEMPLATES_DIR . 'generators-page.php';
@@ -257,32 +262,12 @@ class AdminMenus
     {
         $option = 'per_page';
         $args = array(
-            'label' => __('Generators per page', 'lmfwc'),
+            'label'   => __('Generators per page', 'lmfwc'),
             'default' => 10,
-            'option' => 'generators_per_page'
+            'option'  => 'generators_per_page'
         );
 
         add_screen_option($option, $args);
-    }
-
-    public function generatorsAddPage()
-    {
-        include LMFWC_TEMPLATES_DIR . 'generators-add-new.php';
-    }
-
-    public function generatorsEditPage()
-    {
-        if (!array_key_exists('edit', $_GET) && !array_key_exists('id', $_GET)) {
-            return;
-        }
-
-        if (!$generator = apply_filters('lmfwc_get_generator', $_GET['id'])) {
-           return;
-        }
-
-        $products = apply_filters('lmfwc_get_assigned_products', $_GET['id']);
-
-        include LMFWC_TEMPLATES_DIR . 'generators-edit.php';
     }
 
     public function initSettingsAPI()

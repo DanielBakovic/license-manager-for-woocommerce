@@ -1,55 +1,49 @@
 <?php
 
-namespace LicenseManagerForWooCommerce\Emails;
+namespace LicenseManagerForWooCommerce\Integrations\WooCommerce\Emails;
+
+use WC_Email;
+use WC_Order;
 
 defined('ABSPATH') || exit;
 
-/**
- * LicenseManagerForWooCommerce CustomerPreorderComplete.
- *
- * @since 1.2.0
- */
-class CustomerPreorderComplete extends \WC_Email
+class CustomerDeliverLicenseKeys extends WC_Email
 {
     /**
-     * Create an instance of the class.
-     *
-     * @return null
+     * CustomerDeliverLicenseKeys constructor.
      */
     function __construct() {
         // Email slug we can use to filter other data.
-        $this->id          = 'lmfwc_email_customer_preorder_complete';
-        $this->title       = __('Completed preorder', 'lmfwc');
-        $this->description = __('An email sent to the customer when a license key preorder is complete.', 'lmfwc');
+        $this->id          = 'lmfwc_email_customer_deliver_license_keys';
+        $this->title       = __('Deliver license keys', 'lmfwc');
+        $this->description = __('A manual email to send out license keys to the customer.', 'lmfwc');
 
         // For admin area to let the user know we are sending this email to customers.
         $this->customer_email = true;
-        $this->heading        = __('Preorder complete', 'lmfwc');
+        $this->heading        = __('License key delivery', 'lmfwc');
 
         // translators: placeholder is {blogname}, a variable that will be substituted when email is sent out
         $this->subject = sprintf(
             _x(
-                '[%s] - Your preorder has arrived!',
-                'default email subject for cancelled emails sent to the customer',
+                '[%s] - Your license keys are here!',
+                'Default email subject for resent license key emails sent to the customer',
                 'lmfwc'
             ),
             '{blogname}'
         );
-    
+
         // Template paths.
-        $this->template_html  = 'emails/customer-preorder-complete.php';
-        $this->template_plain = 'emails/plain/customer-preorder-complete.php';
+        $this->template_html  = 'emails/customer-deliver-license-keys.php';
+        $this->template_plain = 'emails/plain/customer-deliver-license-keys.php';
         $this->template_base  = LMFWC_TEMPLATES_DIR;
-    
+
         // Action to which we hook onto to send the email.
-        add_action('lmfwc_email_customer_preorder_complete', array($this, 'trigger'));
+        add_action('lmfwc_email_customer_deliver_license_keys', array($this, 'trigger'));
 
         parent::__construct();
     }
 
     /**
-     * Get content html.
-     *
      * @return string
      */
     public function get_content_html()
@@ -68,8 +62,6 @@ class CustomerPreorderComplete extends \WC_Email
         );
     }
     /**
-     * Get content plain.
-     *
      * @return string
      */
     public function get_content_plain()
@@ -91,15 +83,15 @@ class CustomerPreorderComplete extends \WC_Email
     /**
      * Trigger the sending of this email.
      *
-     * @param integer        $order_id The order ID.
-     * @param WC_Order|false $order    Order object.
+     * @param integer       $orderId
+     * @param WC_Order|bool $order
      */
-    public function trigger($order_id, $order = false)
+    public function trigger($orderId, $order = false)
     {
         $this->setup_locale();
 
-        if ($order_id && ! is_a($order, 'WC_Order')) {
-            $order = wc_get_order($order_id);
+        if ($orderId && ! is_a($order, 'WC_Order')) {
+            $order = wc_get_order($orderId);
         }
 
         if (is_a($order, 'WC_Order')) {

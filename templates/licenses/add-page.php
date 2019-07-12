@@ -1,6 +1,6 @@
 <?php defined('ABSPATH') || exit; ?>
 
-<h1 class="wp-heading-inline"><?php esc_html_e('Add new licens key(s)', 'lmfwc'); ?></h1>
+<h1 class="wp-heading-inline"><?php esc_html_e('Add new license key(s)', 'lmfwc'); ?></h1>
 <hr class="wp-header-end">
 
 <h2><?php esc_html_e('Add a single license key', 'lmfwc'); ?></h2>

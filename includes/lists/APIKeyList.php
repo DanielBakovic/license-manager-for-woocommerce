@@ -5,6 +5,7 @@ namespace LicenseManagerForWooCommerce\Lists;
 use \LicenseManagerForWooCommerce\AdminMenus;
 use \LicenseManagerForWooCommerce\AdminNotice;
 use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
+use LicenseManagerForWooCommerce\Repositories\Resources\ApiKey as ApiKeyResourceRepository;
 
 defined('ABSPATH') || exit;
 
@@ -357,9 +358,7 @@ class APIKeyList extends \WP_List_Table
 
     private function revokeKeys()
     {
-        $keys = (array)$_REQUEST['key'];
-
-        if ($count = apply_filters('lmfwc_delete_api_keys', $keys)) {
+        if ($count = ApiKeyResourceRepository::instance()->delete((array)$_REQUEST['key'])) {
             AdminNotice::success(
                 sprintf(__('%d API key(s) permanently revoked.', 'lmfwc'), $count)
             );

@@ -1,4 +1,12 @@
-<?php defined('ABSPATH') || exit; ?>
+<?php
+
+use LicenseManagerForWooCommerce\Models\Resources\Generator as GeneratorResourceModel;
+
+defined('ABSPATH') || exit;
+
+/** @var GeneratorResourceModel $generator */
+
+?>
 
 <h1 class="wp-heading-inline"><?php esc_html_e('Edit generator', 'lmfwc'); ?></h1>
 <hr class="wp-header-end">
@@ -17,7 +25,7 @@
                     <span class="text-danger">*</span></label>
                 </th>
                 <td>
-                    <input name="name" id="name" class="regular-text" type="text" value="<?php echo esc_html($generator->name); ?>">
+                    <input name="name" id="name" class="regular-text" type="text" value="<?php echo esc_html($generator->getName()); ?>">
                     <p class="description" id="tagline-description">
                         <b><?php esc_html_e('Required.', 'lmfwc');?></b>
                         <span><?php esc_html_e('A short name to describe the generator.', 'lmfwc');?></span>
@@ -29,7 +37,7 @@
             <tr scope="row">
                 <th scope="row"><label><?php esc_html_e('Maximum activation count', 'lmfwc');?></label></th>
                 <td>
-                    <input name="times_activated_max" id="times_activated_max" class="regular-text" type="number" value="<?php echo esc_html($generator->times_activated_max); ?>">
+                    <input name="times_activated_max" id="times_activated_max" class="regular-text" type="number" value="<?php echo esc_html($generator->getTimesActivatedMax()); ?>">
                     <p class="description" id="tagline-description"><?php esc_html_e('Define how many times the license key can be marked as "activated" by using the REST API. Leave blank if you do not use the API.', 'lmfwc');?></p>
                 </td>
             </tr>
@@ -41,7 +49,7 @@
                     <span class="text-danger">*</span></label>
                 </th>
                 <td>
-                    <input name="charset" id="charset" class="regular-text" type="text" value="<?php echo esc_html($generator->charset); ?>">
+                    <input name="charset" id="charset" class="regular-text" type="text" value="<?php echo esc_html($generator->getCharset()); ?>">
                     <p class="description" id="tagline-description">
                         <b><?php esc_html_e('Required.', 'lmfwc');?></b>
                         <span><?php _e('The characters which will be used for generating a license key, i.e. for <code>12-AB-34-CD</code> the character map is <code>ABCD1234</code>.', 'lmfwc');?></span>
@@ -56,7 +64,7 @@
                     <span class="text-danger">*</span></label>
                 </th>
                 <td>
-                    <input name="chunks" id="chunks" class="regular-text" type="text" value="<?php echo esc_html($generator->chunks); ?>">
+                    <input name="chunks" id="chunks" class="regular-text" type="text" value="<?php echo esc_html($generator->getChunks()); ?>">
                     <p class="description" id="tagline-description">
                         <b><?php esc_html_e('Required.', 'lmfwc');?></b>
                         <span><?php _e('The number of separated character sets, i.e. for <code>12-AB-34-CD</code> the number of chunks is <code>4</code>.', 'lmfwc');?></span>
@@ -71,7 +79,7 @@
                     <span class="text-danger">*</span></label>
                 </th>
                 <td>
-                    <input name="chunk_length" id="chunk_length" class="regular-text" type="text" value="<?php echo esc_html($generator->chunk_length); ?>">
+                    <input name="chunk_length" id="chunk_length" class="regular-text" type="text" value="<?php echo esc_html($generator->getChunkLength()); ?>">
                     <p class="description" id="tagline-description">
                         <b><?php esc_html_e('Required.', 'lmfwc');?></b>
                         <span><?php _e('The character length of an individual chunk, i.e. for <code>12-AB-34-CD</code> the chunk length is <code>2</code>.', 'lmfwc');?></span>
@@ -83,7 +91,7 @@
             <tr scope="row">
                 <th scope="row"><label for="separator"><?php esc_html_e('Separator', 'lmfwc');?></label></th>
                 <td>
-                    <input name="separator" id="separator" class="regular-text" type="text" value="<?php echo esc_html($generator->separator); ?>">
+                    <input name="separator" id="separator" class="regular-text" type="text" value="<?php echo esc_html($generator->getSeparator()); ?>">
                     <p class="description" id="tagline-description">
                         <b><?php esc_html_e('Optional.', 'lmfwc');?></b>
                         <span><?php _e('The special character separating the individual chunks, i.e. for <code>12-AB-34-CD</code> the separator is <code>-</code>.', 'lmfwc');?></span>
@@ -95,7 +103,7 @@
             <tr scope="row">
                 <th scope="row"><label for="prefix"><?php esc_html_e('Prefix', 'lmfwc');?></label></th>
                 <td>
-                    <input name="prefix" id="prefix" class="regular-text" type="text" value="<?php echo esc_html($generator->prefix); ?>">
+                    <input name="prefix" id="prefix" class="regular-text" type="text" value="<?php echo esc_html($generator->getPrefix()); ?>">
                     <p class="description" id="tagline-description">
                         <b><?php esc_html_e('Optional.', 'lmfwc');?></b>
                         <span><?php _e('Adds a character set at the start of a license key (separator <b>not</b> included), i.e. for <code>PRE-12-AB-34-CD</code> the prefix is <code>PRE-</code>.', 'lmfwc');?></span>
@@ -107,7 +115,7 @@
             <tr scope="row">
                 <th scope="row"><label for="suffix"><?php esc_html_e('Suffix', 'lmfwc');?></label></th>
                 <td>
-                    <input name="suffix" id="suffix" class="regular-text" type="text" value="<?php echo esc_html($generator->suffix); ?>">
+                    <input name="suffix" id="suffix" class="regular-text" type="text" value="<?php echo esc_html($generator->getSuffix()); ?>">
                     <p class="description" id="tagline-description">
                         <b><?php esc_html_e('Optional.', 'lmfwc');?></b>
                         <span><?php _e('Adds a character set at the end of a license key (separator <b>not</b> included), i.e. for <code>12-AB-34-CD-SUF</code> the suffix is <code>-SUF</code>.', 'lmfwc');?></span>
@@ -119,7 +127,7 @@
             <tr scope="row">
                 <th scope="row"><label for="expires_in"><?php esc_html_e('Expires in', 'lmfwc');?></label></th>
                 <td>
-                    <input name="expires_in" id="expires_in" class="regular-text" type="text" value="<?php echo esc_html($generator->expires_in); ?>">
+                    <input name="expires_in" id="expires_in" class="regular-text" type="text" value="<?php echo esc_html($generator->getExpiresIn()); ?>">
                     <p class="description" id="tagline-description">
                         <b><?php esc_html_e('Optional.', 'lmfwc');?></b>
                         <span><?php esc_html_e('The number of days for which the license key is valid after purchase. Leave blank if it doesn\'t expire.', 'lmfwc');?></span>

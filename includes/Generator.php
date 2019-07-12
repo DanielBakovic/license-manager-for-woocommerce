@@ -6,18 +6,10 @@ use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
 
 defined('ABSPATH') || exit;
 
-/**
- * LicenseManagerForWooCommerce Generator.
- *
- * @version 1.0.0
- * @since 1.0.0
- */
 class Generator
 {
     /**
      * The character map, from which the license will be generated
-     *
-     * @since 1.0.0
      */
     const CHARSET = '123456789ABCDEFGHIJKLMNPQRSTUVWXYZ';
 

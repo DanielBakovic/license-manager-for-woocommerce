@@ -1,42 +1,19 @@
 <?php
-/**
- * Exception
- * PHP Version: 5.6
- * 
- * @category WordPress
- * @package  LicenseManagerForWooCommerce
- * @author   Dražen Bebić <drazen.bebic@outlook.com>
- * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
- * @link     https://www.bebic.at/license-manager-for-woocommerce
- */
 
 namespace LicenseManagerForWooCommerce;
 
+use Throwable;
+
 defined('ABSPATH') || exit;
 
-/**
- * LicenseManagerForWooCommerce Exception
- *
- * @category WordPress
- * @package  LicenseManagerForWooCommerce
- * @author   Dražen Bebić <drazen.bebic@outlook.com>
- * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
- * @version  Release: <1.1.0>
- * @link     https://www.bebic.at/license-manager-for-woocommerce
- * @since    1.0.0
- */
-class Exception extends \Exception implements \Throwable
+class Exception extends \Exception implements Throwable
 {
     /**
-     * Error reporting email
-     * 
      * @var string
      */
     const EMAIL_ADDRESS = 'info@bebic.at';
 
     /**
-     * Error reporting email
-     * 
      * @var string
      */
     const EMAIL_SUBJECT_TEMPLATE = '[LMFWC] [Exception] [%s]';
@@ -44,12 +21,9 @@ class Exception extends \Exception implements \Throwable
     /**
      * Constructor
      * 
-     * @param string    $message  The exception message
-     * @param integer   $code     The exception code
-     * @param Exception $previous Previously thrown exception
-     *
-     * @since  1.2.0
-     * @return null
+     * @param string    $message
+     * @param integer   $code
+     * @param Exception $previous
      */
     public function __construct($message = '', $code = 0, $previous = null)
     {
@@ -66,14 +40,12 @@ class Exception extends \Exception implements \Throwable
     /**
      * Email the exception if the setting is on
      * 
-     * @param LicenseManagerForWooCommerce\Exception $e The exception to be mailed.
-     * 
-     * @return null
+     * @param Exception $e The exception to be mailed.
      */
     protected function mailException($e)
     {
         // We won't do this yet
-        if (1 == 1) {
+        if (1 === 1) {
             return;
         }
 

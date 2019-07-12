@@ -1,4 +1,8 @@
-<?php defined('ABSPATH') || exit; ?>
+<?php
+
+use LicenseManagerForWooCommerce\Models\Resources\License;
+
+defined('ABSPATH') || exit; ?>
 
 <h2><?php esc_html_e($heading);?></h2>
 
@@ -13,14 +17,22 @@
                         </th>
                     </tr>
                 </thead>
-                <?php foreach ($row['keys'] as $entry): ?>
+                <?php
+                    /** @var License $license */
+                    foreach ($row['keys'] as $license):
+                ?>
                     <tr>
-                        <td class="td" style="text-align: left; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" colspan="<?php echo ($entry->expires_at) ? '1' : '2'; ?>">
-                            <code><?php echo esc_html(apply_filters('lmfwc_decrypt', $entry->license_key)) ;?></code>
+                        <td class="td" style="text-align: left; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;" colspan="<?php echo ($license->getExpiresAt()) ? '1' : '2'; ?>">
+                            <code><?php echo esc_html($license->getDecryptedLicenseKey()); ?></code>
                         </td>
 
-                        <?php if ($entry->expires_at): ?>
-                            <?php $date = new \DateTime($entry->expires_at); ?>
+                        <?php if ($license->getExpiresAt()): ?>
+                            <?php
+                                try {
+                                    $date = new DateTime($license->getExpiresAt());
+                                } catch (Exception $e) {
+                                }
+                            ?>
                             <td class="td" style="text-align: left; vertical-align: middle; font-family: 'Helvetica Neue', Helvetica, Roboto, Arial, sans-serif;">
                                 <code><?php
                                     printf('%s <b>%s</b>', $valid_until, $date->format($date_format));

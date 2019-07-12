@@ -6,12 +6,6 @@ use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
 
 defined('ABSPATH') || exit;
 
-/**
- * Set up WordPress Admin Notices.
- *
- * @version 1.1.0
- * @since 1.0.0
- */
 class AdminNotice
 {
     const MESSAGE_DISMISSIBLE = '<div class="notice %s is-dismissible"><p><b>License Manager</b>: %s</p></div>';
@@ -23,7 +17,7 @@ class AdminNotice
     const NOTICE_INFO    = 'notice-info';
 
     /**
-     * Class constructor.
+     * AdminNotice constructor.
      */
     public function __construct() {
         add_action('admin_notices', array($this, 'init'));
@@ -31,8 +25,6 @@ class AdminNotice
 
     /**
      * Retrieves the notice message from the transients, displays it and finally deletes the transient itself.
-     * 
-     * @since 1.1.0
      */
     public function init()
     {
@@ -74,12 +66,10 @@ class AdminNotice
     /**
      * Adds a dashboard notice to be displayed on the next page reload.
      *
-     * @since 1.1.0
-     *
      * @param string $level
      * @param string $message
-     * @param int $code
-     * @param int $duration
+     * @param int    $code
+     * @param int    $duration
      */
     public static function add($level, $message, $code = 0, $duration = 60)
     {
@@ -102,10 +92,8 @@ class AdminNotice
     /**
      * Log and display exception
      * 
-     * @param string  $message  The exception message
-     * @param integer $duration Transient lifespan in seconds
-     * 
-     * @return null
+     * @param string  $message
+     * @param integer $duration
      */
     public static function error($message, $duration = 60)
     {
@@ -126,8 +114,6 @@ class AdminNotice
      * Display a success message
      * 
      * @param string $message The success message to be display
-     * 
-     * @return null
      */
     public static function success($message)
     {
@@ -137,9 +123,7 @@ class AdminNotice
     /**
      * Display a warning message
      * 
-     * @param string $message The warning message to be display
-     * 
-     * @return null
+     * @param string $message
      */
     public static function warning($message)
     {
@@ -149,9 +133,7 @@ class AdminNotice
     /**
      * Display a info message
      * 
-     * @param string $message The info message to be display
-     * 
-     * @return null
+     * @param string $message
      */
     public static function info($message)
     {

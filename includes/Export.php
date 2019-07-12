@@ -12,9 +12,11 @@
 
 namespace LicenseManagerForWooCommerce;
 
-use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
-use \LicenseManagerForWooCommerce\Enums\LicenseSource as LicenseSourceEnum;
-use \LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
+use FPDF;
+use LicenseManagerForWooCommerce\Enums\LicenseSource;
+use LicenseManagerForWooCommerce\Enums\LicenseStatus;
+use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
+use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResourceRepository;
 
 defined('ABSPATH') || exit;
 
@@ -53,39 +55,38 @@ class Export
     /**
      * Creates a PDF of license keys by the given array of IDs
      * 
-     * @param array $ids License Key ID's
-     * 
-     * @return null
+     * @param array $licenseKeyIds
      */
-    public function exportLicenseKeysPdf($ids)
+    public function exportLicenseKeysPdf($licenseKeyIds)
     {
-        $license_keys = array();
+        $licenseKeys = array();
 
-        foreach ($ids as $license_key_id) {
-            try {
-                $license = apply_filters('lmfwc_get_license_key', $license_key_id);
-            } catch (LMFWC_Exception $e) {
+        foreach ($licenseKeyIds as $license_key_id) {
+            /** @var LicenseResourceModel $license */
+            $license = LicenseResourceRepository::instance()->find($license_key_id);
+
+            if (!$license) {
                 continue;
             }
 
-            $license_keys[] = array(
-                'id' => $license['id'],
-                'order_id' => $license['order_id'],
-                'product_id' => $license['product_id'],
-                'license_key' => apply_filters('lmfwc_decrypt', $license['license_key'])
+            $licenseKeys[] = array(
+                'id' => $license->getId(),
+                'order_id' => $license->getOrderId(),
+                'product_id' => $license->getProductId(),
+                'license_key' => $license->getDecryptedLicenseKey()
             );
         }
 
         $header = array(
-            'id' => __('ID', 'lmfwc'),
-            'order_id' => __('Order ID', 'lmwfc'),
-            'product_id' => __('Product ID', 'lmwfc'),
+            'id'          => __('ID', 'lmfwc'),
+            'order_id'    => __('Order ID', 'lmfwc'),
+            'product_id'  => __('Product ID', 'lmfwc'),
             'license_key' => __('License key', 'lmfwc')
         );
 
         ob_clean();
 
-        $pdf = new \FPDF('P', 'mm', 'A4');
+        $pdf = new FPDF('P', 'mm', 'A4');
         $pdf->AddPage();
         $pdf->AddFont('Roboto-Bold', '', 'Roboto-Bold.php');
         $pdf->AddFont('Roboto-Regular', '', 'Roboto-Regular.php');
@@ -122,7 +123,7 @@ class Export
         // Data
         $pdf->Ln();
 
-        foreach ($license_keys as $row) {
+        foreach ($licenseKeys as $row) {
             foreach ($row as $col_name => $col) {
                 $pdf->SetFont('Roboto-Regular', '', 8);
                 $width = 40;
@@ -154,30 +155,29 @@ class Export
     /**
      * Creates a CSV of license keys by the given array of IDs
      * 
-     * @param array $ids License Key ID's
-     * 
-     * @return null
+     * @param array $licenseKeyIds
      */
-    public function exportLicenseKeysCsv($ids)
+    public function exportLicenseKeysCsv($licenseKeyIds)
     {
-        $license_keys = array();
+        $licenseKeys = array();
 
-        foreach ($ids as $license_key_id) {
-            try {
-                $license = apply_filters('lmfwc_get_license_key', $license_key_id);
-            } catch (LMFWC_Exception $e) {
+        foreach ($licenseKeyIds as $license_key_id) {
+            /** @var LicenseResourceModel $license */
+            $license = LicenseResourceRepository::instance()->find($license_key_id);
+
+            if (!$license) {
                 continue;
             }
 
-            $license_keys[] = array(
-                'order_id' => $license['order_id'],
-                'product_id' => $license['product_id'],
-                'license_key' => apply_filters('lmfwc_decrypt', $license['license_key']),
-                'created_at' => $license['created_at'],
-                'expires_at' => $license['expires_at'],
-                'valid_for' => $license['valid_for'],
-                'source' => LicenseSourceEnum::getExportLabel($license['source']),
-                'status' => LicenseStatusEnum::getExportLabel($license['status'])
+            $licenseKeys[] = array(
+                'order_id'    => $license->getOrderId(),
+                'product_id'  => $license->getProductId(),
+                'license_key' => $license->getDecryptedLicenseKey(),
+                'created_at'  => $license->getCreatedAt(),
+                'expires_at'  => $license->getExpiresAt(),
+                'valid_for'   => $license->getValidFor(),
+                'source'      => LicenseSource::getExportLabel($license->getSource()),
+                'status'      => LicenseStatus::getExportLabel($license->getStatus())
             );
         }
 
@@ -200,9 +200,9 @@ class Export
         ob_clean();
         ob_start();
         $df = fopen("php://output", 'w');
-        fputcsv($df, array_keys(reset($license_keys)));
+        fputcsv($df, array_keys(reset($licenseKeys)));
 
-        foreach ($license_keys as $row) {
+        foreach ($licenseKeys as $row) {
            fputcsv($df, $row);
         }
 

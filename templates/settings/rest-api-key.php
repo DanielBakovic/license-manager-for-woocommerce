@@ -1,3 +1,13 @@
+<?php
+
+use LicenseManagerForWooCommerce\Models\Resources\ApiKey as ApiKeyResourceModel;
+
+defined('ABSPATH') || exit;
+
+/** @var ApiKeyResourceModel $key_data */
+
+?>
+
 <h2><?php esc_html_e('Key details', 'lmfwc');?></h2>
 <hr class="wp-header-end">
 
@@ -20,7 +30,7 @@
                         class="regular-text"
                         name="description"
                         type="text"
-                        value="<?php echo esc_attr($key_data['description']); ?>"
+                        value="<?php echo esc_attr($key_data->getDescription()); ?>"
                     >
                     <p class="description">
                         <b><?php esc_html_e('Required.', 'lmfwc');?></b>
@@ -67,7 +77,7 @@
                         <?php foreach ($permissions as $permission_id => $permission_name) : ?>
                             <option
                                 value="<?php echo esc_attr($permission_id); ?>"
-                                <?php selected($key_data['permissions'], $permission_id, true); ?>
+                                <?php selected($key_data->getPermissions(), $permission_id, true); ?>
                             >
                                 <span><?php echo esc_html($permission_name); ?></span>
                             </option>
@@ -85,7 +95,7 @@
                         <label><?php esc_html_e('Consumer key ending in', 'lmfwc');?></label>
                     </th>
                     <td>
-                        <code>&hellip;<?php echo esc_html($key_data['truncated_key']); ?></code>
+                        <code>&hellip;<?php echo esc_html($key_data->getTruncatedKey()); ?></code>
                     </td>
                 </tr>
                 <tr scope="row">
@@ -94,8 +104,8 @@
                     </th>
                     <td>
                         <?php 
-                            if (!empty($key_data['last_access'])) {
-                                echo esc_html(apply_filters('woocommerce_api_key_last_access_datetime', $date, $key_data['last_access']));
+                            if (!empty($key_data->getLastAccess())) {
+                                echo esc_html(apply_filters('woocommerce_api_key_last_access_datetime', $date, $key_data->getLastAccess()));
                             } else {
                                 esc_html_e('Unknown', 'lmfwc');
                             }

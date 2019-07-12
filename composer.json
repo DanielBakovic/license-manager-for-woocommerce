@@ -7,12 +7,21 @@
             "LicenseManagerForWooCommerce\\API\\v1\\": "includes/api/v1",
             "LicenseManagerForWooCommerce\\Emails\\": "includes/emails",
             "LicenseManagerForWooCommerce\\Enums\\": "includes/enums",
+            "LicenseManagerForWooCommerce\\Integrations\\": "includes/integrations",
+            "LicenseManagerForWooCommerce\\Integrations\\WooCommerce\\": "includes/integrations/woocommerce",
+            "LicenseManagerForWooCommerce\\Integrations\\WooCommerce\\Emails\\": "includes/integrations/woocommerce/emails",
+            "LicenseManagerForWooCommerce\\Interfaces\\": "includes/interfaces",
             "LicenseManagerForWooCommerce\\Lists\\": "includes/lists",
-            "LicenseManagerForWooCommerce\\Repositories\\": "includes/repositories"
+            "LicenseManagerForWooCommerce\\Models\\": "includes/models",
+            "LicenseManagerForWooCommerce\\Models\\Resources\\": "includes/models/resources",
+            "LicenseManagerForWooCommerce\\Repositories\\": "includes/repositories",
+            "LicenseManagerForWooCommerce\\Repositories\\Resources\\": "includes/repositories/resources"
         }
     },
     "require": {
         "defuse/php-encryption": "^2.2",
-        "setasign/fpdf": "^1.8"
+        "setasign/fpdf": "^1.8",
+        "ext-openssl": "*",
+        "ext-json": "*"
     }
 }
