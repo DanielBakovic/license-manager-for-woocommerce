@@ -5,10 +5,10 @@
     <?php settings_errors(); ?>
 
     <nav class="nav-tab-wrapper woo-nav-tab-wrapper">
-        <a href="<?=$url_general;?>" class="nav-tab <?=$tab == 'general' ? 'nav-tab-active' : '';?>">
+        <a href="<?php echo esc_url($url_general); ?>" class="nav-tab <?=$tab == 'general' ? 'nav-tab-active' : '';?>">
             <span><?php esc_html_e('General', 'lmfwc');?></span>
         </a>
-        <a href="<?=$url_rest_api;?>" class="nav-tab <?=$tab == 'rest_api' ? 'nav-tab-active' : '';?>">
+        <a href="<?php echo esc_url($url_rest_api); ?>" class="nav-tab <?=$tab == 'rest_api' ? 'nav-tab-active' : '';?>">
             <span><?php esc_html_e('REST API', 'lmfwc');?></span>
         </a>
     </nav>

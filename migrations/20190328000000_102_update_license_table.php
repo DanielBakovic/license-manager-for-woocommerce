@@ -3,16 +3,16 @@
 /**
  * Upgrade
  */
-$table_licenses = $wpdb->prefix . \LicenseManagerForWooCommerce\Setup::LICENSES_TABLE_NAME;
-$table_generators = $wpdb->prefix . \LicenseManagerForWooCommerce\Setup::GENERATORS_TABLE_NAME;
+$tableLicenses = $wpdb->prefix . \LicenseManagerForWooCommerce\Setup::LICENSES_TABLE_NAME;
+$tableGenerators = $wpdb->prefix . \LicenseManagerForWooCommerce\Setup::GENERATORS_TABLE_NAME;
 
-if ($wpdb->get_var("SHOW TABLES LIKE '{$table_licenses}'") != $table_licenses) {
+if ($wpdb->get_var("SHOW TABLES LIKE '{$tableLicenses}'") != $tableLicenses) {
     return;
 }
 
-if ($migration_mode == 'up') {
+if ($migrationMode === 'up') {
     $sql = "
-        ALTER TABLE {$table_licenses}
+        ALTER TABLE {$tableLicenses}
             CHANGE COLUMN `license_key` `license_key` LONGTEXT NOT NULL COMMENT 'Encrypted License Key' AFTER `product_id`,
             CHANGE COLUMN `hash` `hash` LONGTEXT NOT NULL COMMENT 'Hashed License Key ID' AFTER `license_key`,
             ADD COLUMN `times_activated` INT(10) NULL DEFAULT NULL COMMENT 'Number of activations' AFTER `status`,
@@ -26,7 +26,7 @@ if ($migration_mode == 'up') {
     $wpdb->query($sql);
 
     $sql ="
-        ALTER TABLE {$table_generators}
+        ALTER TABLE {$tableGenerators}
             ADD COLUMN `times_activated_max` INT(10) NULL DEFAULT NULL COMMENT 'Maximum number of activations' AFTER `chunk_length`;
     ";
 
@@ -36,9 +36,9 @@ if ($migration_mode == 'up') {
 /**
  * Downgrade
  */
-if ($migration_mode == 'down') {
+if ($migrationMode === 'down') {
     $sql = "
-        ALTER TABLE {$table_licenses}
+        ALTER TABLE {$tableLicenses}
             CHANGE COLUMN `license_key` `license_key` VARCHAR(4000) NOT NULL COMMENT 'Encrypted License Key' AFTER `product_id`,
             CHANGE COLUMN `created_at` `created_at` DATETIME NOT NULL COMMENT 'Creation timestamp' AFTER `hash`,
             DROP COLUMN `times_activated`,
@@ -51,7 +51,7 @@ if ($migration_mode == 'down') {
     $wpdb->query($sql);
 
     $sql = "
-        ALTER TABLE {$table_generators}
+        ALTER TABLE {$tableGenerators}
             DROP COLUMN `times_activated_max`;
     ";
 

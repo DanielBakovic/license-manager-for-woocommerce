@@ -20,10 +20,12 @@ class Exception extends \Exception implements Throwable
 
     /**
      * Constructor
-     * 
-     * @param string    $message
-     * @param integer   $code
+     *
+     * @param string $message
+     * @param integer $code
      * @param Exception $previous
+     *
+     * @throws \Exception
      */
     public function __construct($message = '', $code = 0, $previous = null)
     {
@@ -39,8 +41,10 @@ class Exception extends \Exception implements Throwable
 
     /**
      * Email the exception if the setting is on
-     * 
+     *
      * @param Exception $e The exception to be mailed.
+     *
+     * @throws \Exception
      */
     protected function mailException($e)
     {

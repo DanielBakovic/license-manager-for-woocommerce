@@ -1,18 +1,17 @@
 <?php
 
-/**
- * Upgrade
- */
-$table_generators = $wpdb->prefix . \LicenseManagerForWooCommerce\Setup::GENERATORS_TABLE_NAME;
-$table_api_keys = $wpdb->prefix . \LicenseManagerForWooCommerce\Setup::API_KEYS_TABLE_NAME;
+use LicenseManagerForWooCommerce\Setup;
 
-if ($wpdb->get_var("SHOW TABLES LIKE '{$table_generators}'") != $table_generators) {
+$tableGenerators = $wpdb->prefix . Setup::GENERATORS_TABLE_NAME;
+$tableApiKeys    = $wpdb->prefix . Setup::API_KEYS_TABLE_NAME;
+
+if ($wpdb->get_var("SHOW TABLES LIKE '{$tableGenerators}'") != $tableGenerators) {
     return;
 }
 
-if ($migration_mode == 'up') {
+if ($migrationMode === 'up') {
     $sql ="
-        ALTER TABLE {$table_generators}
+        ALTER TABLE {$tableGenerators}
             ADD COLUMN `created_at` DATETIME NULL COMMENT 'Creation Date' AFTER `expires_in`,
             ADD COLUMN `created_by` BIGINT(20) NULL COMMENT 'WP User ID' AFTER `created_at`,
             ADD COLUMN `updated_at` DATETIME NULL COMMENT 'Update Date' AFTER `created_by`,
@@ -22,7 +21,7 @@ if ($migration_mode == 'up') {
     $wpdb->query($sql);
 
     $sql ="
-        ALTER TABLE {$table_api_keys}
+        ALTER TABLE {$tableApiKeys}
             ADD COLUMN `created_at` DATETIME NULL COMMENT 'Creation Date' AFTER `last_access`,
             ADD COLUMN `created_by` BIGINT(20) NULL COMMENT 'WP User ID' AFTER `created_at`,
             ADD COLUMN `updated_at` DATETIME NULL COMMENT 'Update Date' AFTER `created_by`,
@@ -35,9 +34,9 @@ if ($migration_mode == 'up') {
 /**
  * Downgrade
  */
-if ($migration_mode == 'down') {
+if ($migrationMode === 'down') {
     $sql = "
-        ALTER TABLE {$table_generators}
+        ALTER TABLE {$tableGenerators}
             DROP COLUMN `created_at`,
             DROP COLUMN `created_by`,
             DROP COLUMN `updated_at`,
@@ -47,7 +46,7 @@ if ($migration_mode == 'down') {
     $wpdb->query($sql);
 
     $sql = "
-        ALTER TABLE {$table_api_keys}
+        ALTER TABLE {$tableApiKeys}
             DROP COLUMN `created_at`,
             DROP COLUMN `created_by`,
             DROP COLUMN `updated_at`,

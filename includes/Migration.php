@@ -1,50 +1,34 @@
 <?php
-/**
- * Migrations handler
- * PHP Version: 5.6
- * 
- * @category WordPress
- * @package  LicenseManagerForWooCommerce
- * @author   Dražen Bebić <drazen.bebic@outlook.com>
- * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
- * @link     https://www.bebic.at/license-manager-for-woocommerce
- */
 
 namespace LicenseManagerForWooCommerce;
 
 defined('ABSPATH') || exit;
 
-/**
- * LicenseManagerForWooCommerce
- *
- * @category WordPress
- * @package  LicenseManagerForWooCommerce
- * @author   Dražen Bebić <drazen.bebic@outlook.com>
- * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
- * @version  Release: <1.2.0>
- * @link     https://www.bebic.at/license-manager-for-woocommerce
- * @since    1.0.0
- */
 class Migration
 {
-    public static function up($old_db_version)
+    /**
+     * Performs a database upgrade
+     *
+     * @param int $oldDatabaseVersion
+     */
+    public static function up($oldDatabaseVersion)
     {
-        $reg_exp_filename = '/(\d{14})_(.*?)_(.*?)\.php/';
-        $migration_mode = 'up';
+        $regExFileName = '/(\d{14})_(.*?)_(.*?)\.php/';
+        $migrationMode = 'up';
 
-        foreach (glob(LMFWC_MIGRATIONS_DIR . '*.php') as $filename) {
-            if (preg_match($reg_exp_filename, basename($filename), $match)) {
-                $file_basename = $match[0];
-                $file_datetime = $match[1];
-                $file_version = $match[2];
-                $file_description = $match[3];
+        foreach (glob(LMFWC_MIGRATIONS_DIR . '*.php') as $fileName) {
+            if (preg_match($regExFileName, basename($fileName), $match)) {
+                $fileBasename    = $match[0];
+                $fileDateTime    = $match[1];
+                $fileVersion     = $match[2];
+                $fileDescription = $match[3];
 
                 global $wpdb;
 
-                if (intval($file_version) <= Setup::DB_VERSION
-                    && intval($file_version) > $old_db_version
+                if (intval($fileVersion) <= Setup::DB_VERSION
+                    && intval($fileVersion) > $oldDatabaseVersion
                 ) {
-                    require_once $filename;
+                    require_once $fileName;
                 }
             }
         }
@@ -52,7 +36,12 @@ class Migration
         update_option('lmfwc_db_version', Setup::DB_VERSION, true);
     }
 
-    public static function down($old_db_version)
+    /**
+     * Performs a database downgrade (Currently not in use)
+     *
+     * @param $oldDatabaseVersion
+     */
+    public static function down($oldDatabaseVersion)
     {
     }
 }

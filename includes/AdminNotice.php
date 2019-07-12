@@ -93,7 +93,7 @@ class AdminNotice
      * Log and display exception
      * 
      * @param string  $message
-     * @param integer $duration
+     * @param int     $duration
      */
     public static function error($message, $duration = 60)
     {

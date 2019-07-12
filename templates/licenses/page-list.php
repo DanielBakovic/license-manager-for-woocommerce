@@ -4,7 +4,7 @@
 <a class="page-title-action" href="<?php echo esc_url($addLicenseUrl); ?>">
     <span><?php esc_html_e('Add new', 'lmfwc');?></span>
 </a>
-<a class="page-title-action" href="<?php echo esc_url($addLicenseUrl); ?>">
+<a class="page-title-action" href="<?php echo esc_url($importLicenseUrl); ?>">
     <span><?php esc_html_e('Import', 'lmfwc');?></span>
 </a>
 <hr class="wp-header-end">

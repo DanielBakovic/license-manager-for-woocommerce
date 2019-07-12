@@ -12,10 +12,10 @@ defined('ABSPATH') || exit;
 <hr class="wp-header-end">
 
 <form method="post" action="<?=admin_url('admin-post.php');?>">
-    <input type="hidden" name="id" value="<?=$key_id;?>">
+    <input type="hidden" name="id" value="<?php esc_html_e($key_id); ?>">
     <?php wp_nonce_field('lmfwc-api-key-update'); ?>
     <input type="hidden" name="action" value="<?='lmfwc_api_key_update';?>">
-    <input type="hidden" name="lmfwc_action" value="<?php echo esc_attr($action);?>">
+    <input type="hidden" name="lmfwc_action" value="<?php esc_attr_e($action);?>">
 
     <table class="form-table">
         <tbody>

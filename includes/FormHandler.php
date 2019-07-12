@@ -14,7 +14,6 @@ namespace LicenseManagerForWooCommerce;
 
 use LicenseManagerForWooCommerce\Enums\LicenseSource;
 use LicenseManagerForWooCommerce\Lists\LicensesList;
-use LicenseManagerForWooCommerce\Enums\LicenseStatus;
 use LicenseManagerForWooCommerce\Models\Resources\ApiKey as ApiKeyResourceModel;
 use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
 use LicenseManagerForWooCommerce\Repositories\Resources\ApiKey as ApiKeyResourceRepository;
@@ -25,19 +24,11 @@ use WC_Product_Simple;
 
 defined('ABSPATH') || exit;
 
-/**
- * LicenseManagerForWooCommerce FormHandler
- *
- * @category WordPress
- * @package  LicenseManagerForWooCommerce
- * @author   Dražen Bebić <drazen.bebic@outlook.com>
- * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
- * @version  Release: <1.1.0>
- * @link     https://www.bebic.at/license-manager-for-woocommerce
- * @since    1.0.0
- */
 class FormHandler
 {
+    /**
+     * Temporary import file name
+     */
     const TEMP_IMPORT_FILE = 'import.tmp';
 
     /**
@@ -100,9 +91,6 @@ class FormHandler
 
     /**
      * Save the generator to the database.
-     *
-     * @since  1.0.0
-     * @return null
      */
     public function saveGenerator()
     {
@@ -321,8 +309,9 @@ class FormHandler
         // Check the nonce.
         check_admin_referer('lmfwc_import_license_keys');
 
-        $ext = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
-        $mimes = array('application/vnd.ms-excel', 'text/plain', 'text/csv', 'text/tsv');
+        $licenseKeys = null;
+        $ext         = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+        $mimes       = array('application/vnd.ms-excel', 'text/plain', 'text/csv', 'text/tsv');
 
         if (!in_array($ext, array('txt', 'csv'))
             || !in_array($_FILES['file']['type'], $mimes)
@@ -333,7 +322,7 @@ class FormHandler
 
             wp_redirect(
                 sprintf(
-                    'admin.php?page=%s&action=add',
+                    'admin.php?page=%s&action=import',
                     AdminMenus::LICENSES_PAGE
                 )
             );
@@ -361,7 +350,7 @@ class FormHandler
 
                 wp_redirect(
                     sprintf(
-                        'admin.php?page=%s&action=add',
+                        'admin.php?page=%s&action=import',
                         AdminMenus::LICENSES_PAGE
                     )
                 );
@@ -384,19 +373,15 @@ class FormHandler
             }
         }
 
-        if (array_key_exists('activate', $_POST)) {
-            $status = LicenseStatus::ACTIVE;
-        } else {
-            $status = LicenseStatus::INACTIVE;
-        }
 
         // Save the imported keys.
         try {
             $result = apply_filters(
                 'lmfwc_insert_imported_license_keys',
                 $licenseKeys,
-                $status,
-                $_POST['product'],
+                $_POST['status'],
+                $_POST['order_id'],
+                $_POST['product_id'],
                 $_POST['valid_for'],
                 $_POST['times_activated_max']
             );
@@ -406,7 +391,7 @@ class FormHandler
             );
             wp_redirect(
                 sprintf(
-                    'admin.php?page=%s&action=add',
+                    'admin.php?page=%s&action=import',
                     AdminMenus::LICENSES_PAGE
                 )
             );
@@ -423,7 +408,7 @@ class FormHandler
             );
             wp_redirect(
                 sprintf(
-                    'admin.php?page=%s&action=add',
+                    'admin.php?page=%s&action=import',
                     AdminMenus::LICENSES_PAGE
                 )
             );
@@ -439,7 +424,7 @@ class FormHandler
             );
             wp_redirect(
                 sprintf(
-                    'admin.php?page=%s&action=add',
+                    'admin.php?page=%s&action=import',
                     AdminMenus::LICENSES_PAGE
                 )
             );
@@ -452,7 +437,7 @@ class FormHandler
             );
             wp_redirect(
                 sprintf(
-                    'admin.php?page=%s&action=add',
+                    'admin.php?page=%s&action=import',
                     AdminMenus::LICENSES_PAGE
                 )
             );
@@ -470,7 +455,7 @@ class FormHandler
 
             wp_redirect(
                 sprintf(
-                    'admin.php?page=%s&action=add',
+                    'admin.php?page=%s&action=import',
                     AdminMenus::LICENSES_PAGE
                 )
             );
@@ -487,22 +472,16 @@ class FormHandler
         // Check the nonce
         check_admin_referer('lmfwc_add_license_key');
 
-        // Set the proper license key status
-        if (array_key_exists('activate', $_POST)) {
-            $status = LicenseStatus::ACTIVE;
-        } else {
-            $status = LicenseStatus::INACTIVE;
-        }
-
         /** @var LicenseResourceModel $license */
         $license = LicenseResourceRepository::instance()->insert(
             array(
-                'product_id'          => $_POST['product'],
+                'order_id'            => $_POST['order_id'],
+                'product_id'          => $_POST['product_id'],
                 'license_key'         => apply_filters('lmfwc_encrypt', $_POST['license_key']),
                 'hash'                => apply_filters('lmfwc_hash', $_POST['license_key']),
                 'valid_for'           => $_POST['valid_for'],
                 'source'              => LicenseSource::IMPORT,
-                'status'              => $status,
+                'status'              => $_POST['status'],
                 'times_activated_max' => $_POST['times_activated_max']
             )
         );
@@ -542,7 +521,7 @@ class FormHandler
             $_POST['license_id'],
             array(
                 'order_id'            => $_POST['order_id'],
-                'product_id'          => $_POST['product'],
+                'product_id'          => $_POST['product_id'],
                 'license_key'         => apply_filters('lmfwc_encrypt', $_POST['license_key']),
                 'hash'                => apply_filters('lmfwc_hash', $_POST['license_key']),
                 'valid_for'           => $_POST['valid_for'],
@@ -797,7 +776,8 @@ class FormHandler
             );
 
             $html .= sprintf(
-                '<img class="lmfwc-spinner" src="%s">',
+                '<img class="lmfwc-spinner" alt="%s" src="%s">',
+                __('Please wait...', 'lmfwc'),
                 LicensesList::SPINNER_URL
             );
 

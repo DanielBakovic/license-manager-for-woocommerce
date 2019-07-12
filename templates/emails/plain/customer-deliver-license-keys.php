@@ -1,1 +1,1 @@
-customer-deliiver-license-keys
+<?php defined('ABSPATH') || exit; ?>

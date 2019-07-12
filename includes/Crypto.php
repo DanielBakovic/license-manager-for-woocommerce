@@ -2,42 +2,28 @@
 
 namespace LicenseManagerForWooCommerce;
 
+use Defuse\Crypto\Exception\BadFormatException;
+use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Key;
 use Defuse\Crypto\Crypto as DefuseCrypto;
 use Defuse\Crypto\Exception\WrongKeyOrModifiedCiphertextException;
 
 defined('ABSPATH') || exit;
 
-/**
- * LicenseManagerForWooCommerce Crypto class.
- *
- * @version 1.0.1
- * @since 1.0.0
- */
 class Crypto
 {
     /**
      * The defuse key file name.
-     *
-     * @var   string
-     * @since 1.0.0
      */
     const DEFUSE_FILE = 'defuse.txt';
 
     /**
      * The secret file name.
-     *
-     * @var   string
-     * @since 1.0.0
      */
     const SECRET_FILE = 'secret.txt';
 
     /**
-     * Folder name inside the wp_contents directory where the cryptographic secrets
-     * are stored.
-     * 
-     * @var   string
-     * @since 1.1.1
+     * Folder name inside the wp_contents directory where the cryptographic secrets are stored.
      */
     const PLUGIN_SLUG = 'lmfwc-files';
 
@@ -46,14 +32,14 @@ class Crypto
      *
      * @var string
      */
-    private $key_ascii;
+    private $keyAscii;
 
     /**
      * The hashing key
      * 
      * @var string
      */
-    private $key_secret;
+    private $keySecret;
 
     /**
      * Directory path to the plugin folder inside wp-content/uploads
@@ -78,54 +64,62 @@ class Crypto
         add_filter('lmfwc_hash',    array($this, 'hash'),    10, 1);
     }
 
+    /**
+     * Sets the defuse encryption key
+     */
     private function setDefuse()
     {
         /* When the cryptographic secrets are loaded into these constants, no other files are needed */
         if (defined('LMFWC_PLUGIN_DEFUSE')) {
-            $this->key_ascii = LMFWC_PLUGIN_DEFUSE;
+            $this->keyAscii = LMFWC_PLUGIN_DEFUSE;
             return;
         }
 
         if (file_exists($this->uploads_dir . self::DEFUSE_FILE)) {
-            $this->key_ascii = file_get_contents($this->uploads_dir . self::DEFUSE_FILE);
+            $this->keyAscii = file_get_contents($this->uploads_dir . self::DEFUSE_FILE);
         }
     }
 
+    /**
+     * Sets the cryptographic secret
+     */
     private function setSecret()
     {
         /* When the cryptographic secrets are loaded into these constants, no other files are needed */
         if (defined('LMFWC_PLUGIN_SECRET')) {
-            $this->key_secret = LMFWC_PLUGIN_SECRET;
+            $this->keySecret = LMFWC_PLUGIN_SECRET;
             return;
         }
 
         if (file_exists($this->uploads_dir . self::SECRET_FILE)) {
-            $this->key_secret = file_get_contents($this->uploads_dir . self::SECRET_FILE);
+            $this->keySecret = file_get_contents($this->uploads_dir . self::SECRET_FILE);
         }
     }
 
     /**
      * Load the defuse key from the plugin folder.
      *
-     * @since 1.0.0
+     * @throws BadFormatException
+     * @throws EnvironmentIsBrokenException
      *
      * @return string
      */
     private function loadEncryptionKeyFromConfig()
     {
-        if (!$this->key_ascii) {
-            return;
+        if (!$this->keyAscii) {
+            return '';
         }
 
-        return Key::loadFromAsciiSafeString($this->key_ascii);
+        return Key::loadFromAsciiSafeString($this->keyAscii);
     }
 
     /**
      * Encrypt a string and return the encrypted cipher text.
      *
-     * @since 1.0.0
+     * @param string $value
      *
-     * @param string $value - The text which will be encrypted.
+     * @throws BadFormatException
+     * @throws EnvironmentIsBrokenException
      *
      * @return string
      */
@@ -137,9 +131,10 @@ class Crypto
     /**
      * Decrypt a cipher and return the decrypted value.
      *
-     * @since 1.0.0
+     * @param string $cipher
      *
-     * @param string $cipher - The cipher text which will be decrypted.
+     * @throws BadFormatException
+     * @throws EnvironmentIsBrokenException
      *
      * @return string
      */
@@ -152,13 +147,17 @@ class Crypto
         try {
             return DefuseCrypto::decrypt($cipher, $this->loadEncryptionKeyFromConfig());
         } catch (WrongKeyOrModifiedCiphertextException $ex) {
-            // An attack! Either the wrong key was loaded, or the ciphertext has changed since it was created -- either
+            // An attack! Either the wrong key was loaded, or the cipher text has changed since it was created -- either
             // corrupted in the database or intentionally modified by someone trying to carry out an attack.
         }
     }
 
+    /**
+     * @param $value
+     * @return false|string
+     */
     public function hash($value)
     {
-        return hash_hmac('sha256', $value, $this->key_secret);
+        return hash_hmac('sha256', $value, $this->keySecret);
     }
 }

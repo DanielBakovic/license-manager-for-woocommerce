@@ -1,14 +1,4 @@
 <?php
-/**
- * Export handler
- * PHP Version: 5.6
- * 
- * @category WordPress
- * @package  LicenseManagerForWooCommerce
- * @author   Dražen Bebić <drazen.bebic@outlook.com>
- * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
- * @link     https://www.bebic.at/license-manager-for-woocommerce
- */
 
 namespace LicenseManagerForWooCommerce;
 
@@ -20,17 +10,6 @@ use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResour
 
 defined('ABSPATH') || exit;
 
-/**
- * LicenseManagerForWooCommerce Export
- *
- * @category WordPress
- * @package  LicenseManagerForWooCommerce
- * @author   Dražen Bebić <drazen.bebic@outlook.com>
- * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
- * @version  Release: <1.1.0>
- * @link     https://www.bebic.at/license-manager-for-woocommerce
- * @since    1.0.0
- */
 class Export
 {
     /**

@@ -20,24 +20,31 @@ if (class_exists('AdminMenus', false)) {
 
 class AdminMenus
 {
-    private $tab_whitelist;
-    private $section_whitelist;
+    /**
+     * @var array
+     */
+    private $tabWhitelist;
 
-    const LICENSES_PAGE   = 'lmfwc_licenses';
+    /**
+     * Licenses page slug
+     */
+    const LICENSES_PAGE = 'lmfwc_licenses';
+
+    /**
+     * Generators page slug
+     */
     const GENERATORS_PAGE = 'lmfwc_generators';
+
+    /**
+     * Settings page slug
+     */
     const SETTINGS_PAGE   = 'lmfwc_settings';
 
     /**
      * Class constructor.
      */
     public function __construct() {
-        $this->tab_whitelist = array(
-            'general',
-            'rest_api'
-        );
-        $this->section_whitelist = array(
-            ''
-        );
+        $this->tabWhitelist = array('general', 'rest_api');
 
         // Plugin pages.
         add_action('admin_menu', array($this, 'createPluginPages'), 9);
@@ -50,6 +57,11 @@ class AdminMenus
         add_filter('admin_footer_text', array($this, 'adminFooterText'), 1);
     }
 
+    /**
+     * Returns an array of all plugin pages
+     *
+     * @return array
+     */
     public function getPluginPageIDs()
     {
         return array(
@@ -59,6 +71,9 @@ class AdminMenus
         );
     }
 
+    /**
+     * Sets up all necessary plugin pages
+     */
     public function createPluginPages()
     {
         // Licenses List Page
@@ -71,7 +86,7 @@ class AdminMenus
             'dashicons-lock',
             10
         );
-        $licenses_hook = add_submenu_page(
+        $licensesHook = add_submenu_page(
             self::LICENSES_PAGE,
             __('License Manager', 'lmfwc'),
             __('License keys', 'lmfwc'),
@@ -79,10 +94,10 @@ class AdminMenus
             self::LICENSES_PAGE,
             array($this, 'licensesPage')
         );
-        add_action('load-' . $licenses_hook, array($this, 'licensesPageScreenOptions'));
+        add_action('load-' . $licensesHook, array($this, 'licensesPageScreenOptions'));
 
         // Generators List Page
-        $generators_hook = add_submenu_page(
+        $generatorsHook = add_submenu_page(
             self::LICENSES_PAGE,
             __('License Manager - Generators', 'lmfwc'),
             __('Generators', 'lmfwc'),
@@ -90,7 +105,7 @@ class AdminMenus
             self::GENERATORS_PAGE,
             array($this, 'generatorsPage')
         );
-        add_action('load-' . $generators_hook, array($this, 'generatorsPageScreenOptions'));
+        add_action('load-' . $generatorsHook, array($this, 'generatorsPageScreenOptions'));
 
         // Settings Page
         add_submenu_page(
@@ -103,6 +118,9 @@ class AdminMenus
         );
     }
 
+    /**
+     * Adds the supported screen options for the licenses list
+     */
     public function licensesPageScreenOptions()
     {
         $option = 'per_page';
@@ -115,6 +133,24 @@ class AdminMenus
         add_screen_option($option, $args);
     }
 
+    /**
+     * Adds the supported screen options for the generators list
+     */
+    public function generatorsPageScreenOptions()
+    {
+        $option = 'per_page';
+        $args = array(
+            'label'   => __('Generators per page', 'lmfwc'),
+            'default' => 10,
+            'option'  => 'generators_per_page'
+        );
+
+        add_screen_option($option, $args);
+    }
+
+    /**
+     * Sets up the licenses page
+     */
     public function licensesPage()
     {
         $licenses = new LicensesList();
@@ -126,15 +162,28 @@ class AdminMenus
                 wp_create_nonce('add')
             )
         );
+        $importLicenseUrl = admin_url(
+            sprintf(
+                'admin.php?page=%s&action=import&_wpnonce=%s',
+                self::LICENSES_PAGE,
+                wp_create_nonce('import')
+            )
+        );
 
         if ($action === 'add'
             || $action === 'edit'
             || $action === 'activate'
             || $action === 'deactivate'
             || $action === 'delete'
+            || $action === 'import'
         ) {
             $products = apply_filters('lmfwc_get_products_dropdown', null);
-        } 
+        }
+
+        if ($action === 'edit' || $action === 'add' || $action === 'import') {
+            $orders = wc_get_orders(array('limit' => -1));
+            $statusOptions = LicenseStatus::dropdown();
+        }
 
         if ($action === 'edit') {
             if (!current_user_can('manage_options')) {
@@ -149,13 +198,47 @@ class AdminMenus
             }
 
             $licenseKey    = $license->getDecryptedLicenseKey();
-            $statusOptions = LicenseStatus::dropdown();
-            $orders        = wc_get_orders(array('limit' => -1));
         }
 
-        include LMFWC_TEMPLATES_DIR . 'licenses-page.php';
+        include LMFWC_TEMPLATES_DIR . 'page-licenses.php';
     }
 
+    /**
+     * Sets up the generators page
+     */
+    public function generatorsPage()
+    {
+        $generators = new GeneratorsList();
+        $action     = $this->getCurrentAction($default = 'list');
+
+        if ($action == 'list') {
+            $add_generator_url = wp_nonce_url(
+                sprintf(
+                    admin_url('admin.php?page=%s&action=add'),
+                    self::GENERATORS_PAGE
+                ),
+                'lmfwc_add_generator'
+            );
+        }
+
+        if ($action === 'edit') {
+            if (!array_key_exists('edit', $_GET) && !array_key_exists('id', $_GET)) {
+                return;
+            }
+
+            if (!$generator = GeneratorResourceRepository::instance()->find($_GET['id'])) {
+                return;
+            }
+
+            $products = apply_filters('lmfwc_get_assigned_products', $_GET['id']);
+        }
+
+        include LMFWC_TEMPLATES_DIR . 'page-generators.php';
+    }
+
+    /**
+     * Sets up the settings page
+     */
     public function settingsPage()
     {
         $tab = $this->getCurrentTab();
@@ -225,65 +308,40 @@ class AdminMenus
             );
         }
 
-        include LMFWC_TEMPLATES_DIR . 'settings-page.php';
+        include LMFWC_TEMPLATES_DIR . 'page-settings.php';
     }
 
-    public function generatorsPage()
-    {
-        $generators = new GeneratorsList();
-        $action     = $this->getCurrentAction($default = 'list');
-
-        if ($action == 'list') {
-            $add_generator_url = wp_nonce_url(
-                sprintf(
-                    admin_url('admin.php?page=%s&action=add'),
-                    self::GENERATORS_PAGE
-                ),
-                'lmfwc_add_generator'
-            );
-        }
-
-        if ($action == 'edit') {
-            if (!array_key_exists('edit', $_GET) && !array_key_exists('id', $_GET)) {
-                return;
-            }
-
-            if (!$generator = GeneratorResourceRepository::instance()->find($_GET['id'])) {
-               return;
-            }
-
-            $products = apply_filters('lmfwc_get_assigned_products', $_GET['id']);
-        }
-
-        include LMFWC_TEMPLATES_DIR . 'generators-page.php';
-    }
-
-    public function generatorsPageScreenOptions()
-    {
-        $option = 'per_page';
-        $args = array(
-            'label'   => __('Generators per page', 'lmfwc'),
-            'default' => 10,
-            'option'  => 'generators_per_page'
-        );
-
-        add_screen_option($option, $args);
-    }
-
+    /**
+     * Initialized the plugin Settings API
+     */
     public function initSettingsAPI()
     {
         new Settings();
     }
 
-    public function setScreenOption($status, $option, $value)
+    /**
+     * @param bool   $keep
+     * @param string $option
+     * @param int    $value
+     *
+     * @return int
+     */
+    public function setScreenOption($keep, $option, $value)
     {
         return $value;
     }
 
-    public function adminFooterText($footer_text)
+    /**
+     * Sets the custom footer text for the plugin pages
+     *
+     * @param string $footerText
+     *
+     * @return string
+     */
+    public function adminFooterText($footerText)
     {
         if (!current_user_can('manage_options') || !function_exists('wc_get_screen_ids')) {
-            return $footer_text;
+            return $footerText;
         }
 
         $current_screen = get_current_screen();
@@ -291,38 +349,48 @@ class AdminMenus
         // Check to make sure we're on a WooCommerce admin page.
         if (isset($current_screen->id) && in_array($current_screen->id, $this->getPluginPageIDs())) {
             // Change the footer text
-            $footer_text = sprintf(
+            $footerText = sprintf(
                 __( 'If you like %1$s please leave us a %2$s rating. A huge thanks in advance!', 'lmfwc' ),
                 sprintf( '<strong>%s</strong>', esc_html__( 'License Manager for WooCommerce', 'lmfwc' ) ),
                 '<a href="https://wordpress.org/support/plugin/license-manager-for-woocommerce/reviews/?rate=5#new-post" target="_blank" class="wc-rating-link" data-rated="' . esc_attr__( 'Thanks :)', 'lmfwc' ) . '">&#9733;&#9733;&#9733;&#9733;&#9733;</a>'
             );
         }
 
-        return $footer_text;
+        return $footerText;
     }
 
+    /**
+     * Retrieves the currently active tab
+     *
+     * @return string
+     */
     protected function getCurrentTab()
     {
-        if (isset($_GET['tab']) && in_array($_GET['tab'], $this->tab_whitelist)) {
+        $tab = 'general';
+
+        if (isset($_GET['tab']) && in_array($_GET['tab'], $this->tabWhitelist)) {
             $tab = sanitize_text_field($_GET['tab']);
-        } else {
-            $tab = 'general';
         }
 
         return $tab;
     }
 
+    /**
+     * Retrieves the currently active section (currently not used)
+     *
+     * @return string
+     */
     protected function getCurrentSection()
     {
-        $section = '';
-
-        return $section;
+        return '';
     }
 
     /**
      * Returns the string value of the "action" GET parameter
-     * 
-     * @return string|null
+     *
+     * @param string $default
+     *
+     * @return string
      */
     protected function getCurrentAction($default)
     {

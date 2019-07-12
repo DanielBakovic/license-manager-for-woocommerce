@@ -93,7 +93,7 @@
                 <th scope="row"><label for="edit__product"><?php esc_html_e('Product', 'lmfwc');?></label></th>
                 <td>
                     <?php if (!empty($products)): ?>
-                        <select name="product" id="edit__product" class="regular-text">
+                        <select name="product_id" id="edit__product" class="regular-text">
                             <option value=""><?php esc_html_e('Select a product...');?></option>
                             <?php
                             foreach ($products as $product) {

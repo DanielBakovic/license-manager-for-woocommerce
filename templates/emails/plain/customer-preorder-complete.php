@@ -1,1 +1,1 @@
-customer-preorder-complete
+<?php defined('ABSPATH') || exit; ?>

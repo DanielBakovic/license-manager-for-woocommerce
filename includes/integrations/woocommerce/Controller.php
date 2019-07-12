@@ -33,7 +33,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
 
         add_filter('lmfwc_get_customer_license_keys',     array($this, 'getCustomerLicenseKeys'),     10, 1);
         add_filter('lmfwc_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 6);
-        add_filter('lmfwc_insert_imported_license_keys',  array($this, 'insertImportedLicenseKeys'),  10, 5);
+        add_filter('lmfwc_insert_imported_license_keys',  array($this, 'insertImportedLicenseKeys'),  10, 6);
         add_action('lmfwc_sell_imported_license_keys',    array($this, 'sellImportedLicenseKeys'),    10, 3);
     }
 
@@ -201,6 +201,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
      *
      * @param array $licenseKeys
      * @param int   $status
+     * @param int   $orderId
      * @param int   $productId
      * @param int   $validFor
      * @param int   $timesActivatedMax
@@ -208,11 +209,12 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
      * @return array
      * @throws LMFWC_Exception
      */
-    public function insertImportedLicenseKeys($licenseKeys, $status, $productId, $validFor, $timesActivatedMax)
+    public function insertImportedLicenseKeys($licenseKeys, $status, $orderId, $productId, $validFor, $timesActivatedMax)
     {
         $result                 = array();
         $cleanLicenseKeys       = array();
         $cleanStatus            = $status            ? absint($status)            : null;
+        $cleanOrderId           = $orderId           ? absint($orderId)           : null;
         $cleanProductId         = $productId         ? absint($productId)         : null;
         $cleanValidFor          = $validFor          ? absint($validFor)          : null;
         $cleanTimesActivatedMax = $timesActivatedMax ? absint($timesActivatedMax) : null;
@@ -240,11 +242,10 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         foreach ($cleanLicenseKeys as $licenseKey) {
             $license = LicenseResourceRepository::instance()->insert(
                 array(
-                    'order_id'            => null,
+                    'order_id'            => $cleanOrderId,
                     'product_id'          => $cleanProductId,
                     'license_key'         => apply_filters('lmfwc_encrypt', $licenseKey),
                     'hash'                => apply_filters('lmfwc_hash', $licenseKey),
-                    'expires_at'          => null,
                     'valid_for'           => $cleanValidFor,
                     'source'              => LicenseSource::IMPORT,
                     'status'              => $cleanStatus,
