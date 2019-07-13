@@ -9,11 +9,13 @@
 </a>
 <hr class="wp-header-end">
 
-<?php $licenses->views(); ?>
+<?php  ?>
 
-<form method="post">
+<form method="post" id="lmfwc-license-table">
     <?php
         $licenses->prepare_items();
+        $licenses->views();
+        $licenses->search_box(__( 'Search license key', 'lmfwc' ), 'license_key');
         $licenses->display();
     ?>
 </form>

@@ -4,19 +4,12 @@ namespace LicenseManagerForWooCommerce\API;
 
 defined('ABSPATH') || exit;
 
-/**
- * Setup all the API endpoints
- *
- * @since 1.1.0
- */
 class Setup
 {
     public $controller;
 
     /**
      * Setup class constructor.
-     *
-     * @return null
      */
     public function __construct() {
         // REST API was included starting WordPress 4.4.
@@ -30,8 +23,6 @@ class Setup
 
     /**
      * Register the new plugin routes
-     *
-     * @return null
      */
     public function registerRoutes()
     {

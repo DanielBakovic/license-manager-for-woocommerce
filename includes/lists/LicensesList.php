@@ -1,14 +1,4 @@
 <?php
-/**
- * License listing class.
- * PHP Version: 5.6
- * 
- * @category WordPress
- * @package  LicenseManagerForWooCommerce
- * @author   Dražen Bebić <drazen.bebic@outlook.com>
- * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
- * @link     https://www.bebic.at/license-manager-for-woocommerce
- */
 
 namespace LicenseManagerForWooCommerce\Lists;
 
@@ -22,6 +12,7 @@ use LicenseManagerForWooCommerce\Settings;
 use LicenseManagerForWooCommerce\Setup;
 use WC_Product;
 use WP_List_Table;
+use WP_User;
 
 defined('ABSPATH') || exit;
 
@@ -29,19 +20,11 @@ if (!class_exists('WP_List_Table')) {
     include_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
 }
 
-/**
- * LicenseManagerForWooCommerce
- *
- * @category WordPress
- * @package  LicenseManagerForWooCommerce
- * @author   Dražen Bebić <drazen.bebic@outlook.com>
- * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
- * @version  Release: <1.3.0>
- * @link     https://www.bebic.at/license-manager-for-woocommerce
- * @since    1.0.0
- */
 class LicensesList extends WP_List_Table
 {
+    /**
+     * Path to spinner image
+     */
     const SPINNER_URL = '/wp-admin/images/loading.gif';
 
     /**
@@ -87,8 +70,8 @@ class LicensesList extends WP_List_Table
 
     /**
      * Creates the different status filter links at the top of the table.
-     * 
-     * @return null
+     *
+     * @return array
      */
     protected function get_views()
     {
@@ -153,21 +136,24 @@ class LicensesList extends WP_List_Table
         return $statusLinks;
     }
 
-//    protected function extra_tablenav($which)
-//    {
-//        if ($which === 'top') {
-//            echo '<div class="alignleft actions">';
-//                $this->level_dropdown();
-//                $this->source_dropdown();
-//                submit_button(__( 'Filter', 'lmfwc' ), '', 'filter-action', false);
-//            echo '</div>';
-//        }
-//    }
+    /**
+     * @param string $which
+     */
+    protected function extra_tablenav($which)
+    {
+        if ($which === 'top') {
+            echo '<div class="alignleft actions">';
+            $this->order_dropdown();
+            $this->product_dropdown();
+            submit_button(__('Filter', 'lmfwc'), '', 'filter-action', false);
+            echo '</div>';
+        }
+    }
 
     /**
-     * Display level dropdown
+     * Display order dropdown
      */
-    public function level_dropdown() {
+    public function order_dropdown() {
 
         global $wpdb;
 
@@ -178,16 +164,16 @@ class LicensesList extends WP_List_Table
         );
 
         foreach ($results as $result) {
-            if (!$order_id = intval($result['order_id'])) {
+            if (!$orderId = intval($result['order_id'])) {
                 continue;
             }
 
-            if (!$order = wc_get_order($order_id)) {
+            if (!$order = wc_get_order($orderId)) {
                 continue;
             }
 
             array_push($orders, array(
-                'value' => $order_id,
+                'value' => $orderId,
                 'label' => $order->get_formatted_billing_full_name()
             ));
         }
@@ -202,8 +188,7 @@ class LicensesList extends WP_List_Table
                 <span><?php _e('Filter by order', 'lmfwc'); ?></span>
             </label>
             <select name="order-id" id="filter-by-order-id">
-                <option<?php selected($selectedOrder, ''); ?> value="">
-                    <span><?php _e('All orders', 'lmfwc'); ?></option></span>
+                <option <?php selected($selectedOrder, ''); ?> value=""><?php _e('All orders', 'lmfwc'); ?></option>
                 <?php
                 foreach ($orders as $order) {
                     printf(
@@ -215,6 +200,62 @@ class LicensesList extends WP_List_Table
                 }
                 ?>
             </select>
+        <?php
+    }
+
+    /**
+     * Display product dropdown
+     */
+    public function product_dropdown() {
+        global $wpdb;
+
+        $products = array();
+        $results  = $wpdb->get_results(
+            "SELECT DISTINCT `product_id` FROM {$this->table} WHERE `product_id` IS NOT NULL;",
+            ARRAY_A
+        );
+
+        foreach ($results as $result) {
+            if (!$productId = intval($result['product_id'])) {
+                continue;
+            }
+
+            /** @var $product WC_Product */
+            if (!$product = wc_get_product($productId)) {
+                continue;
+            }
+
+            array_push(
+                $products,
+                array(
+                    'value' => $productId,
+                    'label' => sprintf('%s', $product->get_name())
+                )
+            );
+        }
+
+        if (count($products) === 0) {
+            return $products;
+        }
+
+        $selectedProduct = isset($_REQUEST['product-id']) ? $_REQUEST['product-id'] : '';
+        ?>
+        <label for="filter-by-product-id" class="screen-reader-text">
+            <span><?php _e('Filter by product', 'lmfwc'); ?></span>
+        </label>
+        <select name="product-id" id="filter-by-product-id">
+            <option <?php selected($selectedProduct, ''); ?> value=""><?php _e('All products', 'lmfwc'); ?></option>
+            <?php
+            foreach ($products as $product) {
+                printf(
+                    '<option%1$s value="%2$s">%3$s</option>',
+                    selected($selectedProduct, $product['value'], false),
+                    esc_attr($product['value']),
+                    esc_html('#' . $product['value'] . ' ' . $product['label'])
+                );
+            }
+            ?>
+        </select>
         <?php
     }
 
@@ -445,31 +486,105 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Created at column
-     * 
+     * Created column
+     *
      * @param array $item Associative array of column name and value pairs
      *
      * @throws Exception
      * @return string
      */
-    public function column_created_at($item)
+    public function column_created($item)
     {
-        if (!$item['created_at']) {
-            return '';
+        $html = '';
+
+        if ($item['created_at']) {
+            $offsetSeconds = floatval($this->gmtOffset) * 60 * 60;
+            $timestamp     = strtotime($item['created_at']) + $offsetSeconds;
+            $result        = date('Y-m-d H:i:s', $timestamp);
+            $date          = new DateTime($result);
+
+            $html .= sprintf(
+                '<span>%s <b>%s, %s</b></span>',
+                __('at', 'lmfwc'),
+                $date->format($this->dateFormat),
+                $date->format($this->timeFormat)
+            );
         }
 
-        $offsetSeconds = floatval($this->gmtOffset) * 60 * 60;
-        $timestamp = strtotime($item['created_at']) + $offsetSeconds;
-        $result = date('Y-m-d H:i:s', $timestamp);
-        $date = new DateTime($result);
+        if ($item['created_by']) {
+            /** @var WP_User $user */
+            $user = get_user_by('id', $item['created_by']);
 
-        $createdAt = sprintf(
-            '<span class="lmfwc-date lmfwc-status">%s, %s</span>',
-            $date->format($this->dateFormat),
-            $date->format($this->timeFormat)
-        );
+            if ($user instanceof WP_User) {
+                if (current_user_can('manage_options')) {
+                    $html .= sprintf(
+                        '<br>%s <a href="%s">%s</a>',
+                        __('by', 'lmfwc'),
+                        get_edit_user_link($user->ID),
+                        $user->display_name
+                    );
+                } else {
+                    $html .= sprintf(
+                        '<br><span>%s %s</span>',
+                        __('by', 'lmfwc'),
+                        $user->display_name
+                    );
+                }
+            }
+        }
 
-        return $createdAt;
+        return $html;
+    }
+
+    /**
+     * Updated column
+     *
+     * @param array $item Associative array of column name and value pairs
+     *
+     * @throws Exception
+     * @return string
+     */
+    public function column_updated($item)
+    {
+        $html = '';
+
+        if ($item['updated_at']) {
+            $offsetSeconds = floatval($this->gmtOffset) * 60 * 60;
+            $timestamp     = strtotime($item['updated_at']) + $offsetSeconds;
+            $result        = date('Y-m-d H:i:s', $timestamp);
+            $date          = new DateTime($result);
+
+            $html .= sprintf(
+                '<span>%s <b>%s, %s</b></span>',
+                __('at', 'lmfwc'),
+                $date->format($this->dateFormat),
+                $date->format($this->timeFormat)
+            );
+        }
+
+        if ($item['updated_by']) {
+            /** @var WP_User $user */
+            $user = get_user_by('id', $item['updated_by']);
+
+            if ($user instanceof WP_User) {
+                if (current_user_can('manage_options')) {
+                    $html .= sprintf(
+                        '<br>%s <a href="%s">%s</a>',
+                        __('by', 'lmfwc'),
+                        get_edit_user_link($user->ID),
+                        $user->display_name
+                    );
+                } else {
+                    $html .= sprintf(
+                        '<br><span>%s %s</span>',
+                        __('by', 'lmfwc'),
+                        $user->display_name
+                    );
+                }
+            }
+        }
+
+        return $html;
     }
 
     /**
@@ -602,7 +717,8 @@ class LicensesList extends WP_List_Table
             'product_id' => array('product_id', true),
             'expires_at' => array('expires_at', true),
             'status'     => array('status', true),
-            'created_at' => array('created_at', true),
+            'created'    => array('created_at', true),
+            'updated'    => array('updated_at', true),
             'activation' => array('times_activated_max', true)
         );
 
@@ -678,18 +794,14 @@ class LicensesList extends WP_List_Table
             'total_pages' => ceil($totalItems / $perPage)
         ));
 
-        if (array_key_exists('filter_action', (array)$_REQUEST)) {
-            $this->filter_licenses();
-        }
-
         $this->items = $this->get_licenses($perPage, $currentPage);
     }
 
     /**
      * Retrieves the licenses from the database.
      * 
-     * @param integer $per_page    Default amount of licenses per page
-     * @param integer $page_number Default page number
+     * @param int $per_page    Default amount of licenses per page
+     * @param int $page_number Default page number
      * 
      * @return array
      */
@@ -699,34 +811,29 @@ class LicensesList extends WP_List_Table
 
         $sql = "SELECT * FROM {$this->table} WHERE 1 = 1";
 
-        $where = '';
-
+        // Applies the view filter
         if ($this->is_view_filter_active()) {
-            $where .= $wpdb->prepare(
-                ' AND status = %d',
-                intval($_GET['status'])
+            $sql .= $wpdb->prepare(' AND status = %d', intval($_GET['status']));
+        }
+
+        // Applies the search box filter
+        if (array_key_exists('s', $_REQUEST) && $_REQUEST['s']) {
+            $sql .= $wpdb->prepare(
+                ' AND hash = %s',
+                apply_filters('lmfwc_hash', sanitize_text_field($_REQUEST['s']))
             );
         }
 
+        // Applies the order filter
         if (isset($_REQUEST['order-id']) && is_numeric($_REQUEST['order-id'])) {
-            $where .= $wpdb->prepare(
-                ' AND order_id = %d',
-                intval($_REQUEST['order-id'])
-            );
-
-            $foo = add_query_arg(array(
-                'filter-order-id' => intval($_REQUEST['order-id'])
-            ));
+            $sql .= $wpdb->prepare(' AND order_id = %d', intval($_REQUEST['order-id']));
         }
 
+        // Applies the product filter
         if (isset($_REQUEST['product-id']) && is_numeric($_REQUEST['product-id'])) {
-            $where .= $wpdb->prepare(
-                ' AND product_id = %d',
-                intval($_REQUEST['product-id'])
-            );
+            $sql .= $wpdb->prepare(' AND product_id = %d', intval($_REQUEST['product-id']));
         }
 
-        $sql .= $where;
         $sql .= ' ORDER BY ' . (empty($_REQUEST['orderby']) ? 'id' : esc_sql($_REQUEST['orderby']));
         $sql .= ' '          . (empty($_REQUEST['order'])   ? 'DESC'  : esc_sql($_REQUEST['order']));
         $sql .= " LIMIT {$per_page}";
@@ -740,9 +847,9 @@ class LicensesList extends WP_List_Table
     /**
      * Retrieves the generator table row count
      * 
-     * @return integer
+     * @return int
      */
-    public function record_count($status = null)
+    public function record_count()
     {
         global $wpdb;
 
@@ -756,7 +863,13 @@ class LicensesList extends WP_List_Table
             $sql .= $wpdb->prepare(' AND order_id = %d', intval($_REQUEST['order-id']));
         }
 
-        //return $wpdb->get_var("SELECT COUNT(*) FROM {$this->table}");
+        if (array_key_exists('s', $_REQUEST) && $_REQUEST['s']) {
+            $sql .= $wpdb->prepare(
+                ' AND hash = %s',
+                apply_filters('lmfwc_hash', sanitize_text_field($_REQUEST['s']))
+            );
+        }
+
         return $wpdb->get_var($sql);
     }
 
@@ -779,10 +892,11 @@ class LicensesList extends WP_List_Table
             'order_id'    => __('Order', 'lmfwc'),
             'product_id'  => __('Product', 'lmfwc'),
             'activation'  => __('Activation', 'lmfwc'),
-            'created_at'  => __('Created at', 'lmfwc'),
             'expires_at'  => __('Expires at', 'lmfwc'),
             'valid_for'   => __('Valid for', 'lmfwc'),
-            'status'      => __('Status', 'lmfwc')
+            'status'      => __('Status', 'lmfwc'),
+            'created'     => __('Created', 'lmfwc'),
+            'updated'     => __('Updated', 'lmfwc')
         );
 
         return $columns;
@@ -825,12 +939,8 @@ class LicensesList extends WP_List_Table
         $message = '';
 
         foreach ($licenseKeyIds as $licenseKeyId) {
-            try {
-                LicenseResourceRepository::instance()->update($licenseKeyId, array('status' => $status));
-                $count++;
-            } catch (Exception $e) {
-                // Todo...
-            }
+            LicenseResourceRepository::instance()->update($licenseKeyId, array('status' => $status));
+            $count++;
         }
 
         if ($nonce == 'activate') {
@@ -917,26 +1027,31 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Sets a filter
+     * Displays the search box
+     *
+     * @param string $text
+     * @param string $inputId
      */
-    protected function filter_licenses()
+    public function search_box($text, $inputId)
     {
-        $args = array();
-
-        remove_query_arg('product_id');
-        remove_query_arg('order_id');
-
-        if ($_REQUEST['product-filter']) {
-            $args['product_id'] = intval($_REQUEST['product-filter']);
+        if (empty($_REQUEST['s']) && !$this->has_items()) {
+            return;
         }
 
-        if ($_REQUEST['order-filter']) {
-            $args['order_id'] = intval($_REQUEST['order-filter']);
-        }
+        $inputId     = $inputId . '-search-input';
+        $searchQuery = isset($_REQUEST['s']) ? sanitize_text_field(wp_unslash($_REQUEST['s'])) : '';
 
-        $url = add_query_arg($args);
+        echo '<p class="search-box">';
+        echo '<label class="screen-reader-text" for="' . esc_attr( $inputId ) . '">' . esc_html( $text ) . ':</label>';
+        echo '<input type="search" id="' . esc_attr($inputId) . '" name="s" value="' . esc_attr($searchQuery) . '" />';
 
-        wp_redirect($url);
-        exit();
+        submit_button(
+            $text, '', '', false,
+            array(
+                'id' => 'search-submit',
+            )
+        );
+
+        echo '</p>';
     }
 }
