@@ -133,6 +133,15 @@ final class Main
         // Licenses page
         if (isset($_GET['page']) && $_GET['page'] == AdminMenus::LICENSES_PAGE) {
             wp_enqueue_script('lmfwc_licenses_page_js', LMFWC_JS_URL . 'licenses_page.js');
+
+            wp_localize_script('lmfwc_licenses_page_js', 'i18n', array(
+                'placeholderSearchOrders'   => __('Search by order ID or customer email', 'lmfwc'),
+                'placeholderSearchProducts' => __('Search by product ID or product name', 'lmfwc')
+            ));
+
+            wp_localize_script('lmfwc_licenses_page_js', 'security', array(
+                'dropdownSearch' => wp_create_nonce('lmfwc_dropdown_search')
+            ));
         }
 
         // Generators page
@@ -234,7 +243,6 @@ final class Main
         new AdminNotice();
         new Generator();
         new Repositories\PostMeta();
-        new Repositories\Posts();
         new Repositories\Users();
         new FormHandler();
         new API\Setup();

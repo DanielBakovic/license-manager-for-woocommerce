@@ -55,24 +55,7 @@
         <tr scope="row">
             <th scope="row"><label for="bulk__order"><?php esc_html_e('Order', 'lmfwc');?></label></th>
             <td>
-                <?php if (!empty($orders)): ?>
-                    <select name="order_id" id="bulk__order" class="regular-text">
-                        <option value=""><?php esc_html_e('Select an order...');?></option>
-                        <?php
-                        /** @var WC_Order $order */
-                        foreach ($orders as $order) {
-                            echo sprintf(
-                                '<option value="%d">#%d - %s</option>',
-                                $order->get_id(),
-                                $order->get_id(),
-                                $order->get_formatted_billing_full_name()
-                            );
-                        }
-                        ?>
-                    </select>
-                <?php else: ?>
-                    <label><?php esc_html_e('You do not have any orders.', 'lmfwc');?></label>
-                <?php endif; ?>
+                <select name="order_id" id="bulk__order" class="regular-text"></select>
                 <p class="description"><?php esc_html_e('The order to which the license keys will be assigned.', 'lmfwc');?></p>
             </td>
         </tr>
@@ -81,23 +64,7 @@
         <tr scope="row">
             <th scope="row"><label for="bulk__product"><?php esc_html_e('Product', 'lmfwc');?></label></th>
             <td>
-                <?php if (!empty($products)): ?>
-                    <select name="product_id" id="bulk__product" class="regular-text">
-                        <option value=""><?php esc_html_e('Select a product...', 'lmfwc');?></option>
-                        <?php foreach ($products as $product): ?>
-                            <?php
-                                echo sprintf(
-                                    '<option value="%d">#%d - %s</option>',
-                                    $product['id'],
-                                    $product['id'],
-                                    $product['name']
-                                );
-                            ?>
-                        <?php endforeach; ?>
-                    </select>
-                <?php else: ?>
-                    <label><?php esc_html_e('You do not have any products defined.', 'lmfwc');?></label>
-                <?php endif; ?>
+                <select name="product_id" id="bulk__product" class="regular-text"></select>
                 <p class="description"><?php esc_html_e('The product to which the license keys will be assigned. You can also leave this blank to manually assign them later.', 'lmfwc');?></p>
             </td>
         </tr>

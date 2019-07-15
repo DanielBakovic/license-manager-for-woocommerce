@@ -1,7 +1,7 @@
 <?php defined('ABSPATH') || exit; ?>
 
 <h1 class="wp-heading-inline"><?php esc_html_e('Generators', 'lmfwc'); ?></h1>
-<a href="<?php echo esc_url($add_generator_url) ;?>" class="page-title-action">
+<a href="<?php echo esc_url($addGeneratorUrl); ?>" class="page-title-action">
     <span><?php esc_html_e('Add new', 'lmfwc');?></span>
 </a>
 <p>

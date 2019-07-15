@@ -1,33 +1,96 @@
 document.addEventListener('DOMContentLoaded', function(event) {
-    let selectBulkProduct   = jQuery('select#bulk__product');
-    let selectBulkOrder     = jQuery('select#bulk__order');
-    let selectSingleProduct = jQuery('select#single__product');
-    let selectSingleOrder   = jQuery('select#single__order');
-    let selectEditProduct   = jQuery('select#edit__product');
-    let selectEditOrder     = jQuery('select#edit__order');
+    let importLicenseProduct = jQuery('select#bulk__product');
+    let importLicenseOrder   = jQuery('select#bulk__order');
+    let addLicenseProduct    = jQuery('select#single__product');
+    let addLicenseOrder      = jQuery('select#single__order');
+    let editLicenseProduct   = jQuery('select#edit__product');
+    let editLicenseOrder     = jQuery('select#edit__order');
     //let licensesTableForm   = document.getElementById('lmfwc-license-table');
 
-    if (selectBulkProduct) {
-        selectBulkProduct.select2();
+    let productDropdownSearchConfig = {
+        ajax: {
+            cache: true,
+            delay: 500,
+            url: ajaxurl,
+            method: 'POST',
+            dataType: 'json',
+            data: function(params) {
+                return {
+                    action: 'lmfwc_dropdown_search',
+                    security: security.dropdownSearch,
+                    term: params.term,
+                    page: params.page,
+                    type: 'product'
+                };
+            },
+            processResults: function(data, params) {
+                console.log(data);
+                console.log(params);
+                params.page = params.page || 1;
+
+                return {
+                    results: data.results,
+                    pagination: {
+                        more: data.pagination.more
+                    }
+                };
+            }
+        },
+        placeholder: i18n.placeholderSearchProducts,
+        minimumInputLength: 1
+    };
+    let orderDropdownSearchConfig = {
+        ajax: {
+            cache: true,
+            delay: 500,
+            url: ajaxurl,
+            method: 'POST',
+            dataType: 'json',
+            data: function(params) {
+                return {
+                    action: 'lmfwc_dropdown_search',
+                    security: security.dropdownSearch,
+                    term: params.term,
+                    page: params.page,
+                    type: 'shop_order'
+                };
+            },
+            processResults: function(data, params) {
+                params.page = params.page || 1;
+
+                return {
+                    results: data.results,
+                    pagination: {
+                        more: data.pagination.more
+                    }
+                };
+            }
+        },
+        placeholder: i18n.placeholderSearchOrders,
+        minimumInputLength: 1
+    };
+
+    if (importLicenseProduct) {
+        importLicenseProduct.select2(productDropdownSearchConfig);
     }
 
-    if (selectBulkOrder) {
-        selectBulkOrder.select2();
+    if (importLicenseOrder) {
+        importLicenseOrder.select2(orderDropdownSearchConfig);
     }
 
-    if (selectSingleProduct) {
-        selectSingleProduct.select2();
+    if (addLicenseProduct) {
+        addLicenseProduct.select2(productDropdownSearchConfig);
     }
 
-    if (selectSingleOrder) {
-        selectSingleOrder.select2();
+    if (addLicenseOrder) {
+        addLicenseOrder.select2(orderDropdownSearchConfig);
     }
 
-    if (selectEditProduct) {
-        selectEditProduct.select2();
+    if (editLicenseProduct) {
+        editLicenseProduct.select2(productDropdownSearchConfig);
     }
 
-    if (selectEditOrder) {
-        selectEditOrder.select2();
+    if (editLicenseOrder) {
+        editLicenseOrder.select2(orderDropdownSearchConfig);
     }
 });

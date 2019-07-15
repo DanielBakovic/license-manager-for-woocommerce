@@ -153,38 +153,28 @@ class AdminMenus
      */
     public function licensesPage()
     {
-        $licenses = new LicensesList();
         $action   = $this->getCurrentAction($default = 'list');
-        $addLicenseUrl = admin_url(
-            sprintf(
-                'admin.php?page=%s&action=add&_wpnonce=%s',
-                self::LICENSES_PAGE,
-                wp_create_nonce('add')
-            )
-        );
-        $importLicenseUrl = admin_url(
-            sprintf(
-                'admin.php?page=%s&action=import&_wpnonce=%s',
-                self::LICENSES_PAGE,
-                wp_create_nonce('import')
-            )
-        );
 
-        if ($action === 'add'
-            || $action === 'edit'
-            || $action === 'activate'
-            || $action === 'deactivate'
-            || $action === 'delete'
-            || $action === 'import'
-        ) {
-            $products = apply_filters('lmfwc_get_products_dropdown', null);
+        // List license keys
+        if ($action === 'list') {
+            $licenses = new LicensesList();
+            $addLicenseUrl = admin_url(
+                sprintf(
+                    'admin.php?page=%s&action=add&_wpnonce=%s',
+                    self::LICENSES_PAGE,
+                    wp_create_nonce('add')
+                )
+            );
+            $importLicenseUrl = admin_url(
+                sprintf(
+                    'admin.php?page=%s&action=import&_wpnonce=%s',
+                    self::LICENSES_PAGE,
+                    wp_create_nonce('import')
+                )
+            );
         }
 
-        if ($action === 'edit' || $action === 'add' || $action === 'import') {
-            $orders = wc_get_orders(array('limit' => -1));
-            $statusOptions = LicenseStatus::dropdown();
-        }
-
+        // Edit license keys
         if ($action === 'edit') {
             if (!current_user_can('manage_options')) {
                 wp_die(__('Insufficient permission', 'lmfwc'));
@@ -197,8 +187,14 @@ class AdminMenus
                 wp_die(__('Invalid license key ID', 'lmfwc'));
             }
 
-            $licenseKey    = $license->getDecryptedLicenseKey();
+            $licenseKey = $license->getDecryptedLicenseKey();
         }
+
+        // Edit, add or import license keys
+        if ($action === 'edit' || $action === 'add' || $action === 'import') {
+            $statusOptions = LicenseStatus::dropdown();
+        }
+
 
         include LMFWC_TEMPLATES_DIR . 'page-licenses.php';
     }
@@ -211,8 +207,9 @@ class AdminMenus
         $generators = new GeneratorsList();
         $action     = $this->getCurrentAction($default = 'list');
 
-        if ($action == 'list') {
-            $add_generator_url = wp_nonce_url(
+        // List generators
+        if ($action === 'list') {
+            $addGeneratorUrl = wp_nonce_url(
                 sprintf(
                     admin_url('admin.php?page=%s&action=add'),
                     self::GENERATORS_PAGE
@@ -221,7 +218,12 @@ class AdminMenus
             );
         }
 
+        // Edit generators
         if ($action === 'edit') {
+            if (!current_user_can('manage_options')) {
+                wp_die(__('Insufficient permission', 'lmfwc'));
+            }
+
             if (!array_key_exists('edit', $_GET) && !array_key_exists('id', $_GET)) {
                 return;
             }

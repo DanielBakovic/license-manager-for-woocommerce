@@ -14,9 +14,10 @@ use LicenseManagerForWooCommerce\Interfaces\IntegrationController as Integration
 use LicenseManagerForWooCommerce\Models\Resources\Generator as GeneratorResourceModel;
 use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
 use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResourceRepository;
-use stdClass;
+use WC_Admin_Order;
 use WC_Order;
 use WC_Order_Item_Product;
+use WC_Product;
 use WC_Product_Simple;
 use WC_Product_Variation;
 
@@ -35,6 +36,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         add_filter('lmfwc_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 6);
         add_filter('lmfwc_insert_imported_license_keys',  array($this, 'insertImportedLicenseKeys'),  10, 6);
         add_action('lmfwc_sell_imported_license_keys',    array($this, 'sellImportedLicenseKeys'),    10, 3);
+        add_action('wp_ajax_lmfwc_dropdown_search',       array($this, 'dropdownDataSearch'),         10);
     }
 
     /**
@@ -312,5 +314,188 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 )
             );
         }
+    }
+
+    /**
+     * Performs a paginated data search for orders or products to be used inside a select2 dropdown
+     */
+    public function dropdownDataSearch()
+    {
+        check_ajax_referer('lmfwc_dropdown_search', 'security');
+
+        $type    = (string)wc_clean(wp_unslash($_POST['type']));
+        $page    = 1;
+        $limit   = 10;
+        $results = array();
+        $term    = isset($_POST['term']) ? (string)wc_clean(wp_unslash($_POST['term'])) : '';
+        $more    = true;
+        $offset  = 0;
+        $ids     = array();
+
+        if (!$term) {
+            wp_die();
+        }
+
+        if (array_key_exists('page', $_POST)) {
+            $page = intval($_POST['page']);
+        }
+
+        if ($page > 1) {
+            $offset = ($page - 1) * $limit;
+        }
+
+        if (is_numeric($term)) {
+            // Search for a specific order
+            if ($type === 'shop_order') {
+                /** @var WC_Order $order */
+                $order = wc_get_order(intval($term));
+
+                // Order exists.
+                if ($order && $order instanceof WC_Order) {
+                    $text = sprintf(
+                    /* translators: $1: order id, $2 customer name, $3 customer email */
+                        '#%1$s %2$s <%3$s>',
+                        $order->get_id(),
+                        $order->get_formatted_billing_full_name(),
+                        $order->get_billing_email()
+                    );
+
+                    $results[] = array(
+                        'id' => $order->get_id(),
+                        'text' => $text
+                    );
+                }
+            }
+
+            // Search for a specific product
+            elseif ($type === 'product') {
+                /** @var WC_Product $product */
+                $product = wc_get_product(intval($term));
+
+                // Product exists.
+                if ($product && $product instanceof WC_Product) {
+                    $text = sprintf(
+                    /* translators: $1: order id, $2 customer name */
+                        '(#%1$s) %2$s',
+                        $product->get_id(),
+                        $product->get_formatted_name()
+                    );
+
+                    $results[] = array(
+                        'id' => $product->get_id(),
+                        'text' => $text
+                    );
+                }
+            }
+        }
+
+        if (empty($ids)) {
+            $args = array(
+                'type'     => $type,
+                'limit'    => $limit,
+                'offset'   => $offset,
+                'customer' => $term,
+            );
+
+            // Search for orders
+            if ($type === 'shop_order') {
+                /** @var WC_Admin_Order[] $orders */
+                $orders = wc_get_orders($args);
+
+                if (count($orders) < $limit) {
+                    $more = false;
+                }
+
+                /** @var WC_Admin_Order $order */
+                foreach ($orders as $order) {
+                    $text = sprintf(
+                    /* translators: $1: order id, $2 customer name, $3 customer email */
+                        '#%1$s %2$s <%3$s>',
+                        $order->get_id(),
+                        $order->get_formatted_billing_full_name(),
+                        $order->get_billing_email()
+                    );
+
+                    $results[] = array(
+                        'id' => $order->get_id(),
+                        'text' => $text
+                    );
+                }
+            }
+
+            // Search for products
+            elseif ($type === 'product') {
+                $products = $this->searchProducts($term, $limit, $offset);
+
+                if (count($products) < $limit) {
+                    $more = false;
+                }
+
+                foreach ($products as $productId) {
+                    /** @var WC_Product $product */
+                    $product = wc_get_product($productId);
+
+                    if (!$product) {
+                        continue;
+                    }
+
+                    $text = sprintf(
+                    /* translators: $1: product id, $2 product name */
+                        '(#%1$s) %2$s',
+                        $product->get_id(),
+                        $product->get_formatted_name()
+                    );
+
+                    $results[] = array(
+                        'id' => $product->get_id(),
+                        'text' => $text
+                    );
+                }
+            }
+        }
+
+        wp_send_json(
+            array(
+                'page'       => $page,
+                'results'    => $results,
+                'pagination' => array(
+                    'more' => $more
+                )
+            )
+        );
+    }
+
+    /**
+     * Searches the database for posts that match the given term
+     *
+     * @param string $term
+     * @param int    $limit
+     * @param int    $offset
+     *
+     * @return array
+     */
+    private function searchProducts($term, $limit, $offset)
+    {
+        global $wpdb;
+
+        $sql ="
+            SELECT
+                DISTINCT (posts.ID)
+            FROM
+                $wpdb->posts as posts
+            INNER JOIN
+                $wpdb->postmeta as meta
+                    ON 1=1
+                    AND posts.ID = meta.post_id
+            WHERE
+                1=1
+                AND posts.post_title LIKE '%$term%'
+                AND posts.post_type = 'product'
+            ORDER BY posts.ID DESC
+            LIMIT $limit
+            OFFSET $offset
+        ";
+
+        return $wpdb->get_col($sql);
     }
 }

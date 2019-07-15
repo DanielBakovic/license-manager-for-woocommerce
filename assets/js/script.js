@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
             });
         },
         copyToClipboard: function(el, e) {
-            // Copy to cliboard
+            // Copy to clipboard
             var str = el.innerText.toString();
 
             if (!str) return;
