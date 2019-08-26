@@ -4,7 +4,7 @@ use LicenseManagerForWooCommerce\Models\Resources\ApiKey as ApiKeyResourceModel;
 
 defined('ABSPATH') || exit;
 
-/** @var ApiKeyResourceModel $key_data */
+/** @var ApiKeyResourceModel $keyData */
 
 ?>
 
@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
 <hr class="wp-header-end">
 
 <form method="post" action="<?=admin_url('admin-post.php');?>">
-    <input type="hidden" name="id" value="<?php esc_html_e($key_id); ?>">
+    <input type="hidden" name="id" value="<?php esc_html_e($keyId); ?>">
     <?php wp_nonce_field('lmfwc-api-key-update'); ?>
     <input type="hidden" name="action" value="<?='lmfwc_api_key_update';?>">
     <input type="hidden" name="lmfwc_action" value="<?php esc_attr_e($action);?>">
@@ -30,7 +30,7 @@ defined('ABSPATH') || exit;
                         class="regular-text"
                         name="description"
                         type="text"
-                        value="<?php echo esc_attr($key_data->getDescription()); ?>"
+                        value="<?php echo esc_attr($keyData->getDescription()); ?>"
                     >
                     <p class="description">
                         <b><?php esc_html_e('Required.', 'lmfwc');?></b>
@@ -48,7 +48,7 @@ defined('ABSPATH') || exit;
                         <option value=""><?php esc_html_e('Please select a user...', 'lmfwc'); ?></option>
                         <?php
                             foreach ($users as $user):
-                                $selected = ($user_id == $user->ID) ? 'selected="selected"' : '';
+                                $selected = ($userId == $user->ID) ? 'selected="selected"' : '';
 
                                 echo sprintf(
                                     '<option value="%s" %s>%s (#%d - %s)</option>',
@@ -74,12 +74,12 @@ defined('ABSPATH') || exit;
                 </th>
                 <td>
                     <select id="permissions" class="regular-text" name="permissions">
-                        <?php foreach ($permissions as $permission_id => $permission_name) : ?>
+                        <?php foreach ($permissions as $permissionId => $permissionName) : ?>
                             <option
-                                value="<?php echo esc_attr($permission_id); ?>"
-                                <?php selected($key_data->getPermissions(), $permission_id, true); ?>
+                                value="<?php echo esc_attr($permissionId); ?>"
+                                <?php selected($keyData->getPermissions(), $permissionId, true); ?>
                             >
-                                <span><?php echo esc_html($permission_name); ?></span>
+                                <span><?php echo esc_html($permissionName); ?></span>
                             </option>
                         <?php endforeach; ?>
                     </select>
@@ -95,7 +95,7 @@ defined('ABSPATH') || exit;
                         <label><?php esc_html_e('Consumer key ending in', 'lmfwc');?></label>
                     </th>
                     <td>
-                        <code>&hellip;<?php echo esc_html($key_data->getTruncatedKey()); ?></code>
+                        <code>&hellip;<?php echo esc_html($keyData->getTruncatedKey()); ?></code>
                     </td>
                 </tr>
                 <tr scope="row">
@@ -104,8 +104,8 @@ defined('ABSPATH') || exit;
                     </th>
                     <td>
                         <?php 
-                            if (!empty($key_data->getLastAccess())) {
-                                echo esc_html(apply_filters('woocommerce_api_key_last_access_datetime', $date, $key_data->getLastAccess()));
+                            if (!empty($keyData->getLastAccess())) {
+                                echo esc_html(apply_filters('woocommerce_api_key_last_access_datetime', $date, $keyData->getLastAccess()));
                             } else {
                                 esc_html_e('Unknown', 'lmfwc');
                             }
@@ -116,7 +116,7 @@ defined('ABSPATH') || exit;
         </tbody>
     </table>
 
-    <?php if (0 === intval($key_id)): ?>
+    <?php if (0 === intval($keyId)): ?>
         <?php submit_button(__('Generate API key', 'lmfwc'), 'primary', 'update_api_key'); ?>
     <?php else: ?>
         <p class="submit">
@@ -128,7 +128,7 @@ defined('ABSPATH') || exit;
                         add_query_arg(
                             array(
                                 'action' => 'revoke',
-                                'key' => $key_id
+                                'key' => $keyId
                             ),
                             sprintf(
                                 admin_url('admin.php?page=%s&tab=rest_api'),

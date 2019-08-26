@@ -201,22 +201,22 @@ class Authentication
     /**
      * Return the user data for the given consumer_key.
      *
-     * @param string $consumer_key
+     * @param string $consumerKey
      * 
      * @return array
      */
-    public function getUserDataByConsumerKey($consumer_key) {
+    public function getUserDataByConsumerKey($consumerKey) {
         global $wpdb;
 
-        $consumer_key = wc_api_hash(sanitize_text_field($consumer_key));
-        $user         = $wpdb->get_row(
+        $consumerKey = wc_api_hash(sanitize_text_field($consumerKey));
+        $user        = $wpdb->get_row(
             $wpdb->prepare(
                 "
                     SELECT id, user_id, permissions, consumer_key, consumer_secret, nonces
                     FROM {$wpdb->prefix}lmfwc_api_keys
                     WHERE consumer_key = %s
                 ",
-                $consumer_key
+                $consumerKey
             )
         );
 

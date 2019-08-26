@@ -1,6 +1,6 @@
 <?php
 
-namespace LicenseManagerForWooCommerce\API\v1;
+namespace LicenseManagerForWooCommerce\API\v2;
 
 use Exception;
 use LicenseManagerForWooCommerce\Abstracts\RestController as LMFWC_REST_Controller;
@@ -18,7 +18,7 @@ class Generators extends LMFWC_REST_Controller
     /**
      * @var string
      */
-    protected $namespace = 'lmfwc/v1';
+    protected $namespace = 'lmfwc/v2';
 
     /**
      * @var string
@@ -32,7 +32,7 @@ class Generators extends LMFWC_REST_Controller
     {
         /*
          * GET generators
-         * 
+         *
          * Retrieves all the available generators from the database.
          */
         register_rest_route(
@@ -46,7 +46,7 @@ class Generators extends LMFWC_REST_Controller
 
         /*
          * GET generators/{id}
-         * 
+         *
          * Retrieves a single generator from the database.
          */
         register_rest_route(
@@ -66,7 +66,7 @@ class Generators extends LMFWC_REST_Controller
 
         /*
          * POST generators
-         * 
+         *
          * Creates a new generator in the database
          */
         register_rest_route(
@@ -80,7 +80,7 @@ class Generators extends LMFWC_REST_Controller
 
         /*
          * PUT generators/{id}
-         * 
+         *
          * Updates an already existing generator in the database
          */
         register_rest_route(
@@ -129,7 +129,7 @@ class Generators extends LMFWC_REST_Controller
 
         /** @var GeneratorResourceModel $generator */
         foreach ($generators as $generator) {
-            $response[] = $this->getGeneratorData($generator);
+            $response[] = $generator->toArray();
         }
 
         return $this->response(true, $response, 200);
@@ -176,7 +176,7 @@ class Generators extends LMFWC_REST_Controller
             );
         }
 
-        return $this->response(true, $this->getGeneratorData($generator), 200);
+        return $this->response(true, $generator->toArray(), 200);
     }
 
     /**
@@ -261,7 +261,7 @@ class Generators extends LMFWC_REST_Controller
             );
         }
 
-        return $this->response(true, $this->getGeneratorData($generator), 200);
+        return $this->response(true, $generator->toArray(), 200);
     }
 
     /**
@@ -358,31 +358,6 @@ class Generators extends LMFWC_REST_Controller
             );
         }
 
-        return $this->response(true, $this->getGeneratorData($updatedGenerator), 200);
-    }
-
-    /**
-     * @param GeneratorResourceModel $generator
-     *
-     * @return array
-     */
-    private function getGeneratorData($generator)
-    {
-        return array(
-            'id'                  => $generator->getId(),
-            'name'                => $generator->getName(),
-            'charset'             => $generator->getCharset(),
-            'chunks'              => $generator->getChunks(),
-            'chunk_length'        => $generator->getChunkLength(),
-            'times_activated_max' => $generator->getTimesActivatedMax(),
-            'separator'           => $generator->getSeparator(),
-            'prefix'              => $generator->getPrefix(),
-            'suffix'              => $generator->getSuffix(),
-            'expires_in'          => $generator->getExpiresIn(),
-            'created_at'          => $generator->getCreatedAt(),
-            'created_by'          => $generator->getCreatedBy(),
-            'updated_at'          => $generator->getUpdatedAt(),
-            'updated_by'          => $generator->getUpdatedBy()
-        );
+        return $this->response(true, $updatedGenerator->toArray(), 200);
     }
 }

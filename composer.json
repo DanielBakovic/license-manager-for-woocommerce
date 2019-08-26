@@ -5,6 +5,7 @@
             "LicenseManagerForWooCommerce\\Abstracts\\": "includes/abstracts",
             "LicenseManagerForWooCommerce\\API\\": "includes/api",
             "LicenseManagerForWooCommerce\\API\\v1\\": "includes/api/v1",
+            "LicenseManagerForWooCommerce\\API\\v2\\": "includes/api/v2",
             "LicenseManagerForWooCommerce\\Emails\\": "includes/emails",
             "LicenseManagerForWooCommerce\\Enums\\": "includes/enums",
             "LicenseManagerForWooCommerce\\Integrations\\": "includes/integrations",

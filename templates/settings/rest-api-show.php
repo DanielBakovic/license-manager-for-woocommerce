@@ -4,14 +4,14 @@ use LicenseManagerForWooCommerce\Models\Resources\ApiKey as ApiKeyResourceModel;
 
 defined('ABSPATH') || exit;
 
-/** @var ApiKeyResourceModel $key_data */
+/** @var ApiKeyResourceModel $keyData */
 
 ?>
 
 <h2><?php esc_html_e('Key details', 'lmfwc');?></h2>
 <hr class="wp-header-end">
 
-<?php if ($key_data): ?>
+<?php if ($keyData): ?>
 
     <form method="post" action="<?=admin_url('admin-post.php');?>">
         <?php wp_nonce_field('lmfwc-api-key-update'); ?>
@@ -28,7 +28,7 @@ defined('ABSPATH') || exit;
                             class="regular-text"
                             name="consumer_key"
                             type="text"
-                            value="<?php echo esc_attr($key_data->getConsumerKey()); ?>"
+                            value="<?php echo esc_attr($consumerKey); ?>"
                             readonly="readonly"
                         >
                     </td>
@@ -43,7 +43,7 @@ defined('ABSPATH') || exit;
                             class="regular-text"
                             name="consumer_secret"
                             type="text"
-                            value="<?php echo esc_attr($key_data->getConsumerSecret()); ?>"
+                            value="<?php echo esc_attr($keyData->getConsumerSecret()); ?>"
                             readonly="readonly"
                         >
                     </td>
@@ -59,7 +59,7 @@ defined('ABSPATH') || exit;
                         add_query_arg(
                             array(
                                 'action' => 'revoke',
-                                'key' => $key_data->getId()
+                                'key' => $keyData->getId()
                             ),
                             sprintf(admin_url('admin.php?page=%s&tab=rest_api'), \LicenseManagerForWooCommerce\AdminMenus::SETTINGS_PAGE)
                         ),

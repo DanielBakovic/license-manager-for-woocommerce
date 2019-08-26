@@ -243,11 +243,10 @@ class AdminMenus
      */
     public function settingsPage()
     {
-        $tab = $this->getCurrentTab();
-        $section = $this->getCurrentSection();
-
-        $url_general = admin_url(sprintf('admin.php?page=%s&tab=general', self::SETTINGS_PAGE));
-        $url_rest_api = admin_url(sprintf('admin.php?page=%s&tab=rest_api', self::SETTINGS_PAGE));
+        $tab        = $this->getCurrentTab();
+        $section    = $this->getCurrentSection();
+        $urlGeneral = admin_url(sprintf('admin.php?page=%s&tab=general', self::SETTINGS_PAGE));
+        $urlRestApi = admin_url(sprintf('admin.php?page=%s&tab=rest_api', self::SETTINGS_PAGE));
 
         if ($tab == 'rest_api') {
             if (isset($_GET['create_key'])) {
@@ -261,24 +260,23 @@ class AdminMenus
             }
 
             if ($action === 'create' || $action === 'edit') {
-
-                $key_id = 0;
-                $key_data = new ApiKeyResourceModel();
-                $user_id = null;
-                $date = null;
+                $keyId   = 0;
+                $keyData = new ApiKeyResourceModel();
+                $userId  = null;
+                $date    = null;
 
                 if (array_key_exists('edit_key', $_GET)) {
-                    $key_id = absint($_GET['edit_key']);
+                    $keyId = absint($_GET['edit_key']);
                 }
 
-                if ($key_id !== 0) {
-                    /** @var ApiKeyResourceModel $key_data */
-                    $key_data    = ApiKeyResourceRepository::instance()->find($key_id);
-                    $user_id     = (int)$key_data->getUserId();
+                if ($keyId !== 0) {
+                    /** @var ApiKeyResourceModel $keyData */
+                    $keyData = ApiKeyResourceRepository::instance()->find($keyId);
+                    $userId  = (int)$keyData->getUserId();
                     $date = sprintf(
                         esc_html__('%1$s at %2$s', 'lmfwc'),
-                        date_i18n(wc_date_format(), strtotime($key_data->getLastAccess())),
-                        date_i18n(wc_time_format(), strtotime($key_data->getLastAccess()))
+                        date_i18n(wc_date_format(), strtotime($keyData->getLastAccess())),
+                        date_i18n(wc_time_format(), strtotime($keyData->getLastAccess()))
                     );
                 }
 
@@ -289,16 +287,18 @@ class AdminMenus
                     'read_write' => __('Read/Write', 'lmfwc'),
                 );
 
-                if ($key_id && $user_id && ! current_user_can('edit_user', $user_id)) {
-                    if (get_current_user_id() !== $user_id) {
+                if ($keyId && $userId && ! current_user_can('edit_user', $userId)) {
+                    if (get_current_user_id() !== $userId) {
                         wp_die(esc_html__('You do not have permission to edit this API Key', 'lmfwc'));
                     }
                 }
             } elseif ($action === 'list') {
                 $keys = new APIKeyList();
             } elseif ($action === 'show') {
-                $key_data = get_transient('lmfwc_api_key');
+                $keyData = get_transient('lmfwc_api_key');
+                $consumerKey = get_transient('lmfwc_consumer_key');
                 delete_transient('lmfwc_api_key');
+                delete_transient('lmfwc_consumer_key');
             }
 
             // Add screen option.

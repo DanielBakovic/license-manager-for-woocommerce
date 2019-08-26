@@ -11,6 +11,8 @@ defined('ABSPATH') || exit;
 class RestController extends WP_REST_Controller
 {
     /**
+     * Returns a structured response object for the API.
+     *
      * @param bool  $success
      * @param array $data
      * @param int   $code
@@ -28,8 +30,9 @@ class RestController extends WP_REST_Controller
         );
     }
 
-
     /**
+     * Checks if the given string is a JSON object.
+     *
      * @param string $string
      * 
      * @return bool

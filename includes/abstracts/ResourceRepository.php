@@ -24,6 +24,8 @@ abstract class ResourceRepository implements RepositoryInterface
     protected $primaryKey;
 
     /**
+     * Retrieves the only instance of the called class.
+     *
      * @return $this
      */
     public static function instance()
@@ -38,6 +40,8 @@ abstract class ResourceRepository implements RepositoryInterface
     }
 
     /**
+     * Adds a new entry to the table.
+     *
      * @param array $data
      *
      * @return mixed|void
@@ -61,6 +65,8 @@ abstract class ResourceRepository implements RepositoryInterface
     }
 
     /**
+     * Retrieves a single table row by its ID.
+     *
      * @param int $id
      *
      * @return mixed|void
@@ -84,6 +90,8 @@ abstract class ResourceRepository implements RepositoryInterface
     }
 
     /**
+     * Retrieves a single table row by the query parameter.
+     *
      * @param array $query
      *
      * @return mixed|void
@@ -126,6 +134,8 @@ abstract class ResourceRepository implements RepositoryInterface
     }
 
     /**
+     * Retrieves all table rows as an array.
+     *
      * @return mixed|void
      */
     public function findAll()
@@ -147,6 +157,8 @@ abstract class ResourceRepository implements RepositoryInterface
     }
 
     /**
+     * Retrieves multiple table rows as an array, filtered by the query.
+     *
      * @param array       $query
      * @param null|string $orderBy
      * @param null|string $sort
@@ -198,6 +210,8 @@ abstract class ResourceRepository implements RepositoryInterface
     }
 
     /**
+     * Updates a single table row by its ID.
+     *
      * @param int   $id
      * @param array $data
      *
@@ -225,6 +239,14 @@ abstract class ResourceRepository implements RepositoryInterface
         return $this->find($id);
     }
 
+    /**
+     * Updates one or multiple table rows by the query.
+     *
+     * @param array $query
+     * @param array $data
+     *
+     * @return mixed|void
+     */
     public function updateBy($query, $data)
     {
         if (!$query || !is_array($query) || count($query) <= 0) {
@@ -252,6 +274,8 @@ abstract class ResourceRepository implements RepositoryInterface
     }
 
     /**
+     * Removes multiple table rows by their ID's.
+     *
      * @param array $ids
      *
      * @return mixed|void
@@ -267,6 +291,8 @@ abstract class ResourceRepository implements RepositoryInterface
     }
 
     /**
+     * Deletes one or more table rows by the query parameter.
+     *
      * @param array $query
      *
      * @return mixed|void
@@ -298,6 +324,8 @@ abstract class ResourceRepository implements RepositoryInterface
     }
 
     /**
+     * Retrieves the total count of table entries.
+     *
      * @return int|mixed
      */
     public function count()
@@ -310,6 +338,8 @@ abstract class ResourceRepository implements RepositoryInterface
     }
 
     /**
+     * Retrieves the total count of table entries, filtered by the query parameter.
+     *
      * @param array $query
      *
      * @return mixed|void
@@ -343,6 +373,8 @@ abstract class ResourceRepository implements RepositoryInterface
     }
 
     /**
+     * Performs a general query on the table.
+     *
      * @param string $sqlQuery
      * @param string $output
      *
@@ -356,6 +388,8 @@ abstract class ResourceRepository implements RepositoryInterface
     }
 
     /**
+     * Truncates the table.
+     *
      * @return mixed|void
      */
     public function truncate()

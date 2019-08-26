@@ -622,6 +622,7 @@ class FormHandler
                 AdminNotice::success(
                     __('API key generated successfully. Make sure to copy your new keys now as the secret key will be hidden once you leave this page.', 'lmfwc')
                 );
+                set_transient('lmfwc_consumer_key', $consumerKey, 60);
                 set_transient('lmfwc_api_key', $apiKey, 60);
             } else {
                 AdminNotice::error(
