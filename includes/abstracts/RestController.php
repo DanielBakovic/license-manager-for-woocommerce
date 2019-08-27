@@ -37,7 +37,8 @@ class RestController extends WP_REST_Controller
      * 
      * @return bool
      */
-    protected function isJson($string) {
+    protected function isJson($string)
+    {
         json_decode($string);
         return (json_last_error() === JSON_ERROR_NONE);
     }

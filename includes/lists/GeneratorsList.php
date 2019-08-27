@@ -2,11 +2,12 @@
 
 namespace LicenseManagerForWooCommerce\Lists;
 
-use \LicenseManagerForWooCommerce\AdminMenus;
-use \LicenseManagerForWooCommerce\AdminNotice;
+use Exception;
+use LicenseManagerForWooCommerce\AdminMenus;
+use LicenseManagerForWooCommerce\AdminNotice;
 use LicenseManagerForWooCommerce\Repositories\Resources\Generator as GeneratorResourceRepository;
-use \LicenseManagerForWooCommerce\Setup;
-use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
+use LicenseManagerForWooCommerce\Setup;
+use WP_List_Table;
 
 defined('ABSPATH') || exit;
 
@@ -14,7 +15,7 @@ if (!class_exists('WP_List_Table')) {
     require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 }
 
-class GeneratorsList extends \WP_List_Table
+class GeneratorsList extends WP_List_Table
 {
     /**
      * @var string
@@ -28,11 +29,13 @@ class GeneratorsList extends \WP_List_Table
     {
         global $wpdb;
 
-        parent::__construct([
-            'singular' => __('Generator', 'lmfwc'),
-            'plural'   => __('Generators', 'lmfwc'),
-            'ajax'     => false
-        ]);
+        parent::__construct(
+            array(
+                'singular' => __('Generator', 'lmfwc'),
+                'plural'   => __('Generators', 'lmfwc'),
+                'ajax'     => false
+            )
+        );
 
         $this->table = $wpdb->prefix . Setup::GENERATORS_TABLE_NAME;
     }
@@ -40,20 +43,20 @@ class GeneratorsList extends \WP_List_Table
     /**
      * Retrieves the generators from the database.
      * 
-     * @param integer $per_page    Default amount of generators per page
-     * @param integer $page_number Default page number
+     * @param int $perPage    Default amount of generators per page
+     * @param int $pageNumber Default page number
      * 
      * @return array
      */
-    public function get_generators($per_page = 20, $page_number = 1)
+    public function getGenerators($perPage = 20, $pageNumber = 1)
     {
         global $wpdb;
 
         $sql = "SELECT * FROM {$this->table}";
         $sql .= ' ORDER BY ' . (empty($_REQUEST['orderby']) ? 'id'   : esc_sql($_REQUEST['orderby']));
         $sql .= ' '          . (empty($_REQUEST['order'])   ? 'DESC' : esc_sql($_REQUEST['order']));
-        $sql .= " LIMIT {$per_page}";
-        $sql .= ' OFFSET ' . ($page_number - 1) * $per_page;
+        $sql .= " LIMIT {$perPage}";
+        $sql .= ' OFFSET ' . ($pageNumber - 1) * $perPage;
 
         $results = $wpdb->get_results($sql, ARRAY_A);
 
@@ -61,11 +64,11 @@ class GeneratorsList extends \WP_List_Table
     }
 
     /**
-     * Retrieves the generator table row count
+     * Retrieves the generator table row count.
      * 
      * @return integer
      */
-    public function record_count()
+    public function recordCount()
     {
         global $wpdb;
 
@@ -73,7 +76,7 @@ class GeneratorsList extends \WP_List_Table
     }
 
     /**
-     * Output in case no items exist
+     * Output in case no items exist.
      */
     public function no_items()
     {
@@ -81,7 +84,7 @@ class GeneratorsList extends \WP_List_Table
     }
 
     /**
-     * Checkbox column
+     * Checkbox column.
      * 
      * @param array $item Associative array of column name and value pairs
      * 
@@ -93,7 +96,7 @@ class GeneratorsList extends \WP_List_Table
     }
 
     /**
-     * Name column
+     * Name column.
      * 
      * @param array $item Associative array of column name and value pairs
      * 
@@ -102,8 +105,8 @@ class GeneratorsList extends \WP_List_Table
     public function column_name($item)
     {
         $products = apply_filters('lmfwc_get_assigned_products', $item['id']);
-        $actions = array();
-        $title = '<strong>' . $item['name'] . '</strong>';
+        $actions  = array();
+        $title    = '<strong>' . $item['name'] . '</strong>';
 
         if (count($products) > 0) {
             $title .= sprintf(
@@ -139,7 +142,7 @@ class GeneratorsList extends \WP_List_Table
     }
 
     /**
-     * Character map column
+     * Character map column.
      * 
      * @param array $item Associative array of column name and value pairs
      * 
@@ -157,7 +160,7 @@ class GeneratorsList extends \WP_List_Table
     }
 
     /**
-     * Separator column
+     * Separator column.
      * 
      * @param array $item Associative array of column name and value pairs
      * 
@@ -175,7 +178,7 @@ class GeneratorsList extends \WP_List_Table
     }
 
     /**
-     * Prefix column
+     * Prefix column.
      * 
      * @param array $item Associative array of column name and value pairs
      * 
@@ -193,7 +196,7 @@ class GeneratorsList extends \WP_List_Table
     }
 
     /**
-     * Suffix column
+     * Suffix column.
      * 
      * @param array $item Associative array of column name and value pairs
      * 
@@ -211,7 +214,7 @@ class GeneratorsList extends \WP_List_Table
     }
 
     /**
-     * Expires in column
+     * Expires in column.
      * 
      * @param array $item Associative array of column name and value pairs
      * 
@@ -219,21 +222,21 @@ class GeneratorsList extends \WP_List_Table
      */
     public function column_expires_in($item)
     {
-        $expires_in = '';
+        $expiresIn = '';
 
         if (!$item['expires_in']) {
-            return $expires_in;
+            return $expiresIn;
         }
 
-        $expires_in .= sprintf('%d %s', $item['expires_in'], __('day(s)', 'lmfwc'));
-        $expires_in .= '<br>';
-        $expires_in .= sprintf('<small>%s</small>', __('After purchase', 'lmfwc'));
+        $expiresIn .= sprintf('%d %s', $item['expires_in'], __('day(s)', 'lmfwc'));
+        $expiresIn .= '<br>';
+        $expiresIn .= sprintf('<small>%s</small>', __('After purchase', 'lmfwc'));
 
-        return $expires_in;
+        return $expiresIn;
     }
 
     /**
-     * Default column value
+     * Default column value.
      * 
      * @param array  $item        Associative array of column name and value pairs
      * @param string $column_name Name of the current column
@@ -246,11 +249,11 @@ class GeneratorsList extends \WP_List_Table
     }
 
     /**
-     * Set the table columns
+     * Set the table columns.
      */
     public function get_columns()
     {
-        $columns = array(
+        return array(
             'cb'                  => '<input type="checkbox" />',
             'name'                => __('Name', 'lmfwc'),
             'charset'             => __('Character map', 'lmfwc'),
@@ -262,18 +265,16 @@ class GeneratorsList extends \WP_List_Table
             'suffix'              => __('Suffix', 'lmfwc'),
             'expires_in'          => __('Expires in', 'lmfwc')
         );
-
-        return $columns;
     }
 
     /**
-     * Defines sortable columns and their sort value
+     * Defines sortable columns and their sort value.
      * 
      * @return array
      */
     public function get_sortable_columns()
     {
-        $sortable_columns = array(
+        return array(
             'name'                => array('name', true),
             'charset'             => array('charset', true),
             'chunks'              => array('chunks', true),
@@ -281,12 +282,10 @@ class GeneratorsList extends \WP_List_Table
             'times_activated_max' => array('times_activated_max', true),
             'expires_in'          => array('expires_in', true),
         );
-
-        return $sortable_columns;
     }
 
     /**
-     * Defines items in the bulk action dropdown
+     * Defines items in the bulk action dropdown.
      * 
      * @return array
      */
@@ -300,7 +299,9 @@ class GeneratorsList extends \WP_List_Table
     }
 
     /**
-     * Processes the currently selected action
+     * Handle bulk action requests.
+     *
+     * @throws Exception
      */
     public function process_bulk_action()
     {
@@ -308,8 +309,8 @@ class GeneratorsList extends \WP_List_Table
 
         switch ($action) {
             case 'delete':
-                $this->verify_nonce('delete');
-                $this->delete_generators();
+                $this->verifyNonce('delete');
+                $this->deleteGenerators();
                 break;
             default:
                 break;
@@ -317,7 +318,9 @@ class GeneratorsList extends \WP_List_Table
     }
 
     /**
-     * Initialization function
+     * Initialization function.
+     *
+     * @throws Exception
      */
     public function prepare_items()
     {
@@ -329,30 +332,31 @@ class GeneratorsList extends \WP_List_Table
 
         $this->process_bulk_action();
 
-        $per_page     = $this->get_items_per_page('generators_per_page', 10);
-        $current_page = $this->get_pagenum();
-        $total_items  = $this->record_count();
+        $perPage     = $this->get_items_per_page('generators_per_page', 10);
+        $currentPage = $this->get_pagenum();
+        $totalItems  = $this->recordCount();
 
-        $this->set_pagination_args([
-            'total_items' => $total_items,
-            'per_page'    => $per_page,
-            'total_pages' => ceil($total_items / $per_page)
-        ]);
+        $this->set_pagination_args(
+            array(
+                'total_items' => $totalItems,
+                'per_page'    => $perPage,
+                'total_pages' => ceil($totalItems / $perPage)
+            )
+        );
 
-        $this->items = $this->get_generators($per_page, $current_page);
+        $this->items = $this->getGenerators($perPage, $currentPage);
     }
 
     /**
-     * Checks if the given nonce is (still) valid
-     * 
-     * @param string $nonce_action The nonce to check
-     * 
-     * @return null
+     * Checks if the given nonce is valid.
+     *
+     * @param string $nonceAction The nonce to check
+     *
+     * @throws Exception
      */
-    private function verify_nonce($nonce_action)
+    private function verifyNonce($nonceAction)
     {
-        if (
-            !wp_verify_nonce($_REQUEST['_wpnonce'], $nonce_action) &&
+        if (!wp_verify_nonce($_REQUEST['_wpnonce'], $nonceAction) &&
             !wp_verify_nonce($_REQUEST['_wpnonce'], 'bulk-' . $this->_args['plural'])
         ) {
             AdminNotice::error(
@@ -367,9 +371,9 @@ class GeneratorsList extends \WP_List_Table
     /**
      * Bulk deletes the generators from the table by a single ID or an array of ID's.
      *
-     * @return string
+     * @throws Exception
      */
-    public function delete_generators()
+    public function deleteGenerators()
     {
         $selectedGenerators = (array)$_REQUEST['id'];
         $generatorsToDelete = array();
@@ -394,7 +398,9 @@ class GeneratorsList extends \WP_List_Table
                     sprintf('admin.php?page=%s', AdminMenus::GENERATORS_PAGE)
                 )
             );
-        } else {
+        }
+
+        else {
             AdminNotice::error(
                 __('There was a problem deleting the generators.', 'lmfwc')
             );

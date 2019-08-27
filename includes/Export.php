@@ -32,7 +32,7 @@ class Export
     }
 
     /**
-     * Creates a PDF of license keys by the given array of IDs
+     * Creates a PDF of license keys by the given array of ID's.
      * 
      * @param array $licenseKeyIds
      */
@@ -40,9 +40,9 @@ class Export
     {
         $licenseKeys = array();
 
-        foreach ($licenseKeyIds as $license_key_id) {
+        foreach ($licenseKeyIds as $licenseKeyId) {
             /** @var LicenseResourceModel $license */
-            $license = LicenseResourceRepository::instance()->find($license_key_id);
+            $license = LicenseResourceRepository::instance()->find($licenseKeyId);
 
             if (!$license) {
                 continue;
@@ -79,20 +79,20 @@ class Export
         // Table Header
         $pdf->SetDrawColor(200, 200, 200);
 
-        foreach ($header as $col_name => $col) {
+        foreach ($header as $columnName => $col) {
             $width = 40;
 
-            if ($col_name == 'id') {
+            if ($columnName == 'id') {
                 $width = 12;
             }
 
-            if ($col_name == 'order_id'
-                || $col_name == 'product_id'
+            if ($columnName == 'order_id'
+                || $columnName == 'product_id'
             ) {
                 $width = 20;
             }
 
-            if ($col_name == 'license_key') {
+            if ($columnName == 'license_key') {
                 $width = 0;
             }
 
@@ -103,21 +103,21 @@ class Export
         $pdf->Ln();
 
         foreach ($licenseKeys as $row) {
-            foreach ($row as $col_name => $col) {
+            foreach ($row as $columnName => $col) {
                 $pdf->SetFont('Roboto-Regular', '', 8);
                 $width = 40;
 
-                if ($col_name == 'id') {
+                if ($columnName == 'id') {
                     $width = 12;
                 }
 
-                if ($col_name == 'order_id'
-                    || $col_name == 'product_id'
+                if ($columnName == 'order_id'
+                    || $columnName == 'product_id'
                 ) {
                     $width = 20;
                 }
 
-                if ($col_name == 'license_key') {
+                if ($columnName == 'license_key') {
                     $pdf->SetFont('RobotoMono-Regular', '', 8);
                     $width = 0;
                 }
@@ -132,7 +132,7 @@ class Export
     }
 
     /**
-     * Creates a CSV of license keys by the given array of IDs
+     * Creates a CSV of license keys by the given array of ID's.
      * 
      * @param array $licenseKeyIds
      */
@@ -140,9 +140,9 @@ class Export
     {
         $licenseKeys = array();
 
-        foreach ($licenseKeyIds as $license_key_id) {
+        foreach ($licenseKeyIds as $licenseKeyId) {
             /** @var LicenseResourceModel $license */
-            $license = LicenseResourceRepository::instance()->find($license_key_id);
+            $license = LicenseResourceRepository::instance()->find($licenseKeyId);
 
             if (!$license) {
                 continue;

@@ -4,14 +4,11 @@ namespace LicenseManagerForWooCommerce;
 
 defined('ABSPATH') || exit;
 
-/**
- * LicenseManagerForWooCommerce Settings.
- *
- * @version 1.0.0
- * @since 1.0.0
- */
 class Settings
 {
+    /**
+     * @var array
+     */
     private $settings;
 
     /**
@@ -25,8 +22,6 @@ class Settings
 
     /**
      * Initialize the WordPress Settings API.
-     *
-     * @since 1.0.0
      */
     private function init()
     {
@@ -62,8 +57,6 @@ class Settings
 
     /**
      * Callback for the "lmfwc_security" section.
-     *
-     * @since 1.0.0
      */
     public function lmfwcSecurityHeader()
     {
@@ -72,8 +65,6 @@ class Settings
 
     /**
      * Callback for the "lmfwc_hide_license_keys" field.
-     *
-     * @since 1.0.0
      */
     public function lmfwcFieldHideLicenseKeys()
     {
@@ -100,8 +91,6 @@ class Settings
 
     /**
      * Callback for the "lmfwc_disable_api_ssl" field.
-     *
-     * @since 1.0.0
      */
     public function lmfwcFieldEnableApiOnNonSsl()
     {
@@ -126,6 +115,9 @@ class Settings
         echo $html;
     }
 
+    /**
+     * Callback for the "lmfwc_auto_delivery" field.
+     */
     public function lmfwcFieldAutoDelivery()
     {
         $field = 'lmfwc_auto_delivery';
@@ -152,9 +144,9 @@ class Settings
     /**
      * Helper function to get a setting by name.
      *
-     * @since 1.0.0
+     * @param string $field
      *
-     * @return boolean
+     * @return bool
      */
     public static function get($field)
     {

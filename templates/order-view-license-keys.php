@@ -31,7 +31,7 @@ defined('ABSPATH') || exit; ?>
                         ?>
                         <td>
                         <span class="lmfwc-myaccount-license-key"><?php
-                            printf('%s <b>%s</b>', $valid_until, $date->format($date_format));
+                            printf('%s <b>%s</b>', $validUntil, $date->format($dateFormat));
                         ?></span>
                         </td>
                     <?php endif; ?>

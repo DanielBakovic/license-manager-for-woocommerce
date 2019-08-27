@@ -18,12 +18,12 @@ class Templates
     }
 
     /**
-     * Adds the ordered license keys to the email body
+     * Adds the ordered license keys to the email body.
      *
-     * @param WC_Order $order
-     * @param bool     $sentToAdmin
-     * @param bool     $plainText
-     * @param WC_Email $email
+     * @param WC_Order $order       WooCommerce Order
+     * @param bool     $sentToAdmin Determines if the email is sent to the admin
+     * @param bool     $plainText   Determines if a plain text or HTML email will be sent
+     * @param WC_Email $email       WooCommerce Email
      */
     public function addOrderDetails($order, $sentToAdmin, $plainText, $email)
     {
@@ -39,7 +39,9 @@ class Templates
                 '',
                 LMFWC_TEMPLATES_DIR
             );
-        } else {
+        }
+
+        else {
             echo wc_get_template_html(
                 'emails/email-order-details.php',
                 array(
@@ -55,12 +57,12 @@ class Templates
     }
 
     /**
-     * Adds basic order info to the email body
+     * Adds basic order info to the email body.
      *
-     * @param WC_Order $order
-     * @param bool     $sentToAdmin
-     * @param bool     $plainText
-     * @param WC_Email $email
+     * @param WC_Order $order       WooCommerce Order
+     * @param bool     $sentToAdmin Determines if the email is sent to the admin
+     * @param bool     $plainText   Determines if a plain text or HTML email will be sent
+     * @param WC_Email $email       WooCommerce Email
      */
     public function addOrderLicenseKeys($order, $sentToAdmin, $plainText, $email)
     {
@@ -80,7 +82,9 @@ class Templates
                 '',
                 LMFWC_TEMPLATES_DIR
             );
-        } else {
+        }
+
+        else {
             echo wc_get_template_html(
                 'emails/email-order-license-keys.php',
                 array(

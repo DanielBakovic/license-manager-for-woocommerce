@@ -18,7 +18,6 @@ class Users
     /**
      * Retrieve assigned products for a specific generator.
      *
-     * @since  1.2.0
      * @return array
      */
     public function getUsers()

@@ -1,14 +1,4 @@
 <?php
-/**
- * Main plugin file.
- * PHP Version: 5.6
- * 
- * @category WordPress
- * @package  LicenseManagerForWooCommerce
- * @author   Dražen Bebić <drazen.bebic@outlook.com>
- * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
- * @link     https://www.bebic.at/license-manager-for-woocommerce
- */
 
 namespace LicenseManagerForWooCommerce;
 
@@ -298,6 +288,7 @@ class FormHandler
                 sprintf('admin.php?page=%s', AdminMenus::GENERATORS_PAGE)
             )
         );
+
         exit();
     }
 
@@ -373,7 +364,6 @@ class FormHandler
             }
         }
 
-
         // Save the imported keys.
         try {
             $result = apply_filters(
@@ -435,12 +425,14 @@ class FormHandler
             AdminNotice::error(
                 __('There was a problem importing the license keys.', 'lmfwc')
             );
+
             wp_redirect(
                 sprintf(
                     'admin.php?page=%s&action=import',
                     AdminMenus::LICENSES_PAGE
                 )
             );
+
             exit();
         }
 
@@ -624,7 +616,9 @@ class FormHandler
                 );
                 set_transient('lmfwc_consumer_key', $consumerKey, 60);
                 set_transient('lmfwc_api_key', $apiKey, 60);
-            } else {
+            }
+
+            else {
                 AdminNotice::error(
                     __('There was a problem generating the API key.', 'lmfwc')
                 );
@@ -638,7 +632,9 @@ class FormHandler
             );
 
             exit();
-        } elseif ($action === 'edit') {
+        }
+
+        elseif ($action === 'edit') {
             $apiKey = ApiKeyResourceRepository::instance()->update(
                 $keyId,
                 array(
@@ -650,7 +646,9 @@ class FormHandler
 
             if ($apiKey) {
                 AdminNotice::success(__('API key updated successfully.', 'lmfwc'));
-            } else {
+            }
+
+            else {
                 AdminNotice::error(
                     __('There was a problem updating the API key.', 'lmfwc')
                 );
@@ -712,7 +710,7 @@ class FormHandler
     }
 
     /**
-     * Hook into the WordPress Order Item Meta Box and display the license key(s)
+     * Hook into the WordPress Order Item Meta Box and display the license key(s).
      *
      * @param int                   $itemId
      * @param WC_Order_Item_Product $item
@@ -742,7 +740,6 @@ class FormHandler
         $html .= '<ul class="lmfwc-license-list">';
 
         if (!Settings::get('lmfwc_hide_license_keys')) {
-
             /** @var LicenseResourceModel $license */
             foreach ($licenses as $license) {
                 $html .= sprintf(
@@ -752,7 +749,9 @@ class FormHandler
             }
 
             $html .= '</ul>';
-        } else {
+        }
+
+        else {
             /** @var LicenseResourceModel $license */
             foreach ($licenses as $license) {
                 $html .= sprintf(

@@ -32,7 +32,7 @@ class Licenses extends LMFWC_REST_Controller
      */
     public function register_routes()
     {
-        /*
+        /**
          * GET licenses
          * 
          * Retrieves all the available licenses from the database.
@@ -46,10 +46,10 @@ class Licenses extends LMFWC_REST_Controller
             )
         );
 
-        /*
-         * GET licenses/{license_key}
+        /**
+         * GET licenses/{license_key OR id}
          * 
-         * Retrieves a single licenses from the database.
+         * Retrieves a single licenses from the database, either by the license key string or its ID.
          */
         register_rest_route(
             $this->namespace, $this->rest_base . '/(?P<license_key>[\w-]+)', array(
@@ -66,7 +66,7 @@ class Licenses extends LMFWC_REST_Controller
             )
         );
 
-        /*
+        /**
          * POST licenses
          * 
          * Creates a new license in the database
@@ -80,10 +80,10 @@ class Licenses extends LMFWC_REST_Controller
             )
         );
 
-        /*
-         * PUT licenses/{license_key}
+        /**
+         * PUT licenses/{license_key OR id}
          * 
-         * Updates an already existing license in the database
+         * Updates an already existing license in the database, either by the license key string or its ID.
          */
         register_rest_route(
             $this->namespace, $this->rest_base . '/(?P<license_key>[\w-]+)', array(
@@ -100,9 +100,10 @@ class Licenses extends LMFWC_REST_Controller
             )
         );
 
-        /* PUT licenses/activate/{license_key}
+        /**
+         * PUT licenses/activate/{license_key OR id}
          * 
-         * Activates a license key
+         * Activates a license key, either by the license key string or its ID.
          */
         register_rest_route(
             $this->namespace, $this->rest_base . '/activate/(?P<license_key>[\w-]+)', array(
@@ -119,9 +120,10 @@ class Licenses extends LMFWC_REST_Controller
             )
         );
 
-        /* PUT licenses/activate/{license_key}
+        /**
+         * PUT licenses/activate/{license_key OR id}
          * 
-         * Activates a license key
+         * Activates a license key, either by the license key string or its ID.
          */
         register_rest_route(
             $this->namespace, $this->rest_base . '/validate/(?P<license_key>[\w-]+)', array(
@@ -258,13 +260,15 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
-        if ($statusEnum && !in_array($statusEnum, LicenseStatus::$enum_array)) {
+        if ($statusEnum && !in_array($statusEnum, LicenseStatus::$enumArray)) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
                 'License Key status is invalid',
                 array('status' => 404)
             );
-        } else {
+        }
+
+        else {
             $status = LicenseStatus::$values[$statusEnum];
         }
 
@@ -480,9 +484,7 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
-        if ($timesActivatedMax
-            && ($timesActivated >= $timesActivatedMax)
-        ) {
+        if ($timesActivatedMax && ($timesActivated >= $timesActivatedMax)) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
                 sprintf(
@@ -497,7 +499,9 @@ class Licenses extends LMFWC_REST_Controller
         try {
             if (!$timesActivated) {
                 $timesActivatedNew = 1;
-            } else {
+            }
+
+            else {
                 $timesActivatedNew = intval($timesActivated) + 1;
             }
 
@@ -596,6 +600,8 @@ class Licenses extends LMFWC_REST_Controller
     }
 
     /**
+     * Converts the passed status string to a valid enumerator value.
+     *
      * @param string $enumerator
      *
      * @return int
@@ -628,6 +634,8 @@ class Licenses extends LMFWC_REST_Controller
     }
 
     /**
+     * Prepares the legacy API response format.
+     *
      * @param LicenseResourceModel $license
      *
      * @return array

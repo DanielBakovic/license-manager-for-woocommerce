@@ -51,6 +51,14 @@ interface ResourceRepository
     public function update($id, $data);
 
     /**
+     * @param array $query
+     * @param array $data
+     *
+     * @return mixed
+     */
+    public function updateBy($query, $data);
+
+    /**
      * @param array $ids
      *
      * @return mixed

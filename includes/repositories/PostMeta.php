@@ -20,14 +20,14 @@ class PostMeta
     /**
      * Retrieve assigned products for a specific generator.
      *
-     * @param int $generator_id
+     * @param int $generatorId
      *
      * @return array
      * @throws LMFWC_Exception
      */
-    public function getAssignedProducts($generator_id)
+    public function getAssignedProducts($generatorId)
     {
-        $clean_generator_id = $generator_id ? absint($generator_id) : null;
+        $clean_generator_id = $generatorId ? absint($generatorId) : null;
 
         if (!$clean_generator_id) {
             throw new LMFWC_Exception('Generator ID is invalid.');

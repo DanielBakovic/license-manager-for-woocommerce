@@ -43,7 +43,6 @@ class Email
         }
 
         if (Settings::get('lmfwc_auto_delivery')) {
-
             // Send the keys out if the setting is active.
             if ($plainText) {
                 echo wc_get_template(
@@ -61,7 +60,9 @@ class Email
                     '',
                     LMFWC_TEMPLATES_DIR
                 );
-            } else {
+            }
+
+            else {
                 echo wc_get_template_html(
                     'emails/email-order-license-keys.php',
                     array(
@@ -78,9 +79,9 @@ class Email
                     LMFWC_TEMPLATES_DIR
                 );
             }
+        }
 
-        } else {
-
+        else {
             // Only display a notice.
             if ($plainText) {
                 echo wc_get_template(
@@ -89,7 +90,9 @@ class Email
                     '',
                     LMFWC_TEMPLATES_DIR
                 );
-            } else {
+            }
+
+            else {
                 echo wc_get_template_html(
                     'emails/email-order-license-notice.php',
                     array(),
@@ -103,6 +106,8 @@ class Email
     }
 
     /**
+     * Registers the plugin email classes to work with WooCommerce.
+     *
      * @param array $emails
      *
      * @return array

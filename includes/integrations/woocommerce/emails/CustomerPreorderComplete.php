@@ -44,6 +44,8 @@ class CustomerPreorderComplete extends WC_Email
     }
 
     /**
+     * Retrieves the HTML content of the email.
+     *
      * @return string
      */
     public function get_content_html()
@@ -61,7 +63,10 @@ class CustomerPreorderComplete extends WC_Email
             $this->template_base
         );
     }
+
     /**
+     * Retrieves the plain text content of the email.
+     *
      * @return string
      */
     public function get_content_plain()
@@ -83,8 +88,8 @@ class CustomerPreorderComplete extends WC_Email
     /**
      * Trigger the sending of this email.
      *
-     * @param integer       $orderId
-     * @param WC_Order|bool $order
+     * @param integer       $orderId WooCommerce order ID
+     * @param WC_Order|bool $order   WooCommerce order, or a false flag
      */
     public function trigger($orderId, $order = false)
     {

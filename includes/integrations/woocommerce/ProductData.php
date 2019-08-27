@@ -54,15 +54,18 @@ class ProductData
     }
 
     /**
-     * @param $tabs
+     * Adds a product data tab for simple WooCommerce products.
+     *
+     * @param array $tabs
+     *
      * @return mixed
      */
     public function simpleProductLicenseManagerTab($tabs)
     {
         $tabs[self::ADMIN_TAB_NAME] = array(
-            'label' => __('License Manager', 'lmfwc'),
-            'target' => self::ADMIN_TAB_TARGET,
-            'class' => array('show_if_simple'),
+            'label'    => __('License Manager', 'lmfwc'),
+            'target'   => self::ADMIN_TAB_TARGET,
+            'class'    => array('show_if_simple'),
             'priority' => 21
         );
 
@@ -70,7 +73,7 @@ class ProductData
     }
 
     /**
-     *
+     * Displays the new fields inside the new product data tab.
      */
     public function simpleProductLicenseManagerPanel()
     {
@@ -182,6 +185,8 @@ class ProductData
     }
 
     /**
+     * Adds an icon to the new data tab.
+     *
      * @see https://docs.woocommerce.com/document/utilising-the-woocommerce-icon-font-in-your-extensions/
      * @see https://developer.wordpress.org/resource/dashicons/
      */
@@ -196,6 +201,8 @@ class ProductData
     }
 
     /**
+     * Hook which triggers when the WooCommerce Product is being saved or updated.
+     *
      * @param int $postId
      */
     public function savePost($postId)
@@ -211,7 +218,9 @@ class ProductData
         // Update licensed product flag, according to checkbox.
         if (array_key_exists('lmfwc_licensed_product', $_POST)) {
             update_post_meta($postId, 'lmfwc_licensed_product', 1);
-        } else {
+        }
+
+        else {
             update_post_meta($postId, 'lmfwc_licensed_product', 0);
         }
 
@@ -227,7 +236,9 @@ class ProductData
         // Update the use stock flag, according to checkbox.
         if (array_key_exists('lmfwc_licensed_product_use_stock', $_POST)) {
             update_post_meta($postId, 'lmfwc_licensed_product_use_stock', 1);
-        } else {
+        }
+
+        else {
             update_post_meta($postId, 'lmfwc_licensed_product_use_stock', 0);
         }
 
@@ -247,16 +258,22 @@ class ProductData
                 set_transient('lmfwc_error', $error, 45);
                 update_post_meta($postId, 'lmfwc_licensed_product_use_generator', 0);
                 update_post_meta($postId, 'lmfwc_licensed_product_assigned_generator', 0);
-            } else {
+            }
+
+            else {
                 update_post_meta($postId, 'lmfwc_licensed_product_use_generator', 1);
             }
-        } else {
+        }
+
+        else {
             update_post_meta($postId, 'lmfwc_licensed_product_use_generator', 0);
             update_post_meta($postId, 'lmfwc_licensed_product_assigned_generator', 0);
         }
     }
 
     /**
+     * Adds the new product data fields to variable WooCommerce Products.
+     *
      * @param $loop
      * @param $variationData
      * @param $variation
@@ -369,7 +386,7 @@ class ProductData
     }
 
     /**
-     * Saves the data from the product variation fields
+     * Saves the data from the product variation fields.
      *
      * @param integer $variationId
      * @param integer $i
@@ -379,7 +396,9 @@ class ProductData
         // Update licensed product flag, according to checkbox.
         if (array_key_exists('lmfwc_licensed_product', $_POST)) {
             update_post_meta($variationId, 'lmfwc_licensed_product', 1);
-        } else {
+        }
+
+        else {
             update_post_meta($variationId, 'lmfwc_licensed_product', 0);
         }
 
@@ -395,7 +414,9 @@ class ProductData
         // Update the use stock flag, according to checkbox.
         if (array_key_exists('lmfwc_licensed_product_use_stock', $_POST)) {
             update_post_meta($variationId, 'lmfwc_licensed_product_use_stock', 1);
-        } else {
+        }
+
+        else {
             update_post_meta($variationId, 'lmfwc_licensed_product_use_stock', 0);
         }
 
@@ -415,10 +436,14 @@ class ProductData
                 set_transient('lmfwc_error', $error, 45);
                 update_post_meta($variationId, 'lmfwc_licensed_product_use_generator', 0);
                 update_post_meta($variationId, 'lmfwc_licensed_product_assigned_generator', 0);
-            } else {
+            }
+
+            else {
                 update_post_meta($variationId, 'lmfwc_licensed_product_use_generator', 1);
             }
-        } else {
+        }
+
+        else {
             update_post_meta($variationId, 'lmfwc_licensed_product_use_generator', 0);
             update_post_meta($variationId, 'lmfwc_licensed_product_assigned_generator', 0);
         }

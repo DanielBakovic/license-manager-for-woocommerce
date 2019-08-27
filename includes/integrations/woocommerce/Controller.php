@@ -52,7 +52,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
     /**
      * Retrieves ordered license keys.
      *
-     * @param WC_Order $order
+     * @param WC_Order $order WooCommerce Order
      *
      * @return array
      */
@@ -89,12 +89,12 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
     /**
      * Save the license keys for a given product to the database.
      *
-     * @param int                    $orderId
-     * @param int                    $productId
-     * @param array                  $licenseKeys
-     * @param int                    $expiresIn
-     * @param int                    $status
-     * @param GeneratorResourceModel $generator
+     * @param int                    $orderId     WooCommerce Order ID
+     * @param int                    $productId   WooCommerce Product ID
+     * @param array                  $licenseKeys License keys to be stored
+     * @param int                    $expiresIn   Number of days in which license keys expire
+     * @param int                    $status      License key status
+     * @param GeneratorResourceModel $generator   Generator used
      *
      * @throws LMFWC_Exception
      * @throws Exception
@@ -192,7 +192,9 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 $cleanStatus,
                 $generator
             );
-        } else {
+        }
+
+        else {
             // Keys have been generated and saved, this order is now complete.
             update_post_meta($cleanOrderId, 'lmfwc_order_complete', 1);
         }
@@ -201,12 +203,12 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
     /**
      * Imports an array of un-encrypted license keys.
      *
-     * @param array $licenseKeys
-     * @param int   $status
-     * @param int   $orderId
-     * @param int   $productId
-     * @param int   $validFor
-     * @param int   $timesActivatedMax
+     * @param array $licenseKeys       License keys to be stored
+     * @param int   $status            License key status
+     * @param int   $orderId           WooCommerce Order ID
+     * @param int   $productId         WooCommerce Product ID
+     * @param int   $validFor          Validity period (in days)
+     * @param int   $timesActivatedMax Maximum activation count
      *
      * @return array
      * @throws LMFWC_Exception
@@ -268,9 +270,9 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
     /**
      * Mark the imported license keys as sold.
      *
-     * @param LicenseResourceModel[] $licenses
-     * @param int                    $orderId
-     * @param int                    $amount
+     * @param LicenseResourceModel[] $licenses License key resource models
+     * @param int                    $orderId  WooCommerce Order ID
+     * @param int                    $amount   Amount to be marked as sold
      *
      * @throws LMFWC_Exception
      * @throws Exception
@@ -468,9 +470,9 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
     /**
      * Searches the database for posts that match the given term
      *
-     * @param string $term
-     * @param int    $limit
-     * @param int    $offset
+     * @param string $term   The search term
+     * @param int    $limit  Maximum number of search results
+     * @param int    $offset Search offset
      *
      * @return array
      */

@@ -23,7 +23,6 @@ defined('ABSPATH') || exit;
  * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
  * @version  Release: <1.3.0>
  * @link     https://www.bebic.at/license-manager-for-woocommerce
- * @since    1.0.0
  */
 final class Main
 {
@@ -174,7 +173,7 @@ final class Main
     public function pluginRowMeta($links, $file)
     {
         if (strpos($file, 'license-manager-for-woocommerce.php') !== false ) {
-            $new_links = array(
+            $newLinks = array(
                 'github' => sprintf(
                     '<a href="%s" target="_blank">%s</a>',
                     'https://github.com/drazenbebic/license-manager',
@@ -192,7 +191,7 @@ final class Main
                 )
             );
             
-            $links = array_merge($links, $new_links);
+            $links = array_merge($links, $newLinks);
         }
 
         return $links;
@@ -221,7 +220,7 @@ final class Main
     }
 
     /**
-     * Adds the i18n translations to the plugin
+     * Adds the i18n translations to the plugin.
      */
     public function loadPluginTextDomain()
     {
@@ -289,6 +288,8 @@ final class Main
     }
 
     /**
+     * Checks if WooCommerce is installed.
+     *
      * @return bool
      */
     private function isWooCommerceActive()

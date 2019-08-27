@@ -30,7 +30,7 @@ class Generators extends LMFWC_REST_Controller
      */
     public function register_routes()
     {
-        /*
+        /**
          * GET generators
          *
          * Retrieves all the available generators from the database.
@@ -44,7 +44,7 @@ class Generators extends LMFWC_REST_Controller
             )
         );
 
-        /*
+        /**
          * GET generators/{id}
          *
          * Retrieves a single generator from the database.
@@ -64,7 +64,7 @@ class Generators extends LMFWC_REST_Controller
             )
         );
 
-        /*
+        /**
          * POST generators
          *
          * Creates a new generator in the database
@@ -78,7 +78,7 @@ class Generators extends LMFWC_REST_Controller
             )
         );
 
-        /*
+        /**
          * PUT generators/{id}
          *
          * Updates an already existing generator in the database
@@ -207,6 +207,7 @@ class Generators extends LMFWC_REST_Controller
                 array('status' => 404)
             );
         }
+
         if (!$charset) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
@@ -214,6 +215,7 @@ class Generators extends LMFWC_REST_Controller
                 array('status' => 404)
             );
         }
+
         if (!$chunks) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
@@ -221,6 +223,7 @@ class Generators extends LMFWC_REST_Controller
                 array('status' => 404)
             );
         }
+
         if (!$chunkLength) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
@@ -252,7 +255,6 @@ class Generators extends LMFWC_REST_Controller
             );
         }
 
-
         if (!$generator) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
@@ -273,7 +275,6 @@ class Generators extends LMFWC_REST_Controller
      */
     public function updateGenerator(WP_REST_Request $request)
     {
-        // init
         $body        = null;
         $generatorId = null;
 

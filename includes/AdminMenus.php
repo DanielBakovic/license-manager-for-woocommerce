@@ -26,19 +26,19 @@ class AdminMenus
     private $tabWhitelist;
 
     /**
-     * Licenses page slug
+     * Licenses page slug.
      */
     const LICENSES_PAGE = 'lmfwc_licenses';
 
     /**
-     * Generators page slug
+     * Generators page slug.
      */
     const GENERATORS_PAGE = 'lmfwc_generators';
 
     /**
-     * Settings page slug
+     * Settings page slug.
      */
-    const SETTINGS_PAGE   = 'lmfwc_settings';
+    const SETTINGS_PAGE = 'lmfwc_settings';
 
     /**
      * Class constructor.
@@ -58,7 +58,7 @@ class AdminMenus
     }
 
     /**
-     * Returns an array of all plugin pages
+     * Returns an array of all plugin pages.
      *
      * @return array
      */
@@ -72,7 +72,7 @@ class AdminMenus
     }
 
     /**
-     * Sets up all necessary plugin pages
+     * Sets up all necessary plugin pages.
      */
     public function createPluginPages()
     {
@@ -119,7 +119,7 @@ class AdminMenus
     }
 
     /**
-     * Adds the supported screen options for the licenses list
+     * Adds the supported screen options for the licenses list.
      */
     public function licensesPageScreenOptions()
     {
@@ -134,7 +134,7 @@ class AdminMenus
     }
 
     /**
-     * Adds the supported screen options for the generators list
+     * Adds the supported screen options for the generators list.
      */
     public function generatorsPageScreenOptions()
     {
@@ -149,11 +149,11 @@ class AdminMenus
     }
 
     /**
-     * Sets up the licenses page
+     * Sets up the licenses page.
      */
     public function licensesPage()
     {
-        $action   = $this->getCurrentAction($default = 'list');
+        $action = $this->getCurrentAction($default = 'list');
 
         // List license keys
         if ($action === 'list') {
@@ -200,7 +200,7 @@ class AdminMenus
     }
 
     /**
-     * Sets up the generators page
+     * Sets up the generators page.
      */
     public function generatorsPage()
     {
@@ -239,7 +239,7 @@ class AdminMenus
     }
 
     /**
-     * Sets up the settings page
+     * Sets up the settings page.
      */
     public function settingsPage()
     {
@@ -292,9 +292,13 @@ class AdminMenus
                         wp_die(esc_html__('You do not have permission to edit this API Key', 'lmfwc'));
                     }
                 }
-            } elseif ($action === 'list') {
+            }
+
+            elseif ($action === 'list') {
                 $keys = new APIKeyList();
-            } elseif ($action === 'show') {
+            }
+
+            elseif ($action === 'show') {
                 $keyData = get_transient('lmfwc_api_key');
                 $consumerKey = get_transient('lmfwc_consumer_key');
                 delete_transient('lmfwc_api_key');
@@ -314,7 +318,7 @@ class AdminMenus
     }
 
     /**
-     * Initialized the plugin Settings API
+     * Initialized the plugin Settings API.
      */
     public function initSettingsAPI()
     {
@@ -322,6 +326,8 @@ class AdminMenus
     }
 
     /**
+     * Displays the new screen options.
+     *
      * @param bool   $keep
      * @param string $option
      * @param int    $value
@@ -334,7 +340,7 @@ class AdminMenus
     }
 
     /**
-     * Sets the custom footer text for the plugin pages
+     * Sets the custom footer text for the plugin pages.
      *
      * @param string $footerText
      *
@@ -346,10 +352,10 @@ class AdminMenus
             return $footerText;
         }
 
-        $current_screen = get_current_screen();
+        $currentScreen = get_current_screen();
 
         // Check to make sure we're on a WooCommerce admin page.
-        if (isset($current_screen->id) && in_array($current_screen->id, $this->getPluginPageIDs())) {
+        if (isset($currentScreen->id) && in_array($currentScreen->id, $this->getPluginPageIDs())) {
             // Change the footer text
             $footerText = sprintf(
                 __( 'If you like %1$s please leave us a %2$s rating. A huge thanks in advance!', 'lmfwc' ),
@@ -362,7 +368,7 @@ class AdminMenus
     }
 
     /**
-     * Retrieves the currently active tab
+     * Retrieves the currently active tab.
      *
      * @return string
      */
@@ -378,7 +384,7 @@ class AdminMenus
     }
 
     /**
-     * Retrieves the currently active section (currently not used)
+     * Retrieves the currently active section (currently not used).
      *
      * @return string
      */
@@ -388,7 +394,7 @@ class AdminMenus
     }
 
     /**
-     * Returns the string value of the "action" GET parameter
+     * Returns the string value of the "action" GET parameter.
      *
      * @param string $default
      *

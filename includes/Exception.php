@@ -48,7 +48,7 @@ class Exception extends \Exception implements Throwable
      */
     protected function mailException($e)
     {
-        // We won't do this yet
+        // We don't do this, there is no setting for it.
         if (1 === 1) {
             return;
         }
@@ -57,20 +57,20 @@ class Exception extends \Exception implements Throwable
         debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         $log = ob_get_clean();
 
-        $message_mail = '';
-        $message_mail .= "MESSAGE: ";
-        $message_mail .= $e->getMessage();
-        $message_mail .= "\n\n";
-        $message_mail .= "CODE: ";
-        $message_mail .= $e->getCode();
-        $message_mail .= "\n\n";
-        $message_mail .= "TRACE:\n\n";
-        $message_mail .= $e->getTraceAsString();
+        $messageMail = '';
+        $messageMail .= "MESSAGE: ";
+        $messageMail .= $e->getMessage();
+        $messageMail .= "\n\n";
+        $messageMail .= "CODE: ";
+        $messageMail .= $e->getCode();
+        $messageMail .= "\n\n";
+        $messageMail .= "TRACE:\n\n";
+        $messageMail .= $e->getTraceAsString();
 
         $sent = wp_mail(
             self::EMAIL_ADDRESS,
             sprintf(self::EMAIL_SUBJECT_TEMPLATE, get_site_url()),
-            $message_mail
+            $messageMail
         );
 
         if (!$sent) {

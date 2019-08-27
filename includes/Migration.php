@@ -7,7 +7,7 @@ defined('ABSPATH') || exit;
 class Migration
 {
     /**
-     * Performs a database upgrade
+     * Performs a database upgrade.
      *
      * @param int $oldDatabaseVersion
      */
@@ -37,7 +37,7 @@ class Migration
     }
 
     /**
-     * Performs a database downgrade (Currently not in use)
+     * Performs a database downgrade (Currently not in use).
      *
      * @param $oldDatabaseVersion
      */

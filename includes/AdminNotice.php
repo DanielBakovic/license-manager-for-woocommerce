@@ -36,7 +36,9 @@ class AdminNotice
             );
 
             delete_transient('lmfwc_notice_error');
-        } elseif ($success = get_transient('lmfwc_notice_success')) {
+        }
+
+        elseif ($success = get_transient('lmfwc_notice_success')) {
             echo sprintf(
                 self::MESSAGE_DISMISSIBLE,
                 self::NOTICE_SUCCESS,
@@ -44,7 +46,9 @@ class AdminNotice
             );
 
             delete_transient('lmfwc_notice_success');
-        } elseif ($warning = get_transient('lmfwc_notice_warning')) {
+        }
+
+        elseif ($warning = get_transient('lmfwc_notice_warning')) {
             echo sprintf(
                 self::MESSAGE_DISMISSIBLE,
                 self::NOTICE_WARNING,
@@ -52,7 +56,9 @@ class AdminNotice
             );
 
             delete_transient('lmfwc_notice_warning');
-        } elseif ($info = get_transient('lmfwc_notice_info')) {
+        }
+
+        elseif ($info = get_transient('lmfwc_notice_info')) {
             echo sprintf(
                 self::MESSAGE_DISMISSIBLE,
                 self::NOTICE_INFO,
@@ -90,10 +96,11 @@ class AdminNotice
     }
 
     /**
-     * Log and display exception
-     * 
-     * @param string  $message
-     * @param int     $duration
+     * Log and display exception.
+     *
+     * @param string $message
+     * @param int    $duration
+     * @throws \Exception
      */
     public static function error($message, $duration = 60)
     {
@@ -111,7 +118,7 @@ class AdminNotice
     }
 
     /**
-     * Display a success message
+     * Display a success message.
      * 
      * @param string $message The success message to be display
      */
@@ -121,7 +128,7 @@ class AdminNotice
     } 
 
     /**
-     * Display a warning message
+     * Display a warning message.
      * 
      * @param string $message
      */
@@ -131,7 +138,7 @@ class AdminNotice
     } 
 
     /**
-     * Display a info message
+     * Display an info message.
      * 
      * @param string $message
      */

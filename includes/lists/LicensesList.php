@@ -23,7 +23,7 @@ if (!class_exists('WP_List_Table')) {
 class LicensesList extends WP_List_Table
 {
     /**
-     * Path to spinner image
+     * Path to spinner image.
      */
     const SPINNER_URL = '/wp-admin/images/loading.gif';
 
@@ -137,23 +137,25 @@ class LicensesList extends WP_List_Table
     }
 
     /**
+     * Adds the order and product filters to the licenses list.
+     *
      * @param string $which
      */
     protected function extra_tablenav($which)
     {
         if ($which === 'top') {
             echo '<div class="alignleft actions">';
-            $this->order_dropdown();
-            $this->product_dropdown();
+            $this->orderDropdown();
+            $this->productDropdown();
             submit_button(__('Filter', 'lmfwc'), '', 'filter-action', false);
             echo '</div>';
         }
     }
 
     /**
-     * Display order dropdown
+     * Displays the order dropdown filter.
      */
-    public function order_dropdown() {
+    public function orderDropdown() {
 
         global $wpdb;
 
@@ -204,9 +206,9 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Display product dropdown
+     * Displays the product dropdown filter.
      */
-    public function product_dropdown() {
+    public function productDropdown() {
         global $wpdb;
 
         $products = array();
@@ -260,7 +262,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Checkbox column
+     * Checkbox column.
      * 
      * @param array $item Associative array of column name and value pairs
      * 
@@ -275,7 +277,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * License key column
+     * License key column.
      * 
      * @param array $item Associative array of column name and value pairs
      * 
@@ -290,7 +292,9 @@ class LicensesList extends WP_List_Table
                 $item['id'],
                 self::SPINNER_URL
             );
-        } else {
+        }
+
+        else {
             $title = sprintf(
                 '<code class="lmfwc-placeholder">%s</code>',
                 apply_filters('lmfwc_decrypt', $item['license_key'])
@@ -386,7 +390,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Order ID column
+     * Order ID column.
      * 
      * @param array $item Associative array of column name and value pairs
      * 
@@ -408,7 +412,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Product ID column
+     * Product ID column.
      * 
      * @param array $item Associative array of column name and value pairs
      * 
@@ -451,7 +455,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Activation column
+     * Activation column.
      * 
      * @param array $item Associative array of column name and value pairs
      * 
@@ -486,7 +490,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Created column
+     * Created column.
      *
      * @param array $item Associative array of column name and value pairs
      *
@@ -523,7 +527,9 @@ class LicensesList extends WP_List_Table
                         get_edit_user_link($user->ID),
                         $user->display_name
                     );
-                } else {
+                }
+
+                else {
                     $html .= sprintf(
                         '<br><span>%s %s</span>',
                         __('by', 'lmfwc'),
@@ -537,7 +543,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Updated column
+     * Updated column.
      *
      * @param array $item Associative array of column name and value pairs
      *
@@ -574,7 +580,9 @@ class LicensesList extends WP_List_Table
                         get_edit_user_link($user->ID),
                         $user->display_name
                     );
-                } else {
+                }
+
+                else {
                     $html .= sprintf(
                         '<br><span>%s %s</span>',
                         __('by', 'lmfwc'),
@@ -588,7 +596,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Expires at column
+     * Expires at column.
      * 
      * @param array $item Associative array of column name and value pairs
      *
@@ -601,11 +609,11 @@ class LicensesList extends WP_List_Table
             return '';
         }
 
-        $offsetSeconds = floatval($this->gmtOffset) * 60 * 60;
+        $offsetSeconds      = floatval($this->gmtOffset) * 60 * 60;
         $timestampExpiresAt = strtotime($item['expires_at']) + $offsetSeconds;
-        $timestampNow = strtotime('now') + $offsetSeconds;
-        $datetimeString = date('Y-m-d H:i:s', $timestampExpiresAt);
-        $date = new DateTime($datetimeString);
+        $timestampNow       = strtotime('now') + $offsetSeconds;
+        $datetimeString     = date('Y-m-d H:i:s', $timestampExpiresAt);
+        $date               = new DateTime($datetimeString);
 
         if ($timestampNow > $timestampExpiresAt) {
             return sprintf(
@@ -624,7 +632,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Valid for column
+     * Valid for column.
      * 
      * @param array $item Associative array of column name and value pairs
      * 
@@ -647,7 +655,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Status column
+     * Status column.
      * 
      * @param array $item Associative array of column name and value pairs
      * 
@@ -692,20 +700,20 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Default column value
+     * Default column value.
      * 
-     * @param array  $item        Associative array of column name and value pairs
-     * @param string $column_name Name of the current column
+     * @param array  $item       Associative array of column name and value pairs
+     * @param string $columnName Name of the current column
      * 
      * @return string
      */
-    public function column_default($item, $column_name)
+    public function column_default($item, $columnName)
     {
-        return $item[$column_name];
+        return $item[$columnName];
     }
 
     /**
-     * Defines sortable columns and their sort value
+     * Defines sortable columns and their sort value.
      * 
      * @return array
      */
@@ -726,7 +734,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Defines items in the bulk action dropdown
+     * Defines items in the bulk action dropdown.
      * 
      * @return array
      */
@@ -744,7 +752,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Processes the currently selected action
+     * Processes the currently selected action.
      */
     public function process_bulk_action()
     {
@@ -772,7 +780,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Initialization function
+     * Initialization function.
      */
     public function prepare_items()
     {
@@ -800,12 +808,12 @@ class LicensesList extends WP_List_Table
     /**
      * Retrieves the licenses from the database.
      * 
-     * @param int $per_page    Default amount of licenses per page
-     * @param int $page_number Default page number
+     * @param int $perPage    Default amount of licenses per page
+     * @param int $pageNumber Default page number
      * 
      * @return array
      */
-    public function get_licenses($per_page = 20, $page_number = 1)
+    public function get_licenses($perPage = 20, $pageNumber = 1)
     {
         global $wpdb;
 
@@ -836,8 +844,8 @@ class LicensesList extends WP_List_Table
 
         $sql .= ' ORDER BY ' . (empty($_REQUEST['orderby']) ? 'id' : esc_sql($_REQUEST['orderby']));
         $sql .= ' '          . (empty($_REQUEST['order'])   ? 'DESC'  : esc_sql($_REQUEST['order']));
-        $sql .= " LIMIT {$per_page}";
-        $sql .= ' OFFSET ' . ($page_number - 1) * $per_page;
+        $sql .= " LIMIT {$perPage}";
+        $sql .= ' OFFSET ' . ($pageNumber - 1) * $perPage;
 
         $results = $wpdb->get_results($sql, ARRAY_A);
 
@@ -845,7 +853,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Retrieves the generator table row count
+     * Retrieves the generator table row count.
      * 
      * @return int
      */
@@ -874,7 +882,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Output in case no items exist
+     * Output in case no items exist.
      */
     public function no_items()
     {
@@ -882,7 +890,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Set the table columns
+     * Set the table columns.
      */
     public function get_columns()
     {
@@ -903,9 +911,10 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Checks if the given nonce is (still) valid
-     * 
+     * Checks if the given nonce is (still) valid.
+     *
      * @param string $nonce The nonce to check
+     * @throws Exception
      */
     private function verify_nonce($nonce)
     {
@@ -927,6 +936,7 @@ class LicensesList extends WP_List_Table
      * Changes the license key status
      *
      * @param int $status
+     * @throws Exception
      */
     private function toggle_license_key_status($status)
     {
@@ -969,7 +979,9 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Removes the license key(s) permanently from the database
+     * Removes the license key(s) permanently from the database.
+     *
+     * @throws Exception
      */
     private function delete_license_keys()
     {
@@ -993,9 +1005,10 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Initiates a file download of the exported licenses (pdf or csv)
+     * Initiates a file download of the exported licenses (PDF or CSV).
      *
      * @param string $type
+     * @throws Exception
      */
     private function export_license_keys($type)
     {
@@ -1011,7 +1024,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Checks if there are currently any license view filters active
+     * Checks if there are currently any license view filters active.
      * 
      * @return boolean
      */
@@ -1027,7 +1040,7 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Displays the search box
+     * Displays the search box.
      *
      * @param string $text
      * @param string $inputId

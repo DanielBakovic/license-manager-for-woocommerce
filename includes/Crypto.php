@@ -42,7 +42,7 @@ class Crypto
     private $keySecret;
 
     /**
-     * Directory path to the plugin folder inside wp-content/uploads
+     * Directory path to the plugin folder inside wp-content/uploads.
      * 
      * @var string
      */
@@ -65,7 +65,7 @@ class Crypto
     }
 
     /**
-     * Sets the defuse encryption key
+     * Sets the defuse encryption key.
      */
     private function setDefuse()
     {
@@ -81,7 +81,7 @@ class Crypto
     }
 
     /**
-     * Sets the cryptographic secret
+     * Sets the cryptographic secret.
      */
     private function setSecret()
     {
@@ -102,7 +102,7 @@ class Crypto
      * @throws BadFormatException
      * @throws EnvironmentIsBrokenException
      *
-     * @return string
+     * @return Key|string
      */
     private function loadEncryptionKeyFromConfig()
     {
@@ -153,7 +153,10 @@ class Crypto
     }
 
     /**
-     * @param $value
+     * Hashes the given string using the HMAC-SHA256 method.
+     *
+     * @param string $value
+     *
      * @return false|string
      */
     public function hash($value)

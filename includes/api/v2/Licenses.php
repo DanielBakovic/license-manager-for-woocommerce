@@ -32,7 +32,7 @@ class Licenses extends LMFWC_REST_Controller
      */
     public function register_routes()
     {
-        /*
+        /**
          * GET licenses
          *
          * Retrieves all the available licenses from the database.
@@ -46,7 +46,7 @@ class Licenses extends LMFWC_REST_Controller
             )
         );
 
-        /*
+        /**
          * GET licenses/{license_key}
          *
          * Retrieves a single licenses from the database.
@@ -66,7 +66,7 @@ class Licenses extends LMFWC_REST_Controller
             )
         );
 
-        /*
+        /**
          * POST licenses
          *
          * Creates a new license in the database
@@ -80,7 +80,7 @@ class Licenses extends LMFWC_REST_Controller
             )
         );
 
-        /*
+        /**
          * PUT licenses/{license_key}
          *
          * Updates an already existing license in the database
@@ -100,7 +100,8 @@ class Licenses extends LMFWC_REST_Controller
             )
         );
 
-        /* PUT licenses/activate/{license_key}
+        /**
+         * PUT licenses/activate/{license_key}
          *
          * Activates a license key
          */
@@ -119,7 +120,8 @@ class Licenses extends LMFWC_REST_Controller
             )
         );
 
-        /* PUT licenses/activate/{license_key}
+        /**
+         * PUT licenses/activate/{license_key}
          *
          * Activates a license key
          */
@@ -171,11 +173,9 @@ class Licenses extends LMFWC_REST_Controller
         foreach ($licenses as $license) {
             $licenseData = $license->toArray();
 
-            // Remove the hash and decrypt the license key
+            // Remove the hash, decrypt the license key, and add it to the response
             unset($licenseData['hash']);
-
             $licenseData['licenseKey'] = $license->getDecryptedLicenseKey();
-
             $response[] = $licenseData;
         }
 
@@ -263,13 +263,15 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
-        if ($statusEnum && !in_array($statusEnum, LicenseStatus::$enum_array)) {
+        if ($statusEnum && !in_array($statusEnum, LicenseStatus::$enumArray)) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
                 'License Key status is invalid',
                 array('status' => 404)
             );
-        } else {
+        }
+
+        else {
             $status = LicenseStatus::$values[$statusEnum];
         }
 
@@ -475,9 +477,7 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
-        if ($timesActivatedMax
-            && ($timesActivated >= $timesActivatedMax)
-        ) {
+        if ($timesActivatedMax && ($timesActivated >= $timesActivatedMax)) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
                 sprintf(
@@ -492,7 +492,9 @@ class Licenses extends LMFWC_REST_Controller
         try {
             if (!$timesActivated) {
                 $timesActivatedNew = 1;
-            } else {
+            }
+
+            else {
                 $timesActivatedNew = intval($timesActivated) + 1;
             }
 
@@ -542,7 +544,6 @@ class Licenses extends LMFWC_REST_Controller
 
         $licenseKey = sanitize_text_field($urlParams['license_key']);
 
-
         if (!$licenseKey) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
@@ -587,6 +588,8 @@ class Licenses extends LMFWC_REST_Controller
     }
 
     /**
+     * Converts the passed status string to a valid enumerator value.
+     *
      * @param string $enumerator
      *
      * @return int

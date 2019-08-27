@@ -28,6 +28,8 @@ class Order
     }
 
     /**
+     * Generates licenses when an order is set to complete.
+     *
      * @param integer $orderId
      */
     public function generateOrderLicenses($orderId)
@@ -98,7 +100,9 @@ class Order
                         $neededAmount
                     );
                     // There are not enough keys.
-                } else {
+                }
+
+                else {
                     // Set the available license keys as "SOLD".
                     apply_filters(
                         'lmfwc_sell_imported_license_keys',
@@ -143,13 +147,17 @@ class Order
                         );
 
                         // Create a backorder
-                    } else {
+                    }
+
+                    else {
                         // Coming soon...
                     }
                 }
 
                 // Scenario 3 - Use generator.
-            } else if (!$useStock && $useGenerator) {
+            }
+
+            else if (!$useStock && $useGenerator) {
                 $generatorId = get_post_meta($product->get_id(), 'lmfwc_licensed_product_assigned_generator', true);
 
                 // Retrieve the generator from the database and set up the args.
@@ -218,15 +226,15 @@ class Order
             wp_enqueue_style('lmfwc_admin_css', LMFWC_CSS_URL . 'main.css');
         }
 
-        $date_format = get_option('date_format');
-        $heading     = apply_filters('lmfwc_license_keys_table_heading', null);
-        $valid_until = apply_filters('lmfwc_license_keys_table_valid_until', null);
+        $dateFormat = get_option('date_format');
+        $heading    = apply_filters('lmfwc_license_keys_table_heading', null);
+        $validUntil = apply_filters('lmfwc_license_keys_table_valid_until', null);
 
         include LMFWC_TEMPLATES_DIR . 'order-view-license-keys.php';
     }
 
     /**
-     * Adds a new order action used to resend the sold license keys
+     * Adds a new order action used to resend the sold license keys.
      *
      * @param array $actions
      *

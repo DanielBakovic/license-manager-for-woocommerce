@@ -6,8 +6,6 @@ defined('ABSPATH') || exit;
 
 class Setup
 {
-    public $controller;
-
     /**
      * Setup class constructor.
      */
@@ -22,7 +20,7 @@ class Setup
     }
 
     /**
-     * Register the new plugin routes
+     * Initializes the plugin API controllers.
      */
     public function registerRoutes()
     {
