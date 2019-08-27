@@ -26,6 +26,19 @@ class Generators extends LMFWC_REST_Controller
     protected $rest_base = '/generators';
 
     /**
+     * @var array
+     */
+    protected $settings = array();
+
+    /**
+     * Generators constructor.
+     */
+    public function __construct()
+    {
+        $this->settings = (array)get_option('lmfwc_settings');
+    }
+
+    /**
      * Register all the needed routes for this resource.
      */
     public function register_routes()
@@ -106,6 +119,14 @@ class Generators extends LMFWC_REST_Controller
      */
     public function getGenerators()
     {
+        if (!$this->isRouteEnabled($this->settings, '006')) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                'This route is disabled via the plugin settings.',
+                array('status' => 404)
+            );
+        }
+
         try {
             /** @var GeneratorResourceModel[] $generator */
             $generators = GeneratorResourceRepository::instance()->findAll();
@@ -144,6 +165,14 @@ class Generators extends LMFWC_REST_Controller
      */
     public function getGenerator(WP_REST_Request $request)
     {
+        if (!$this->isRouteEnabled($this->settings, '007')) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                'This route is disabled via the plugin settings.',
+                array('status' => 404)
+            );
+        }
+
         $generatorId = absint($request->get_param('generator_id'));
 
         if (!$generatorId) {
@@ -188,6 +217,14 @@ class Generators extends LMFWC_REST_Controller
      */
     public function createGenerator(WP_REST_Request $request)
     {
+        if (!$this->isRouteEnabled($this->settings, '008')) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                'This route is disabled via the plugin settings.',
+                array('status' => 404)
+            );
+        }
+
         $body = $request->get_params();
 
         $name              = isset($body['name'])                ? sanitize_text_field($body['name'])      : null;
@@ -275,6 +312,14 @@ class Generators extends LMFWC_REST_Controller
      */
     public function updateGenerator(WP_REST_Request $request)
     {
+        if (!$this->isRouteEnabled($this->settings, '009')) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                'This route is disabled via the plugin settings.',
+                array('status' => 404)
+            );
+        }
+
         $body        = null;
         $generatorId = null;
 

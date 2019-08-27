@@ -28,6 +28,19 @@ class Licenses extends LMFWC_REST_Controller
     protected $rest_base = '/licenses';
 
     /**
+     * @var array
+     */
+    protected $settings = array();
+
+    /**
+     * Licenses constructor.
+     */
+    public function __construct()
+    {
+        $this->settings = (array)get_option('lmfwc_settings');
+    }
+
+    /**
      * Register all the needed routes for this resource.
      */
     public function register_routes()
@@ -148,6 +161,14 @@ class Licenses extends LMFWC_REST_Controller
      */
     public function getLicenses()
     {
+        if (!$this->isRouteEnabled($this->settings, '000')) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                'This route is disabled via the plugin settings.',
+                array('status' => 404)
+            );
+        }
+
         try {
             /** @var LicenseResourceModel[] $licenses */
             $licenses = LicenseResourceRepository::instance()->findAll();
@@ -186,6 +207,14 @@ class Licenses extends LMFWC_REST_Controller
      */
     public function getLicense(WP_REST_Request $request)
     {
+        if (!$this->isRouteEnabled($this->settings, '001')) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                'This route is disabled via the plugin settings.',
+                array('status' => 404)
+            );
+        }
+
         $licenseKey = sanitize_text_field($request->get_param('license_key'));
 
         if (!$licenseKey) {
@@ -242,6 +271,14 @@ class Licenses extends LMFWC_REST_Controller
      */
     public function createLicense(WP_REST_Request $request)
     {
+        if (!$this->isRouteEnabled($this->settings, '002')) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                'This route is disabled via the plugin settings.',
+                array('status' => 404)
+            );
+        }
+
         $body = $request->get_params();
 
         $productId         = isset($body['product_id'])          ? absint($body['product_id'])               : null;
@@ -313,6 +350,14 @@ class Licenses extends LMFWC_REST_Controller
      */
     public function updateLicense(WP_REST_Request $request)
     {
+        if (!$this->isRouteEnabled($this->settings, '003')) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                'This route is disabled via the plugin settings.',
+                array('status' => 404)
+            );
+        }
+
         $body      = null;
         $urlParams = $request->get_url_params();
 
@@ -422,6 +467,14 @@ class Licenses extends LMFWC_REST_Controller
      */
     public function activateLicense(WP_REST_Request $request)
     {
+        if (!$this->isRouteEnabled($this->settings, '004')) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                'This route is disabled via the plugin settings.',
+                array('status' => 404)
+            );
+        }
+
         $licenseKey = sanitize_text_field($request->get_param('license_key'));
 
         if (!$licenseKey) {
@@ -533,6 +586,14 @@ class Licenses extends LMFWC_REST_Controller
      */
     public function validateLicense(WP_REST_Request $request)
     {
+        if (!$this->isRouteEnabled($this->settings, '005')) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                'This route is disabled via the plugin settings.',
+                array('status' => 404)
+            );
+        }
+
         $urlParams = $request->get_url_params();
 
         if (!array_key_exists('license_key', $urlParams)) {

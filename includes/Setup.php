@@ -262,7 +262,30 @@ class Setup
     {
         $defaults = array(
             'lmfwc_hide_license_keys' => 0,
-            'lmfwc_auto_delivery' => 1
+            'lmfwc_auto_delivery' => 1,
+            'lmfwc_disable_api_ssl' => 0,
+            'lmfwc_enabled_api_endpoints' => array(
+                '000' => '1',
+                '001' => '1',
+                '002' => '1',
+                '003' => '1',
+                '004' => '1',
+                '005' => '1',
+                '006' => '1',
+                '007' => '1',
+                '008' => '1',
+                '009' => '1',
+                '010' => '1',
+                '011' => '1',
+                '012' => '1',
+                '013' => '1',
+                '014' => '1',
+                '015' => '1',
+                '016' => '1',
+                '017' => '1',
+                '018' => '1',
+                '019' => '1'
+            )
         );
 
         // The defaults for the Setting API.

@@ -42,4 +42,24 @@ class RestController extends WP_REST_Controller
         json_decode($string);
         return (json_last_error() === JSON_ERROR_NONE);
     }
+
+    /**
+     * Checks whether a specific plugin API route is enabled.
+     *
+     * @param array  $settings Plugin settings array
+     * @param string $routeId  Unique plugin API route ID
+     *
+     * @return bool
+     */
+    protected function isRouteEnabled($settings, $routeId)
+    {
+        if (!array_key_exists('lmfwc_enabled_api_endpoints', $settings)
+            || !array_key_exists($routeId, $settings['lmfwc_enabled_api_endpoints'])
+            || !$settings['lmfwc_enabled_api_endpoints'][$routeId]
+        ) {
+            return false;
+        }
+
+        return true;
+    }
 }
