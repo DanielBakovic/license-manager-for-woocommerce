@@ -388,8 +388,8 @@ class ProductData
     /**
      * Saves the data from the product variation fields.
      *
-     * @param integer $variationId
-     * @param integer $i
+     * @param int $variationId
+     * @param int $i
      */
     public function variableProductLicenseManagerSaveAction($variationId, $i)
     {

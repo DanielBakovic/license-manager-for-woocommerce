@@ -1026,7 +1026,7 @@ class LicensesList extends WP_List_Table
     /**
      * Checks if there are currently any license view filters active.
      * 
-     * @return boolean
+     * @return bool
      */
     public function is_view_filter_active()
     {

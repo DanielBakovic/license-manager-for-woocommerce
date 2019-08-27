@@ -66,7 +66,7 @@ class GeneratorsList extends WP_List_Table
     /**
      * Retrieves the generator table row count.
      * 
-     * @return integer
+     * @return int
      */
     public function recordCount()
     {

@@ -21,8 +21,8 @@ class Exception extends \Exception implements Throwable
     /**
      * Constructor
      *
-     * @param string $message
-     * @param integer $code
+     * @param string    $message
+     * @param int       $code
      * @param Exception $previous
      *
      * @throws \Exception

@@ -30,7 +30,7 @@ class Order
     /**
      * Generates licenses when an order is set to complete.
      *
-     * @param integer $orderId
+     * @param int $orderId
      */
     public function generateOrderLicenses($orderId)
     {

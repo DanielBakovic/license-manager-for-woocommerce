@@ -9,7 +9,7 @@
             <span><?php esc_html_e('General', 'lmfwc');?></span>
         </a>
         <a href="<?php echo esc_url($urlRestApi); ?>" class="nav-tab <?=$tab == 'rest_api' ? 'nav-tab-active' : '';?>">
-            <span><?php esc_html_e('REST API', 'lmfwc');?></span>
+            <span><?php esc_html_e('REST API keys', 'lmfwc');?></span>
         </a>
     </nav>
 

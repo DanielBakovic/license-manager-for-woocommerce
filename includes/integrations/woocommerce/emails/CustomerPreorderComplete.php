@@ -88,7 +88,7 @@ class CustomerPreorderComplete extends WC_Email
     /**
      * Trigger the sending of this email.
      *
-     * @param integer       $orderId WooCommerce order ID
+     * @param int           $orderId WooCommerce order ID
      * @param WC_Order|bool $order   WooCommerce order, or a false flag
      */
     public function trigger($orderId, $order = false)
