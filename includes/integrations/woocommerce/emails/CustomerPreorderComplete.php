@@ -33,8 +33,8 @@ class CustomerPreorderComplete extends WC_Email
         );
 
         // Template paths.
-        $this->template_html  = 'emails/customer-preorder-complete.php';
-        $this->template_plain = 'emails/plain/customer-preorder-complete.php';
+        $this->template_html  = 'emails/lmfwc-email-customer-preorder-complete.php';
+        $this->template_plain = 'emails/plain/lmfwc-email-customer-preorder-complete.php';
         $this->template_base  = LMFWC_TEMPLATES_DIR;
 
         // Action to which we hook onto to send the email.

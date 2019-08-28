@@ -29,12 +29,13 @@ class Templates
     {
         if ($plainText) {
             echo wc_get_template(
-                'emails/plain/email-order-details.php',
+                'emails/plain/lmfwc-email-order-details.php',
                 array(
                     'order'         => $order,
                     'sent_to_admin' => false,
                     'plain_text'    => false,
-                    'email'         => $email
+                    'email'         => $email,
+                    'args'          => apply_filters('lmfwc_template_args_emails_email_order_details', array())
                 ),
                 '',
                 LMFWC_TEMPLATES_DIR
@@ -43,12 +44,13 @@ class Templates
 
         else {
             echo wc_get_template_html(
-                'emails/email-order-details.php',
+                'emails/lmfwc-email-order-details.php',
                 array(
                     'order'         => $order,
                     'sent_to_admin' => false,
                     'plain_text'    => false,
-                    'email'         => $email
+                    'email'         => $email,
+                    'args'          => apply_filters('lmfwc_template_args_emails_email_order_details', array())
                 ),
                 '',
                 LMFWC_TEMPLATES_DIR
@@ -68,7 +70,7 @@ class Templates
     {
         if ($plainText) {
             echo wc_get_template(
-                'emails/plain/email-order-license-keys.php',
+                'emails/plain/lmfwc-email-order-license-keys.php',
                 array(
                     'heading'       => apply_filters('lmfwc_license_keys_table_heading', null),
                     'valid_until'   => apply_filters('lmfwc_license_keys_table_valid_until', null),
@@ -77,7 +79,8 @@ class Templates
                     'order'         => $order,
                     'sent_to_admin' => false,
                     'plain_text'    => false,
-                    'email'         => $email
+                    'email'         => $email,
+                    'args'          => apply_filters('lmfwc_template_args_emails_order_license_keys', array())
                 ),
                 '',
                 LMFWC_TEMPLATES_DIR
@@ -86,7 +89,7 @@ class Templates
 
         else {
             echo wc_get_template_html(
-                'emails/email-order-license-keys.php',
+                'emails/lmfwc-email-order-license-keys.php',
                 array(
                     'heading'       => apply_filters('lmfwc_license_keys_table_heading', null),
                     'valid_until'   => apply_filters('lmfwc_license_keys_table_valid_until', null),
@@ -95,7 +98,8 @@ class Templates
                     'order'         => $order,
                     'sent_to_admin' => false,
                     'plain_text'    => false,
-                    'email'         => $email
+                    'email'         => $email,
+                    'args'          => apply_filters('lmfwc_template_args_emails_order_license_keys', array())
                 ),
                 '',
                 LMFWC_TEMPLATES_DIR

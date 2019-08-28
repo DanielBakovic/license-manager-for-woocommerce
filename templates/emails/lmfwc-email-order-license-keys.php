@@ -1,4 +1,17 @@
 <?php
+/**
+ * The template which adds the license keys to the "order complete" email (HTML).
+ *
+ * This template can be overridden by copying it to yourtheme/woocommerce/emails/lmfwc-email-order-license-keys.php.
+ *
+ * HOWEVER, on occasion I will need to update template files and you
+ * (the developer) will need to copy the new files to your theme to
+ * maintain compatibility. I try to do this as little as possible, but it does
+ * happen. When this occurs the version of the template file will be bumped and
+ * the readme will list any important changes.
+ *
+ * @version 1.3.0
+ */
 
 use LicenseManagerForWooCommerce\Models\Resources\License;
 

@@ -226,11 +226,19 @@ class Order
             wp_enqueue_style('lmfwc_admin_css', LMFWC_CSS_URL . 'main.css');
         }
 
-        $dateFormat = get_option('date_format');
-        $heading    = apply_filters('lmfwc_license_keys_table_heading', null);
-        $validUntil = apply_filters('lmfwc_license_keys_table_valid_until', null);
+        echo wc_get_template_html(
+            'myaccount/lmfwc-license-keys.php',
+            array(
+                'heading'       => apply_filters('lmfwc_license_keys_table_heading', null),
+                'valid_until'   => apply_filters('lmfwc_license_keys_table_valid_until', null),
+                'data'          => $data,
+                'date_format'   => get_option('date_format'),
+                'args'          => apply_filters('lmfwc_template_args_myaccount_license_keys', array())
+            ),
+            '',
+            LMFWC_TEMPLATES_DIR
+        );
 
-        include LMFWC_TEMPLATES_DIR . 'order-view-license-keys.php';
     }
 
     /**

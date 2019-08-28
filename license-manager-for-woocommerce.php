@@ -36,8 +36,7 @@ if (!defined('LMFWC_PLUGIN_URL')) {
  *
  * Returns the main instance of SN to prevent the need to use globals.
  *
- * @since  1.0.0
- * @return LicenseManagerForWooCommerce
+ * @return Main
  */
 function lmfwc()
 {

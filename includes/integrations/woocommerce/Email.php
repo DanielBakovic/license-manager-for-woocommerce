@@ -46,7 +46,7 @@ class Email
             // Send the keys out if the setting is active.
             if ($plainText) {
                 echo wc_get_template(
-                    'emails/plain/email-order-license-keys.php',
+                    'emails/plain/lmfwc-email-order-license-keys.php',
                     array(
                         'heading'       => apply_filters('lmfwc_license_keys_table_heading', null),
                         'valid_until'   => apply_filters('lmfwc_license_keys_table_valid_until', null),
@@ -55,7 +55,8 @@ class Email
                         'order'         => $order,
                         'sent_to_admin' => $isAdminEmail,
                         'plain_text'    => true,
-                        'email'         => $email
+                        'email'         => $email,
+                        'args'          => apply_filters('lmfwc_template_args_emails_email_order_license_keys', array())
                     ),
                     '',
                     LMFWC_TEMPLATES_DIR
@@ -64,7 +65,7 @@ class Email
 
             else {
                 echo wc_get_template_html(
-                    'emails/email-order-license-keys.php',
+                    'emails/lmfwc-email-order-license-keys.php',
                     array(
                         'heading'       => apply_filters('lmfwc_license_keys_table_heading', null),
                         'valid_until'   => apply_filters('lmfwc_license_keys_table_valid_until', null),
@@ -73,7 +74,8 @@ class Email
                         'order'         => $order,
                         'sent_to_admin' => $isAdminEmail,
                         'plain_text'    => false,
-                        'email'         => $email
+                        'email'         => $email,
+                        'args'          => apply_filters('lmfwc_template_args_emails_email_order_license_keys', array())
                     ),
                     '',
                     LMFWC_TEMPLATES_DIR
@@ -85,8 +87,10 @@ class Email
             // Only display a notice.
             if ($plainText) {
                 echo wc_get_template(
-                    'emails/plain/email-order-license-notice.php',
-                    array(),
+                    'emails/plain/lmfwc-email-order-license-notice.php',
+                    array(
+                        'args' => apply_filters('lmfwc_template_args_emails_email_order_license_notice', array())
+                    ),
                     '',
                     LMFWC_TEMPLATES_DIR
                 );
@@ -94,8 +98,10 @@ class Email
 
             else {
                 echo wc_get_template_html(
-                    'emails/email-order-license-notice.php',
-                    array(),
+                    'emails/lmfwc-email-order-license-notice.php',
+                    array(
+                        'args' => apply_filters('lmfwc_template_args_emails_email_order_license_notice', array())
+                    ),
                     '',
                     LMFWC_TEMPLATES_DIR
                 );
