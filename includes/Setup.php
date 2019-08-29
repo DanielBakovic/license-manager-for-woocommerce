@@ -32,6 +32,8 @@ class Setup
 
     /**
      * Installation script.
+     *
+     * @throws EnvironmentIsBrokenException
      */
     public static function install()
     {
@@ -264,7 +266,7 @@ class Setup
             'lmfwc_hide_license_keys' => 0,
             'lmfwc_auto_delivery' => 1,
             'lmfwc_disable_api_ssl' => 0,
-            'lmfwc_enabled_api_endpoints' => array(
+            'lmfwc_enabled_api_routes' => array(
                 '000' => '1',
                 '001' => '1',
                 '002' => '1',
@@ -284,7 +286,8 @@ class Setup
                 '016' => '1',
                 '017' => '1',
                 '018' => '1',
-                '019' => '1'
+                '019' => '1',
+                '020' => '1'
             )
         );
 

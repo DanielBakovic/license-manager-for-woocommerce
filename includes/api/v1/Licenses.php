@@ -162,11 +162,7 @@ class Licenses extends LMFWC_REST_Controller
     public function getLicenses()
     {
         if (!$this->isRouteEnabled($this->settings, '000')) {
-            return new WP_Error(
-                'lmfwc_rest_data_error',
-                'This route is disabled via the plugin settings.',
-                array('status' => 404)
-            );
+            return $this->routeDisabledError();
         }
 
         try {
@@ -195,11 +191,11 @@ class Licenses extends LMFWC_REST_Controller
             $response[] = $this->getLicenseData($license);
         }
 
-        return $this->response(true, $response, 200);
+        return $this->response(true, $response, 200, 'v1/licenses');
     }
 
     /**
-     * Callback for the GET licenses/{license_key} route. Retrieves a single license key from the database.
+     * Callback for the GET licenses/{license_key OR id} route. Retrieves a single license key from the database.
      *
      * @param WP_REST_Request $request
      * 
@@ -208,11 +204,7 @@ class Licenses extends LMFWC_REST_Controller
     public function getLicense(WP_REST_Request $request)
     {
         if (!$this->isRouteEnabled($this->settings, '001')) {
-            return new WP_Error(
-                'lmfwc_rest_data_error',
-                'This route is disabled via the plugin settings.',
-                array('status' => 404)
-            );
+            return $this->routeDisabledError();
         }
 
         $licenseKey = sanitize_text_field($request->get_param('license_key'));
@@ -259,7 +251,7 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
-        return $this->response(true, $this->getLicenseData($license), 200);
+        return $this->response(true, $this->getLicenseData($license), 200, 'v1/licenses/{license_key OR id}');
     }
 
     /**
@@ -272,11 +264,7 @@ class Licenses extends LMFWC_REST_Controller
     public function createLicense(WP_REST_Request $request)
     {
         if (!$this->isRouteEnabled($this->settings, '002')) {
-            return new WP_Error(
-                'lmfwc_rest_data_error',
-                'This route is disabled via the plugin settings.',
-                array('status' => 404)
-            );
+            return $this->routeDisabledError();
         }
 
         $body = $request->get_params();
@@ -338,11 +326,11 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
-        return $this->response(true, $this->getLicenseData($license), 200);
+        return $this->response(true, $this->getLicenseData($license), 200, 'v1/licenses');
     }
 
     /**
-     * Callback for the PUT licenses/{license_key} route. Updates an existing license key in the database.
+     * Callback for the PUT licenses/{license_key OR id} route. Updates an existing license key in the database.
      *
      * @param WP_REST_Request $request
      * 
@@ -351,11 +339,7 @@ class Licenses extends LMFWC_REST_Controller
     public function updateLicense(WP_REST_Request $request)
     {
         if (!$this->isRouteEnabled($this->settings, '003')) {
-            return new WP_Error(
-                'lmfwc_rest_data_error',
-                'This route is disabled via the plugin settings.',
-                array('status' => 404)
-            );
+            return $this->routeDisabledError();
         }
 
         $body      = null;
@@ -455,11 +439,11 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
-        return $this->response(true, $this->getLicenseData($updatedLicense), 200);
+        return $this->response(true, $this->getLicenseData($updatedLicense), 200, 'v1/licenses/{license_key OR id}');
     }
 
     /**
-     * Callback for the PUT licenses/activate/{license_key OR license_key_id} route. This will activate a license key (if possible)
+     * Callback for the PUT licenses/activate/{license_key OR id} route. This will activate a license key (if possible)
      *
      * @param WP_REST_Request $request
      * 
@@ -468,11 +452,7 @@ class Licenses extends LMFWC_REST_Controller
     public function activateLicense(WP_REST_Request $request)
     {
         if (!$this->isRouteEnabled($this->settings, '004')) {
-            return new WP_Error(
-                'lmfwc_rest_data_error',
-                'This route is disabled via the plugin settings.',
-                array('status' => 404)
-            );
+            return $this->routeDisabledError();
         }
 
         $licenseKey = sanitize_text_field($request->get_param('license_key'));
@@ -573,12 +553,12 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
-        return $this->response(true, $this->getLicenseData($updatedLicense), 200);
+        return $this->response(true, $this->getLicenseData($updatedLicense), 200, 'v1/licenses/activate/{license_key OR id}');
     }
 
     /**
-     * Callback for the GET licenses/validate{id} route. This check and verify the activation status of a given
-     * license key.
+     * Callback for the GET licenses/validate/{license_key OR id} route. This checks and verifies the activation status
+     * of the given license key.
      *
      * @param WP_REST_Request $request
      * 
@@ -587,11 +567,7 @@ class Licenses extends LMFWC_REST_Controller
     public function validateLicense(WP_REST_Request $request)
     {
         if (!$this->isRouteEnabled($this->settings, '005')) {
-            return new WP_Error(
-                'lmfwc_rest_data_error',
-                'This route is disabled via the plugin settings.',
-                array('status' => 404)
-            );
+            return $this->routeDisabledError();
         }
 
         $urlParams = $request->get_url_params();
@@ -657,7 +633,7 @@ class Licenses extends LMFWC_REST_Controller
             'remaining_activations' => intval($license->getTimesActivatedMax()) - intval($license->getTimesActivated())
         );
 
-        return $this->response(true, $result, 200);
+        return $this->response(true, $result, 200, 'v1/licenses/validate/{license_key OR id}');
     }
 
     /**

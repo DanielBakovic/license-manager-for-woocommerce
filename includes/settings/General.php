@@ -63,9 +63,9 @@ class General
         );
 
         add_settings_field(
-            'lmfwc_enabled_api_endpoints',
-            __('Enable/disable API endpoints', 'lmfwc'),
-            array($this, 'fieldEnabledApiEndpoints'),
+            'lmfwc_enabled_api_routes',
+            __('Enable/disable API routes', 'lmfwc'),
+            array($this, 'fieldEnabledApiRoutes'),
             'lmfwc',
             'lmfwc_rest_api'
         );
@@ -152,7 +152,7 @@ class General
             $field,
             $field
         );
-        $html .= sprintf('<span>%s</span>', __('Enable the plugin API endpoints over insecure HTTP connections.', 'lmfwc'));
+        $html .= sprintf('<span>%s</span>', __('Enable the plugin API routes over insecure HTTP connections.', 'lmfwc'));
         $html .= '</label>';
         $html .= sprintf(
             '<p class="description">%s</p>',
@@ -164,11 +164,11 @@ class General
     }
 
     /**
-     * Callback for the "lmfwc_enabled_api_endpoints" field.
+     * Callback for the "lmfwc_enabled_api_routes" field.
      */
-    public function fieldEnabledApiEndpoints()
+    public function fieldEnabledApiRoutes()
     {
-        $field = 'lmfwc_enabled_api_endpoints';
+        $field = 'lmfwc_enabled_api_routes';
         $value = array();
         $routes = array(
             array(
@@ -263,38 +263,44 @@ class General
             ),
             array(
                 'id'         => '015',
-                'name'       => 'v2/licenses/validate/{license_key}',
+                'name'       => 'v2/licenses/deactivate/{license_key}',
                 'method'     => 'GET',
                 'deprecated' => false,
             ),
             array(
                 'id'         => '016',
-                'name'       => 'v2/generators',
+                'name'       => 'v2/licenses/validate/{license_key}',
                 'method'     => 'GET',
                 'deprecated' => false,
             ),
             array(
                 'id'         => '017',
-                'name'       => 'v2/generators/{id}',
+                'name'       => 'v2/generators',
                 'method'     => 'GET',
                 'deprecated' => false,
             ),
             array(
                 'id'         => '018',
+                'name'       => 'v2/generators/{id}',
+                'method'     => 'GET',
+                'deprecated' => false,
+            ),
+            array(
+                'id'         => '019',
                 'name'       => 'v2/generators',
                 'method'     => 'POST',
                 'deprecated' => false,
             ),
             array(
-                'id'         => '019',
+                'id'         => '020',
                 'name'       => 'v2/generators/{id}',
                 'method'     => 'GET',
                 'deprecated' => false,
             ),
         );
 
-        if (array_key_exists('lmfwc_enabled_api_endpoints', $this->settings)) {
-            $value = $this->settings['lmfwc_enabled_api_endpoints'];
+        if (array_key_exists('lmfwc_enabled_api_routes', $this->settings)) {
+            $value = $this->settings['lmfwc_enabled_api_routes'];
         }
 
         $html = '<fieldset>';
@@ -327,7 +333,7 @@ class General
 
         $html .= sprintf(
             '<p class="description">%s %s</p>',
-            __('Please note that the v1 endpoints are currently being deprecated. This means that, while they are still available to use, they will be removed from the plugin in a future version. Please adjust any applications to use the v2 endpoints.', 'lmfwc'),
+            __('Please note that the v1 routes are currently being deprecated. This means that, while they are still available to use, they will eventually be removed from the plugin. Please adjust any existing implementations to use the v2 routes.', 'lmfwc'),
             sprintf(
                 __('The complete <b>API documentation</b> can be found <a href="%s" target="_blank" rel="noopener">here</a>.', 'lmfwc'),
                 'https://documenter.getpostman.com/view/6103231/S1ETQGZ1?version=latest'

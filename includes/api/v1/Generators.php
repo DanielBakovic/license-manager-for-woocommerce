@@ -120,11 +120,7 @@ class Generators extends LMFWC_REST_Controller
     public function getGenerators()
     {
         if (!$this->isRouteEnabled($this->settings, '006')) {
-            return new WP_Error(
-                'lmfwc_rest_data_error',
-                'This route is disabled via the plugin settings.',
-                array('status' => 404)
-            );
+            return $this->routeDisabledError();
         }
 
         try {
@@ -153,7 +149,7 @@ class Generators extends LMFWC_REST_Controller
             $response[] = $this->getGeneratorData($generator);
         }
 
-        return $this->response(true, $response, 200);
+        return $this->response(true, $response, 200, 'v1/generators');
     }
 
     /**
@@ -166,11 +162,7 @@ class Generators extends LMFWC_REST_Controller
     public function getGenerator(WP_REST_Request $request)
     {
         if (!$this->isRouteEnabled($this->settings, '007')) {
-            return new WP_Error(
-                'lmfwc_rest_data_error',
-                'This route is disabled via the plugin settings.',
-                array('status' => 404)
-            );
+            return $this->routeDisabledError();
         }
 
         $generatorId = absint($request->get_param('generator_id'));
@@ -205,7 +197,7 @@ class Generators extends LMFWC_REST_Controller
             );
         }
 
-        return $this->response(true, $this->getGeneratorData($generator), 200);
+        return $this->response(true, $this->getGeneratorData($generator), 200, 'v1/generators/{id}');
     }
 
     /**
@@ -218,11 +210,7 @@ class Generators extends LMFWC_REST_Controller
     public function createGenerator(WP_REST_Request $request)
     {
         if (!$this->isRouteEnabled($this->settings, '008')) {
-            return new WP_Error(
-                'lmfwc_rest_data_error',
-                'This route is disabled via the plugin settings.',
-                array('status' => 404)
-            );
+            return $this->routeDisabledError();
         }
 
         $body = $request->get_params();
@@ -300,7 +288,7 @@ class Generators extends LMFWC_REST_Controller
             );
         }
 
-        return $this->response(true, $this->getGeneratorData($generator), 200);
+        return $this->response(true, $this->getGeneratorData($generator), 200, 'v1/generators');
     }
 
     /**
@@ -313,11 +301,7 @@ class Generators extends LMFWC_REST_Controller
     public function updateGenerator(WP_REST_Request $request)
     {
         if (!$this->isRouteEnabled($this->settings, '009')) {
-            return new WP_Error(
-                'lmfwc_rest_data_error',
-                'This route is disabled via the plugin settings.',
-                array('status' => 404)
-            );
+            return $this->routeDisabledError();
         }
 
         $body        = null;
@@ -404,7 +388,7 @@ class Generators extends LMFWC_REST_Controller
             );
         }
 
-        return $this->response(true, $this->getGeneratorData($updatedGenerator), 200);
+        return $this->response(true, $this->getGeneratorData($updatedGenerator), 200, 'v1/generators/{id}');
     }
 
     /**
