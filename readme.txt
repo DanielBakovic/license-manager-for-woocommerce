@@ -1,4 +1,4 @@
-=== License Manager for WooCommerce ===
+﻿=== License Manager for WooCommerce ===
 Contributors: drazenbebic
 Donate link: https://www.bebic.at/license-manager-for-woocommerce/donate
 Tags: license key, license, key, software license, serial key, manager, woocommerce, wordpress
@@ -119,6 +119,9 @@ Again, yes! Here you can find the [API Documentation](https://documenter.getpost
 * Tweak - Changes to the REST API response structure.
 * Tweak - Changes to the database structure.
 * Fix - The license key product settings will no longer be lost when using quick edit on products.
+
+= 1.1.4 - 2019-03-30 =
+* Fix - Licenses keys will no longer be sent out more than once if you change the order status from "complete" to something else and then back to "complete".
 
 = 1.1.3 - 2019-03-24 =
 * Fix - On some environments the activate hook wouldn't work properly and the needed cryptographic secrets weren't generated. I negotiated a deal for this not to happen anymore.
