@@ -164,6 +164,11 @@ class Order
                 /** @var GeneratorResourceModel $generator */
                 $generator = GeneratorResourceRepository::instance()->find($generatorId);
 
+                // The assigned generator no longer exists
+                if (!$generator) {
+                    continue;
+                }
+
                 $licenses = apply_filters('lmfwc_create_license_keys', array(
                     'amount'       => $neededAmount,
                     'charset'      => $generator->getCharset(),

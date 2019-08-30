@@ -88,13 +88,15 @@ class ProductData
         $useStock          = get_post_meta($post->ID, 'lmfwc_licensed_product_use_stock',          true);
         $generatorOptions  = array('' => __('Please select a generator', 'lmfwc'));
 
-        /** @var GeneratorResourceModel $generator */
-        foreach ($generators as $generator) {
-            $generatorOptions[$generator->getId()] = sprintf(
-                '(#%d) %s',
-                $generator->getId(),
-                $generator->getName()
-            );
+        if ($generators) {
+            /** @var GeneratorResourceModel $generator */
+            foreach ($generators as $generator) {
+                $generatorOptions[$generator->getId()] = sprintf(
+                    '(#%d) %s',
+                    $generator->getId(),
+                    $generator->getName()
+                );
+            }
         }
 
         echo sprintf(
