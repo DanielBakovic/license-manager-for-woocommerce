@@ -3,8 +3,8 @@ Contributors: drazenbebic
 Donate link: https://www.bebic.at/license-manager-for-woocommerce/donate
 Tags: license key, license, key, software license, serial key, manager, woocommerce, wordpress
 Requires at least: 4.7
-Tested up to: 5.1
-Stable tag: 1.2.3
+Tested up to: 5.2
+Stable tag: 2.0.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -77,18 +77,29 @@ Again, yes! Here you can find the [API Documentation](https://documenter.getpost
 
 == Changelog ==
 
-= 1.2.3 - 2019-04-21 =
+= 2.0.0 - 2019-08-30 =
+* Add - Template override support.
+* Add - Select2 dropdown fields for orders and products when adding or editing license keys.
+* Add - Search box for license keys. Only accepts the complete license keys, will not find parts of it.
+* Add - v2 API routes
+* Add - Setting for enabling/disabling specific API routes.
+* Add - `lmfwc_rest_api_pre_response` filter, which allows to edit API responses before they are sent out.
+* Tweak - Complete code rework.
+* Tweak - Reworked v1 API routes (maintaining compatibility)
+* Fix - Users can now edit and delete all license keys, even sold/delivered ones.
+* Fix - WordPress installations with large numbers of orders/products could not open the add/edit license key page.
+* Fix - CSS fallback font for the license key table.
+* Fix - "Valid for" text in customer emails/my account no longer shows if the field was empty.
 
+= 1.2.3 - 2019-04-21 =
 * Add - Filter to change the "Valid until" text inside the emails (`lmfwc_license_keys_table_valid_until`).
 * Fix - Minor CSS fixes.
 * Fix - When selling license keys, the "Expires at" field would be set even when not applicable. This does not happen anymore.
 
 = 1.2.2 - 2019-04-19 =
-
 * Add - German plugin translation
 
 = 1.2.1 - 2019-04-18 =
-
 * Fix - "There was a problem adding the license key." error message should not appear any more when adding a license key.
 
 = 1.2.0 - 2019-04-17 =
