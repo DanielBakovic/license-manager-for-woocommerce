@@ -464,11 +464,22 @@ class FormHandler
         // Check the nonce
         check_admin_referer('lmfwc_add_license_key');
 
+        $orderId = null;
+        $productId = null;
+
+        if (array_key_exists('order_id', $_POST)) {
+            $orderId = $_POST['order_id'];
+        }
+
+        if (array_key_exists('product_id', $_POST)) {
+            $productId = $_POST['product_id'];
+        }
+
         /** @var LicenseResourceModel $license */
         $license = LicenseResourceRepository::instance()->insert(
             array(
-                'order_id'            => $_POST['order_id'],
-                'product_id'          => $_POST['product_id'],
+                'order_id'            => $orderId,
+                'product_id'          => $productId,
                 'license_key'         => apply_filters('lmfwc_encrypt', $_POST['license_key']),
                 'hash'                => apply_filters('lmfwc_hash', $_POST['license_key']),
                 'valid_for'           => $_POST['valid_for'],
