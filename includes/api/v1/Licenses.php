@@ -280,7 +280,7 @@ class Licenses extends LMFWC_REST_Controller
         if (!$licenseKey) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
-                'License Key is invalid.',
+                'License key is invalid.',
                 array('status' => 404)
             );
         }
@@ -416,7 +416,7 @@ class Licenses extends LMFWC_REST_Controller
         }
 
         if (array_key_exists('status', $updateData)) {
-            $updateData['status'] = $this->getStatus($updateData['status']);
+            $updateData['status'] = $this->getLicenseStatus($updateData['status']);
         }
 
         if (array_key_exists('hash', $updateData)) {
@@ -575,7 +575,7 @@ class Licenses extends LMFWC_REST_Controller
         if (!array_key_exists('license_key', $urlParams)) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
-                'License Key is invalid.',
+                'License key is invalid.',
                 array('status' => 404)
             );
         }
@@ -585,7 +585,7 @@ class Licenses extends LMFWC_REST_Controller
         if (!$licenseKey) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
-                'License Key is invalid.',
+                'License key is invalid.',
                 array('status' => 404)
             );
         }
@@ -634,40 +634,6 @@ class Licenses extends LMFWC_REST_Controller
         );
 
         return $this->response(true, $result, 200, 'v1/licenses/validate/{license_key OR id}');
-    }
-
-    /**
-     * Converts the passed status string to a valid enumerator value.
-     *
-     * @param string $enumerator
-     *
-     * @return int
-     */
-    private function getStatus($enumerator)
-    {
-        $status = LicenseStatus::INACTIVE;
-
-        if (strtoupper($enumerator) === 'SOLD') {
-            $status = LicenseStatus::SOLD;
-            return $status;
-        }
-
-        if (strtoupper($enumerator) === 'DELIVERED') {
-            $status = LicenseStatus::DELIVERED;
-            return $status;
-        }
-
-        if (strtoupper($enumerator) === 'ACTIVE') {
-            $status = LicenseStatus::ACTIVE;
-            return $status;
-        }
-
-        if (strtoupper($enumerator) === 'INACTIVE') {
-            $status = LicenseStatus::INACTIVE;
-            return $status;
-        }
-
-        return $status;
     }
 
     /**

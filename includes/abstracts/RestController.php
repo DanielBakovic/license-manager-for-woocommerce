@@ -2,6 +2,7 @@
 
 namespace LicenseManagerForWooCommerce\Abstracts;
 
+use LicenseManagerForWooCommerce\Enums\LicenseStatus;
 use WP_Error;
 use WP_REST_Controller;
 use WP_REST_Response;
@@ -76,5 +77,35 @@ class RestController extends WP_REST_Controller
             'This route is disabled via the plugin settings.',
             array('status' => 404)
         );
+    }
+
+    /**
+     * Converts the passed status string to a valid enumerator value.
+     *
+     * @param string $enumerator
+     *
+     * @return int
+     */
+    protected function getLicenseStatus($enumerator)
+    {
+        $status = LicenseStatus::INACTIVE;
+
+        if (strtoupper($enumerator) === 'SOLD') {
+            return LicenseStatus::SOLD;
+        }
+
+        if (strtoupper($enumerator) === 'DELIVERED') {
+            return LicenseStatus::DELIVERED;
+        }
+
+        if (strtoupper($enumerator) === 'ACTIVE') {
+            return LicenseStatus::ACTIVE;
+        }
+
+        if (strtoupper($enumerator) === 'INACTIVE') {
+            return LicenseStatus::INACTIVE;
+        }
+
+        return $status;
     }
 }

@@ -303,7 +303,7 @@ class Licenses extends LMFWC_REST_Controller
         if (!$licenseKey) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
-                'License Key is invalid.',
+                'License key is invalid.',
                 array('status' => 404)
             );
         }
@@ -434,7 +434,7 @@ class Licenses extends LMFWC_REST_Controller
         }
 
         if (array_key_exists('status', $updateData)) {
-            $updateData['status'] = $this->getStatus($updateData['status']);
+            $updateData['status'] = $this->getLicenseStatus($updateData['status']);
         }
 
         if (array_key_exists('hash', $updateData)) {
@@ -588,7 +588,94 @@ class Licenses extends LMFWC_REST_Controller
             return $this->routeDisabledError();
         }
 
-        return $this->response(true, array('Coming soon...'), 200, 'v2/licenses/deactivate/{license_key}');
+        $licenseKey = sanitize_text_field($request->get_param('license_key'));
+
+        if (!$licenseKey) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                'License key is invalid.',
+                array('status' => 404)
+            );
+        }
+
+        try {
+            /** @var LicenseResourceModel $license */
+            $license = LicenseResourceRepository::instance()->findBy(
+                array(
+                    'hash' => apply_filters('lmfwc_hash', $licenseKey)
+                )
+            );
+        } catch (Exception $e) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                $e->getMessage(),
+                array('status' => 404)
+            );
+        }
+
+        if (!$license) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                sprintf(
+                    'License Key: %s could not be found.',
+                    $licenseKey
+                ),
+                array('status' => 404)
+            );
+        }
+
+        // Check if the license key can be activated
+        $timesActivated    = absint($license->getTimesActivated());
+        $timesActivatedMax = absint($license->getTimesActivatedMax());
+
+        if (!$timesActivatedMax) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                sprintf(
+                    'License Key: %s can not be deactivated (times_activated_max not set).',
+                    $licenseKey
+                ),
+                array('status' => 404)
+            );
+        }
+
+        if (!$timesActivated || $timesActivated == 0) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                sprintf(
+                    'License Key: %s has not been activated yet.',
+                    $licenseKey
+                ),
+                array('status' => 404)
+            );
+        }
+
+        // Deactivate the license key
+        try {
+            $timesActivatedNew = intval($timesActivated) - 1;
+
+            /** @var LicenseResourceModel $updatedLicense */
+            $updatedLicense = LicenseResourceRepository::instance()->update(
+                $license->getId(),
+                array(
+                    'times_activated' => $timesActivatedNew
+                )
+            );
+        } catch (Exception $e) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                $e->getMessage(),
+                array('status' => 404)
+            );
+        }
+
+        $licenseData = $updatedLicense->toArray();
+
+        // Remove the hash and decrypt the license key
+        unset($licenseData['hash']);
+        $licenseData['licenseKey'] = $updatedLicense->getDecryptedLicenseKey();
+
+        return $this->response(true, $licenseData, 200, 'v2/licenses/deactivate/{license_key}');
     }
 
     /**
@@ -610,7 +697,7 @@ class Licenses extends LMFWC_REST_Controller
         if (!array_key_exists('license_key', $urlParams)) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
-                'License Key is invalid.',
+                'License key is invalid.',
                 array('status' => 404)
             );
         }
@@ -620,7 +707,7 @@ class Licenses extends LMFWC_REST_Controller
         if (!$licenseKey) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
-                'License Key is invalid.',
+                'License key is invalid.',
                 array('status' => 404)
             );
         }
@@ -658,39 +745,5 @@ class Licenses extends LMFWC_REST_Controller
         );
 
         return $this->response(true, $result, 200, 'v2/licenses/validate/{license_key}');
-    }
-
-    /**
-     * Converts the passed status string to a valid enumerator value.
-     *
-     * @param string $enumerator
-     *
-     * @return int
-     */
-    private function getStatus($enumerator)
-    {
-        $status = LicenseStatus::INACTIVE;
-
-        if (strtoupper($enumerator) === 'SOLD') {
-            $status = LicenseStatus::SOLD;
-            return $status;
-        }
-
-        if (strtoupper($enumerator) === 'DELIVERED') {
-            $status = LicenseStatus::DELIVERED;
-            return $status;
-        }
-
-        if (strtoupper($enumerator) === 'ACTIVE') {
-            $status = LicenseStatus::ACTIVE;
-            return $status;
-        }
-
-        if (strtoupper($enumerator) === 'INACTIVE') {
-            $status = LicenseStatus::INACTIVE;
-            return $status;
-        }
-
-        return $status;
     }
 }
