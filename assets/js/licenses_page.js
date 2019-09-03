@@ -37,7 +37,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
             }
         },
         placeholder: i18n.placeholderSearchProducts,
-        minimumInputLength: 1
+        minimumInputLength: 1,
+        allowClear: true
     };
     let orderDropdownSearchConfig = {
         ajax: {
@@ -67,7 +68,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
             }
         },
         placeholder: i18n.placeholderSearchOrders,
-        minimumInputLength: 1
+        minimumInputLength: 1,
+        allowClear: true
     };
 
     if (importLicenseProduct) {
