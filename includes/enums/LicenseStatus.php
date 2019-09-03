@@ -101,20 +101,20 @@ abstract class LicenseStatus
     {
         return array(
             array(
-                'value' => self::SOLD,
-                'name' => __('Sold', 'lmfwc')
-            ),
-            array(
-                'value' => self::DELIVERED,
-                'name' => __('Delivered', 'lmfwc')
-            ),
-            array(
                 'value' => self::ACTIVE,
                 'name' => __('Active', 'lmfwc')
             ),
             array(
                 'value' => self::INACTIVE,
                 'name' => __('Inactive', 'lmfwc')
+            ),
+            array(
+                'value' => self::SOLD,
+                'name' => __('Sold', 'lmfwc')
+            ),
+            array(
+                'value' => self::DELIVERED,
+                'name' => __('Delivered', 'lmfwc')
             )
         );
     }
