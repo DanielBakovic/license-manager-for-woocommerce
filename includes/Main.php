@@ -21,7 +21,7 @@ defined('ABSPATH') || exit;
  * @package  LicenseManagerForWooCommerce
  * @author   Dražen Bebić <drazen.bebic@outlook.com>
  * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
- * @version  Release: <2.0.0>
+ * @version  Release: <2.0.1>
  * @link     https://www.bebic.at/license-manager-for-woocommerce
  */
 final class Main
@@ -29,7 +29,7 @@ final class Main
     /**
      * @var string
      */
-    public $version = '2.0.0';
+    public $version = '2.0.1';
 
     /**
      * @var $this

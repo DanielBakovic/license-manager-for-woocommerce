@@ -4,7 +4,7 @@ Donate link: https://www.bebic.at/license-manager-for-woocommerce/donate
 Tags: license key, license, key, software license, serial key, manager, woocommerce, wordpress
 Requires at least: 4.7
 Tested up to: 5.2
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -76,6 +76,14 @@ Again, yes! Here you can find the [API Documentation](https://documenter.getpost
 7. Create a new license key generator.
 
 == Changelog ==
+
+= 2.0.1 - 2019-09-03 =
+* Add - v2/deactivate/{license_key} route for license key deactivation.
+* Add - "Clear" functionality to order and product select2 dropdown menus.
+* Fix - License key status dropdown order ("Active" is first now).
+* Fix - PHP fatal error when deleting license keys.
+* Fix - PHP Notices when performing certain operations (license key import, generator delete).
+* Fix - "lmfwc_rest_api_pre_response" hook priority is now correctly set to 1.
 
 = 2.0.0 - 2019-08-30 =
 * Add - Template override support.
