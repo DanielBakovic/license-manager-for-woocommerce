@@ -156,7 +156,7 @@ class AdminMenus
         $action = $this->getCurrentAction($default = 'list');
 
         // List license keys
-        if ($action === 'list') {
+        if ($action === 'list' || $action === 'delete') {
             $licenses = new LicensesList();
             $addLicenseUrl = admin_url(
                 sprintf(
@@ -195,7 +195,6 @@ class AdminMenus
             $statusOptions = LicenseStatus::dropdown();
         }
 
-
         include LMFWC_TEMPLATES_DIR . 'page-licenses.php';
     }
 
@@ -208,7 +207,7 @@ class AdminMenus
         $action     = $this->getCurrentAction($default = 'list');
 
         // List generators
-        if ($action === 'list') {
+        if ($action === 'list' || $action === 'delete') {
             $addGeneratorUrl = wp_nonce_url(
                 sprintf(
                     admin_url('admin.php?page=%s&action=add'),

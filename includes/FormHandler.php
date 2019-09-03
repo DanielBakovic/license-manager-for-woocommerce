@@ -303,6 +303,16 @@ class FormHandler
         $licenseKeys = null;
         $ext         = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
         $mimes       = array('application/vnd.ms-excel', 'text/plain', 'text/csv', 'text/tsv');
+        $orderId     = null;
+        $productId   = null;
+
+        if (array_key_exists('order_id', $_POST) && $_POST['order_id']) {
+            $orderId = $_POST['order_id'];
+        }
+
+        if (array_key_exists('product_id', $_POST) && $_POST['product_id']) {
+            $productId = $_POST['product_id'];
+        }
 
         if (!in_array($ext, array('txt', 'csv'))
             || !in_array($_FILES['file']['type'], $mimes)
@@ -370,8 +380,8 @@ class FormHandler
                 'lmfwc_insert_imported_license_keys',
                 $licenseKeys,
                 $_POST['status'],
-                $_POST['order_id'],
-                $_POST['product_id'],
+                $orderId,
+                $productId,
                 $_POST['valid_for'],
                 $_POST['times_activated_max']
             );

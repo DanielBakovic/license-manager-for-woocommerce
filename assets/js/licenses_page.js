@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', function(event) {
-    let importLicenseProduct = jQuery('select#bulk__product');
-    let importLicenseOrder   = jQuery('select#bulk__order');
-    let addLicenseProduct    = jQuery('select#single__product');
-    let addLicenseOrder      = jQuery('select#single__order');
-    let editLicenseProduct   = jQuery('select#edit__product');
-    let editLicenseOrder     = jQuery('select#edit__order');
-    //let licensesTableForm   = document.getElementById('lmfwc-license-table');
+    var importLicenseProduct = jQuery('select#bulk__product');
+    var importLicenseOrder   = jQuery('select#bulk__order');
+    var addLicenseProduct    = jQuery('select#single__product');
+    var addLicenseOrder      = jQuery('select#single__order');
+    var editLicenseProduct   = jQuery('select#edit__product');
+    var editLicenseOrder     = jQuery('select#edit__order');
+    //var licensesTableForm   = document.getElementById('lmfwc-license-table');
 
-    let productDropdownSearchConfig = {
+    var productDropdownSearchConfig = {
         ajax: {
             cache: true,
             delay: 500,
@@ -24,8 +24,6 @@ document.addEventListener('DOMContentLoaded', function(event) {
                 };
             },
             processResults: function(data, params) {
-                console.log(data);
-                console.log(params);
                 params.page = params.page || 1;
 
                 return {
@@ -40,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         minimumInputLength: 1,
         allowClear: true
     };
-    let orderDropdownSearchConfig = {
+    var orderDropdownSearchConfig = {
         ajax: {
             cache: true,
             delay: 500,
