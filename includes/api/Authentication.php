@@ -61,7 +61,7 @@ class Authentication
     }
 
     /**
-     * Authenticates the user user.
+     * Authenticates the user.
      *
      * @param int|false $userId The user ID
      * 

@@ -19,7 +19,7 @@ class Setup
         add_action('rest_api_init', array($this, 'registerRoutes'), 10);
 
         // Init related actions and filters.
-        add_filter('lmfwc_rest_api_pre_response', array($this, 'preResponse'), 999, 3);
+        add_filter('lmfwc_rest_api_pre_response', array($this, 'preResponse'), 1, 3);
     }
 
     /**
