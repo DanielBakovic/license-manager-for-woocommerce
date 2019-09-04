@@ -11,7 +11,7 @@ class Exception extends \Exception implements Throwable
     /**
      * @var string
      */
-    const EMAIL_ADDRESS = 'info@bebic.at';
+    const EMAIL_ADDRESS = 'support@licensemanager.at';
 
     /**
      * @var string

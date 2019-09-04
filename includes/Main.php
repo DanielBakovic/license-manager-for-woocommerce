@@ -7,7 +7,7 @@
  * @package  LicenseManagerForWooCommerce
  * @author   Dražen Bebić <drazen.bebic@outlook.com>
  * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
- * @link     https://www.bebic.at/license-manager-for-woocommerce
+ * @link     https://www.licensemanager.at/
  */
 
 namespace LicenseManagerForWooCommerce;
@@ -22,7 +22,7 @@ defined('ABSPATH') || exit;
  * @author   Dražen Bebić <drazen.bebic@outlook.com>
  * @license  GNUv3 https://www.gnu.org/licenses/gpl-3.0.en.html
  * @version  Release: <2.0.1>
- * @link     https://www.bebic.at/license-manager-for-woocommerce
+ * @link     https://www.licensemanager.at/
  */
 final class Main
 {
@@ -181,12 +181,12 @@ final class Main
                 ),
                 'docs' => sprintf(
                     '<a href="%s" target="_blank">%s</a>',
-                    'https://www.bebic.at/license-manager-for-woocommerce/docs',
+                    'https://www.licensemanager.at/docs/',
                     __('Documentation', 'lmfwc')
                 ),
                 'donate' => sprintf(
                     '<a href="%s" target="_blank">%s</a>',
-                    'https://www.bebic.at/license-manager-for-woocommerce/donate',
+                    'https://www.licensemanager.at/donate/',
                     __('Donate', 'lmfwc')
                 )
             );

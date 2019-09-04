@@ -1,6 +1,6 @@
 ﻿=== License Manager for WooCommerce ===
 Contributors: drazenbebic
-Donate link: https://www.bebic.at/license-manager-for-woocommerce/donate
+Donate link: https://www.licensemanager.at/donate/
 Tags: license key, license, key, software license, serial key, manager, woocommerce, wordpress
 Requires at least: 4.7
 Tested up to: 5.2
@@ -30,7 +30,7 @@ The plugin also offers additional endpoints for manipulating licenses and genera
 
 #### Support
 
-If you have any feature requests, need more hooks, or maybe have even found a bug, please let us know in the support forum or e-mail us at <licensemanager@bebic.at>. We look forward to hearing from you!
+If you have any feature requests, need more hooks, or maybe have even found a bug, please let us know in the support forum or e-mail us at <support@licensemanager.at>. We look forward to hearing from you!
 
 #### Important
 
@@ -59,7 +59,7 @@ The plugin will create two files inside the `wp-content/uploads/lmfwc-files` fol
 
 = Is there a documentation? =
 
-Yes, there is! An extensive documentation describing the plugin features and functionality in detail can be found on the [plugin homepage](https://www.bebic.at/license-manager-for-woocommerce).
+Yes, there is! An extensive documentation describing the plugin features and functionality in detail can be found on the [plugin homepage](https://www.licensemanager.at/docs/).
 
 = What about the API documentation? =
 
