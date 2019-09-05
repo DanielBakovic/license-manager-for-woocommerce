@@ -5,7 +5,7 @@
  * Description: Easily sell and manage software license keys through your WooCommerce shop.
  * Version: 2.0.1
  * Author: Dražen Bebić
- * Author URI: https://www.bebic.at/
+ * Author URI: https://www.licensemanager.at/
  * Text Domain: lmfwc
  * Domain Path: /i18n
  * Requires at least: 4.7

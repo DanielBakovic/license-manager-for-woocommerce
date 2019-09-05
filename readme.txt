@@ -26,11 +26,13 @@ The **License Manager for WooCommerce** allows you to easily sell and manage all
 
 #### API
 
-The plugin also offers additional endpoints for manipulating licenses and generator resources. These routes are authorized via API keys (generated through the plugin settings) and accessed via the WordPress API. An extensive [API documentation](https://documenter.getpostman.com/view/6103231/S1ETQGZ1) is also available.
+The plugin also offers additional endpoints for manipulating licenses and generator resources. These routes are authorized via API keys (generated through the plugin settings) and accessed via the WordPress API. An extensive [API documentation](https://www.licensemanager.at/docs/rest-api/v2/) is also available.
 
 #### Support
 
 If you have any feature requests, need more hooks, or maybe have even found a bug, please let us know in the support forum or e-mail us at <support@licensemanager.at>. We look forward to hearing from you!
+
+You can also check out the [documentation pages](https://www.licensemanager.at/docs/handbook/), as they contain the most essential information on what the plugin can do for you.
 
 #### Important
 
@@ -63,7 +65,7 @@ Yes, there is! An extensive documentation describing the plugin features and fun
 
 = What about the API documentation? =
 
-Again, yes! Here you can find the [API Documentation](https://documenter.getpostman.com/view/6103231/S1ETQGZ1) detailing all the new endpoint requests and responses. Have fun!
+Again, yes! Here you can find the [API Documentation](https://www.licensemanager.at/docs/rest-api/v2/) detailing all the new endpoint requests and responses. Have fun!
 
 == Screenshots ==
 
