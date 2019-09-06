@@ -258,7 +258,7 @@ class General
             array(
                 'id'         => '014',
                 'name'       => 'v2/licenses/activate/{license_key}',
-                'method'     => 'PUT',
+                'method'     => 'GET',
                 'deprecated' => false,
             ),
             array(
