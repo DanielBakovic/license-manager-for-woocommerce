@@ -154,25 +154,21 @@ class AdminMenus
     public function licensesPage()
     {
         $action = $this->getCurrentAction($default = 'list');
-
-        // List license keys
-        if ($action === 'list' || $action === 'delete') {
-            $licenses = new LicensesList();
-            $addLicenseUrl = admin_url(
-                sprintf(
-                    'admin.php?page=%s&action=add&_wpnonce=%s',
-                    self::LICENSES_PAGE,
-                    wp_create_nonce('add')
-                )
-            );
-            $importLicenseUrl = admin_url(
-                sprintf(
-                    'admin.php?page=%s&action=import&_wpnonce=%s',
-                    self::LICENSES_PAGE,
-                    wp_create_nonce('import')
-                )
-            );
-        }
+        $licenses = new LicensesList();
+        $addLicenseUrl = admin_url(
+            sprintf(
+                'admin.php?page=%s&action=add&_wpnonce=%s',
+                self::LICENSES_PAGE,
+                wp_create_nonce('add')
+            )
+        );
+        $importLicenseUrl = admin_url(
+            sprintf(
+                'admin.php?page=%s&action=import&_wpnonce=%s',
+                self::LICENSES_PAGE,
+                wp_create_nonce('import')
+            )
+        );
 
         // Edit license keys
         if ($action === 'edit') {
