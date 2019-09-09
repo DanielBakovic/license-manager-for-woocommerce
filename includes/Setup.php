@@ -262,7 +262,7 @@ class Setup
      */
     public static function setDefaultOptions()
     {
-        $defaults = array(
+        $defaultSettingsGeneral = array(
             'lmfwc_hide_license_keys' => 0,
             'lmfwc_auto_delivery' => 1,
             'lmfwc_disable_api_ssl' => 0,
@@ -292,7 +292,7 @@ class Setup
         );
 
         // The defaults for the Setting API.
-        update_option('lmfwc_settings', $defaults);
+        update_option('lmfwc_settings_general', $defaultSettingsGeneral);
         update_option('lmfwc_db_version', self::DB_VERSION);
     }
 }

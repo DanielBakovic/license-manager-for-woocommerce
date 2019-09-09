@@ -16,10 +16,15 @@ class General
      */
     public function __construct()
     {
-        $this->settings = (array)get_option('lmfwc_settings');
+        $this->settings = (array)get_option('lmfwc_settings_general');
+
+        /**
+         * @see https://developer.wordpress.org/reference/functions/register_setting/#parameters
+         */
+        $args = array();
 
         // Register the initial settings group.
-        register_setting('lmfwc_settings_group', 'lmfwc_settings');
+        register_setting('lmfwc_settings_group_general', 'lmfwc_settings_general', $args);
 
         // Initialize the individual sections
         $this->initSectionLicenseKeys();
@@ -29,74 +34,70 @@ class General
     private function initSectionLicenseKeys()
     {
         // Add the settings sections.
-        add_settings_section('lmfwc_license_keys', __('License keys', 'lmfwc'), array($this, 'sectionHeaderLicenseKeys'), 'lmfwc');
+        add_settings_section(
+            'license_keys_section',
+            __('License keys', 'lmfwc'),
+            null,
+            'lmfwc_license_keys'
+        );
 
         // lmfwc_security section fields.
         add_settings_field(
             'lmfwc_hide_license_keys',
             __('Obscure licenses', 'lmfwc'),
             array($this, 'fieldHideLicenseKeys'),
-            'lmfwc',
-            'lmfwc_license_keys'
+            'lmfwc_license_keys',
+            'license_keys_section'
         );
 
         add_settings_field(
             'lmfwc_auto_delivery',
             __('Automatic delivery', 'lmfwc'),
             array($this, 'fieldAutoDelivery'),
-            'lmfwc',
-            'lmfwc_license_keys'
+            'lmfwc_license_keys',
+            'license_keys_section'
         );
     }
 
     private function initSectionAPI()
     {
         // Add the settings sections.
-        add_settings_section('lmfwc_rest_api', __('REST API', 'lmfwc'), array($this, 'sectionHeaderRestApi'), 'lmfwc');
+        add_settings_section(
+            'lmfwc_rest_api_section',
+            __('REST API', 'lmfwc'),
+            null,
+            'lmfwc_rest_api'
+        );
 
         add_settings_field(
             'lmfwc_disable_api_ssl',
             __('API & SSL', 'lmfwc'),
             array($this, 'fieldEnableApiOnNonSsl'),
-            'lmfwc',
-            'lmfwc_rest_api'
+            'lmfwc_rest_api',
+            'lmfwc_rest_api_section'
         );
 
         add_settings_field(
             'lmfwc_enabled_api_routes',
             __('Enable/disable API routes', 'lmfwc'),
             array($this, 'fieldEnabledApiRoutes'),
-            'lmfwc',
-            'lmfwc_rest_api'
+            'lmfwc_rest_api',
+            'lmfwc_rest_api_section'
         );
     }
 
     /**
-     * Callback for the "lmfwc_license_keys" section header.
-     */
-    public function sectionHeaderLicenseKeys()
-    {
-    }
-
-    /**
-     * Callback for the "lmfwc_rest_api" section header.
-     */
-    public function sectionHeaderRestApi()
-    {
-    }
-
-    /**
-     * Callback for the "lmfwc_hide_license_keys" field.
+     * Callback for the "hide_license_keys" field.
      */
     public function fieldHideLicenseKeys()
     {
-        $field = 'lmfwc_hide_license_keys';
-        (array_key_exists('lmfwc_hide_license_keys', $this->settings)) ? $value = true : $value = false;
+        $field = 'hide_license_keys';
+        (array_key_exists('hide_license_keys', $this->settings)) ? $value = true : $value = false;
 
         $html = '<fieldset>';
         $html .= sprintf('<label for="%s">', $field);
         $html .= sprintf(
-            '<input id="%s" type="checkbox" name="lmfwc_settings[%s]" value="1"' . checked(true, $value, false) . '/>',
+            '<input id="%s" type="checkbox" name="lmfwc_settings_general[%s]" value="1"' . checked(true, $value, false) . '/>',
             $field,
             $field
         );
@@ -122,7 +123,7 @@ class General
         $html = '<fieldset>';
         $html .= sprintf('<label for="%s">', $field);
         $html .= sprintf(
-            '<input id="%s" type="checkbox" name="lmfwc_settings[%s]" value="1"' . checked(true, $value, false) . '/>',
+            '<input id="%s" type="checkbox" name="lmfwc_settings_general[%s]" value="1"' . checked(true, $value, false) . '/>',
             $field,
             $field
         );
@@ -148,7 +149,7 @@ class General
         $html = '<fieldset>';
         $html .= sprintf('<label for="%s">', $field);
         $html .= sprintf(
-            '<input id="%s" type="checkbox" name="lmfwc_settings[%s]" value="1"' . checked(true, $value, false) . '/>',
+            '<input id="%s" type="checkbox" name="lmfwc_settings_general[%s]" value="1"' . checked(true, $value, false) . '/>',
             $field,
             $field
         );
@@ -314,7 +315,7 @@ class General
 
             $html .= sprintf('<label for="%s-%s">', $field, $route['id']);
             $html .= sprintf(
-                '<input id="%s-%s" type="checkbox" name="lmfwc_settings[%s][%s]" value="1" %s>',
+                '<input id="%s-%s" type="checkbox" name="lmfwc_settings_general[%s][%s]" value="1" %s>',
                 $field,
                 $route['id'],
                 $field,

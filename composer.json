@@ -25,5 +25,8 @@
         "setasign/fpdf": "^1.8",
         "ext-openssl": "*",
         "ext-json": "*"
+    },
+    "config": {
+        "optimize-autoloader": true
     }
 }

@@ -5,10 +5,10 @@
     <?php settings_errors(); ?>
 
     <nav class="nav-tab-wrapper woo-nav-tab-wrapper">
-        <a href="<?php echo esc_url($urlGeneral); ?>" class="nav-tab <?=$tab == 'general' ? 'nav-tab-active' : '';?>">
+        <a href="<?php echo esc_url($urlGeneral); ?>" class="nav-tab <?=$tab === 'general' ? 'nav-tab-active' : '';?>">
             <span><?php esc_html_e('General', 'lmfwc');?></span>
         </a>
-        <a href="<?php echo esc_url($urlRestApi); ?>" class="nav-tab <?=$tab == 'rest_api' ? 'nav-tab-active' : '';?>">
+        <a href="<?php echo esc_url($urlRestApi); ?>" class="nav-tab <?=$tab === 'rest_api' ? 'nav-tab-active' : '';?>">
             <span><?php esc_html_e('REST API keys', 'lmfwc');?></span>
         </a>
     </nav>
@@ -16,8 +16,9 @@
     <?php if ($tab == 'general'): ?>
 
         <form action="options.php" method="POST">
-            <?php settings_fields('lmfwc_settings_group'); ?>
-            <?php do_settings_sections('lmfwc'); ?>
+            <?php settings_fields('lmfwc_settings_group_general'); ?>
+            <?php do_settings_sections('lmfwc_license_keys'); ?>
+            <?php do_settings_sections('lmfwc_rest_api'); ?>
             <?php submit_button(); ?>
         </form>
 
