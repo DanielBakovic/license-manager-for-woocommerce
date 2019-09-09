@@ -234,7 +234,7 @@ class APIKeyList extends WP_List_Table
      *
      * @throws Exception
      */
-    public function process_bulk_action()
+    private function processBulkActions()
     {
         if (!$action = $this->current_action()) {
             return;
@@ -247,6 +247,7 @@ class APIKeyList extends WP_List_Table
         switch ($action) {
             case 'revoke':
                 $this->verifyNonce('revoke');
+                $this->verifySelection();
                 $this->revokeKeys();
                 break;
             default:
@@ -296,7 +297,7 @@ class APIKeyList extends WP_List_Table
             $this->get_sortable_columns(),
         );
 
-        $this->process_bulk_action();
+        $this->processBulkActions();
 
         $perPage     = $this->get_items_per_page('lmfwc_keys_per_page');
         $currentPage = $this->get_pagenum();
@@ -354,6 +355,26 @@ class APIKeyList extends WP_List_Table
             AdminNotice::error(__('The nonce is invalid or has expired.', 'lmfwc'));
             wp_redirect(
                 admin_url(sprintf('admin.php?page=%s', AdminMenus::GENERATORS_PAGE))
+            );
+
+            exit();
+        }
+    }
+
+    /**
+     * Makes sure that generators were selected for the bulk action.
+     */
+    private function verifySelection()
+    {
+        // No ID's were selected, show a warning and redirect
+        if (!array_key_exists('key', $_REQUEST)) {
+            $message = sprintf(esc_html__('No API keys were selected.', 'lmfwc'));
+            AdminNotice::warning($message);
+
+            wp_redirect(
+                admin_url(
+                    sprintf('admin.php?page=%s&tab=rest_api', AdminMenus::SETTINGS_PAGE)
+                )
             );
 
             exit();

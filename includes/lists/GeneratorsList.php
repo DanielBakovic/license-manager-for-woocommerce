@@ -68,7 +68,7 @@ class GeneratorsList extends WP_List_Table
      * 
      * @return int
      */
-    public function recordCount()
+    private function getGeneratorCount()
     {
         global $wpdb;
 
@@ -303,13 +303,14 @@ class GeneratorsList extends WP_List_Table
      *
      * @throws Exception
      */
-    public function process_bulk_action()
+    private function processBulkActions()
     {
         $action = $this->current_action();
 
         switch ($action) {
             case 'delete':
                 $this->verifyNonce('delete');
+                $this->verifySelection();
                 $this->deleteGenerators();
                 break;
             default:
@@ -330,11 +331,11 @@ class GeneratorsList extends WP_List_Table
             $this->get_sortable_columns(),
         );
 
-        $this->process_bulk_action();
+        $this->processBulkActions();
 
         $perPage     = $this->get_items_per_page('generators_per_page', 10);
         $currentPage = $this->get_pagenum();
-        $totalItems  = $this->recordCount();
+        $totalItems  = $this->getGeneratorCount();
 
         $this->set_pagination_args(
             array(
@@ -369,11 +370,31 @@ class GeneratorsList extends WP_List_Table
     }
 
     /**
+     * Makes sure that generators were selected for the bulk action.
+     */
+    private function verifySelection()
+    {
+        // No ID's were selected, show a warning and redirect
+        if (!array_key_exists('id', $_REQUEST)) {
+            $message = sprintf(esc_html__('No generators were selected.', 'lmfwc'));
+            AdminNotice::warning($message);
+
+            wp_redirect(
+                admin_url(
+                    sprintf('admin.php?page=%s', AdminMenus::GENERATORS_PAGE)
+                )
+            );
+
+            exit();
+        }
+    }
+
+    /**
      * Bulk deletes the generators from the table by a single ID or an array of ID's.
      *
      * @throws Exception
      */
-    public function deleteGenerators()
+    private function deleteGenerators()
     {
         $selectedGenerators = (array)$_REQUEST['id'];
         $generatorsToDelete = array();

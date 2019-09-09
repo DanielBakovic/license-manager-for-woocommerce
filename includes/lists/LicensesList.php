@@ -48,7 +48,7 @@ class LicensesList extends WP_List_Table
     protected $gmtOffset;
 
     /**
-     * Class constructor.
+     * LicensesList constructor.
      */
     public function __construct()
     {
@@ -754,25 +754,25 @@ class LicensesList extends WP_List_Table
     /**
      * Processes the currently selected action.
      */
-    public function process_bulk_action()
+    private function processBulkActions()
     {
         $action = $this->current_action();
 
         switch ($action) {
             case 'activate':
-                $this->toggle_license_key_status(LicenseStatus::ACTIVE);
+                $this->toggleLicenseKeyStatus(LicenseStatus::ACTIVE);
                 break;
             case 'deactivate':
-                $this->toggle_license_key_status(LicenseStatus::INACTIVE);
+                $this->toggleLicenseKeyStatus(LicenseStatus::INACTIVE);
                 break;
             case 'delete':
-                $this->delete_license_keys();
+                $this->deleteLicenseKeys();
                 break;
             case 'export_pdf':
-                $this->export_license_keys('PDF');
+                $this->exportLicenseKeys('PDF');
                 break;
             case 'export_csv':
-                $this->export_license_keys('CSV');
+                $this->exportLicenseKeys('CSV');
                 break;
             default:
                 break;
@@ -790,11 +790,11 @@ class LicensesList extends WP_List_Table
             $this->get_sortable_columns(),
         );
 
-        $this->process_bulk_action();
+        $this->processBulkActions();
 
         $perPage     = $this->get_items_per_page('lmfwc_licenses_per_page', 10);
         $currentPage = $this->get_pagenum();
-        $totalItems  = $this->record_count();
+        $totalItems  = $this->getLicenseKeyCount();
 
         $this->set_pagination_args(array(
             'total_items' => $totalItems,
@@ -802,7 +802,7 @@ class LicensesList extends WP_List_Table
             'total_pages' => ceil($totalItems / $perPage)
         ));
 
-        $this->items = $this->get_licenses($perPage, $currentPage);
+        $this->items = $this->getLicenseKeys($perPage, $currentPage);
     }
 
     /**
@@ -813,14 +813,14 @@ class LicensesList extends WP_List_Table
      * 
      * @return array
      */
-    public function get_licenses($perPage = 20, $pageNumber = 1)
+    private function getLicenseKeys($perPage = 20, $pageNumber = 1)
     {
         global $wpdb;
 
         $sql = "SELECT * FROM {$this->table} WHERE 1 = 1";
 
         // Applies the view filter
-        if ($this->is_view_filter_active()) {
+        if ($this->isViewFilterActive()) {
             $sql .= $wpdb->prepare(' AND status = %d', intval($_GET['status']));
         }
 
@@ -853,17 +853,17 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Retrieves the generator table row count.
+     * Retrieves the license key table row count.
      * 
      * @return int
      */
-    public function record_count()
+    private function getLicenseKeyCount()
     {
         global $wpdb;
 
         $sql = "SELECT COUNT(*) FROM {$this->table} WHERE 1 = 1";
 
-        if ($this->is_view_filter_active()) {
+        if ($this->isViewFilterActive()) {
             $sql .= $wpdb->prepare(' AND status = %d', intval($_GET['status']));
         }
 
@@ -916,7 +916,7 @@ class LicensesList extends WP_List_Table
      * @param string $nonce The nonce to check
      * @throws Exception
      */
-    private function verify_nonce($nonce)
+    private function verifyNonce($nonce)
     {
         $currentNonce = $_REQUEST['_wpnonce'];
 
@@ -933,16 +933,37 @@ class LicensesList extends WP_List_Table
     }
 
     /**
+     * Makes sure that license keys were selected for the bulk action.
+     */
+    private function verifySelection()
+    {
+        // No ID's were selected, show a warning and redirect
+        if (!array_key_exists('id', $_REQUEST)) {
+            $message = sprintf(esc_html__('No license keys were selected.', 'lmfwc'));
+            AdminNotice::warning($message);
+
+            wp_redirect(
+                admin_url(
+                    sprintf('admin.php?page=%s', AdminMenus::LICENSES_PAGE)
+                )
+            );
+
+            exit();
+        }
+    }
+
+    /**
      * Changes the license key status
      *
      * @param int $status
      * @throws Exception
      */
-    private function toggle_license_key_status($status)
+    private function toggleLicenseKeyStatus($status)
     {
         $status == LicenseStatus::ACTIVE ? $nonce = 'activate' : $nonce = 'deactivate';
 
-        $this->verify_nonce($nonce);
+        $this->verifyNonce($nonce);
+        $this->verifySelection();
 
         $licenseKeyIds = (array)$_REQUEST['id'];
         $count = 0;
@@ -983,9 +1004,10 @@ class LicensesList extends WP_List_Table
      *
      * @throws Exception
      */
-    private function delete_license_keys()
+    private function deleteLicenseKeys()
     {
-        $this->verify_nonce('delete');
+        $this->verifyNonce('delete');
+        $this->verifySelection();
 
         $result = LicenseResourceRepository::instance()->deleteBy(array('id' => (array)($_REQUEST['id'])));
 
@@ -1010,15 +1032,17 @@ class LicensesList extends WP_List_Table
      * @param string $type
      * @throws Exception
      */
-    private function export_license_keys($type)
+    private function exportLicenseKeys($type)
     {
+        $this->verifySelection();
+
         if ($type === 'PDF') {
-            $this->verify_nonce('export_pdf');
+            $this->verifyNonce('export_pdf');
             do_action('lmfwc_export_license_keys_pdf', (array)$_REQUEST['id']);
         }
 
         if ($type === 'CSV') {
-            $this->verify_nonce('export_csv');
+            $this->verifyNonce('export_csv');
             do_action('lmfwc_export_license_keys_csv', (array)$_REQUEST['id']);
         }
     }
@@ -1028,7 +1052,7 @@ class LicensesList extends WP_List_Table
      * 
      * @return bool
      */
-    public function is_view_filter_active()
+    private function isViewFilterActive()
     {
         if (array_key_exists('status', $_GET)
             && in_array($_GET['status'], LicenseStatus::$status)
