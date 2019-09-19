@@ -17,7 +17,7 @@
             "LicenseManagerForWooCommerce\\Models\\Resources\\": "includes/models/resources",
             "LicenseManagerForWooCommerce\\Repositories\\": "includes/repositories",
             "LicenseManagerForWooCommerce\\Repositories\\Resources\\": "includes/repositories/resources",
-            "LicenseManagerForWooCommerce\\Settings\\": "includes/repositories/settings"
+            "LicenseManagerForWooCommerce\\Settings\\": "includes/settings"
         }
     },
     "require": {

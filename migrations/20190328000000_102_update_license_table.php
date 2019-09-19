@@ -1,16 +1,29 @@
 <?php
 
+defined('ABSPATH') || exit;
+
 /**
- * Upgrade
+ * @var string $migrationMode
  */
-$tableLicenses = $wpdb->prefix . \LicenseManagerForWooCommerce\Setup::LICENSES_TABLE_NAME;
-$tableGenerators = $wpdb->prefix . \LicenseManagerForWooCommerce\Setup::GENERATORS_TABLE_NAME;
+
+use LicenseManagerForWooCommerce\Setup;
+use LicenseManagerForWooCommerce\Migration;
+
+$tableLicenses = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
+$tableGenerators = $wpdb->prefix . Setup::GENERATORS_TABLE_NAME;
 
 if ($wpdb->get_var("SHOW TABLES LIKE '{$tableLicenses}'") != $tableLicenses) {
     return;
 }
 
-if ($migrationMode === 'up') {
+if ($wpdb->get_var("SHOW TABLES LIKE '{$tableGenerators}'") != $tableGenerators) {
+    return;
+}
+
+/**
+ * Upgrade
+ */
+if ($migrationMode === Migration::MODE_UP) {
     $sql = "
         ALTER TABLE {$tableLicenses}
             CHANGE COLUMN `license_key` `license_key` LONGTEXT NOT NULL COMMENT 'Encrypted License Key' AFTER `product_id`,
@@ -36,7 +49,7 @@ if ($migrationMode === 'up') {
 /**
  * Downgrade
  */
-if ($migrationMode === 'down') {
+if ($migrationMode === Migration::MODE_DOWN) {
     $sql = "
         ALTER TABLE {$tableLicenses}
             CHANGE COLUMN `license_key` `license_key` VARCHAR(4000) NOT NULL COMMENT 'Encrypted License Key' AFTER `product_id`,

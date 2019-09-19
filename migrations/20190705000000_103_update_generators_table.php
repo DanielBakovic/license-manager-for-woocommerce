@@ -1,6 +1,13 @@
 <?php
 
+defined('ABSPATH') || exit;
+
+/**
+ * @var string $migrationMode
+ */
+
 use LicenseManagerForWooCommerce\Setup;
+use LicenseManagerForWooCommerce\Migration;
 
 $tableGenerators = $wpdb->prefix . Setup::GENERATORS_TABLE_NAME;
 $tableApiKeys    = $wpdb->prefix . Setup::API_KEYS_TABLE_NAME;
@@ -9,7 +16,14 @@ if ($wpdb->get_var("SHOW TABLES LIKE '{$tableGenerators}'") != $tableGenerators)
     return;
 }
 
-if ($migrationMode === 'up') {
+if ($wpdb->get_var("SHOW TABLES LIKE '{$tableApiKeys}'") != $tableApiKeys) {
+    return;
+}
+
+/**
+ * Upgrade
+ */
+if ($migrationMode === Migration::MODE_UP) {
     $sql ="
         ALTER TABLE {$tableGenerators}
             ADD COLUMN `created_at` DATETIME NULL COMMENT 'Creation Date' AFTER `expires_in`,
@@ -34,7 +48,7 @@ if ($migrationMode === 'up') {
 /**
  * Downgrade
  */
-if ($migrationMode === 'down') {
+if ($migrationMode === Migration::MODE_DOWN) {
     $sql = "
         ALTER TABLE {$tableGenerators}
             DROP COLUMN `created_at`,

@@ -7,6 +7,16 @@ defined('ABSPATH') || exit;
 class Migration
 {
     /**
+     * @var string
+     */
+    public const MODE_UP = 'UP';
+
+    /**
+     * @var string
+     */
+    public const MODE_DOWN = 'DOWN';
+
+    /**
      * Performs a database upgrade.
      *
      * @param int $oldDatabaseVersion
@@ -14,7 +24,7 @@ class Migration
     public static function up($oldDatabaseVersion)
     {
         $regExFileName = '/(\d{14})_(.*?)_(.*?)\.php/';
-        $migrationMode = 'up';
+        $migrationMode = self::MODE_UP;
 
         foreach (glob(LMFWC_MIGRATIONS_DIR . '*.php') as $fileName) {
             if (preg_match($regExFileName, basename($fileName), $match)) {

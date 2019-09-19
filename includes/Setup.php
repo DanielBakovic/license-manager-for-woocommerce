@@ -39,7 +39,7 @@ class Setup
     {
         self::createTables();
         self::setDefaultFilesAndFolders();
-        self::setDefaultOptions();
+        self::setDefaultSettings();
     }
 
     /**
@@ -73,15 +73,15 @@ class Setup
      */
     public static function migrate()
     {
-        $current_db_version = get_option('lmfwc_db_version');
+        $currentDatabaseVersion = get_option('lmfwc_db_version');
 
-        if ($current_db_version != self::DB_VERSION) {
-            if ($current_db_version < self::DB_VERSION) {
-                Migration::up($current_db_version);
+        if ($currentDatabaseVersion != self::DB_VERSION) {
+            if ($currentDatabaseVersion < self::DB_VERSION) {
+                Migration::up($currentDatabaseVersion);
             }
 
-            if ($current_db_version > self::DB_VERSION) {
-                Migration::down($current_db_version);
+            if ($currentDatabaseVersion > self::DB_VERSION) {
+                Migration::down($currentDatabaseVersion);
             }
         }
     }
@@ -99,52 +99,48 @@ class Setup
         $table2 = $wpdb->prefix . self::GENERATORS_TABLE_NAME;
         $table3 = $wpdb->prefix . self::API_KEYS_TABLE_NAME;
 
-        $table1Sql = "
+        dbDelta("
             CREATE TABLE IF NOT EXISTS $table1 (
-                `id` BIGINT(20) NOT NULL COMMENT 'Primary Key' AUTO_INCREMENT,
-                `order_id` BIGINT(20) NULL DEFAULT NULL COMMENT 'WC_Order ID',
-                `product_id` BIGINT(20) NULL DEFAULT NULL COMMENT 'WC_Product or WC_Product_Variation ID',
-                `license_key` LONGTEXT NOT NULL COMMENT 'Encrypted License Key',
-                `hash` LONGTEXT NOT NULL COMMENT 'Hashed License Key ID',
-                `expires_at` DATETIME NULL DEFAULT NULL COMMENT 'Expiration Date',
-                `valid_for` INT(32) NULL DEFAULT NULL COMMENT 'License Validity (in days)',
-                `source` VARCHAR(255) NOT NULL COMMENT 'Import or Generator',
-                `status` TINYINT(1) NOT NULL COMMENT 'Sold, Delivered, Active, Inactive',
-                `times_activated` INT(10) NULL DEFAULT NULL COMMENT 'Number of activations',
-                `times_activated_max` INT(10) NULL DEFAULT NULL COMMENT 'Maximum number of activations',
-                `created_at` DATETIME NULL COMMENT 'Creation Date',
-                `created_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'WP User ID',
-                `updated_at` DATETIME NULL DEFAULT NULL COMMENT 'Update Date',
-                `updated_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'WP User ID',
+                `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+                `order_id` BIGINT(20) NULL DEFAULT NULL,
+                `product_id` BIGINT(20) NULL DEFAULT NULL,
+                `license_key` LONGTEXT NOT NULL,
+                `hash` LONGTEXT NOT NULL,
+                `expires_at` DATETIME NULL DEFAULT NULL,
+                `valid_for` INT(32) NULL DEFAULT NULL,
+                `source` VARCHAR(255) NOT NULL,
+                `status` TINYINT(1) NOT NULL,
+                `times_activated` INT(10) NULL DEFAULT NULL,
+                `times_activated_max` INT(10) NULL DEFAULT NULL,
+                `created_at` DATETIME NULL,
+                `created_by` BIGINT(20) NULL DEFAULT NULL,
+                `updated_at` DATETIME NULL DEFAULT NULL,
+                `updated_by` BIGINT(20) NULL DEFAULT NULL,
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-        ";
+        ");
 
-        dbDelta($table1Sql);
-
-        $table2Sql = "
+        dbDelta("
             CREATE TABLE IF NOT EXISTS $table2 (
                 `id` INT(20) NOT NULL AUTO_INCREMENT,
                 `name` VARCHAR(255) NOT NULL,
                 `charset` VARCHAR(255) NOT NULL,
                 `chunks` INT(10) NOT NULL,
                 `chunk_length` INT(10) NOT NULL,
-                `times_activated_max` INT(10) NULL DEFAULT NULL COMMENT 'Maximum number of activations',
+                `times_activated_max` INT(10) NULL DEFAULT NULL,
                 `separator` VARCHAR(255) NULL DEFAULT NULL,
                 `prefix` VARCHAR(255) NULL DEFAULT NULL,
                 `suffix` VARCHAR(255) NULL DEFAULT NULL,
                 `expires_in` INT(10) NULL DEFAULT NULL,
-                `created_at` DATETIME NULL COMMENT 'Creation Date',
-                `created_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'WP User ID',
-                `updated_at` DATETIME NULL DEFAULT NULL COMMENT 'Update Date',
-                `updated_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'WP User ID',
+                `created_at` DATETIME NULL,
+                `created_by` BIGINT(20) NULL DEFAULT NULL,
+                `updated_at` DATETIME NULL DEFAULT NULL,
+                `updated_by` BIGINT(20) NULL DEFAULT NULL,
                 PRIMARY KEY (`id`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-        ";
+        ");
 
-        dbDelta($table2Sql);
-
-        $table3Sql = "
+        dbDelta("
             CREATE TABLE IF NOT EXISTS $table3 (
                 `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
                 `user_id` BIGINT(20) UNSIGNED NOT NULL,
@@ -155,27 +151,31 @@ class Setup
                 `nonces` LONGTEXT NULL,
                 `truncated_key` CHAR(7) NOT NULL,
                 `last_access` DATETIME NULL DEFAULT NULL,
-                `created_at` DATETIME NULL COMMENT 'Creation Date',
-                `created_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'WP User ID',
-                `updated_at` DATETIME NULL DEFAULT NULL COMMENT 'Update Date',
-                `updated_by` BIGINT(20) NULL DEFAULT NULL COMMENT 'WP User ID',
+                `created_at` DATETIME NULL,
+                `created_by` BIGINT(20) NULL DEFAULT NULL,
+                `updated_at` DATETIME NULL DEFAULT NULL,
+                `updated_by` BIGINT(20) NULL DEFAULT NULL,
                 PRIMARY KEY (`id`),
                 INDEX `consumer_key` (`consumer_key`),
                 INDEX `consumer_secret` (`consumer_secret`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-        ";
-
-        dbDelta($table3Sql);
+        ");
     }
 
     /**
-     * Sets up the default folder structure and creates the default files, if needed.
+     * Sets up the default folder structure and creates the default files,
+     * if needed.
      *
      * @throws EnvironmentIsBrokenException
      */
     public static function setDefaultFilesAndFolders()
     {
-        /* When the cryptographic secrets are loaded into these constants, no other files are needed */
+        /**
+         * When the cryptographic secrets are loaded into these constants,
+         * no other files are needed.
+         *
+         * @see https://www.licensemanager.at/docs/handbook/setup/security/
+         */
         if (defined('LMFWC_PLUGIN_SECRET') && defined('LMFWC_PLUGIN_DEFUSE')) {
             return;
         }
@@ -260,7 +260,7 @@ class Setup
     /**
      * Set the default plugin options.
      */
-    public static function setDefaultOptions()
+    public static function setDefaultSettings()
     {
         $defaultSettingsGeneral = array(
             'lmfwc_hide_license_keys' => 0,
