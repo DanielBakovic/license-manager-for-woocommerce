@@ -14,7 +14,6 @@ use LicenseManagerForWooCommerce\Interfaces\IntegrationController as Integration
 use LicenseManagerForWooCommerce\Models\Resources\Generator as GeneratorResourceModel;
 use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
 use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResourceRepository;
-use WC_Admin_Order;
 use WC_Order;
 use WC_Order_Item_Product;
 use WC_Product;
@@ -107,9 +106,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         $cleanExpiresIn = $expiresIn ? absint($expiresIn) : null;
         $cleanStatus    = $status    ? absint($status)    : null;
 
-        if (!$cleanStatus
-            || !in_array($cleanStatus, LicenseStatus::$status)
-        ) {
+        if (!$cleanStatus || !in_array($cleanStatus, LicenseStatus::$status)) {
             throw new LMFWC_Exception('License Status is invalid.');
         }
 
@@ -375,7 +372,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 $product = wc_get_product(intval($term));
 
                 // Product exists.
-                if ($product && $product instanceof WC_Product) {
+                if ($product) {
                     $text = sprintf(
                     /* translators: $1: order id, $2 customer name */
                         '(#%1$s) %2$s',
@@ -401,14 +398,14 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
 
             // Search for orders
             if ($type === 'shop_order') {
-                /** @var WC_Admin_Order[] $orders */
+                /** @var WC_Order[] $orders */
                 $orders = wc_get_orders($args);
 
                 if (count($orders) < $limit) {
                     $more = false;
                 }
 
-                /** @var WC_Admin_Order $order */
+                /** @var WC_Order $order */
                 foreach ($orders as $order) {
                     $text = sprintf(
                     /* translators: $1: order id, $2 customer name, $3 customer email */
@@ -445,7 +442,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                     /* translators: $1: product id, $2 product name */
                         '(#%1$s) %2$s',
                         $product->get_id(),
-                        $product->get_formatted_name()
+                        $product->get_name()
                     );
 
                     $results[] = array(
@@ -468,7 +465,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
     }
 
     /**
-     * Searches the database for posts that match the given term
+     * Searches the database for posts that match the given term.
      *
      * @param string $term   The search term
      * @param int    $limit  Maximum number of search results
@@ -492,7 +489,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
             WHERE
                 1=1
                 AND posts.post_title LIKE '%$term%'
-                AND posts.post_type = 'product'
+                AND (posts.post_type = 'product' OR posts.post_type = 'product_variation')
             ORDER BY posts.ID DESC
             LIMIT $limit
             OFFSET $offset
