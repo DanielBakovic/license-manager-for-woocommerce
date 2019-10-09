@@ -19,6 +19,7 @@ namespace LicenseManagerForWooCommerce;
 defined('ABSPATH') || exit;
 
 require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/includes/functions/lmfwc-core-functions.php';
 
 // Define LMFWC_PLUGIN_FILE.
 if (!defined('LMFWC_PLUGIN_FILE')) {
