@@ -90,7 +90,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
      *
      * @param int                    $orderId     WooCommerce Order ID
      * @param int                    $productId   WooCommerce Product ID
-     * @param array                  $licenseKeys License keys to be stored
+     * @param string[]               $licenseKeys License keys to be stored
      * @param int                    $expiresIn   Number of days in which license keys expire
      * @param int                    $status      License key status
      * @param GeneratorResourceModel $generator   Generator used
@@ -134,14 +134,8 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
 
         // Add the keys to the database table.
         foreach ($cleanLicenseKeys as $licenseKey) {
-            $license = LicenseResourceRepository::instance()->findBy(
-                array(
-                    'hash' => apply_filters('lmfwc_hash', $licenseKey)
-                )
-            );
-
             // Key exists, up the invalid keys count.
-            if ($license) {
+            if (apply_filters('lmfwc_duplicate', $licenseKey)) {
                 $invalidKeysAmount++;
                 continue;
             }
@@ -256,7 +250,9 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
 
             if ($license) {
                 $result['added']++;
-            } else {
+            }
+
+            else {
                 $result['failed']++;
             }
         }

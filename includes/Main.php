@@ -12,6 +12,8 @@
 
 namespace LicenseManagerForWooCommerce;
 
+use LicenseManagerForWooCommerce\Abstracts\Singleton;
+
 defined('ABSPATH') || exit;
 
 /**
@@ -24,7 +26,7 @@ defined('ABSPATH') || exit;
  * @version  Release: <2.0.1>
  * @link     https://www.licensemanager.at/
  */
-final class Main
+final class Main extends Singleton
 {
     /**
      * @var string
@@ -32,14 +34,9 @@ final class Main
     public $version = '2.0.1';
 
     /**
-     * @var $this
-     */
-    protected static $instance = null;
-
-    /**
      * Main constructor.
      */
-    private function __construct()
+    public function __construct()
     {
         $this->_defineConstants();
         $this->_initHooks();
@@ -48,20 +45,6 @@ final class Main
         add_action('init', array($this, 'init'));
 
         new API\Authentication();
-    }
-
-    /**
-     * Ensures only one instance of LicenseManagerForWooCommerce is loaded or can be loaded.
-     *
-     * @return $this
-     */
-    public static function instance()
-    {
-        if (is_null(self::$instance)) {
-            self::$instance = new self();
-        }
-
-        return self::$instance;
     }
 
     /**

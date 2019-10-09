@@ -278,7 +278,8 @@ class Licenses extends LMFWC_REST_Controller
     }
 
     /**
-     * Callback for the POST licenses route. Creates a new license key in the database.
+     * Callback for the POST licenses route. Creates a new license key in the
+     * database.
      *
      * @param WP_REST_Request $request
      *
@@ -304,6 +305,14 @@ class Licenses extends LMFWC_REST_Controller
             return new WP_Error(
                 'lmfwc_rest_data_error',
                 'License key is invalid.',
+                array('status' => 404)
+            );
+        }
+
+        if (apply_filters('lmfwc_duplicate', $licenseKey)) {
+            return new WP_Error(
+                'lmfwc_rest_data_error',
+                'License key already exists',
                 array('status' => 404)
             );
         }

@@ -300,11 +300,12 @@ class FormHandler
         // Check the nonce.
         check_admin_referer('lmfwc_import_license_keys');
 
-        $licenseKeys = null;
-        $ext         = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
-        $mimes       = array('application/vnd.ms-excel', 'text/plain', 'text/csv', 'text/tsv');
-        $orderId     = null;
-        $productId   = null;
+        $licenseKeys          = null;
+        $ext                  = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+        $mimes                = array('application/vnd.ms-excel', 'text/plain', 'text/csv', 'text/tsv');
+        $orderId              = null;
+        $productId            = null;
+        $duplicateLicenseKeys = array();
 
         if (array_key_exists('order_id', $_POST) && $_POST['order_id']) {
             $orderId = $_POST['order_id'];
@@ -360,7 +361,7 @@ class FormHandler
         }
 
         // Handle CSV file uploads
-        if ($ext == 'csv') {
+        elseif ($ext == 'csv') {
             $licenseKeys = array();
 
             if (($handle = fopen(LMFWC_ASSETS_DIR . self::TEMP_IMPORT_FILE, 'r')) !== FALSE) {
@@ -371,6 +372,34 @@ class FormHandler
                 }
 
                 fclose($handle);
+            }
+        }
+
+        // Check for duplicates
+        foreach ($licenseKeys as $i => $licenseKey) {
+            if (apply_filters('lmfwc_duplicate', $licenseKey)) {
+                unset($licenseKeys[$i]);
+                $duplicateLicenseKeys[] = $licenseKey;
+                continue;
+            }
+        }
+
+        if (count($duplicateLicenseKeys) > 0) {
+            AdminNotice::warning(
+                sprintf(
+                    __('%d license key(s) skipped because they already exist.', 'lmfwc'),
+                    count($duplicateLicenseKeys)
+                )
+            );
+
+            if (count($licenseKeys) === 0) {
+                wp_redirect(
+                    sprintf(
+                        'admin.php?page=%s&action=import',
+                        AdminMenus::LICENSES_PAGE
+                    )
+                );
+                exit();
             }
         }
 
@@ -386,9 +415,6 @@ class FormHandler
                 $_POST['times_activated_max']
             );
         } catch (\Exception $e) {
-            AdminNotice::error(
-                __('There was a problem importing the license keys.', 'lmfwc')
-            );
             wp_redirect(
                 sprintf(
                     'admin.php?page=%s&action=import',
@@ -485,6 +511,22 @@ class FormHandler
             $productId = $_POST['product_id'];
         }
 
+        if (apply_filters('lmfwc_duplicate', $_POST['license_key'])) {
+            AdminNotice::error(
+                __('The license key you are trying to add already exists.', 'lmfwc')
+            );
+
+            // Redirect
+            wp_redirect(
+                sprintf(
+                    'admin.php?page=%s&action=add',
+                    AdminMenus::LICENSES_PAGE
+                )
+            );
+
+            exit;
+        }
+
         /** @var LicenseResourceModel $license */
         $license = LicenseResourceRepository::instance()->insert(
             array(
@@ -504,7 +546,9 @@ class FormHandler
             AdminNotice::success(
                 __('1 license key(s) added successfully.', 'lmfwc')
             );
-        } else {
+        }
+
+        else {
             AdminNotice::error(
                 __('There was a problem adding the license key.', 'lmfwc')
             );
@@ -539,6 +583,11 @@ class FormHandler
         if (array_key_exists('product_id', $_POST)) {
             $productId = $_POST['product_id'];
         }
+
+        // Retrieve the existing license key to perform some checks
+
+        var_dump($_POST);
+        exit;
 
         /** @var LicenseResourceModel $license */
         $license = LicenseResourceRepository::instance()->update(
