@@ -6,13 +6,8 @@ use LicenseManagerForWooCommerce\Interfaces\ResourceRepository as RepositoryInte
 
 defined('ABSPATH') || exit;
 
-abstract class ResourceRepository implements RepositoryInterface
+abstract class ResourceRepository extends Singleton implements RepositoryInterface
 {
-    /**
-     * @var array
-     */
-    protected static $instances = array();
-
     /**
      * @var string
      */
@@ -22,22 +17,6 @@ abstract class ResourceRepository implements RepositoryInterface
      * @var string
      */
     protected $primaryKey;
-
-    /**
-     * Retrieves the only instance of the called class.
-     *
-     * @return $this
-     */
-    public static function instance()
-    {
-        $class = get_called_class();
-
-        if (!array_key_exists($class, self::$instances)) {
-            self::$instances[$class] = new $class();
-        }
-
-        return self::$instances[$class];
-    }
 
     /**
      * Adds a new entry to the table.
@@ -105,23 +84,7 @@ abstract class ResourceRepository implements RepositoryInterface
         global $wpdb;
 
         $sqlQuery = "SELECT * FROM {$this->table} WHERE 1=1 ";
-
-        foreach ($query as $columnName => $value) {
-            if (is_array($value)) {
-                $valuesIn = implode(', ', array_map('absint', $value));
-                $sqlQuery .= "AND {$columnName} IN ({$valuesIn}) ";
-            }
-
-            if (is_string($value)) {
-                $sqlQuery .= "AND {$columnName} = '{$value}' ";
-            }
-
-            if (is_numeric($value)) {
-                $value = absint($value);
-                $sqlQuery .= "AND {$columnName} = {$value} ";
-            }
-        }
-
+        $sqlQuery .= $this->parseQueryConditions($query);
         $sqlQuery .= ';';
 
         $result = $wpdb->get_row($sqlQuery);
@@ -175,22 +138,7 @@ abstract class ResourceRepository implements RepositoryInterface
 
         $result   = array();
         $sqlQuery = "SELECT * FROM {$this->table} WHERE 1=1 ";
-
-        foreach ($query as $columnName => $value) {
-            if (is_array($value)) {
-                $valuesIn = implode(', ', array_map('absint', $value));
-                $sqlQuery .= "AND {$columnName} IN ({$valuesIn}) ";
-            }
-
-            if (is_string($value)) {
-                $sqlQuery .= "AND {$columnName} = '{$value}' ";
-            }
-
-            if (is_numeric($value)) {
-                $value = absint($value);
-                $sqlQuery .= "AND {$columnName} = {$value} ";
-            }
-        }
+        $sqlQuery .= $this->parseQueryConditions($query);
 
         if ($orderBy && is_string($orderBy)) {
             $sqlQuery .= "ORDER BY {$orderBy} ";
@@ -245,7 +193,7 @@ abstract class ResourceRepository implements RepositoryInterface
      * @param array $query
      * @param array $data
      *
-     * @return mixed|void
+     * @return int|bool
      */
     public function updateBy($query, $data)
     {
@@ -253,24 +201,29 @@ abstract class ResourceRepository implements RepositoryInterface
             return false;
         }
 
-        global $wpdb;
-
-        $meta = array(
-            'updated_at' => gmdate('Y-m-d H:i:s'),
-            'updated_by' => get_current_user_id()
-        );
-
-        $updated = $wpdb->update(
-            $this->table,
-            array_merge($data, $meta),
-            $query
-        );
-
-        if (!$updated) {
+        if (!$data || !is_array($data) || count($data) <= 0) {
             return false;
         }
 
-        return $updated;
+        global $wpdb;
+
+        $sqlQuery = "UPDATE {$this->table} SET ";
+
+        $sqlQuery .= $wpdb->prepare(' updated_at = %s,', gmdate('Y-m-d H:i:s'));
+        $sqlQuery .= $wpdb->prepare(' updated_by = %d,', get_current_user_id());
+
+        foreach ($data as $columnName => $value) {
+            $sqlQuery .= " {$columnName} = {$value},";
+        }
+
+        $sqlQuery = rtrim($sqlQuery, ',');
+
+        $sqlQuery .= ' WHERE 1=1 ';
+        $sqlQuery .= $this->parseQueryConditions($query);
+
+        $sqlQuery .= ';';
+
+        return $wpdb->query($sqlQuery);
     }
 
     /**
@@ -306,18 +259,7 @@ abstract class ResourceRepository implements RepositoryInterface
         global $wpdb;
 
         $sqlQuery = "DELETE FROM {$this->table} WHERE 1=1 ";
-
-        foreach ($query as $columnName => $value) {
-            if (is_array($value)) {
-                $valuesIn = implode(', ', array_map('absint', $value));
-                $sqlQuery .= "AND {$columnName} IN ({$valuesIn}) ";
-            }
-
-            if (is_string($value) || is_integer($value)) {
-                $sqlQuery .= "AND {$columnName} = {$value} ";
-            }
-        }
-
+        $sqlQuery .= $this->parseQueryConditions($query);
         $sqlQuery .= ';';
 
         return $wpdb->query($sqlQuery);
@@ -353,18 +295,7 @@ abstract class ResourceRepository implements RepositoryInterface
         global $wpdb;
 
         $sqlQuery = "SELECT COUNT(*) FROM {$this->table} WHERE 1=1 ";
-
-        foreach ($query as $columnName => $value) {
-            if (is_array($value)) {
-                $valuesIn = implode(', ', array_map('absint', $value));
-                $sqlQuery .= "AND {$columnName} IN ({$valuesIn}) ";
-            }
-
-            if (is_string($value) || is_integer($value)) {
-                $sqlQuery .= "AND {$columnName} = {$value} ";
-            }
-        }
-
+        $sqlQuery .= $this->parseQueryConditions($query);
         $sqlQuery .= ';';
 
         $count = $wpdb->get_var($sqlQuery);
@@ -397,5 +328,33 @@ abstract class ResourceRepository implements RepositoryInterface
         global $wpdb;
 
         $wpdb->query("TRUNCATE TABLE {$this->table};");
+    }
+
+    /**
+     * @param array $query
+     *
+     * @return string
+     */
+    private function parseQueryConditions($query)
+    {
+        $result = '';
+
+        foreach ($query as $columnName => $value) {
+            if (is_array($value)) {
+                $valuesIn = implode(', ', array_map('absint', $value));
+                $result .= "AND {$columnName} IN ({$valuesIn}) ";
+            }
+
+            elseif (is_string($value)) {
+                $result .= "AND {$columnName} = '{$value}' ";
+            }
+
+            elseif (is_numeric($value)) {
+                $value = absint($value);
+                $result .= "AND {$columnName} = {$value} ";
+            }
+        }
+
+        return $result;
     }
 }
