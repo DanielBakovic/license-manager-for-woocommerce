@@ -24,7 +24,8 @@ class AdminNotice
     }
 
     /**
-     * Retrieves the notice message from the transients, displays it and finally deletes the transient itself.
+     * Retrieves the notice messages from transients, displays them and
+     * finally deletes the transients.
      */
     public function init()
     {
@@ -38,7 +39,7 @@ class AdminNotice
             delete_transient('lmfwc_notice_error');
         }
 
-        elseif ($success = get_transient('lmfwc_notice_success')) {
+        if ($success = get_transient('lmfwc_notice_success')) {
             echo sprintf(
                 self::MESSAGE_DISMISSIBLE,
                 self::NOTICE_SUCCESS,
@@ -48,7 +49,7 @@ class AdminNotice
             delete_transient('lmfwc_notice_success');
         }
 
-        elseif ($warning = get_transient('lmfwc_notice_warning')) {
+        if ($warning = get_transient('lmfwc_notice_warning')) {
             echo sprintf(
                 self::MESSAGE_DISMISSIBLE,
                 self::NOTICE_WARNING,
@@ -58,7 +59,7 @@ class AdminNotice
             delete_transient('lmfwc_notice_warning');
         }
 
-        elseif ($info = get_transient('lmfwc_notice_info')) {
+        if ($info = get_transient('lmfwc_notice_info')) {
             echo sprintf(
                 self::MESSAGE_DISMISSIBLE,
                 self::NOTICE_INFO,
