@@ -62,7 +62,7 @@
             <th scope="row"><label for="single__product"><?php esc_html_e('Product', 'lmfwc');?></label></th>
             <td>
                 <select name="product_id" id="single__product" class="regular-text"></select>
-                <p class="description"><?php esc_html_e('The product to which the license keys will be assigned. You can also leave this blank to manually assign them later.', 'lmfwc');?></p>
+                <p class="description"><?php esc_html_e('The product to which the license keys will be assigned.', 'lmfwc');?></p>
             </td>
         </tr>
         </tbody>

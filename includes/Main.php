@@ -129,6 +129,15 @@ final class Main extends Singleton
         // Generators page
         if (isset($_GET['page']) && $_GET['page'] == AdminMenus::GENERATORS_PAGE) {
             wp_enqueue_script('lmfwc_generators_page_js', LMFWC_JS_URL . 'generators_page.js');
+
+            wp_localize_script('lmfwc_generators_page_js', 'i18n', array(
+                'placeholderSearchOrders'   => __('Search by order ID or customer email', 'lmfwc'),
+                'placeholderSearchProducts' => __('Search by product ID or product name', 'lmfwc')
+            ));
+
+            wp_localize_script('lmfwc_generators_page_js', 'security', array(
+                'dropdownSearch' => wp_create_nonce('lmfwc_dropdown_search')
+            ));
         }
 
         // Settings page

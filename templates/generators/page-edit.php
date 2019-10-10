@@ -11,6 +11,20 @@ defined('ABSPATH') || exit;
 <h1 class="wp-heading-inline"><?php esc_html_e('Edit generator', 'lmfwc'); ?></h1>
 <hr class="wp-header-end">
 
+<?php if ($products): ?>
+    <p><?php esc_html_e('This generator is assigned to the following product(s)', 'lmfwc');?>:</p>
+
+    <ul>
+        <?php foreach ($products as $product): ?>
+            <li>
+                <a href="<?php esc_html_e(get_edit_post_link($product->get_id()));?>">
+                    <span><?php esc_html_e($product->get_name());?></span>
+                </a>
+            </li>
+        <?php endforeach; ?>
+    </ul>
+<?php endif; ?>
+
 <form method="post" action="<?php echo esc_url(admin_url('admin-post.php')); ?>">
     <input type="hidden" name="action" value="lmfwc_update_generator">
     <input type="hidden" name="id" value="<?php echo esc_html(absint($_GET['id']));?>">
@@ -137,26 +151,6 @@ defined('ABSPATH') || exit;
         </tbody>
     </table>
 
-    <p class="submit">
-        <input name="submit" id="submit" class="button button-primary" value="<?php esc_html_e('Update' ,'lmfwc');?>" type="submit">
-    </p>
+    <?php submit_button(__('Update', 'lmfwc')); ?>
 
 </form>
-
-<h2><?php esc_html_e('Assigned products', 'lmfwc');?></h2>
-
-<?php if ($products): ?>
-    <p><?php esc_html_e('The generator is assigned to the following product(s)', 'lmfwc');?>:</p>
-
-    <ul>
-        <?php foreach ($products as $product): ?>
-            <li>
-                <a href="<?php esc_html_e(get_edit_post_link($product->get_id()));?>">
-                    <span><?php esc_html_e($product->get_name());?></span>
-                </a>
-            </li>
-        <?php endforeach; ?>
-    </ul>
-<?php else: ?>
-    <p><?php esc_html_e('The generator does not have any products assigned to it.', 'lmfwc');?></p>
-<?php endif; ?>

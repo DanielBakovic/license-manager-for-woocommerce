@@ -357,4 +357,27 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
 
         return $result;
     }
+
+    /**
+     * Checks whether an array has string keys.
+     *
+     * @param array $array
+     * @return bool
+     */
+    private function hasStringKeys($array) {
+        return count(array_filter(array_keys($array), 'is_string')) > 0;
+    }
+
+    /**
+     * Determines if the given string is a valid MySQL logical operator.
+     * @see https://www.scommerce-mage.com/blog/magento2-condition-type-search-filter.html
+     *
+     * @param string $string
+     *
+     * @return bool
+     */
+    private function isLogicalOperator($string)
+    {
+        return in_array(strtoupper($string), array('AND', 'OR', 'IN', 'NOT IN', 'NOT LIKE'));
+    }
 }

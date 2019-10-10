@@ -45,7 +45,7 @@ table.wp-list-table.lizenzschlssel {
 	table-layout: auto !important;
 }
 
-/* Licence table */
+/* License table */
 table.wp-list-table.licensekeys td.source.column-source > span,
 table.wp-list-table.lizenzschlssel td.source.column-source > span {
 	font-size: 2em;

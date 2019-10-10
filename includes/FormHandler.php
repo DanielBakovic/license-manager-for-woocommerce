@@ -3,6 +3,7 @@
 namespace LicenseManagerForWooCommerce;
 
 use LicenseManagerForWooCommerce\Enums\LicenseSource;
+use LicenseManagerForWooCommerce\Enums\LicenseStatus;
 use LicenseManagerForWooCommerce\Lists\LicensesList;
 use LicenseManagerForWooCommerce\Models\Resources\ApiKey as ApiKeyResourceModel;
 use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
@@ -35,6 +36,11 @@ class FormHandler
         add_action(
             'admin_post_lmfwc_update_generator',
             array($this, 'updateGenerator'),
+            10
+        );
+        add_action(
+            'admin_post_lmfwc_generate_license_keys',
+            array($this, 'generateLicenseKeys'),
             10
         );
         add_action(
@@ -289,6 +295,112 @@ class FormHandler
             )
         );
 
+        exit();
+    }
+
+    /**
+     * Generates a chosen amount of license keys using the selected generator.
+     */
+    public function generateLicenseKeys()
+    {
+        // Verify the nonce.
+        check_admin_referer('lmfwc_generate_license_keys');
+
+        $generatorId    = absint($_POST['generator_id']);
+        $amount         = absint($_POST['amount']);
+        $status         = absint($_POST['status']);
+        $generator      = GeneratorResourceRepository::instance()->find($generatorId);
+        $orderId        = null;
+        $productId      = null;
+
+        if (array_key_exists('order_id', $_POST) && $_POST['order_id']) {
+            $orderId = absint($_POST['order_id']);
+        }
+
+        if (array_key_exists('product_id', $_POST) && $_POST['product_id']) {
+            $productId = absint($_POST['product_id']);
+        }
+
+        // Validate request.
+        if (!$generator) {
+            AdminNotice::error(__('The chosen generator does not exist.', 'lmfwc'));
+
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&action=edit&id=%d',
+                        AdminMenus::GENERATORS_PAGE,
+                        $generatorId
+                    )
+                )
+            );
+            exit();
+        }
+
+        if ($orderId && !wc_get_order($orderId)) {
+            AdminNotice::error(__('The chosen order does not exist.', 'lmfwc'));
+
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&action=edit&id=%d',
+                        AdminMenus::GENERATORS_PAGE,
+                        $generatorId
+                    )
+                )
+            );
+            exit();
+        }
+
+        if ($productId && !wc_get_product($productId)) {
+            AdminNotice::error(__('The chosen product does not exist.', 'lmfwc'));
+
+            wp_redirect(
+                admin_url(
+                    sprintf(
+                        'admin.php?page=%s&action=edit&id=%d',
+                        AdminMenus::GENERATORS_PAGE,
+                        $generatorId
+                    )
+                )
+            );
+            exit();
+        }
+
+        $licenses = apply_filters(
+            'lmfwc_create_license_keys',
+            array(
+                'amount'       => $amount,
+                'charset'      => $generator->getCharset(),
+                'chunks'       => $generator->getChunks(),
+                'chunk_length' => $generator->getChunkLength(),
+                'separator'    => $generator->getSeparator(),
+                'prefix'       => $generator->getPrefix(),
+                'suffix'       => $generator->getSuffix(),
+                'expires_in'   => $generator->getExpiresIn()
+            )
+        );
+
+
+        // Save the license keys.
+        apply_filters(
+            'lmfwc_insert_generated_license_keys',
+            $orderId,
+            $productId,
+            $licenses['licenses'],
+            $licenses['expires_in'],
+            $status,
+            $generator
+        );
+
+        // Show message and redirect.
+        AdminNotice::success(sprintf(__('Successfully generated %d license key(s).', 'lmfwc'), $amount));
+
+        wp_redirect(
+            admin_url(
+                sprintf('admin.php?page=%s&action=generate', AdminMenus::GENERATORS_PAGE)
+            )
+        );
         exit();
     }
 

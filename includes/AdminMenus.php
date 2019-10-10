@@ -211,6 +211,13 @@ class AdminMenus
                 ),
                 'lmfwc_add_generator'
             );
+            $generateKeysUrl = wp_nonce_url(
+                sprintf(
+                    admin_url('admin.php?page=%s&action=generate'),
+                    self::GENERATORS_PAGE
+                ),
+                'lmfwc_generate_keys'
+            );
         }
 
         // Edit generators
@@ -228,6 +235,12 @@ class AdminMenus
             }
 
             $products = apply_filters('lmfwc_get_assigned_products', $_GET['id']);
+        }
+
+        // Generate license keys
+        if ($action === 'generate') {
+            $generators    = GeneratorResourceRepository::instance()->findAll();
+            $statusOptions = LicenseStatus::dropdown();
         }
 
         include LMFWC_TEMPLATES_DIR . 'page-generators.php';
