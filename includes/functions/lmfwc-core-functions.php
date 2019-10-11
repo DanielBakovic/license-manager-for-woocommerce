@@ -17,19 +17,41 @@ defined('ABSPATH') || exit;
  *
  * @return bool
  */
-function lmfwc_duplicate($licenseKey, $licenseKeyId = null) {
+function lmfwc_duplicate($licenseKey, $licenseKeyId = null)
+{
     $duplicate = false;
+    $hash      = apply_filters('lmfwc_hash', $licenseKey);
 
-    $query = array(
-        'hash' => apply_filters('lmfwc_hash', $licenseKey)
-    );
+    // Add action
+    if ($licenseKeyId === null) {
+        $query = array('hash' => $hash);
 
-    if ($licenseKeyId !== null && is_numeric($licenseKeyId)) {
-        $query['id'] = $licenseKeyId;
+        if (LicenseResourceRepository::instance()->findBy($query)) {
+            $duplicate = true;
+        }
     }
 
-    if (LicenseResourceRepository::instance()->findBy($query)) {
-        $duplicate = true;
+    // Update action
+    elseif ($licenseKeyId !== null && is_numeric($licenseKeyId)) {
+        global $wpdb;
+
+        $table = LicenseResourceRepository::instance()->getTable();
+
+        $query = "
+            SELECT
+                id
+            FROM
+                {$table}
+            WHERE
+                1=1
+                AND hash = '{$hash}'
+                AND id NOT LIKE {$licenseKeyId}
+            ;
+        ";
+
+        if (LicenseResourceRepository::instance()->query($query)) {
+            $duplicate = true;
+        }
     }
 
     return $duplicate;

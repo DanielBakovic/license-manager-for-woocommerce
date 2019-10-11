@@ -312,7 +312,7 @@ class Licenses extends LMFWC_REST_Controller
         if (apply_filters('lmfwc_duplicate', $licenseKey)) {
             return new WP_Error(
                 'lmfwc_rest_data_error',
-                'License key already exists',
+                'This license key already exists.',
                 array('status' => 404)
             );
         }
@@ -442,17 +442,25 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
+        if (array_key_exists('license_key', $updateData)) {
+            if (apply_filters('lmfwc_duplicate', $updateData['license_key'], $license->getId())) {
+                return new WP_Error(
+                    'lmfwc_rest_data_error',
+                    'This license key already exists.',
+                    array('status' => 404)
+                );
+            }
+
+            $updateData['hash']        = apply_filters('lmfwc_hash', $updateData['license_key']);
+            $updateData['license_key'] = apply_filters('lmfwc_encrypt', $updateData['license_key']);
+        }
+
         if (array_key_exists('status', $updateData)) {
             $updateData['status'] = $this->getLicenseStatus($updateData['status']);
         }
 
         if (array_key_exists('hash', $updateData)) {
             unset($updateData['hash']);
-        }
-
-        if (array_key_exists('license_key', $updateData)) {
-            $updateData['hash'] = apply_filters('lmfwc_hash', $updateData['license_key']);
-            $updateData['license_key'] = apply_filters('lmfwc_encrypt', $updateData['license_key']);
         }
 
         /** @var LicenseResourceModel $updatedLicense */

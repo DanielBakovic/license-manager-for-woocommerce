@@ -625,7 +625,7 @@ class FormHandler
 
         if (apply_filters('lmfwc_duplicate', $_POST['license_key'])) {
             AdminNotice::error(
-                __('The license key you are trying to add already exists.', 'lmfwc')
+                __('The license key already exists.', 'lmfwc')
             );
 
             // Redirect
@@ -685,7 +685,7 @@ class FormHandler
         // Check the nonce
         check_admin_referer('lmfwc_update_license_key');
 
-        $orderId = null;
+        $orderId   = null;
         $productId = null;
 
         if (array_key_exists('order_id', $_POST)) {
@@ -696,10 +696,23 @@ class FormHandler
             $productId = $_POST['product_id'];
         }
 
-        // Retrieve the existing license key to perform some checks
+        // Check for duplicates
+        if (apply_filters('lmfwc_duplicate', $_POST['license_key'], $_POST['license_id'])) {
+            AdminNotice::error(
+                __('The license key already exists.', 'lmfwc')
+            );
 
-        var_dump($_POST);
-        exit;
+            // Redirect
+            wp_redirect(
+                sprintf(
+                    'admin.php?page=%s&action=edit&id=%d',
+                    AdminMenus::LICENSES_PAGE,
+                    absint($_POST['license_id'])
+                )
+            );
+
+            exit;
+        }
 
         /** @var LicenseResourceModel $license */
         $license = LicenseResourceRepository::instance()->update(
