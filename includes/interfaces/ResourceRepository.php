@@ -102,4 +102,14 @@ interface ResourceRepository
      * @return AbstractResourceModel
      */
     public function createResourceModel($dataObject);
+
+    /**
+     * @return string
+     */
+    public function getTable();
+
+    /**
+     * @return string
+     */
+    public function getPrimaryKey();
 }

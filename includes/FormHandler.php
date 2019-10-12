@@ -2,6 +2,8 @@
 
 namespace LicenseManagerForWooCommerce;
 
+use DateTime;
+use DateTimezone;
 use LicenseManagerForWooCommerce\Enums\LicenseSource;
 use LicenseManagerForWooCommerce\Enums\LicenseStatus;
 use LicenseManagerForWooCommerce\Lists\LicensesList;
@@ -10,7 +12,10 @@ use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceMode
 use LicenseManagerForWooCommerce\Repositories\Resources\ApiKey as ApiKeyResourceRepository;
 use LicenseManagerForWooCommerce\Repositories\Resources\Generator as GeneratorResourceRepository;
 use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResourceRepository;
+use WC_DateTime;
+use WC_Order;
 use WC_Order_Item_Product;
+use WC_Order_Refund;
 use WC_Product_Simple;
 
 defined('ABSPATH') || exit;
@@ -679,53 +684,94 @@ class FormHandler
 
     /**
      * Updates an existing license keys.
+     *
+     * @throws \Exception
      */
     public function updateLicenseKey()
     {
         // Check the nonce
         check_admin_referer('lmfwc_update_license_key');
 
-        $orderId   = null;
-        $productId = null;
+        $licenseId         = absint($_POST['license_id']);
+        $status            = absint($_POST['status']);
+        $timesActivatedMax = null;
+        $orderId           = null;
+        $productId         = null;
+        $validFor          = null;
+        $expiresAt         = null;
 
         if (array_key_exists('order_id', $_POST)) {
-            $orderId = $_POST['order_id'];
+            $orderId = absint($_POST['order_id']);
         }
 
         if (array_key_exists('product_id', $_POST)) {
-            $productId = $_POST['product_id'];
+            $productId = absint($_POST['product_id']);
+        }
+
+        if ($_POST['valid_for']) {
+            $validFor = absint($_POST['valid_for']);
+        }
+
+        if ($_POST['times_activated_max']) {
+            $timesActivatedMax = absint($_POST['times_activated_max']);
+        }
+
+        if ($_POST['expires_at'] && apply_filters('lmfwc_validate_date', 'Y-m-d H:i:s', $_POST['expires_at'])) {
+            $expiresAt = new DateTime($_POST['expires_at']);
+            $expiresAt = $expiresAt->format('Y-m-d H:i:s');
         }
 
         // Check for duplicates
-        if (apply_filters('lmfwc_duplicate', $_POST['license_key'], $_POST['license_id'])) {
-            AdminNotice::error(
-                __('The license key already exists.', 'lmfwc')
-            );
+        if (apply_filters('lmfwc_duplicate', $_POST['license_key'], $licenseId)) {
+            AdminNotice::error(__('The license key already exists.', 'lmfwc'));
 
             // Redirect
             wp_redirect(
                 sprintf(
                     'admin.php?page=%s&action=edit&id=%d',
                     AdminMenus::LICENSES_PAGE,
-                    absint($_POST['license_id'])
+                    $licenseId
                 )
             );
 
             exit;
         }
 
+        // When the "valid for" field changes, "expires_at" has to as well
+        if (in_array($status, array(LicenseStatus::SOLD, LicenseStatus::DELIVERED))) {
+            $datePaid = new DateTime('now', new DateTimezone('UTC'));
+
+            /** @var WC_Order|WC_Order_Refund|bool $order */
+            if ($order = wc_get_order($orderId)) {
+                /** @var WC_DateTime $orderDatePaid */
+                $orderDatePaid = $order->get_date_paid();
+                $datePaid      = new DateTime($orderDatePaid->format('Y-m-d H:i:s'), new DateTimezone('UTC'));
+            }
+
+            if ($validFor) {
+                $newExpiresAt = new DateTime($datePaid->format('Y-m-d H:i:s'));
+                $newExpiresAt->modify(sprintf('+%d day', $validFor));
+                $expiresAt = $newExpiresAt->format('Y-m-d H:i:s');
+            }
+
+            elseif ($validFor === null) {
+                $expiresAt = null;
+            }
+        }
+
         /** @var LicenseResourceModel $license */
         $license = LicenseResourceRepository::instance()->update(
-            $_POST['license_id'],
+            $licenseId,
             array(
                 'order_id'            => $orderId,
                 'product_id'          => $productId,
                 'license_key'         => apply_filters('lmfwc_encrypt', $_POST['license_key']),
                 'hash'                => apply_filters('lmfwc_hash', $_POST['license_key']),
-                'valid_for'           => $_POST['valid_for'],
+                'expires_at'          => $expiresAt,
+                'valid_for'           => $validFor,
                 'source'              => $_POST['source'],
-                'status'              => $_POST['status'],
-                'times_activated_max' => $_POST['times_activated_max']
+                'status'              => $status,
+                'times_activated_max' => $timesActivatedMax
             )
         );
 
@@ -734,7 +780,9 @@ class FormHandler
             AdminNotice::success(
                 __('Your license key has been updated successfully.', 'lmfwc')
             );
-        } else {
+        }
+
+        else {
             AdminNotice::error(
                 __('There was a problem updating the license key.', 'lmfwc')
             );

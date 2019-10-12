@@ -1,11 +1,17 @@
-<?php defined('ABSPATH') || exit; ?>
+<?php
+    use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
+
+    defined('ABSPATH') || exit;
+
+    /** @var LicenseResourceModel $license */
+?>
 
 <h1 class="wp-heading-inline"><?php esc_html_e('Edit license key', 'lmfwc'); ?></h1>
 <hr class="wp-header-end">
 
 <form method="post" action="<?php echo admin_url('admin-post.php');?>">
-
     <input type="hidden" name="source" value="<?php echo esc_html($license->getSource()); ?>">
+    <input type="hidden" name="expires_at" value="<?php esc_attr_e($license->getExpiresAt()); ?>">
     <input type="hidden" name="action" value="lmfwc_update_license_key">
     <?php wp_nonce_field('lmfwc_update_license_key'); ?>
 

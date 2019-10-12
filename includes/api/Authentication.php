@@ -37,8 +37,6 @@ class Authentication
         add_filter('rest_authentication_errors', array($this, 'checkAuthenticationError'), 15);
         add_filter('rest_post_dispatch',         array($this, 'sendUnauthorizedHeaders'),  50);
         add_filter('rest_pre_dispatch',          array($this, 'checkUserPermissions'),     10, 3);
-
-        add_filter('lmfwc_get_user_data_by_consumer_key', array($this, 'getUserDataByConsumerKey'), 1);
     }
 
     /**
