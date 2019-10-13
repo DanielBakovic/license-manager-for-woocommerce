@@ -24,7 +24,7 @@ class Settings
      */
     public static function get($field)
     {
-        $settings = (array)get_option('lmfwc_settings');
+        $settings = (array)get_option('lmfwc_settings_general');
         (array_key_exists($field, $settings)) ? $value = true : $value = false;
 
         return $value;

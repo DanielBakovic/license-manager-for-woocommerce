@@ -91,15 +91,16 @@ class General
      */
     public function fieldHideLicenseKeys()
     {
-        $field = 'hide_license_keys';
-        (array_key_exists('hide_license_keys', $this->settings)) ? $value = true : $value = false;
+        $field = 'lmfwc_hide_license_keys';
+        (array_key_exists($field, $this->settings)) ? $value = true : $value = false;
 
         $html = '<fieldset>';
         $html .= sprintf('<label for="%s">', $field);
         $html .= sprintf(
-            '<input id="%s" type="checkbox" name="lmfwc_settings_general[%s]" value="1"' . checked(true, $value, false) . '/>',
+            '<input id="%s" type="checkbox" name="lmfwc_settings_general[%s]" value="1" %s/>',
             $field,
-            $field
+            $field,
+            checked(true, $value, false)
         );
         $html .= sprintf('<span>%s</span>', __('Hide license keys in the admin dashboard.', 'lmfwc'));
         $html .= '</label>';
@@ -118,16 +119,20 @@ class General
     public function fieldAutoDelivery()
     {
         $field = 'lmfwc_auto_delivery';
-        (array_key_exists('lmfwc_auto_delivery', $this->settings)) ? $value = true : $value = false;
+        (array_key_exists($field, $this->settings)) ? $value = true : $value = false;
 
         $html = '<fieldset>';
         $html .= sprintf('<label for="%s">', $field);
         $html .= sprintf(
-            '<input id="%s" type="checkbox" name="lmfwc_settings_general[%s]" value="1"' . checked(true, $value, false) . '/>',
+            '<input id="%s" type="checkbox" name="lmfwc_settings_general[%s]" value="1" %s/>',
             $field,
-            $field
+            $field,
+            checked(true, $value, false)
         );
-        $html .= sprintf('<span>%s</span>', __('Automatically send license keys when an order is set to \'Complete\'.', 'lmfwc'));
+        $html .= sprintf(
+            '<span>%s</span>',
+            __('Automatically send license keys when an order is set to \'Complete\'.', 'lmfwc')
+        );
         $html .= '</label>';
         $html .= sprintf(
             '<p class="description">%s</p>',
@@ -144,16 +149,20 @@ class General
     public function fieldEnableApiOnNonSsl()
     {
         $field = 'lmfwc_disable_api_ssl';
-        (array_key_exists('lmfwc_disable_api_ssl', $this->settings)) ? $value = true : $value = false;
+        (array_key_exists($field, $this->settings)) ? $value = true : $value = false;
 
         $html = '<fieldset>';
         $html .= sprintf('<label for="%s">', $field);
         $html .= sprintf(
-            '<input id="%s" type="checkbox" name="lmfwc_settings_general[%s]" value="1"' . checked(true, $value, false) . '/>',
+            '<input id="%s" type="checkbox" name="lmfwc_settings_general[%s]" value="1" %s/>',
             $field,
-            $field
+            $field,
+            checked(true, $value, false)
         );
-        $html .= sprintf('<span>%s</span>', __('Enable the plugin API routes over insecure HTTP connections.', 'lmfwc'));
+        $html .= sprintf(
+            '<span>%s</span>',
+            __('Enable the plugin API routes over insecure HTTP connections.', 'lmfwc')
+        );
         $html .= '</label>';
         $html .= sprintf(
             '<p class="description">%s</p>',
@@ -300,8 +309,8 @@ class General
             ),
         );
 
-        if (array_key_exists('lmfwc_enabled_api_routes', $this->settings)) {
-            $value = $this->settings['lmfwc_enabled_api_routes'];
+        if (array_key_exists($field, $this->settings)) {
+            $value = $this->settings[$field];
         }
 
         $html = '<fieldset>';
@@ -325,7 +334,10 @@ class General
             $html .= sprintf('<code><b>%s</b> - %s</code>', $route['method'], $route['name']);
 
             if (true === $route['deprecated']) {
-                $html .= sprintf('<code class="text-info"><b>%s</b></code>', strtoupper(__('Deprecated', 'lmfwc')));
+                $html .= sprintf(
+                    '<code class="text-info"><b>%s</b></code>',
+                    strtoupper(__('Deprecated', 'lmfwc'))
+                );
             }
 
             $html .= '</label>';
