@@ -213,7 +213,13 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
         $sqlQuery .= $wpdb->prepare(' updated_by = %d,', get_current_user_id());
 
         foreach ($data as $columnName => $value) {
-            $sqlQuery .= " {$columnName} = {$value},";
+            if (is_numeric($value)) {
+                $sqlQuery .= " {$columnName} = {$value},";
+            }
+
+            elseif (is_string($value)) {
+                $sqlQuery .= " {$columnName} = '{$value}',";
+            }
         }
 
         $sqlQuery = rtrim($sqlQuery, ',');
@@ -359,6 +365,22 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
     }
 
     /**
+     * @return string
+     */
+    public function getTable()
+    {
+        return $this->table;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrimaryKey()
+    {
+        return $this->primaryKey;
+    }
+
+    /**
      * Checks whether an array has string keys.
      *
      * @param array $array
@@ -379,21 +401,5 @@ abstract class ResourceRepository extends Singleton implements RepositoryInterfa
     private function isLogicalOperator($string)
     {
         return in_array(strtoupper($string), array('AND', 'OR', 'IN', 'NOT IN', 'NOT LIKE'));
-    }
-
-    /**
-     * @return string
-     */
-    public function getTable()
-    {
-        return $this->table;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPrimaryKey()
-    {
-        return $this->primaryKey;
     }
 }

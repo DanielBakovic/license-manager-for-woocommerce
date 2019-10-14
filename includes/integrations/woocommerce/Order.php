@@ -99,9 +99,9 @@ class Order
                         $orderId,
                         $neededAmount
                     );
-                    // There are not enough keys.
                 }
 
+                // There are not enough keys.
                 else {
                     // Set the available license keys as "SOLD".
                     apply_filters(
@@ -148,17 +148,16 @@ class Order
 
                         // Create a backorder
                     }
-
-                    else {
-                        // Coming soon...
-                    }
                 }
-
-                // Scenario 3 - Use generator.
             }
 
+            // Sell license keys through the active generator
             else if (!$useStock && $useGenerator) {
-                $generatorId = get_post_meta($product->get_id(), 'lmfwc_licensed_product_assigned_generator', true);
+                $generatorId = get_post_meta(
+                    $product->get_id(),
+                    'lmfwc_licensed_product_assigned_generator',
+                    true
+                );
 
                 // Retrieve the generator from the database and set up the args.
                 /** @var GeneratorResourceModel $generator */

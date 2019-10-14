@@ -26,9 +26,14 @@ class Setup
     const API_KEYS_TABLE_NAME = 'lmfwc_api_keys';
 
     /**
+     * @var string
+     */
+    const LICENSE_META_TABLE_NAME = 'lmfwc_licenses_meta';
+
+    /**
      * @var int
      */
-    const DB_VERSION = 103;
+    const DB_VERSION = 104;
 
     /**
      * Installation script.
@@ -60,12 +65,16 @@ class Setup
         $tables = array(
             $wpdb->prefix . self::LICENSES_TABLE_NAME,
             $wpdb->prefix . self::GENERATORS_TABLE_NAME,
-            $wpdb->prefix . self::API_KEYS_TABLE_NAME
+            $wpdb->prefix . self::API_KEYS_TABLE_NAME,
+            $wpdb->prefix . self::LICENSE_META_TABLE_NAME
         );
 
         foreach ($tables as $table) {
             $wpdb->query("DROP TABLE IF EXISTS {$table}");
         }
+
+        delete_option('lmfwc_settings_general');
+        delete_option('lmfwc_db_version');
     }
 
     /**
@@ -98,6 +107,7 @@ class Setup
         $table1 = $wpdb->prefix . self::LICENSES_TABLE_NAME;
         $table2 = $wpdb->prefix . self::GENERATORS_TABLE_NAME;
         $table3 = $wpdb->prefix . self::API_KEYS_TABLE_NAME;
+        $table4 = $wpdb->prefix . self::LICENSE_META_TABLE_NAME;
 
         dbDelta("
             CREATE TABLE IF NOT EXISTS $table1 (
@@ -159,6 +169,20 @@ class Setup
                 INDEX `consumer_key` (`consumer_key`),
                 INDEX `consumer_secret` (`consumer_secret`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+        ");
+
+        dbDelta("
+            CREATE TABLE IF NOT EXISTS $table4 (
+                `meta_id` BIGINT(20) UNSIGNED AUTO_INCREMENT,
+                `license_id` BIGINT(20) UNSIGNED DEFAULT 0 NOT NULL,
+                `meta_key` VARCHAR(255) NULL,
+                `meta_value` LONGTEXT NULL,
+                `created_at` DATETIME NULL,
+                `created_by` BIGINT(20) NULL DEFAULT NULL,
+                `updated_at` DATETIME NULL DEFAULT NULL,
+                `updated_by` BIGINT(20) NULL DEFAULT NULL,
+                PRIMARY KEY (`meta_id`)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8
         ");
     }
 
