@@ -2,6 +2,8 @@
 
 namespace LicenseManagerForWooCommerce\API;
 
+use WP_Error;
+
 defined('ABSPATH') || exit;
 
 class Setup
@@ -20,6 +22,7 @@ class Setup
 
         // Init related actions and filters.
         add_filter('lmfwc_rest_api_pre_response', array($this, 'preResponse'), 1, 3);
+        add_filter('lmfwc_rest_api_validation',   array($this, 'validate'),    1, 1);
     }
 
     /**
@@ -43,7 +46,8 @@ class Setup
     }
 
     /**
-     * Allows developers to hook in and modify the response of any API route right before being sent out.
+     * Allows developers to hook in and modify the response of any API route
+     * right before being sent out.
      *
      * @param string $method Contains the HTTP method which was used in the request
      * @param string $route  Contains the request endpoint name
@@ -54,5 +58,18 @@ class Setup
     public function preResponse($method, $route, $data)
     {
         return $data;
+    }
+
+    /**
+     * Allows developers to hook in and perform additional validation on any
+     * and all routes.
+     *
+     * @param int $httpStatus The response HTTP status in case of an error, default is 403
+     *
+     * @return mixed|WP_Error
+     */
+    public function validate($httpStatus)
+    {
+        return $httpStatus;
     }
 }

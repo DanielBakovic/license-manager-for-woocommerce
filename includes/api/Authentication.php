@@ -339,6 +339,13 @@ class Authentication
             $this->updateLastAccess();
         }
 
+        // Additional validation performed by the custom "lmfwc_rest_api_validation" filter
+        $error = apply_filters('lmfwc_rest_api_validation', $httpStatus = 403);
+
+        if ($error instanceof WP_Error) {
+            return $error;
+        }
+
         return $result;
     }
 }
