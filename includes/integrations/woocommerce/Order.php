@@ -124,24 +124,14 @@ class Order
                         /** @var GeneratorResourceModel $generator */
                         $generator = GeneratorResourceRepository::instance()->find($generatorId);
 
-                        $licenses = apply_filters('lmfwc_create_license_keys', array(
-                            'amount'       => $amountToGenerate,
-                            'charset'      => $generator->getCharset(),
-                            'chunks'       => $generator->getChunks(),
-                            'chunk_length' => $generator->getChunkLength(),
-                            'separator'    => $generator->getSeparator(),
-                            'prefix'       => $generator->getPrefix(),
-                            'suffix'       => $generator->getSuffix(),
-                            'expires_in'   => $generator->getExpiresIn()
-                        ));
+                        $licenses = apply_filters('lmfwc_generate_license_keys', $amountToGenerate, $generator);
 
                         // Save the license keys.
                         apply_filters(
                             'lmfwc_insert_generated_license_keys',
                             $orderId,
                             $product->get_id(),
-                            $licenses['licenses'],
-                            $licenses['expires_in'],
+                            $licenses,
                             LicenseStatus::SOLD,
                             $generator
                         );
@@ -168,24 +158,14 @@ class Order
                     continue;
                 }
 
-                $licenses = apply_filters('lmfwc_create_license_keys', array(
-                    'amount'       => $neededAmount,
-                    'charset'      => $generator->getCharset(),
-                    'chunks'       => $generator->getChunks(),
-                    'chunk_length' => $generator->getChunkLength(),
-                    'separator'    => $generator->getSeparator(),
-                    'prefix'       => $generator->getPrefix(),
-                    'suffix'       => $generator->getSuffix(),
-                    'expires_in'   => $generator->getExpiresIn()
-                ));
+                $licenses = apply_filters('lmfwc_generate_license_keys', $neededAmount, $generator);
 
                 // Save the license keys.
                 apply_filters(
                     'lmfwc_insert_generated_license_keys',
                     $orderId,
                     $product->get_id(),
-                    $licenses['licenses'],
-                    $licenses['expires_in'],
+                    $licenses,
                     LicenseStatus::SOLD,
                     $generator
                 );

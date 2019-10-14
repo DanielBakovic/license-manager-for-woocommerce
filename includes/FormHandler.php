@@ -8,6 +8,7 @@ use LicenseManagerForWooCommerce\Enums\LicenseSource;
 use LicenseManagerForWooCommerce\Enums\LicenseStatus;
 use LicenseManagerForWooCommerce\Lists\LicensesList;
 use LicenseManagerForWooCommerce\Models\Resources\ApiKey as ApiKeyResourceModel;
+use LicenseManagerForWooCommerce\Models\Resources\Generator as GeneratorResourceModel;
 use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
 use LicenseManagerForWooCommerce\Repositories\Resources\ApiKey as ApiKeyResourceRepository;
 use LicenseManagerForWooCommerce\Repositories\Resources\Generator as GeneratorResourceRepository;
@@ -311,12 +312,14 @@ class FormHandler
         // Verify the nonce.
         check_admin_referer('lmfwc_generate_license_keys');
 
-        $generatorId    = absint($_POST['generator_id']);
-        $amount         = absint($_POST['amount']);
-        $status         = absint($_POST['status']);
-        $generator      = GeneratorResourceRepository::instance()->find($generatorId);
-        $orderId        = null;
-        $productId      = null;
+        $generatorId = absint($_POST['generator_id']);
+        $amount      = absint($_POST['amount']);
+        $status      = absint($_POST['status']);
+        $orderId     = null;
+        $productId   = null;
+
+        /** @var GeneratorResourceModel $generator */
+        $generator = GeneratorResourceRepository::instance()->find($generatorId);
 
         if (array_key_exists('order_id', $_POST) && $_POST['order_id']) {
             $orderId = absint($_POST['order_id']);
@@ -372,28 +375,14 @@ class FormHandler
             exit();
         }
 
-        $licenses = apply_filters(
-            'lmfwc_create_license_keys',
-            array(
-                'amount'       => $amount,
-                'charset'      => $generator->getCharset(),
-                'chunks'       => $generator->getChunks(),
-                'chunk_length' => $generator->getChunkLength(),
-                'separator'    => $generator->getSeparator(),
-                'prefix'       => $generator->getPrefix(),
-                'suffix'       => $generator->getSuffix(),
-                'expires_in'   => $generator->getExpiresIn()
-            )
-        );
-
+        $licenses = apply_filters('lmfwc_generate_license_keys', $amount, $generator);
 
         // Save the license keys.
         apply_filters(
             'lmfwc_insert_generated_license_keys',
             $orderId,
             $productId,
-            $licenses['licenses'],
-            $licenses['expires_in'],
+            $licenses,
             $status,
             $generator
         );

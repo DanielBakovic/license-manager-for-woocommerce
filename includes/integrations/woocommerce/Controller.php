@@ -32,7 +32,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         $this->bootstrap();
 
         add_filter('lmfwc_get_customer_license_keys',     array($this, 'getCustomerLicenseKeys'),     10, 1);
-        add_filter('lmfwc_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 6);
+        add_filter('lmfwc_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 5);
         add_filter('lmfwc_insert_imported_license_keys',  array($this, 'insertImportedLicenseKeys'),  10, 6);
         add_action('lmfwc_sell_imported_license_keys',    array($this, 'sellImportedLicenseKeys'),    10, 3);
         add_action('wp_ajax_lmfwc_dropdown_search',       array($this, 'dropdownDataSearch'),         10);
@@ -91,20 +91,18 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
      * @param int                    $orderId     WooCommerce Order ID
      * @param int                    $productId   WooCommerce Product ID
      * @param string[]               $licenseKeys License keys to be stored
-     * @param int                    $expiresIn   Number of days in which license keys expire
      * @param int                    $status      License key status
      * @param GeneratorResourceModel $generator   Generator used
      *
      * @throws LMFWC_Exception
      * @throws Exception
      */
-    public function insertGeneratedLicenseKeys($orderId, $productId, $licenseKeys, $expiresIn, $status, $generator)
+    public function insertGeneratedLicenseKeys($orderId, $productId, $licenseKeys, $status, $generator)
     {
         $cleanLicenseKeys = array();
-        $cleanOrderId   = $orderId   ? absint($orderId)   : null;
-        $cleanProductId = $productId ? absint($productId) : null;
-        $cleanExpiresIn = $expiresIn ? absint($expiresIn) : null;
-        $cleanStatus    = $status    ? absint($status)    : null;
+        $cleanOrderId     = $orderId   ? absint($orderId)   : null;
+        $cleanProductId   = $productId ? absint($productId) : null;
+        $cleanStatus      = $status    ? absint($status)    : null;
 
         if (!$cleanStatus || !in_array($cleanStatus, LicenseStatus::$status)) {
             throw new LMFWC_Exception('License Status is invalid.');
@@ -126,8 +124,8 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         $invalidKeysAmount = 0;
         $expiresAt         = null;
 
-        if ($cleanExpiresIn && $status == LicenseStatus::SOLD) {
-            $dateInterval  = 'P' . $cleanExpiresIn . 'D';
+        if ($generator->getExpiresIn() && $status == LicenseStatus::SOLD) {
+            $dateInterval  = 'P' . $generator->getExpiresIn() . 'D';
             $dateExpiresAt = new DateInterval($dateInterval);
             $expiresAt     = $gmtDate->add($dateExpiresAt)->format('Y-m-d H:i:s');
         }
@@ -152,7 +150,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                     'license_key'         => $encryptedLicenseKey,
                     'hash'                => $hashedLicenseKey,
                     'expires_at'          => $expiresAt,
-                    'valid_for'           => $cleanExpiresIn,
+                    'valid_for'           => $generator->getExpiresIn(),
                     'source'              => LicenseSource::GENERATOR,
                     'status'              => $cleanStatus,
                     'times_activated_max' => $generator->getTimesActivatedMax()
@@ -162,24 +160,12 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
 
         // There have been duplicate keys, regenerate and add them.
         if ($invalidKeysAmount > 0) {
-            $newKeys = apply_filters(
-                'lmfwc_create_license_keys',
-                array(
-                    'amount'       => $invalidKeysAmount,
-                    'charset'      => $generator->getCharset(),
-                    'chunks'       => $generator->getChunks(),
-                    'chunk_length' => $generator->getChunkLength(),
-                    'separator'    => $generator->getSeparator(),
-                    'prefix'       => $generator->getPrefix(),
-                    'suffix'       => $generator->getSuffix(),
-                    'expires_in'   => $cleanExpiresIn
-                )
-            );
+            $newKeys = apply_filters('lmfwc_generate_license_keys', $invalidKeysAmount, $generator);
+
             $this->insertGeneratedLicenseKeys(
                 $cleanOrderId,
                 $cleanProductId,
-                $newKeys['licenses'],
-                $cleanExpiresIn,
+                $newKeys,
                 $cleanStatus,
                 $generator
             );
