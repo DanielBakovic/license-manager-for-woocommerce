@@ -741,11 +741,13 @@ class LicensesList extends WP_List_Table
     public function get_bulk_actions()
     {
         $actions = array(
-            'activate'   => __('Activate', 'lmfwc'),
-            'deactivate' => __('Deactivate', 'lmfwc'),
-            'delete'     => __('Delete', 'lmfwc'),
-            'export_csv' => __('Export (CSV)', 'lmfwc'),
-            'export_pdf' => __('Export (PDF)', 'lmfwc')
+            'activate'          => __('Activate', 'lmfwc'),
+            'deactivate'        => __('Deactivate', 'lmfwc'),
+            'mark_as_sold'      => __('Mark as sold', 'lmfwc'),
+            'mark_as_delivered' => __('Mark as delivered', 'lmfwc'),
+            'delete'            => __('Delete', 'lmfwc'),
+            'export_csv'        => __('Export (CSV)', 'lmfwc'),
+            'export_pdf'        => __('Export (PDF)', 'lmfwc')
         );
 
         return $actions;
@@ -764,6 +766,12 @@ class LicensesList extends WP_List_Table
                 break;
             case 'deactivate':
                 $this->toggleLicenseKeyStatus(LicenseStatus::INACTIVE);
+                break;
+            case 'mark_as_sold':
+                $this->toggleLicenseKeyStatus(LicenseStatus::SOLD);
+                break;
+            case 'mark_as_delivered':
+                $this->toggleLicenseKeyStatus(LicenseStatus::DELIVERED);
                 break;
             case 'delete':
                 $this->deleteLicenseKeys();
@@ -960,42 +968,35 @@ class LicensesList extends WP_List_Table
      */
     private function toggleLicenseKeyStatus($status)
     {
-        $status == LicenseStatus::ACTIVE ? $nonce = 'activate' : $nonce = 'deactivate';
+        switch ($status) {
+            case LicenseStatus::SOLD:
+                $nonce = 'sell';
+                break;
+            case LicenseStatus::DELIVERED:
+                $nonce = 'deliver';
+                break;
+            case LicenseStatus::ACTIVE:
+                $nonce = 'activate';
+                break;
+            default:
+                $nonce = 'deactivate';
+                break;
+        }
 
         $this->verifyNonce($nonce);
         $this->verifySelection();
 
         $licenseKeyIds = (array)$_REQUEST['id'];
-        $count = 0;
-        $message = '';
+        $count         = 0;
 
         foreach ($licenseKeyIds as $licenseKeyId) {
             LicenseResourceRepository::instance()->update($licenseKeyId, array('status' => $status));
             $count++;
         }
 
-        if ($nonce == 'activate') {
-            $message = sprintf(
-                esc_html__('%d license key(s) activated successfully.', 'lmfwc'),
-                $count
-            );
-        } elseif ($nonce == 'deactivate') {
-            $message = sprintf(
-                esc_html__('%d license key(s) deactivated successfully.', 'lmfwc'),
-                $count
-            );
-        }
-
-        // Set the admin notice
-        AdminNotice::success($message);
-
-        // Redirect and exit
-        wp_redirect(
-            admin_url(
-                sprintf('admin.php?page=%s', AdminMenus::LICENSES_PAGE)
-            )
-        );
-
+        // Set the admin notice, redirect and exit
+        AdminNotice::success(sprintf(esc_html__('%d license key(s) updated successfully.', 'lmfwc'), $count));
+        wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::LICENSES_PAGE)));
         exit();
     }
 
