@@ -43,7 +43,8 @@ class AdminMenus
     /**
      * Class constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->tabWhitelist = array('general', 'rest_api');
 
         // Plugin pages.
@@ -259,11 +260,17 @@ class AdminMenus
         if ($tab == 'rest_api') {
             if (isset($_GET['create_key'])) {
                 $action = 'create';
-            } elseif (isset($_GET['edit_key'])) {
+            }
+
+            elseif (isset($_GET['edit_key'])) {
                 $action = 'edit';
-            } elseif (isset($_GET['show_key'])) {
+            }
+
+            elseif (isset($_GET['show_key'])) {
                 $action = 'show';
-            } else {
+            }
+
+            else {
                 $action = 'list';
             }
 

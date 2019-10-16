@@ -25,8 +25,8 @@ class ProductData
     /**
      * ProductData constructor.
      */
-    public function __construct(
-    ) {
+    public function __construct()
+    {
         /**
          * @see https://www.proy.info/woocommerce-admin-custom-product-data-tab/
          */

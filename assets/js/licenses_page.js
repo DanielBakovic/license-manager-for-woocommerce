@@ -5,7 +5,8 @@ document.addEventListener('DOMContentLoaded', function(event) {
     var addLicenseOrder      = jQuery('select#single__order');
     var editLicenseProduct   = jQuery('select#edit__product');
     var editLicenseOrder     = jQuery('select#edit__order');
-    //var licensesTableForm   = document.getElementById('lmfwc-license-table');
+    var bulkAddSource        = jQuery('input[type="radio"].bulk__type');
+    var bulkAddSourceRows    = jQuery('tr.bulk__source_row');
 
     var productDropdownSearchConfig = {
         ajax: {
@@ -92,5 +93,21 @@ document.addEventListener('DOMContentLoaded', function(event) {
 
     if (editLicenseOrder) {
         editLicenseOrder.select2(orderDropdownSearchConfig);
+    }
+
+    if (bulkAddSource) {
+        bulkAddSource.change(function() {
+            var value = jQuery('input[type="radio"].bulk__type:checked').val();
+
+            if (value !== 'file' && value !== 'clipboard') {
+                return;
+            }
+
+            // Hide the currently visible row
+            jQuery('tr.bulk__source_row:visible').addClass('hidden');
+
+            // Display the selected row
+            jQuery('tr#bulk__source_' + value + '.bulk__source_row').removeClass('hidden');
+        })
     }
 });

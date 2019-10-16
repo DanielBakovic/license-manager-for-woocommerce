@@ -17,18 +17,8 @@ class Export
      */
     public function __construct()
     {
-        add_action(
-            'lmfwc_export_license_keys_pdf',
-            array($this, 'exportLicenseKeysPdf'),
-            10,
-            1
-        );
-        add_action(
-            'lmfwc_export_license_keys_csv',
-            array($this, 'exportLicenseKeysCsv'),
-            10,
-            1
-        );
+        add_action('lmfwc_export_license_keys_pdf', array($this, 'exportLicenseKeysPdf'), 10, 1);
+        add_action('lmfwc_export_license_keys_csv', array($this, 'exportLicenseKeysCsv'), 10, 1);
     }
 
     /**

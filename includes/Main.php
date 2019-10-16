@@ -229,6 +229,7 @@ final class Main extends Singleton
         $this->publicHooks();
 
         new Crypto();
+        new Import();
         new Export();
         new AdminMenus();
         new AdminNotice();
@@ -238,7 +239,7 @@ final class Main extends Singleton
         new FormHandler();
         new API\Setup();
 
-        if ($this->isWooCommerceActive()) {
+        if ($this->isPluginActive('woocommerce/woocommerce.php')) {
             new Integrations\WooCommerce\Controller();
         }
     }
@@ -280,15 +281,14 @@ final class Main extends Singleton
     }
 
     /**
-     * Checks if WooCommerce is installed.
+     * Checks if a plugin is active.
+     *
+     * @param string $pluginName
      *
      * @return bool
      */
-    private function isWooCommerceActive()
+    private function isPluginActive($pluginName)
     {
-        return in_array(
-            'woocommerce/woocommerce.php',
-            apply_filters('active_plugins', get_option('active_plugins'))
-        );
+        return in_array($pluginName, apply_filters('active_plugins', get_option('active_plugins')));
     }
 }

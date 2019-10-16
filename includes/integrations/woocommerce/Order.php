@@ -20,7 +20,8 @@ class Order
     /**
      * OrderManager constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         add_action('woocommerce_order_status_completed',               array($this, 'generateOrderLicenses'));
         add_action('woocommerce_order_details_after_order_table',      array($this, 'showBoughtLicenses'),       10, 1);
         add_filter('woocommerce_order_actions',                        array($this, 'addSendLicenseKeysAction'), 10, 1);

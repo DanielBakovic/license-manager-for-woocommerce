@@ -12,7 +12,8 @@ class Templates
     /**
      * Templates constructor.
      */
-    function __construct() {
+    function __construct()
+    {
         add_action('lmfwc_email_order_details',      array($this, 'addOrderDetails'),     10, 4);
         add_action('lmfwc_email_order_license_keys', array($this, 'addOrderLicenseKeys'), 10, 4);
     }

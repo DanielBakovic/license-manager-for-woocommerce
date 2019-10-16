@@ -11,7 +11,8 @@ class Setup
     /**
      * Setup class constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         // REST API was included starting WordPress 4.4.
         if (!class_exists('\WP_REST_Server')) {
             return;

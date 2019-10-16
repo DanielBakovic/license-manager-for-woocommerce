@@ -12,7 +12,8 @@ class CustomerPreorderComplete extends WC_Email
     /**
      * CustomerPreorderComplete constructor.
      */
-    function __construct() {
+    function __construct()
+    {
         // Email slug we can use to filter other data.
         $this->id          = 'lmfwc_email_customer_preorder_complete';
         $this->title       = __('Completed preorder', 'lmfwc');

@@ -19,7 +19,8 @@ class AdminNotice
     /**
      * AdminNotice constructor.
      */
-    public function __construct() {
+    public function __construct()
+    {
         add_action('admin_notices', array($this, 'init'));
     }
 

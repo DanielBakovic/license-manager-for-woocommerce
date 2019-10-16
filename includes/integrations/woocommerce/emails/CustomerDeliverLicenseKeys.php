@@ -12,7 +12,8 @@ class CustomerDeliverLicenseKeys extends WC_Email
     /**
      * CustomerDeliverLicenseKeys constructor.
      */
-    function __construct() {
+    function __construct()
+    {
         // Email slug we can use to filter other data.
         $this->id          = 'lmfwc_email_customer_deliver_license_keys';
         $this->title       = __('Deliver license keys', 'lmfwc');

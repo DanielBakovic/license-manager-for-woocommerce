@@ -9,11 +9,39 @@
 
     <table class="form-table">
         <tbody>
+        <!-- SOURCE -->
+        <tr class="row">
+            <th class="row"><?php esc_html_e('Source', 'lmfwc'); ?></th>
+            <td>
+                <label style="display: block; margin-bottom: 1em;">
+                    <input type="radio" id="bulk__type_file" class="bulk__type regular-text" name="source" value="file" checked="checked">
+                    <span><?php _e('File upload', 'lmfwc'); ?></span>
+                </label>
+                <label style="display: block;">
+                    <input type="radio" id="bulk__type_clipboard" class="bulk__type regular-text" name="source" value="clipboard">
+                    <span><?php _e('Clipboard', 'lmfwc'); ?></span>
+                </label>
+                <p class="description" style="margin-top: 1em;"><?php _e('You can either upload a file containing the license keys, or copy-paste them into a text field.', 'lmfwc'); ?></p>
+            </td>
+        </tr>
+
         <!-- FILE -->
-        <tr scope="row">
-            <th scope="row"><label for="bulk__file"><?php esc_html_e('File', 'lmfwc'); ?> (txt/csv)</label></th>
+        <tr scope="row" id="bulk__source_file" class="bulk__source_row">
+            <th scope="row"><label for="bulk__file"><?php esc_html_e('File', 'lmfwc'); ?> <kbd>CSV</kbd> <kbd>TXT</kbd></label></th>
             <td>
                 <input name="file" id="bulk__file" class="regular-text" type="file" accept=".csv,.txt">
+                <p class="description">
+                    <b class="text-danger"><?php esc_html_e('Important', 'lmfwc'); ?>:</b>
+                    <span><?php esc_html_e('One line per license key.', 'lmfwc');?></span>
+                </p>
+            </td>
+        </tr>
+
+        <!-- Clipboard -->
+        <tr scope="row" id="bulk__source_clipboard" class="bulk__source_row hidden">
+            <th scope="row"><label for="bulk__clipboard"><?php esc_html_e('License keys', 'lmfwc'); ?></label></th>
+            <td>
+                <textarea name="clipboard" id="bulk__clipboard" cols="49" rows="10" ></textarea>
                 <p class="description">
                     <b class="text-danger"><?php esc_html_e('Important', 'lmfwc'); ?>:</b>
                     <span><?php esc_html_e('One line per license key.', 'lmfwc');?></span>
