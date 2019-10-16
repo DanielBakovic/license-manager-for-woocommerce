@@ -216,7 +216,28 @@ final class Main extends Singleton
      */
     public function loadPluginTextDomain()
     {
-        load_plugin_textdomain('lmfwc', false, 'license-manager-for-woocommerce/i18n/');
+        if (function_exists('determine_locale')) {
+            $locale = determine_locale();
+        }
+
+        else {
+            $locale = is_admin() ? get_user_locale() : get_locale();
+        }
+
+        $locale = apply_filters('plugin_locale', $locale, 'lmfwc');
+
+        unload_textdomain('lmfwc');
+
+        load_textdomain(
+            'lmfwc',
+            WP_LANG_DIR . '/plugins/license-manager-for-woocommerce-' . $locale . '.mo'
+        );
+
+        load_plugin_textdomain(
+            'lmfwc',
+            false,
+            plugin_basename(dirname(LMFWC_PLUGIN_FILE)) . '/i18n/languages'
+        );
     }
 
     /**

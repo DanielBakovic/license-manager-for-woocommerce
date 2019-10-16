@@ -7,7 +7,7 @@
  * Author: Dražen Bebić
  * Author URI: https://www.licensemanager.at/
  * Text Domain: lmfwc
- * Domain Path: /i18n
+ * Domain Path: /i18n/languages/
  * Requires at least: 4.7
  * Tested up to: 5.2
  * WC requires at least: 2.7
