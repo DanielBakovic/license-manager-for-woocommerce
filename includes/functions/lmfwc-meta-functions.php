@@ -13,11 +13,11 @@ use LicenseManagerForWooCommerce\Repositories\Resources\LicenseMeta as LicenseMe
 defined('ABSPATH') || exit;
 
 /**
+ * Adds a new entry to the license meta table.
  *
- *
- * @param int                       $licenseId License Key ID
- * @param string                    $metaKey   Meta key to add
- * @param int|string|array|stdClass $metaValue Meta value to add
+ * @param int    $licenseId License Key ID
+ * @param string $metaKey   Meta key to add
+ * @param mixed  $metaValue Meta value to add
  *
  * @return mixed|bool
  */
@@ -52,10 +52,16 @@ function lmfwc_add_license_meta($licenseId, $metaKey, $metaValue)
  * @param string $metaKey   Meta key to search by
  * @param bool   $single    Return a single or multiple rows (if found)
  *
- * @return mixed|mixed[]
+ * @return mixed|mixed[]|bool
  */
 function lmfwc_get_license_meta($licenseId, $metaKey, $single = false)
 {
+    $license = LicenseResourceRepository::instance()->find($licenseId);
+
+    if (!$license) {
+        return false;
+    }
+
     if ($single) {
         /** @var LicenseMetaResourceModel $licenseMeta */
         $licenseMeta = LicenseMetaResourceRepository::instance()->findBy(
@@ -64,6 +70,10 @@ function lmfwc_get_license_meta($licenseId, $metaKey, $single = false)
                 'meta_key' => $metaKey
             )
         );
+
+        if (!$licenseMeta) {
+            return false;
+        }
 
         return $licenseMeta->getMetaValue();
     }
@@ -96,6 +106,12 @@ function lmfwc_get_license_meta($licenseId, $metaKey, $single = false)
  */
 function lmfwc_update_license_meta($licenseId, $metaKey, $metaValue, $previousValue = null)
 {
+    $license = LicenseResourceRepository::instance()->find($licenseId);
+
+    if (!$license) {
+        return false;
+    }
+
     $selectQuery = array(
         'license_id' => $licenseId,
         'meta_key'   => $metaKey
@@ -107,7 +123,7 @@ function lmfwc_update_license_meta($licenseId, $metaKey, $metaValue, $previousVa
     $updateQueryData = array(
         'license_id' => $licenseId,
         'meta_key'   => $metaKey,
-        'meta_value' => $metaValue
+        'meta_value' => maybe_serialize($metaValue)
     );
 
     if ($previousValue !== null) {
@@ -130,3 +146,37 @@ function lmfwc_update_license_meta($licenseId, $metaKey, $metaValue, $previousVa
     return true;
 }
 
+/**
+ * Deletes one or multiple rows from the license meta table.
+ *
+ * @param int    $licenseId
+ * @param string $metaKey
+ * @param mixed  $metaValue
+ *
+ * @return bool
+ */
+function lmfwc_delete_license_meta($licenseId, $metaKey, $metaValue = null)
+{
+    $license = LicenseResourceRepository::instance()->find($licenseId);
+
+    if (!$license) {
+        return false;
+    }
+
+    $deleteQueryCondition = array(
+        'license_id' => $licenseId,
+        'meta_key' => $metaKey
+    );
+
+    if ($metaValue) {
+        $deleteQueryCondition['meta_value'] = $metaValue;
+    }
+
+    $deleteResult = LicenseMetaResourceRepository::instance()->deleteBy($deleteQueryCondition);
+
+    if ($deleteResult) {
+        return true;
+    }
+
+    return false;
+}
