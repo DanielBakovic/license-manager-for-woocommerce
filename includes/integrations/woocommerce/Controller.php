@@ -14,6 +14,7 @@ use LicenseManagerForWooCommerce\Interfaces\IntegrationController as Integration
 use LicenseManagerForWooCommerce\Models\Resources\Generator as GeneratorResourceModel;
 use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
 use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResourceRepository;
+use stdClass;
 use WC_Order;
 use WC_Order_Item_Product;
 use WC_Product;
@@ -32,6 +33,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         $this->bootstrap();
 
         add_filter('lmfwc_get_customer_license_keys',     array($this, 'getCustomerLicenseKeys'),     10, 1);
+        add_filter('lmfwc_get_all_customer_license_keys', array($this, 'getAllCustomerLicenseKeys'),  10, 1);
         add_filter('lmfwc_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 5);
         add_filter('lmfwc_insert_imported_license_keys',  array($this, 'insertImportedLicenseKeys'),  10, 6);
         add_action('lmfwc_sell_imported_license_keys',    array($this, 'sellImportedLicenseKeys'),    10, 3);
@@ -45,6 +47,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
     {
         new Order();
         new Email();
+        new MyAccount();
         new ProductData();
     }
 
@@ -83,6 +86,55 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         }
 
         return $data;
+    }
+
+    /**
+     * Retrieves all license keys for a user.
+     *
+     * @param int $userId
+     *
+     * @return stdClass|WC_Order[]
+     */
+    public function getAllCustomerLicenseKeys($userId)
+    {
+        global $wpdb;
+
+        $query = "
+            SELECT
+                DISTINCT(pm1.post_id) AS orderId
+            FROM
+                {$wpdb->postmeta} AS pm1
+            INNER JOIN
+                {$wpdb->postmeta} AS pm2
+                ON 1=1
+                   AND pm1.post_id = pm2.post_id
+            WHERE
+                1=1
+                AND pm1.meta_key = 'lmfwc_order_complete'
+                AND pm1.meta_value = '1'
+                AND pm2.meta_key = '_customer_user'
+                AND pm2.meta_value = '{$userId}'
+        ;";
+
+        $result   = array();
+        $orderIds = $wpdb->get_col($query);
+
+        /** @var LicenseResourceModel[] $licenses */
+        $licenses = LicenseResourceRepository::instance()->findAllBy(
+            array(
+                'order_id' => $orderIds
+            )
+        );
+
+        /** @var LicenseResourceModel $license */
+        foreach ($licenses as $license) {
+            $product = wc_get_product($license->getProductId());
+
+            $result[$license->getProductId()]['name']       = $product->get_formatted_name();
+            $result[$license->getProductId()]['licenses'][] = $license;
+        }
+
+        return $result;
     }
 
     /**

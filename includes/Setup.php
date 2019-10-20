@@ -45,6 +45,8 @@ class Setup
         self::createTables();
         self::setDefaultFilesAndFolders();
         self::setDefaultSettings();
+
+        flush_rewrite_rules();
     }
 
     /**
