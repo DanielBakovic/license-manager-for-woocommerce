@@ -33,6 +33,13 @@ if ($migrationMode === Migration::MODE_UP) {
             PRIMARY KEY (`meta_id`)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8
     ");
+
+    $settingsGeneral = get_option('lmfwc_settings');
+
+    if ($settingsGeneral) {
+        add_option('lmfwc_settings_general', $settingsGeneral);
+        delete_option('lmfwc_settings');
+    }
 }
 
 /**
@@ -40,4 +47,11 @@ if ($migrationMode === Migration::MODE_UP) {
  */
 if ($migrationMode === Migration::MODE_DOWN) {
     $wpdb->query("DROP TABLE IF EXISTS {$tableLicenseMeta}");
+
+    $settingsGeneral = get_option('lmfwc_settings_general');
+
+    if ($settingsGeneral) {
+        add_option('lmfwc_settings', $settingsGeneral);
+        delete_option('lmfwc_settings_general');
+    }
 }
