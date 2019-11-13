@@ -80,22 +80,22 @@ Again, yes! Here you can find the [API Documentation](https://www.licensemanager
 == Changelog ==
 
 = 2.1.0 - 2019-11-13 =
-Update - WordPress 5.3 compatibility
-Update - WooCommerce 3.8 compatibility
-Add - Introduced a License key meta table, along with add/update/get/delete functions.
-Add - The plugin now checks for duplicates before adding or editing license keys (this also applies to the API).
-Add - Generators can now freely generate license keys and add them directly to the database.
-Add - `lmfwc_rest_api_validation` filter for additional authentication or data validation when using the REST API.
-Add - Field for copy-pasting license keys on the "Import" page.
-Add - "Mark as sold" and "Mark as delivered" bulk actions on the license keys page.
-Add - A new "My license keys" section for customers, under the "My account" page.
-Add - The "Expires at" field can now directly be edited when adding or editing license keys. This also applies to the API.
-Tweak - Code reformat, refactor, and cleanup.
-Fix - Typo on the Settings page (the `v2/licenses/activate/{license-key}` route now displays correctly as a GET route).
-Fix - The `activate` and `deactivate` license key actions now work on the license keys overview.
-Fix - When adding or editing license keys, the "Product" field now also searches product variations.
-Fix - Multiple admin notices can now be displayed at once.
-Fix - Automatic loading of plugin translations.
+* Update - WordPress 5.3 compatibility
+* Update - WooCommerce 3.8 compatibility
+* Add - Introduced a License key meta table, along with add/update/get/delete functions.
+* Add - The plugin now checks for duplicates before adding or editing license keys (this also applies to the API).
+* Add - Generators can now freely generate license keys and add them directly to the database.
+* Add - `lmfwc_rest_api_validation` filter for additional authentication or data validation when using the REST API.
+* Add - Field for copy-pasting license keys on the "Import" page.
+* Add - "Mark as sold" and "Mark as delivered" bulk actions on the license keys page.
+* Add - A new "My license keys" section for customers, under the "My account" page.
+* Add - The "Expires at" field can now directly be edited when adding or editing license keys. This also applies to the API.
+* Tweak - Code reformat, refactor, and cleanup.
+* Fix - Typo on the Settings page (the `v2/licenses/activate/{license-key}` route now displays correctly as a GET route).
+* Fix - The `activate` and `deactivate` license key actions now work on the license keys overview.
+* Fix - When adding or editing license keys, the "Product" field now also searches product variations.
+* Fix - Multiple admin notices can now be displayed at once.
+* Fix - Automatic loading of plugin translations.
 
 = 2.0.1 - 2019-09-03 =
 * Add - v2/deactivate/{license_key} route for license key deactivation.
