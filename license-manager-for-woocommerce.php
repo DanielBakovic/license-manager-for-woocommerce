@@ -3,15 +3,15 @@
  * Plugin Name: License Manager for WooCommerce
  * Plugin URI: https://www.licensemanager.at/
  * Description: Easily sell and manage software license keys through your WooCommerce shop.
- * Version: 2.0.1
+ * Version: 2.1.0
  * Author: Dražen Bebić
  * Author URI: https://www.licensemanager.at/
  * Text Domain: lmfwc
  * Domain Path: /i18n/languages/
  * Requires at least: 4.7
- * Tested up to: 5.2
+ * Tested up to: 5.3
  * WC requires at least: 2.7
- * WC tested up to: 3.7
+ * WC tested up to: 3.8
  */
 
 namespace LicenseManagerForWooCommerce;
