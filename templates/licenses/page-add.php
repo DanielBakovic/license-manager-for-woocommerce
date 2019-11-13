@@ -23,7 +23,16 @@
             <th scope="row"><label for="single__valid_for"><?php esc_html_e('Valid for (days)', 'lmfwc');?></label></th>
             <td>
                 <input name="valid_for" id="single__valid_for" class="regular-text" type="text">
-                <p class="description"><?php esc_html_e('Number of days for which the license key is valid after purchase. Leave blank if the license key does not expire.', 'lmfwc');?></p>
+                <p class="description"><?php esc_html_e('Number of days for which the license key is valid after purchase. Leave blank if the license key does not expire. Cannot be used at the same time as the "Expires at" field.', 'lmfwc');?></p>
+            </td>
+        </tr>
+
+        <!-- EXPIRES AT -->
+        <tr scope="row">
+            <th scope="row"><label for="single__expires_at"><?php esc_html_e('Expires at', 'lmfwc');?></label></th>
+            <td>
+                <input name="expires_at" id="single__expires_at" class="regular-text" type="text">
+                <p class="description"><?php esc_html_e('The exact date this license key expires on. Leave blank if the license key does not expire. Cannot be used at the same time as the "Valid for (days)" field.', 'lmfwc');?></p>
             </td>
         </tr>
 

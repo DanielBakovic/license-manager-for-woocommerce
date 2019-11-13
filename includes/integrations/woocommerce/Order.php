@@ -3,11 +3,14 @@
 namespace LicenseManagerForWooCommerce\Integrations\WooCommerce;
 
 use LicenseManagerForWooCommerce\Enums\LicenseStatus;
+use LicenseManagerForWooCommerce\Lists\LicensesList;
 use LicenseManagerForWooCommerce\Models\Resources\Generator as GeneratorResourceModel;
 use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
 use LicenseManagerForWooCommerce\Repositories\Resources\Generator as GeneratorResourceRepository;
 use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResourceRepository;
 use LicenseManagerForWooCommerce\Settings;
+use WC_Order_Item_Product;
+use WC_Product_Simple;
 use function WC;
 use WC_Order;
 use WC_Order_Item;
@@ -23,9 +26,10 @@ class Order
     public function __construct()
     {
         add_action('woocommerce_order_status_completed',               array($this, 'generateOrderLicenses'));
+        add_action('woocommerce_order_action_lmfwc_send_license_keys', array($this, 'processSendLicenseKeysAction'));
         add_action('woocommerce_order_details_after_order_table',      array($this, 'showBoughtLicenses'),       10, 1);
         add_filter('woocommerce_order_actions',                        array($this, 'addSendLicenseKeysAction'), 10, 1);
-        add_action('woocommerce_order_action_lmfwc_send_license_keys', array($this, 'processSendLicenseKeysAction'));
+        add_action('woocommerce_after_order_itemmeta',                 array($this, 'showOrderedLicenses'),      10, 3);
     }
 
     /**
@@ -186,6 +190,16 @@ class Order
     }
 
     /**
+     * Sends out the ordered license keys.
+     *
+     * @param WC_Order $order
+     */
+    public function processSendLicenseKeysAction($order)
+    {
+        WC()->mailer()->emails['LMFWC_Customer_Deliver_License_Keys']->trigger($order->get_id(), $order);
+    }
+
+    /**
      * Displays the bought licenses in the order view inside "My Account" -> "Orders".
      *
      * @param WC_Order $order
@@ -245,12 +259,80 @@ class Order
     }
 
     /**
-     * Sends out the ordered license keys.
+     * Hook into the WordPress Order Item Meta Box and display the license key(s).
      *
-     * @param WC_Order $order
+     * @param int                   $itemId
+     * @param WC_Order_Item_Product $item
+     * @param WC_Product_Simple     $product
      */
-    public function processSendLicenseKeysAction($order)
+    public function showOrderedLicenses($itemId, $item, $product)
     {
-        WC()->mailer()->emails['LMFWC_Customer_Deliver_License_Keys']->trigger($order->get_id(), $order);
+        // Not a WC_Order_Item_Product object? Nothing to do...
+        if (!($item instanceof WC_Order_Item_Product)) {
+            return;
+        }
+
+        /** @var LicenseResourceModel[] $licenses */
+        $licenses = LicenseResourceRepository::instance()->findAllBy(
+            array(
+                'order_id' => $item->get_order_id(),
+                'product_id' => $product->get_id()
+            )
+        );
+
+        // No license keys? Nothing to do...
+        if (!$licenses) {
+            return;
+        }
+
+        $html = sprintf('<p>%s:</p>', __('The following license keys have been sold by this order', 'lmfwc'));
+        $html .= '<ul class="lmfwc-license-list">';
+
+        if (!Settings::get('lmfwc_hide_license_keys')) {
+            /** @var LicenseResourceModel $license */
+            foreach ($licenses as $license) {
+                $html .= sprintf(
+                    '<li></span> <code class="lmfwc-placeholder">%s</code></li>',
+                    $license->getDecryptedLicenseKey()
+                );
+            }
+
+            $html .= '</ul>';
+        }
+
+        else {
+            /** @var LicenseResourceModel $license */
+            foreach ($licenses as $license) {
+                $html .= sprintf(
+                    '<li><code class="lmfwc-placeholder empty" data-id="%d"></code></li>',
+                    $license->getId()
+                );
+            }
+
+            $html .= '</ul>';
+            $html .= '<p>';
+
+            $html .= sprintf(
+                '<a class="button lmfwc-license-keys-show-all" data-order-id="%d">%s</a>',
+                $item->get_order_id(),
+                __('Show license key(s)', 'lmfwc')
+            );
+
+            $html .= sprintf(
+                '<a class="button lmfwc-license-keys-hide-all" data-order-id="%d">%s</a>',
+                $item->get_order_id(),
+                __('Hide license key(s)', 'lmfwc')
+            );
+
+            $html .= sprintf(
+                '<img class="lmfwc-spinner" alt="%s" src="%s">',
+                __('Please wait...', 'lmfwc'),
+                LicensesList::SPINNER_URL
+            );
+
+            $html .= '</p>';
+        }
+
+        echo $html;
     }
 }

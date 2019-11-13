@@ -297,6 +297,7 @@ class Licenses extends LMFWC_REST_Controller
         $licenseKey        = isset($body['license_key'])         ? sanitize_text_field($body['license_key']) : null;
         $validFor          = isset($body['valid_for'])           ? absint($body['valid_for'])                : null;
         $validFor          = $validFor                           ? $validFor                                 : null;
+        $expiresAt         = isset($body['expires_at'])          ? sanitize_text_field($body['expires_at'])  : null;
         $timesActivatedMax = isset($body['times_activated_max']) ? absint($body['times_activated_max'])      : null;
         $statusEnum        = isset($body['status'])              ? sanitize_text_field($body['status'])      : null;
         $status            = null;
@@ -329,6 +330,20 @@ class Licenses extends LMFWC_REST_Controller
             $status = LicenseStatus::$values[$statusEnum];
         }
 
+        if ($expiresAt) {
+            try {
+                $expiresAtDateTime = new \DateTime($expiresAt);
+                $expiresAt = $expiresAtDateTime->format('Y-m-d H:i:s');
+                $validFor  = null;
+            } catch (\Exception $e) {
+                return new WP_Error(
+                    'lmfwc_rest_data_error',
+                    $e->getMessage(),
+                    array('status' => 404)
+                );
+            }
+        }
+
         try {
             /** @var LicenseResourceModel $license */
             $license = LicenseResourceRepository::instance()->insert(
@@ -337,6 +352,7 @@ class Licenses extends LMFWC_REST_Controller
                     'license_key'         => apply_filters('lmfwc_encrypt', $licenseKey),
                     'hash'                => apply_filters('lmfwc_hash', $licenseKey),
                     'valid_for'           => $validFor,
+                    'expires_at'          => $expiresAt,
                     'source'              => LicenseSource::API,
                     'status'              => $status,
                     'times_activated_max' => $timesActivatedMax
@@ -461,6 +477,10 @@ class Licenses extends LMFWC_REST_Controller
 
         if (array_key_exists('hash', $updateData)) {
             unset($updateData['hash']);
+        }
+
+        if (array_key_exists('expires_at', $updateData)) {
+            $updateData['valid_for'] = null;
         }
 
         /** @var LicenseResourceModel $updatedLicense */

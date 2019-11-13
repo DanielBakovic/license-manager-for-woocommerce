@@ -2,29 +2,20 @@
 
 namespace LicenseManagerForWooCommerce;
 
-use DateTime;
-use DateTimezone;
 use LicenseManagerForWooCommerce\Enums\LicenseSource;
-use LicenseManagerForWooCommerce\Enums\LicenseStatus;
-use LicenseManagerForWooCommerce\Lists\LicensesList;
 use LicenseManagerForWooCommerce\Models\Resources\ApiKey as ApiKeyResourceModel;
 use LicenseManagerForWooCommerce\Models\Resources\Generator as GeneratorResourceModel;
 use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
 use LicenseManagerForWooCommerce\Repositories\Resources\ApiKey as ApiKeyResourceRepository;
 use LicenseManagerForWooCommerce\Repositories\Resources\Generator as GeneratorResourceRepository;
 use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResourceRepository;
-use WC_DateTime;
-use WC_Order;
-use WC_Order_Item_Product;
-use WC_Order_Refund;
-use WC_Product_Simple;
 
 defined('ABSPATH') || exit;
 
-class FormHandler
+class Controller
 {
     /**
-     * FormHandler Constructor.
+     * Controller Constructor.
      */
     public function __construct()
     {
@@ -40,9 +31,6 @@ class FormHandler
         // AJAX calls.
         add_action('wp_ajax_lmfwc_show_license_key',      array($this, 'showLicenseKey'),     10);
         add_action('wp_ajax_lmfwc_show_all_license_keys', array($this, 'showAllLicenseKeys'), 10);
-
-        // WooCommerce related
-        add_action('woocommerce_after_order_itemmeta', array($this, 'showOrderedLicenses'), 10, 3);
     }
 
     /**
@@ -385,8 +373,12 @@ class FormHandler
         // Check the nonce
         check_admin_referer('lmfwc_add_license_key');
 
-        $orderId = null;
-        $productId = null;
+        $status            = absint($_POST['status']);
+        $orderId           = null;
+        $productId         = null;
+        $validFor          = null;
+        $expiresAt         = null;
+        $timesActivatedMax = null;
 
         if (array_key_exists('order_id', $_POST)) {
             $orderId = $_POST['order_id'];
@@ -394,6 +386,20 @@ class FormHandler
 
         if (array_key_exists('product_id', $_POST)) {
             $productId = $_POST['product_id'];
+        }
+
+        if (array_key_exists('valid_for', $_POST)) {
+            $validFor  = $_POST['valid_for'];
+            $expiresAt = null;
+        }
+
+        if (array_key_exists('expires_at', $_POST)) {
+            $validFor  = null;
+            $expiresAt = $_POST['expires_at'];
+        }
+
+        if (array_key_exists('times_activated_max', $_POST)) {
+            $timesActivatedMax = absint($_POST['times_activated_max']);
         }
 
         if (apply_filters('lmfwc_duplicate', $_POST['license_key'])) {
@@ -409,10 +415,11 @@ class FormHandler
                 'product_id'          => $productId,
                 'license_key'         => apply_filters('lmfwc_encrypt', $_POST['license_key']),
                 'hash'                => apply_filters('lmfwc_hash', $_POST['license_key']),
-                'valid_for'           => $_POST['valid_for'],
+                'expires_at'          => $expiresAt,
+                'valid_for'           => $validFor,
                 'source'              => LicenseSource::IMPORT,
-                'status'              => $_POST['status'],
-                'times_activated_max' => $_POST['times_activated_max']
+                'status'              => $status,
+                'times_activated_max' => $timesActivatedMax
             )
         );
 
@@ -441,31 +448,32 @@ class FormHandler
 
         $licenseId         = absint($_POST['license_id']);
         $status            = absint($_POST['status']);
-        $timesActivatedMax = null;
         $orderId           = null;
         $productId         = null;
         $validFor          = null;
         $expiresAt         = null;
+        $timesActivatedMax = null;
 
         if (array_key_exists('order_id', $_POST)) {
-            $orderId = absint($_POST['order_id']);
+            $orderId = $_POST['order_id'];
         }
 
         if (array_key_exists('product_id', $_POST)) {
-            $productId = absint($_POST['product_id']);
+            $productId = $_POST['product_id'];
         }
 
-        if ($_POST['valid_for']) {
-            $validFor = absint($_POST['valid_for']);
+        if (array_key_exists('valid_for', $_POST)) {
+            $validFor  = $_POST['valid_for'];
+            $expiresAt = null;
         }
 
-        if ($_POST['times_activated_max']) {
+        if (array_key_exists('expires_at', $_POST)) {
+            $validFor  = null;
+            $expiresAt = $_POST['expires_at'];
+        }
+
+        if (array_key_exists('times_activated_max', $_POST)) {
             $timesActivatedMax = absint($_POST['times_activated_max']);
-        }
-
-        if ($_POST['expires_at'] && apply_filters('lmfwc_validate_date', 'Y-m-d H:i:s', $_POST['expires_at'])) {
-            $expiresAt = new DateTime($_POST['expires_at']);
-            $expiresAt = $expiresAt->format('Y-m-d H:i:s');
         }
 
         // Check for duplicates
@@ -473,28 +481,6 @@ class FormHandler
             AdminNotice::error(__('The license key already exists.', 'lmfwc'));
             wp_redirect(sprintf('admin.php?page=%s&action=edit&id=%d', AdminMenus::LICENSES_PAGE, $licenseId));
             exit;
-        }
-
-        // When the "valid for" field changes, "expires_at" has to as well
-        if (in_array($status, array(LicenseStatus::SOLD, LicenseStatus::DELIVERED))) {
-            $datePaid = new DateTime('now', new DateTimezone('UTC'));
-
-            /** @var WC_Order|WC_Order_Refund|bool $order */
-            if ($order = wc_get_order($orderId)) {
-                /** @var WC_DateTime $orderDatePaid */
-                $orderDatePaid = $order->get_date_paid();
-                $datePaid      = new DateTime($orderDatePaid->format('Y-m-d H:i:s'), new DateTimezone('UTC'));
-            }
-
-            if ($validFor) {
-                $newExpiresAt = new DateTime($datePaid->format('Y-m-d H:i:s'));
-                $newExpiresAt->modify(sprintf('+%d day', $validFor));
-                $expiresAt = $newExpiresAt->format('Y-m-d H:i:s');
-            }
-
-            elseif ($validFor === null) {
-                $expiresAt = null;
-            }
         }
 
         /** @var LicenseResourceModel $license */
@@ -669,83 +655,5 @@ class FormHandler
         }
 
         wp_send_json($licenseKeysIds);
-    }
-
-    /**
-     * Hook into the WordPress Order Item Meta Box and display the license key(s).
-     *
-     * @param int                   $itemId
-     * @param WC_Order_Item_Product $item
-     * @param WC_Product_Simple     $product
-     */
-    public function showOrderedLicenses($itemId, $item, $product)
-    {
-        // Not a WC_Order_Item_Product object? Nothing to do...
-        if (!($item instanceof WC_Order_Item_Product)) {
-            return;
-        }
-
-        /** @var LicenseResourceModel[] $licenses */
-        $licenses = LicenseResourceRepository::instance()->findAllBy(
-            array(
-                'order_id' => $item->get_order_id(),
-                'product_id' => $product->get_id()
-            )
-        );
-
-        // No license keys? Nothing to do...
-        if (!$licenses) {
-            return;
-        }
-
-        $html = sprintf('<p>%s:</p>', __('The following license keys have been sold by this order', 'lmfwc'));
-        $html .= '<ul class="lmfwc-license-list">';
-
-        if (!Settings::get('lmfwc_hide_license_keys')) {
-            /** @var LicenseResourceModel $license */
-            foreach ($licenses as $license) {
-                $html .= sprintf(
-                    '<li></span> <code class="lmfwc-placeholder">%s</code></li>',
-                    $license->getDecryptedLicenseKey()
-                );
-            }
-
-            $html .= '</ul>';
-        }
-
-        else {
-            /** @var LicenseResourceModel $license */
-            foreach ($licenses as $license) {
-                $html .= sprintf(
-                    '<li><code class="lmfwc-placeholder empty" data-id="%d"></code></li>',
-                    $license->getId()
-                );
-            }
-
-            $html .= '</ul>';
-            $html .= '<p>';
-
-            $html .= sprintf(
-                '<a class="button lmfwc-license-keys-show-all" data-order-id="%d">%s</a>',
-                $item->get_order_id(),
-                __('Show license key(s)', 'lmfwc')
-            );
-
-            $html .= sprintf(
-                '<a class="button lmfwc-license-keys-hide-all" data-order-id="%d">%s</a>',
-                $item->get_order_id(),
-                __('Hide license key(s)', 'lmfwc')
-            );
-
-            $html .= sprintf(
-                '<img class="lmfwc-spinner" alt="%s" src="%s">',
-                __('Please wait...', 'lmfwc'),
-                LicensesList::SPINNER_URL
-            );
-
-            $html .= '</p>';
-        }
-
-        echo $html;
     }
 }

@@ -85,13 +85,13 @@ final class Main extends Singleton
             'lmfwc_select2_cdn',
             'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css'
         );
-        wp_register_style(
-            'lmfwc_select2',
-            LMFWC_CSS_URL . 'select2.css'
-        );
         wp_register_script(
             'lmfwc_select2_cdn',
             'https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js'
+        );
+        wp_register_style(
+            'lmfwc_select2',
+            LMFWC_CSS_URL . 'select2.css'
         );
 
         // CSS
@@ -99,6 +99,14 @@ final class Main extends Singleton
 
         // JavaScript
         wp_enqueue_script('lmfwc_admin_js', LMFWC_JS_URL . 'script.js');
+
+        // jQuery UI
+        wp_register_style(
+            'lmfwc-jquery-ui-datepicker',
+            'https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css',
+            array(),
+            '1.12.1'
+        );
 
         if (isset($_GET['page']) && 
             (
@@ -257,7 +265,7 @@ final class Main extends Singleton
         new Generator();
         new Repositories\PostMeta();
         new Repositories\Users();
-        new FormHandler();
+        new Controller();
         new API\Setup();
 
         if ($this->isPluginActive('woocommerce/woocommerce.php')) {

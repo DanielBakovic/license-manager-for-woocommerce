@@ -57,17 +57,3 @@ function lmfwc_duplicate($licenseKey, $licenseKeyId = null)
     return $duplicate;
 }
 add_filter('lmfwc_duplicate', 'lmfwc_duplicate', 10, 2);
-
-/**
- * @param string $format
- * @param string $date
- *
- * @return bool
- */
-function lmfwc_validate_date($format, $date)
-{
-    $d = DateTime::createFromFormat($format, $date);
-
-    return $d && $d->format($format) === $date;
-}
-add_filter('lmfwc_validate_date', 'lmfwc_validate_date', 10, 2);

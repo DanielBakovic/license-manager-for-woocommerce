@@ -11,7 +11,6 @@
 
 <form method="post" action="<?php echo admin_url('admin-post.php');?>">
     <input type="hidden" name="source" value="<?php echo esc_html($license->getSource()); ?>">
-    <input type="hidden" name="expires_at" value="<?php esc_attr_e($license->getExpiresAt()); ?>">
     <input type="hidden" name="action" value="lmfwc_update_license_key">
     <?php wp_nonce_field('lmfwc_update_license_key'); ?>
 
@@ -35,10 +34,19 @@
 
             <!-- VALID FOR -->
             <tr scope="row">
-                <th scope="row"><label for="edit__valid_for"><?php esc_html_e('Validity', 'lmfwc');?></label></th>
+                <th scope="row"><label for="edit__valid_for"><?php esc_html_e('Valid for (days)', 'lmfwc');?></label></th>
                 <td>
                     <input name="valid_for" id="edit__valid_for" class="regular-text" type="text" value="<?php echo esc_html($license->getValidFor()); ?>">
-                    <p class="description"><?php esc_html_e('Number of days for which the license key is valid after purchase. Leave blank if the license key does not expire.', 'lmfwc');?></p>
+                    <p class="description"><?php esc_html_e('Number of days for which the license key is valid after purchase. Leave blank if the license key does not expire. Cannot be used at the same time as the "Expires at" field.', 'lmfwc');?></p>
+                </td>
+            </tr>
+
+            <!-- EXPIRES AT -->
+            <tr scope="row">
+                <th scope="row"><label for="edit__expires_at"><?php esc_html_e('Expires at', 'lmfwc');?></label></th>
+                <td>
+                    <input name="expires_at" id="edit__expires_at" class="regular-text" type="text" value="<?php echo esc_html($expiresAt); ?>">
+                    <p class="description"><?php esc_html_e('The exact date this license key expires on. Leave blank if the license key does not expire. Cannot be used at the same time as the "Valid for (days)" field.', 'lmfwc');?></p>
                 </td>
             </tr>
 

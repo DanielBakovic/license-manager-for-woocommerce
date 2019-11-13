@@ -179,6 +179,16 @@ class AdminMenus
 
             /** @var LicenseResourceModel $license */
             $license = LicenseResourceRepository::instance()->find(absint($_GET['id']));
+            $expiresAt = null;
+
+            if ($license->getExpiresAt()) {
+                try {
+                    $expiresAtDateTime = new \DateTime($license->getExpiresAt());
+                    $expiresAt = $expiresAtDateTime->format('Y-m-d');
+                } catch (\Exception $e) {
+                    $expiresAt = null;
+                }
+            }
 
             if (!$license) {
                 wp_die(__('Invalid license key ID', 'lmfwc'));
@@ -189,6 +199,8 @@ class AdminMenus
 
         // Edit, add or import license keys
         if ($action === 'edit' || $action === 'add' || $action === 'import') {
+            wp_enqueue_style('lmfwc-jquery-ui-datepicker');
+            wp_enqueue_script('jquery-ui-datepicker');
             $statusOptions = LicenseStatus::dropdown();
         }
 
