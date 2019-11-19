@@ -57,3 +57,25 @@ function lmfwc_duplicate($licenseKey, $licenseKeyId = null)
     return $duplicate;
 }
 add_filter('lmfwc_duplicate', 'lmfwc_duplicate', 10, 2);
+
+/**
+ * Generates a random hash.
+ *
+ * @return string
+ */
+function lmfwc_rand_hash()
+{
+    if ($hash = apply_filters('lmfwc_rand_hash', null)) {
+        return $hash;
+    }
+
+    if (function_exists('wc_rand_hash')) {
+        return wc_rand_hash();
+    }
+
+    if (!function_exists('openssl_random_pseudo_bytes')) {
+        return sha1(wp_rand());
+    }
+
+    return bin2hex(openssl_random_pseudo_bytes(20));
+}
