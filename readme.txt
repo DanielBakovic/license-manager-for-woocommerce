@@ -4,7 +4,7 @@ Donate link: https://www.licensemanager.at/donate/
 Tags: license key, license, key, software license, serial key, manager, woocommerce, wordpress
 Requires at least: 4.7
 Tested up to: 5.3
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,6 +12,8 @@ Easily sell and manage software license keys through your WooCommerce shop
 
 == Description ==
 The **License Manager for WooCommerce** allows you to easily sell and manage all of your digital license keys. With features like the bulk importer, automatic delivery, and database encryption, your shop will now run easier than ever.
+
+[Plugin & API Documentation](https://www.licensemanager.at/docs)
 
 #### Key plugin features
 
@@ -78,6 +80,12 @@ Again, yes! Here you can find the [API Documentation](https://www.licensemanager
 7. Create a new license key generator.
 
 == Changelog ==
+
+= 2.1.1 - 2019-11-19 =
+* Fix - Adding a generator without a "expires_at" no longer display the "-0001-11-30" date value. You will need to edit existing license keys, remove the value and save them to get rid of the invalid date.
+* Fix - If no generators are present, the plugin would throw a PHP notice when going to the "Generate" page inside on the "Generators" menu page.
+* Tweak - It is now possible to create API keys without WooCommerce installed.
+* Tweak - Removed the redundant plugin Exception class.
 
 = 2.1.0 - 2019-11-13 =
 * Update - WordPress 5.3 compatibility
