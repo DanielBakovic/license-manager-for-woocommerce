@@ -4,7 +4,10 @@ use LicenseManagerForWooCommerce\Models\Resources\Generator as GeneratorResource
 
 defined('ABSPATH') || exit;
 
-/** @var GeneratorResourceModel $generator */
+/**
+ * @var GeneratorResourceModel[] $generatorsDropdown
+ * @var array                    $statusOptions
+ */
 
 ?>
 
@@ -25,7 +28,7 @@ defined('ABSPATH') || exit;
             </th>
             <td>
                 <select id="generate__generator" name="generator_id" class="regular-text">
-                    <?php foreach($generators as $generator): ?>
+                    <?php foreach($generatorsDropdown as $generator): ?>
                         <option value="<?php esc_attr_e($generator->getId()); ?>"><?php esc_attr_e($generator->getName()); ?></option>
                     <?php endforeach; ?>
                 </select>

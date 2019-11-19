@@ -252,8 +252,12 @@ class AdminMenus
 
         // Generate license keys
         if ($action === 'generate') {
-            $generators    = GeneratorResourceRepository::instance()->findAll();
-            $statusOptions = LicenseStatus::dropdown();
+            $generatorsDropdown = GeneratorResourceRepository::instance()->findAll();
+            $statusOptions      = LicenseStatus::dropdown();
+
+            if (!$generatorsDropdown) {
+                $generatorsDropdown = array();
+            }
         }
 
         include LMFWC_TEMPLATES_DIR . 'page-generators.php';

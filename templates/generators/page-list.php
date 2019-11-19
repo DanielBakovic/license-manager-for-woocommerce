@@ -1,4 +1,16 @@
-<?php defined('ABSPATH') || exit; ?>
+<?php
+
+use LicenseManagerForWooCommerce\Lists\GeneratorsList;
+
+defined('ABSPATH') || exit;
+
+/**
+ * @var string         $addGeneratorUrl
+ * @var string         $generateKeysUrl
+ * @var GeneratorsList $generators
+ */
+
+?>
 
 <h1 class="wp-heading-inline"><?php esc_html_e('Generators', 'lmfwc'); ?></h1>
 <a href="<?php echo esc_url($addGeneratorUrl); ?>" class="page-title-action">
