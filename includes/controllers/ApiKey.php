@@ -111,9 +111,7 @@ class ApiKey
             }
 
             else {
-                AdminNotice::error(
-                    __('There was a problem updating the API key.', 'lmfwc')
-                );
+                AdminNotice::error(__('There was a problem updating the API key.', 'lmfwc'));
             }
 
             wp_redirect(sprintf('admin.php?page=%s&tab=rest_api', AdminMenus::SETTINGS_PAGE));

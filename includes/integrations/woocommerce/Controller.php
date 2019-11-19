@@ -9,7 +9,6 @@ use Exception;
 use LicenseManagerForWooCommerce\Abstracts\IntegrationController as AbstractIntegrationController;
 use LicenseManagerForWooCommerce\Enums\LicenseSource;
 use LicenseManagerForWooCommerce\Enums\LicenseStatus;
-use LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
 use LicenseManagerForWooCommerce\Interfaces\IntegrationController as IntegrationControllerInterface;
 use LicenseManagerForWooCommerce\Models\Resources\Generator as GeneratorResourceModel;
 use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
@@ -146,7 +145,6 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
      * @param int                    $status      License key status
      * @param GeneratorResourceModel $generator   Generator used
      *
-     * @throws LMFWC_Exception
      * @throws Exception
      */
     public function insertGeneratedLicenseKeys($orderId, $productId, $licenseKeys, $status, $generator)
@@ -157,11 +155,11 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         $cleanStatus      = $status    ? absint($status)    : null;
 
         if (!$cleanStatus || !in_array($cleanStatus, LicenseStatus::$status)) {
-            throw new LMFWC_Exception('License Status is invalid.');
+            throw new Exception('License Status is invalid.');
         }
 
         if (!is_array($licenseKeys)) {
-            throw new LMFWC_Exception('License Keys must be provided as array');
+            throw new Exception('License Keys must be provided as array');
         }
 
         foreach ($licenseKeys as $licenseKey) {
@@ -169,7 +167,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         }
 
         if (count($cleanLicenseKeys) === 0) {
-            throw new LMFWC_Exception('No License Keys were provided');
+            throw new Exception('No License Keys were provided');
         }
 
         $gmtDate           = new DateTime('now', new DateTimeZone('GMT'));
@@ -240,7 +238,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
      * @param int   $timesActivatedMax Maximum activation count
      *
      * @return array
-     * @throws LMFWC_Exception
+     * @throws Exception
      */
     public function insertImportedLicenseKeys($licenseKeys, $status, $orderId, $productId, $validFor, $timesActivatedMax)
     {
@@ -253,15 +251,15 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         $cleanTimesActivatedMax = $timesActivatedMax ? absint($timesActivatedMax) : null;
 
         if (!is_array($licenseKeys)) {
-            throw new LMFWC_Exception('License Keys must be an array');
+            throw new Exception('License Keys must be an array');
         }
 
         if (!$cleanStatus) {
-            throw new LMFWC_Exception('Status enumerator is missing');
+            throw new Exception('Status enumerator is missing');
         }
 
         if (!in_array($cleanStatus, LicenseStatus::$status)) {
-            throw new LMFWC_Exception('Status enumerator is invalid');
+            throw new Exception('Status enumerator is invalid');
         }
 
         foreach ($licenseKeys as $licenseKey) {
@@ -305,7 +303,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
      * @param int                    $orderId  WooCommerce Order ID
      * @param int                    $amount   Amount to be marked as sold
      *
-     * @throws LMFWC_Exception
+     * @throws Exception
      * @throws Exception
      */
     public function sellImportedLicenseKeys($licenses, $orderId, $amount)
@@ -315,15 +313,15 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         $cleanAmount      = $amount  ? absint($amount)  : null;
 
         if (!is_array($licenses) || count($licenses) <= 0) {
-            throw new LMFWC_Exception('License Keys are invalid.');
+            throw new Exception('License Keys are invalid.');
         }
 
         if (!$cleanOrderId) {
-            throw new LMFWC_Exception('Order ID is invalid.');
+            throw new Exception('Order ID is invalid.');
         }
 
         if (!$cleanOrderId) {
-            throw new LMFWC_Exception('Amount is invalid.');
+            throw new Exception('Amount is invalid.');
         }
 
         for ($i = 0; $i < $cleanAmount; $i++) {

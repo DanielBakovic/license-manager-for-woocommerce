@@ -136,7 +136,7 @@ class Generator
         }
 
         if ($_POST['chunk_length'] == '' || !is_numeric($_POST['chunk_length'])) {
-            AdminNotice::error(__('The Generator chunk length is invalid.', 'lmfwc')            );
+            AdminNotice::error(__('The Generator chunk length is invalid.', 'lmfwc'));
             wp_redirect(
                 admin_url(
                     sprintf(

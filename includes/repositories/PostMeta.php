@@ -2,7 +2,7 @@
 
 namespace LicenseManagerForWooCommerce\Repositories;
 
-use LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
+use Exception;
 
 defined('ABSPATH') || exit;
 
@@ -23,14 +23,14 @@ class PostMeta
      * @param int $generatorId
      *
      * @return array
-     * @throws LMFWC_Exception
+     * @throws Exception
      */
     public function getAssignedProducts($generatorId)
     {
-        $clean_generator_id = $generatorId ? absint($generatorId) : null;
+        $cleanGeneratorId = $generatorId ? absint($generatorId) : null;
 
-        if (!$clean_generator_id) {
-            throw new LMFWC_Exception('Generator ID is invalid.');
+        if (!$cleanGeneratorId) {
+            throw new Exception('Generator ID is invalid.');
         }
 
         global $wpdb;
@@ -48,7 +48,7 @@ class PostMeta
                         AND meta_value = %d
                 ",
                 'lmfwc_licensed_product_assigned_generator',
-                $clean_generator_id
+                $cleanGeneratorId
             ),
             OBJECT
         );

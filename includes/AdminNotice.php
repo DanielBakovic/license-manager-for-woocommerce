@@ -2,8 +2,6 @@
 
 namespace LicenseManagerForWooCommerce;
 
-use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
-
 defined('ABSPATH') || exit;
 
 class AdminNotice
@@ -98,25 +96,13 @@ class AdminNotice
     }
 
     /**
-     * Log and display exception.
+     * Display error message.
      *
      * @param string $message
-     * @param int    $duration
-     * @throws \Exception
      */
-    public static function error($message, $duration = 60)
+    public static function error($message)
     {
-        $e = new LMFWC_Exception($message);
-
-        $message = '';
-        $message .= $e->getMessage();
-        $message .= ' ';
-        $message .= sprintf(
-            __('If you are having trouble solving the problem on your own, please let us know by sending an error report <a href="%s" target="_blank" rel="noopener">in the support forum</a>.', 'lmfwc'),
-            'https://wordpress.org/support/plugin/license-manager-for-woocommerce/'
-        );
-
-        self::add('error', $message, $e->getCode(), $duration);
+        self::add('error', $message);
     }
 
     /**

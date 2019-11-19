@@ -38,9 +38,7 @@ class Import
 
         // Validate the file extension
         if (!in_array($ext, array('txt', 'csv')) || !in_array($_FILES['file']['type'], $mimes)) {
-            AdminNotice::error(
-                __('Invalid file type, only TXT and CSV allowed.', 'lmfwc')
-            );
+            AdminNotice::error(__('Invalid file type, only TXT and CSV allowed.', 'lmfwc'));
 
             wp_redirect(
                 sprintf(

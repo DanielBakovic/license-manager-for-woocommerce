@@ -3,7 +3,7 @@
 namespace LicenseManagerForWooCommerce;
 
 use DateTime;
-use \LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
+use Exception;
 
 defined('ABSPATH') || exit;
 
@@ -222,25 +222,28 @@ class Logger
      * Log error messages or exception to the exception log.
      *
      * @param $error
-     * @throws \Exception
      */
     public static function exception($error)
     {
-        if ($error instanceof \Exception || $error instanceof LMFWC_Exception) {
-
-            $date = new DateTime();
-
-            $message = sprintf("Exception thrown at: %s\n", $date->format('Y-m-d H:i'));
-            $message .= 'Message: ' . $error->getMessage() . "\n";
-            $message .= 'Code: ' . $error->getCode() . "\n";
-            $message .= 'Thrown at: ' . $error->getFile() . ':' . $error->getLine() . "\n";
-            $message .= "Trace:\n";
-            $message .= $error->getTraceAsString();
-
-            self::file($message, self::ERROR_FILE);
-        } else {
-            self::file($error, self::ERROR_FILE);
+        if (!$error instanceof Exception) {
+            return;
         }
+
+        try {
+            $date = new DateTime();
+            $time = $date->format('Y-m-d H:i');
+        } catch (Exception $e) {
+            $time = 'UNKNOWN';
+        }
+
+        $message = sprintf("Exception thrown at: %s\n", $time);
+        $message .= 'Message: ' . $error->getMessage() . "\n";
+        $message .= 'Code: ' . $error->getCode() . "\n";
+        $message .= 'Thrown at: ' . $error->getFile() . ':' . $error->getLine() . "\n";
+        $message .= "Trace:\n";
+        $message .= $error->getTraceAsString();
+
+        self::file($message, self::ERROR_FILE);
     }
 
     /**

@@ -360,9 +360,7 @@ class GeneratorsList extends WP_List_Table
         if (!wp_verify_nonce($_REQUEST['_wpnonce'], $nonceAction) &&
             !wp_verify_nonce($_REQUEST['_wpnonce'], 'bulk-' . $this->_args['plural'])
         ) {
-            AdminNotice::error(
-                __('The nonce is invalid or has expired.', 'lmfwc')
-            );
+            AdminNotice::error(__('The nonce is invalid or has expired.', 'lmfwc'));
             wp_redirect(admin_url(sprintf('admin.php?page=%s', AdminMenus::GENERATORS_PAGE)));
 
             exit();
@@ -410,9 +408,7 @@ class GeneratorsList extends WP_List_Table
         $result = GeneratorResourceRepository::instance()->delete($generatorsToDelete);
 
         if ($result) {
-            AdminNotice::success(
-                sprintf(__('%d generator(s) permanently deleted.', 'lmfwc'), $result)
-            );
+            AdminNotice::success(sprintf(__('%d generator(s) permanently deleted.', 'lmfwc'), $result));
 
             wp_redirect(
                 admin_url(
@@ -422,9 +418,7 @@ class GeneratorsList extends WP_List_Table
         }
 
         else {
-            AdminNotice::error(
-                __('There was a problem deleting the generators.', 'lmfwc')
-            );
+            AdminNotice::error(__('There was a problem deleting the generators.', 'lmfwc'));
 
             wp_redirect(
                 admin_url(

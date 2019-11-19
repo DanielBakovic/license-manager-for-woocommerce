@@ -2,6 +2,7 @@
 
 namespace LicenseManagerForWooCommerce\Controllers;
 
+use Exception;
 use LicenseManagerForWooCommerce\AdminMenus;
 use LicenseManagerForWooCommerce\AdminNotice;
 use LicenseManagerForWooCommerce\Enums\LicenseSource;
@@ -73,7 +74,7 @@ class License
                 $_POST['valid_for'],
                 $_POST['times_activated_max']
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             AdminNotice::error(__($e->getMessage(), 'lmfwc'));
             wp_redirect(sprintf('admin.php?page=%s&action=import', AdminMenus::LICENSES_PAGE));
             exit();
@@ -190,7 +191,7 @@ class License
     /**
      * Updates an existing license keys.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function updateLicenseKey()
     {

@@ -2,7 +2,7 @@
 
 namespace LicenseManagerForWooCommerce;
 
-use LicenseManagerForWooCommerce\Exception as LMFWC_Exception;
+use Exception;
 use LicenseManagerForWooCommerce\Models\Resources\Generator as GeneratorResourceModel;
 
 defined('ABSPATH') || exit;
@@ -54,9 +54,9 @@ class Generator
     /**
      * Bulk create license keys, if possible for given parameters.
      *
-     * @param int                    $amount    Number of license keys to be generated
+     * @param int $amount Number of license keys to be generated
      * @param GeneratorResourceModel $generator Generator used for the license keys
-     * @param array                  $licenses  Number of license keys to be generated
+     * @param array $licenses Number of license keys to be generated
      *
      * @return array
      * @throws Exception
@@ -69,7 +69,7 @@ class Generator
 
         if ($amount > $maxPossibleKeys) {
             Logger::exception(array($amount, $licenses, $generator));
-            throw new LMFWC_Exception('It\'s not possible to generate that many keys with the given parameters, there are not enough combinations. Please review your inputs.');
+            throw new Exception('It\'s not possible to generate that many keys with the given parameters, there are not enough combinations. Please review your inputs.');
         }
 
         // Generate the license strings

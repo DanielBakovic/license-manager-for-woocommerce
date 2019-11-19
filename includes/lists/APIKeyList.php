@@ -389,15 +389,11 @@ class APIKeyList extends WP_List_Table
     private function revokeKeys()
     {
         if ($count = ApiKeyResourceRepository::instance()->delete((array)$_REQUEST['key'])) {
-            AdminNotice::success(
-                sprintf(__('%d API key(s) permanently revoked.', 'lmfwc'), $count)
-            );
+            AdminNotice::success(sprintf(__('%d API key(s) permanently revoked.', 'lmfwc'), $count));
         }
 
         else {
-            AdminNotice::error(
-                __('There was a problem revoking the API key(s).', 'lmfwc')
-            );
+            AdminNotice::error(__('There was a problem revoking the API key(s).', 'lmfwc'));
         }
 
         wp_redirect(sprintf('admin.php?page=%s&tab=rest_api', AdminMenus::SETTINGS_PAGE));
