@@ -325,11 +325,7 @@ class GeneratorsList extends WP_List_Table
      */
     public function prepare_items()
     {
-        $this->_column_headers = array(
-            $this->get_columns(),
-            array(),
-            $this->get_sortable_columns(),
-        );
+        $this->_column_headers = $this->get_column_info();
 
         $this->processBulkActions();
 

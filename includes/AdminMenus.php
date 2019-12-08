@@ -41,6 +41,16 @@ class AdminMenus
     const SETTINGS_PAGE = 'lmfwc_settings';
 
     /**
+     * @var LicensesList
+     */
+    private $licenses;
+
+    /**
+     * @var GeneratorsList
+     */
+    private $generators;
+
+    /**
      * Class constructor.
      */
     public function __construct()
@@ -132,6 +142,8 @@ class AdminMenus
         );
 
         add_screen_option($option, $args);
+
+        $this->licenses = new LicensesList();
     }
 
     /**
@@ -147,6 +159,8 @@ class AdminMenus
         );
 
         add_screen_option($option, $args);
+
+        $this->generators = new GeneratorsList;
     }
 
     /**
@@ -154,8 +168,8 @@ class AdminMenus
      */
     public function licensesPage()
     {
-        $action = $this->getCurrentAction($default = 'list');
-        $licenses = new LicensesList();
+        $action   = $this->getCurrentAction($default = 'list');
+        $licenses = $this->licenses;
         $addLicenseUrl = admin_url(
             sprintf(
                 'admin.php?page=%s&action=add&_wpnonce=%s',
@@ -212,7 +226,7 @@ class AdminMenus
      */
     public function generatorsPage()
     {
-        $generators = new GeneratorsList();
+        $generators = $this->generators;
         $action     = $this->getCurrentAction($default = 'list');
 
         // List generators
