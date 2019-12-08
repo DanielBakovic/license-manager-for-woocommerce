@@ -9,12 +9,12 @@ class Migration
     /**
      * @var string
      */
-    public const MODE_UP = 'UP';
+    const MODE_UP = 'UP';
 
     /**
      * @var string
      */
-    public const MODE_DOWN = 'DOWN';
+    const MODE_DOWN = 'DOWN';
 
     /**
      * Performs a database upgrade.
