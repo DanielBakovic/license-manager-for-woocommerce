@@ -4,6 +4,7 @@ namespace LicenseManagerForWooCommerce;
 
 use Defuse\Crypto\Exception\EnvironmentIsBrokenException;
 use Defuse\Crypto\Key as DefuseCryptoKey;
+use Exception;
 use function dbDelta;
 
 defined('ABSPATH') || exit;
@@ -42,6 +43,7 @@ class Setup
      */
     public static function install()
     {
+        self::checkRequirements();
         self::createTables();
         self::setDefaultFilesAndFolders();
         self::setDefaultSettings();
@@ -94,6 +96,18 @@ class Setup
             if ($currentDatabaseVersion > self::DB_VERSION) {
                 Migration::down($currentDatabaseVersion);
             }
+        }
+    }
+
+    /**
+     * Checks if all required plugin components are present.
+     *
+     * @throws Exception
+     */
+    public static function checkRequirements()
+    {
+        if (version_compare(phpversion(), '5.3.29', '<=')) {
+            throw new Exception('PHP 5.3 or lower detected. License Manager for WooCommerce requires PHP 5.6 or greater.');
         }
     }
 
