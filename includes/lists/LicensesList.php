@@ -65,7 +65,7 @@ class LicensesList extends WP_List_Table
         $this->table      = $wpdb->prefix . Setup::LICENSES_TABLE_NAME;
         $this->dateFormat = get_option('date_format');
         $this->timeFormat = get_option('time_format');
-        $this->gmtOffset  = get_option('gmtOffset');
+        $this->gmtOffset  = get_option('gmt_offset');
     }
 
     /**
