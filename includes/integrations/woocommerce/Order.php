@@ -194,7 +194,7 @@ class Order
             );
 
             /** Plugin event, Type: post, Name: order_license_keys */
-            apply_filters(
+            do_action(
                 'lmfwc_event_post_order_license_keys',
                 array(
                     'orderId'  => $orderId,
