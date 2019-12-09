@@ -4,7 +4,7 @@ Donate link: https://www.licensemanager.at/donate/
 Tags: license key, license, key, software license, serial key, manager, woocommerce, wordpress
 Requires at least: 4.7
 Tested up to: 5.3
-Stable tag: 2.1.1
+Stable tag: 2.1.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -80,6 +80,13 @@ Again, yes! Here you can find the [API Documentation](https://www.licensemanager
 7. Create a new license key generator.
 
 == Changelog ==
+
+= 2.1.2 - 2019-12-09 =
+* Add - The plugin now checks the PHP version upon activation. If the version is on/below 5.3.29, the plugin will not activate.
+* Add - `lmfwc_event_post_order_license_keys` event action has been added. You can hook-in with the `add_action()` function.
+* Fix - Removed the "public" properties from the class constants.
+* Fix - Column screen options now work for the license and generator pages.
+* Fix - Timestamps are now properly converted and displayed on the licenses page.
 
 = 2.1.1 - 2019-11-19 =
 * Fix - Adding a generator without a "expires_at" no longer display the "-0001-11-30" date value. You will need to edit existing license keys, remove the value and save them to get rid of the invalid date.
