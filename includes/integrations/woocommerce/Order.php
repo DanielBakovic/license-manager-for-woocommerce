@@ -186,6 +186,21 @@ class Order
                     array('status' => LicenseStatus::DELIVERED)
                 );
             }
+
+            $orderedLicenseKeys = LicenseResourceRepository::instance()->findAllBy(
+                array(
+                    'order_id' => $orderId
+                )
+            );
+
+            /** Plugin event, Type: post, Name: order_license_keys */
+            apply_filters(
+                'lmfwc_event_post_order_license_keys',
+                array(
+                    'orderId'  => $orderId,
+                    'licenses' => $orderedLicenseKeys
+                )
+            );
         }
     }
 
