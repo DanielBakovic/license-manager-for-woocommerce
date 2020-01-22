@@ -270,12 +270,15 @@ function lmfwc_activate_license($licenseKey)
         return false;
     }
 
-    // Check if the license key can be activated
-    $timesActivated    = absint($license->getTimesActivated());
-    $timesActivatedMax = absint($license->getTimesActivatedMax());
+    $timesActivated    = null;
+    $timesActivatedMax = null;
 
-    if (!$timesActivatedMax) {
-        throw new Exception("License Key: {$licenseKey} can not be activated (times_activated_max not set).");
+    if ($license->getTimesActivated() !== null) {
+        $timesActivated = absint($license->getTimesActivated());
+    }
+
+    if ($license->getTimesActivatedMax() !== null) {
+        $timesActivatedMax = absint($license->getTimesActivatedMax());
     }
 
     if ($timesActivatedMax && ($timesActivated >= $timesActivatedMax)) {
@@ -323,12 +326,10 @@ function lmfwc_deactivate_license($licenseKey)
         return false;
     }
 
-    // Check if the license key can be activated
-    $timesActivated    = absint($license->getTimesActivated());
-    $timesActivatedMax = absint($license->getTimesActivatedMax());
+    $timesActivated = null;
 
-    if (!$timesActivatedMax) {
-        throw new Exception("License Key: {$licenseKey} can not be deactivated (times_activated_max not set).");
+    if ($license->getTimesActivated() !== null) {
+        $timesActivated = absint($license->getTimesActivated());
     }
 
     if (!$timesActivated || $timesActivated === 0) {
