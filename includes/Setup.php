@@ -34,12 +34,13 @@ class Setup
     /**
      * @var int
      */
-    const DB_VERSION = 104;
+    const DB_VERSION = 105;
 
     /**
      * Installation script.
      *
      * @throws EnvironmentIsBrokenException
+     * @throws Exception
      */
     public static function install()
     {
@@ -330,9 +331,17 @@ class Setup
                 '020' => '1'
             )
         );
+        $defaultSettingsOrderStatus = array(
+            'lmfwc_license_key_delivery_options' => array(
+                'wc-completed' => array(
+                    'send' => '1'
+                )
+            )
+        );
 
         // The defaults for the Setting API.
         update_option('lmfwc_settings_general', $defaultSettingsGeneral);
+        update_option('lmfwc_settings_order_status', $defaultSettingsOrderStatus);
         update_option('lmfwc_db_version', self::DB_VERSION);
     }
 }
