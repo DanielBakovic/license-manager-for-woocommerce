@@ -73,7 +73,7 @@ class Order
             $product = $itemData->get_product();
 
             // Skip this product because it's not a licensed product.
-            if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)){
+            if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)) {
                 continue;
             }
 
