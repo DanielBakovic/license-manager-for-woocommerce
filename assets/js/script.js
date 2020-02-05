@@ -6,10 +6,11 @@ document.addEventListener('DOMContentLoaded', function(event) {
         btnCopyToClipboard: document.querySelectorAll('code.lmfwc-placeholder'),
         txtCopiedToClipboard: document.querySelector('.lmfwc-txt-copied-to-clipboard'),
         bindEventListeners: function() {
-            var that = this;
+            let i;
+            const that = this;
 
             if (this.btnHideLicense) {
-                for (var i = 0; i < this.btnHideLicense.length; i++) {
+                for (i = 0; i < this.btnHideLicense.length; i++) {
                     this.btnHideLicense[i].addEventListener('click', function() {
                         that.hideLicenseKey(this);
                     });
@@ -17,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
             }
 
             if (this.btnShowLicense) {
-                for (var i = 0; i < this.btnShowLicense.length; i++) {
+                for (i = 0; i < this.btnShowLicense.length; i++) {
                     this.btnShowLicense[i].addEventListener('click', function() {
                         that.showLicenseKey(this);
                     });
@@ -25,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
             }
 
             if (this.btnCopyToClipboard) {
-                for (var i = 0; i < this.btnCopyToClipboard.length; i++) {
+                for (i = 0; i < this.btnCopyToClipboard.length; i++) {
                     this.btnCopyToClipboard[i].addEventListener('click', function(e) {
                         that.copyToClipboard(this, e);
                     });
@@ -33,15 +34,15 @@ document.addEventListener('DOMContentLoaded', function(event) {
             }
         },
         hideLicenseKey: function(el) {
-            var code = el.parentNode.parentNode.previousSibling.previousSibling;
+            const code = el.parentNode.parentNode.previousSibling.previousSibling;
 
             code.innerText = '';
             code.classList.add('empty');
         },
         showLicenseKey: function(el) {
-            var licenseKeyId = parseInt(el.dataset.id);
-            var spinner      = el.parentNode.parentNode.previousSibling;
-            var code         = spinner.previousSibling;
+            const licenseKeyId = parseInt(el.dataset.id);
+            const spinner      = el.parentNode.parentNode.previousSibling;
+            const code         = spinner.previousSibling;
 
             spinner.style.opacity = 1;
 
@@ -67,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         },
         copyToClipboard: function(el, e) {
             // Copy to clipboard
-            var str = el.innerText.toString();
+            const str = el.innerText.toString();
 
             if (!str) return;
 
@@ -90,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
             }
 
             // Display info
-            var copied = document.createElement('div');
+            const copied = document.createElement('div');
             copied.classList.add('lmfwc-clipboard');
             copied.style.position = 'absolute';
             copied.style.left = e.clientX.toString() + 'px';
@@ -111,13 +112,13 @@ document.addEventListener('DOMContentLoaded', function(event) {
     };
 
     var orderLicenses = {
-        btnShow: document.querySelector('.lmfwc-license-keys-show-all'),
-        btnHide: document.querySelector('.lmfwc-license-keys-hide-all'),
-        getLicenseKeyIds: function() {
-            var licenseKeyIds = [];
-            var codeList      = this.btnShow.parentNode.previousSibling.children;
+        btnShow: document.querySelectorAll('.lmfwc-license-keys-show-all'),
+        btnHide: document.querySelectorAll('.lmfwc-license-keys-hide-all'),
+        getLicenseKeyIds: function(button) {
+            const licenseKeyIds = [];
+            const codeList = button.parentNode.previousSibling.children;
 
-            for(var i = 0, length = codeList.length; i < length; i++){
+            for (let i = 0; i < codeList.length; i++) {
                 licenseKeyIds.push(parseInt(codeList[i].children[0].dataset.id));
             }
 
@@ -126,50 +127,71 @@ document.addEventListener('DOMContentLoaded', function(event) {
         bindShow: function() {
             if (!this.btnShow) return;
 
-            var spinner = this.btnShow.nextSibling.nextSibling;
-            var licenseKeyIds = this.getLicenseKeyIds();
+            const licenseTableObject = this;
 
-            this.btnShow.addEventListener('click', function() {
-                spinner.style.opacity = 1;
+            for (let i = 0; i < this.btnShow.length; i++) {
+                const btnShow = this.btnShow[i];
 
-                jQuery.ajax({
-                    url: ajaxurl,
-                    type: 'POST',
-                    data: {
-                        action: 'lmfwc_show_all_license_keys',
-                        show_all: license.show_all,
-                        ids: JSON.stringify(licenseKeyIds)
-                    },
-                    success: function(response) {
-                        var licenseKeys = response;
+                btnShow.addEventListener('click', function() {
+                    const currentButton = this;
+                    const spinner       = currentButton.nextSibling.nextSibling;
+                    const licenseKeyIds = licenseTableObject.getLicenseKeyIds(currentButton);
+                    spinner.style.opacity = 1;
 
-                        for (var id in licenseKeys) {
-                            var licenseKey = document.querySelector('.lmfwc-placeholder[data-id="' + id +'"]');
-                            licenseKey.classList.remove('empty');
-                            licenseKey.innerText = licenseKeys[id];
+                    jQuery.ajax({
+                        url: ajaxurl,
+                        type: 'POST',
+                        data: {
+                            action: 'lmfwc_show_all_license_keys',
+                            show_all: license.show_all,
+                            ids: JSON.stringify(licenseKeyIds)
+                        },
+                        success: function(response) {
+                            const licenseKeys = response;
+
+                            for (const id in licenseKeys) {
+                                if (!licenseKeys.hasOwnProperty(id)) {
+                                    continue;
+                                }
+
+                                const licenseKey = document.querySelector('.lmfwc-placeholder[data-id="' + id + '"]');
+                                licenseKey.classList.remove('empty');
+                                licenseKey.innerText = licenseKeys[id];
+                            }
+                        },
+                        error: function(response) {
+                            console.log(response);
+                        },
+                        complete: function() {
+                            spinner.style.opacity = 0;
                         }
-                    },
-                    error: function(response) {
-                        console.log(response);
-                    },
-                    complete: function() {
-                        spinner.style.opacity = 0;
-                    }
+                    });
                 });
-            });
+            }
         },
         bindHide: function() {
             if (!this.btnHide) return;
 
-            var licenseKeyIds = this.getLicenseKeyIds();
+            const licenseTableObject = this;
 
-            this.btnHide.addEventListener('click', function() {
-                for (var id in licenseKeyIds) {
-                    var licenseKey = document.querySelector('.lmfwc-placeholder[data-id="' + licenseKeyIds[id] +'"]');
-                    licenseKey.classList.add('empty');
-                    licenseKey.innerText = '';
-                }
-            });
+            for (let i = 0; i < this.btnHide.length; i++) {
+                const btnHide = this.btnHide[i];
+
+                btnHide.addEventListener('click', function() {
+                    const currentButton = this;
+                    const licenseKeyIds = licenseTableObject.getLicenseKeyIds(currentButton);
+
+                    for (const id in licenseKeyIds) {
+                        if (!licenseKeyIds.hasOwnProperty(id)) {
+                            continue;
+                        }
+
+                        const licenseKey = document.querySelector('.lmfwc-placeholder[data-id="' + licenseKeyIds[id] + '"]');
+                        licenseKey.classList.add('empty');
+                        licenseKey.innerText = '';
+                    }
+                });
+            }
         },
         init: function() {
             this.bindShow();

@@ -92,10 +92,10 @@ table.wp-list-table.lizenzschlssel span.lmfwc-date {
 }
 .lmfwc-placeholder:hover {
 	background-image: linear-gradient(to right, #c0c0c0, #8c8c8c);
-	color: #fff;
+	color: #ffffff;
 }
 .lmfwc-placeholder:before {
-	font-family: 'dashicons';
+	font-family: 'dashicons', sans-serif;
 	content: "\f112";
 	position: absolute;
 	top: 0;
@@ -118,6 +118,9 @@ table.wp-list-table.lizenzschlssel span.lmfwc-date {
 	content: 'XXXX-XXXX-XXXX-XXXX';
 	color: rgba(0,0,0,.4);
 	line-height: 25px;
+}
+.lmfwc-placeholder.empty:hover:after {
+	color: #ffffff;
 }
 .lmfwc-spinner {
 	opacity: 0;

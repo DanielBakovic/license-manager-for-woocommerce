@@ -333,6 +333,8 @@ class Order
             }
 
             $html .= '</ul>';
+
+            $html .= '<span class="lmfwc-txt-copied-to-clipboard" style="display: none">' . __('Copied to clipboard', 'lmfwc') . '</span>';
         }
 
         else {
@@ -364,6 +366,8 @@ class Order
                 __('Please wait...', 'lmfwc'),
                 LicensesList::SPINNER_URL
             );
+
+            $html .= '<span class="lmfwc-txt-copied-to-clipboard" style="display: none">' . __('Copied to clipboard', 'lmfwc') . '</span>';
 
             $html .= '</p>';
         }

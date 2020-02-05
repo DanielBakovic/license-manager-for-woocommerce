@@ -1,17 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
-    var importLicenseProduct = jQuery('select#bulk__product');
-    var importLicenseOrder   = jQuery('select#bulk__order');
-    var addLicenseProduct    = jQuery('select#single__product');
-    var addLicenseOrder      = jQuery('select#single__order');
-    var addValidFor          = jQuery('input#single__valid_for');
-    var addExpiresAt         = jQuery('input#single__expires_at');
-    var editLicenseProduct   = jQuery('select#edit__product');
-    var editLicenseOrder     = jQuery('select#edit__order');
-    var editValidFor         = jQuery('input#edit__valid_for');
-    var editExpiresAt        = jQuery('input#edit__expires_at');
-    var bulkAddSource        = jQuery('input[type="radio"].bulk__type');
+    const importLicenseProduct = jQuery('select#bulk__product');
+    const importLicenseOrder   = jQuery('select#bulk__order');
+    const addLicenseProduct    = jQuery('select#single__product');
+    const addLicenseOrder      = jQuery('select#single__order');
+    const addValidFor          = jQuery('input#single__valid_for');
+    const addExpiresAt         = jQuery('input#single__expires_at');
+    const editLicenseProduct   = jQuery('select#edit__product');
+    const editLicenseOrder     = jQuery('select#edit__order');
+    const editValidFor         = jQuery('input#edit__valid_for');
+    const editExpiresAt        = jQuery('input#edit__expires_at');
+    const bulkAddSource        = jQuery('input[type="radio"].bulk__type');
 
-    var productDropdownSearchConfig = {
+    const productDropdownSearchConfig = {
         ajax: {
             cache: true,
             delay: 500,
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', function() {
         minimumInputLength: 1,
         allowClear: true
     };
-    var orderDropdownSearchConfig = {
+    const orderDropdownSearchConfig = {
         ajax: {
             cache: true,
             delay: 500,
@@ -114,7 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (bulkAddSource.length > 0) {
         bulkAddSource.change(function() {
-            var value = jQuery('input[type="radio"].bulk__type:checked').val();
+            const value = jQuery('input[type="radio"].bulk__type:checked').val();
 
             if (value !== 'file' && value !== 'clipboard') {
                 return;
