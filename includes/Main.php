@@ -38,6 +38,8 @@ final class Main extends Singleton
 
     /**
      * Main constructor.
+     *
+     * @return void
      */
     public function __construct()
     {
@@ -52,6 +54,8 @@ final class Main extends Singleton
 
     /**
      * Define plugin constants.
+     *
+     * @return void
      */
     private function _defineConstants()
     {
@@ -80,8 +84,12 @@ final class Main extends Singleton
 
     /**
      * Include JS and CSS files.
+     *
+     * @param string $hook
+     *
+     * @return void
      */
-    public function adminEnqueueScripts()
+    public function adminEnqueueScripts($hook)
     {
         // Select2
         wp_register_style(
@@ -98,10 +106,20 @@ final class Main extends Singleton
         );
 
         // CSS
-        wp_enqueue_style('lmfwc_admin_css', LMFWC_CSS_URL . 'main.css');
+        wp_enqueue_style(
+            'lmfwc_admin_css',
+            LMFWC_CSS_URL . 'main.css',
+            array(),
+            $this->version
+        );
 
         // JavaScript
-        wp_enqueue_script('lmfwc_admin_js', LMFWC_JS_URL . 'script.js');
+        wp_enqueue_script(
+            'lmfwc_admin_js',
+            LMFWC_JS_URL . 'script.js',
+            array(),
+            $this->version
+        );
 
         // jQuery UI
         wp_register_style(
@@ -111,12 +129,9 @@ final class Main extends Singleton
             '1.12.1'
         );
 
-        if (isset($_GET['page']) && 
-            (
-                $_GET['page'] == AdminMenus::LICENSES_PAGE
-                || $_GET['page'] == AdminMenus::GENERATORS_PAGE
-                || $_GET['page'] == AdminMenus::SETTINGS_PAGE
-            )
+        if ($hook === 'toplevel_page_lmfwc_licenses'
+            || $hook === 'license-manager_page_lmfwc_generators'
+            || $hook === 'license-manager_page_lmfwc_settings'
         ) {
             wp_enqueue_script('lmfwc_select2_cdn');
             wp_enqueue_style('lmfwc_select2_cdn');
@@ -124,41 +139,59 @@ final class Main extends Singleton
         }
 
         // Licenses page
-        if (isset($_GET['page']) && $_GET['page'] == AdminMenus::LICENSES_PAGE) {
+        if ($hook === 'toplevel_page_lmfwc_licenses') {
             wp_enqueue_script('lmfwc_licenses_page_js', LMFWC_JS_URL . 'licenses_page.js');
 
-            wp_localize_script('lmfwc_licenses_page_js', 'i18n', array(
-                'placeholderSearchOrders'   => __('Search by order ID or customer email', 'lmfwc'),
-                'placeholderSearchProducts' => __('Search by product ID or product name', 'lmfwc')
-            ));
+            wp_localize_script(
+                'lmfwc_licenses_page_js',
+                'i18n',
+                array(
+                    'placeholderSearchOrders'   => __('Search by order ID or customer email', 'lmfwc'),
+                    'placeholderSearchProducts' => __('Search by product ID or product name', 'lmfwc')
+                )
+            );
 
-            wp_localize_script('lmfwc_licenses_page_js', 'security', array(
-                'dropdownSearch' => wp_create_nonce('lmfwc_dropdown_search')
-            ));
+            wp_localize_script(
+                'lmfwc_licenses_page_js',
+                'security',
+                array(
+                    'dropdownSearch' => wp_create_nonce('lmfwc_dropdown_search')
+                )
+            );
         }
 
         // Generators page
-        if (isset($_GET['page']) && $_GET['page'] == AdminMenus::GENERATORS_PAGE) {
+        if ($hook === 'license-manager_page_lmfwc_generators') {
             wp_enqueue_script('lmfwc_generators_page_js', LMFWC_JS_URL . 'generators_page.js');
 
-            wp_localize_script('lmfwc_generators_page_js', 'i18n', array(
-                'placeholderSearchOrders'   => __('Search by order ID or customer email', 'lmfwc'),
-                'placeholderSearchProducts' => __('Search by product ID or product name', 'lmfwc')
-            ));
+            wp_localize_script(
+                'lmfwc_generators_page_js',
+                'i18n',
+                array(
+                    'placeholderSearchOrders'   => __('Search by order ID or customer email', 'lmfwc'),
+                    'placeholderSearchProducts' => __('Search by product ID or product name', 'lmfwc')
+                )
+            );
 
-            wp_localize_script('lmfwc_generators_page_js', 'security', array(
-                'dropdownSearch' => wp_create_nonce('lmfwc_dropdown_search')
-            ));
+            wp_localize_script(
+                'lmfwc_generators_page_js',
+                'security',
+                array(
+                    'dropdownSearch' => wp_create_nonce('lmfwc_dropdown_search')
+                )
+            );
         }
 
         // Settings page
-        if (isset($_GET['page']) && $_GET['page'] == AdminMenus::SETTINGS_PAGE) {
+        if ($hook === 'license-manager_page_lmfwc_settings') {
             wp_enqueue_script('lmfwc_settings_page_js', LMFWC_JS_URL . 'settings_page.js');
         }
 
         // Script localization
         wp_localize_script(
-            'lmfwc_admin_js', 'license', array(
+            'lmfwc_admin_js',
+            'license',
+            array(
                 'show'     => wp_create_nonce('lmfwc_show_license_key'),
                 'show_all' => wp_create_nonce('lmfwc_show_all_license_keys'),
             )
@@ -202,6 +235,8 @@ final class Main extends Singleton
 
     /**
      * Hook into actions and filters.
+     *
+     * @return void
      */
     private function _initHooks()
     {
@@ -224,6 +259,8 @@ final class Main extends Singleton
 
     /**
      * Adds the i18n translations to the plugin.
+     *
+     * @return void
      */
     public function loadPluginTextDomain()
     {
@@ -253,6 +290,8 @@ final class Main extends Singleton
 
     /**
      * Init LicenseManagerForWooCommerce when WordPress Initialises.
+     *
+     * @return void
      */
     public function init()
     {
@@ -280,6 +319,8 @@ final class Main extends Singleton
 
     /**
      * Defines all public hooks
+     *
+     * @return void
      */
     protected function publicHooks()
     {
