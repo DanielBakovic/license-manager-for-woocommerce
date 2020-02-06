@@ -63,6 +63,14 @@ class General
             'lmfwc_license_keys',
             'license_keys_section'
         );
+
+        add_settings_field(
+            'lmfwc_allow_duplicates',
+            __('Allow duplicates', 'lmfwc'),
+            array($this, 'fieldAllowDuplicates'),
+            'lmfwc_license_keys',
+            'license_keys_section'
+        );
     }
 
     /**
@@ -194,6 +202,35 @@ class General
             '<p class="description">%s</p>',
             __('If this setting is off, you must manually send out all license keys for completed orders.', 'lmfwc')
         );
+        $html .= '</fieldset>';
+
+        echo $html;
+    }
+
+    /**
+     * Callback for the "lmfwc_allow_duplicates" field.
+     *
+     * @return void
+     */
+    public function fieldAllowDuplicates()
+    {
+        $field = 'lmfwc_allow_duplicates';
+        (array_key_exists($field, $this->settings)) ? $value = true : $value = false;
+
+        $html = '<fieldset>';
+        $html .= sprintf('<label for="%s">', $field);
+        $html .= sprintf(
+            '<input id="%s" type="checkbox" name="lmfwc_settings_general[%s]" value="1" %s/>',
+            $field,
+            $field,
+            checked(true, $value, false)
+        );
+        $html .= sprintf(
+            '<span>%s</span>',
+            __('Allow duplicate license keys inside the licenses database table.', 'lmfwc')
+        );
+        $html .= '</label>';
+
         $html .= '</fieldset>';
 
         echo $html;

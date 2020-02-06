@@ -315,6 +315,12 @@ final class Main extends Singleton
         if ($this->isPluginActive('woocommerce/woocommerce.php')) {
             new Integrations\WooCommerce\Controller();
         }
+
+        if (Settings::get('lmfwc_allow_duplicates')) {
+            add_filter('lmfwc_duplicate', function() {
+                return false;
+            }, PHP_INT_MAX);
+        }
     }
 
     /**
