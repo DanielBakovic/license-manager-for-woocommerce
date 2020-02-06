@@ -34,6 +34,7 @@ defined('ABSPATH') || exit;
         <form action="<?php echo admin_url('options.php'); ?>" method="POST">
             <?php settings_fields('lmfwc_settings_group_general'); ?>
             <?php do_settings_sections('lmfwc_license_keys'); ?>
+            <?php do_settings_sections('lmfwc_my_account'); ?>
             <?php do_settings_sections('lmfwc_rest_api'); ?>
             <?php submit_button(); ?>
         </form>

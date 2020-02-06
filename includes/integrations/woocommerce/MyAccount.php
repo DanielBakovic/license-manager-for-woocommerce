@@ -2,6 +2,9 @@
 
 namespace LicenseManagerForWooCommerce\Integrations\WooCommerce;
 
+use Exception;
+use LicenseManagerForWooCommerce\Settings;
+
 defined('ABSPATH') || exit;
 
 class MyAccount
@@ -40,6 +43,32 @@ class MyAccount
 
         if (!$user) {
             return;
+        }
+
+        if (array_key_exists('action', $_POST)) {
+            $licenseKey = sanitize_text_field($_POST['license']);
+
+            if ($_POST['action'] === 'activate' && Settings::get('lmfwc_allow_users_to_activate')) {
+                $nonce = wp_verify_nonce($_POST['_wpnonce'], 'lmfwc_myaccount_activate_license');
+
+                if ($nonce) {
+                    try {
+                        lmfwc_activate_license($licenseKey);
+                    } catch (Exception $e) {
+                    }
+                }
+            }
+
+            if ($_POST['action'] === 'deactivate' && Settings::get('lmfwc_allow_users_to_deactivate')) {
+                $nonce = wp_verify_nonce($_POST['_wpnonce'],'lmfwc_myaccount_deactivate_license');
+
+                if ($nonce) {
+                    try {
+                        lmfwc_deactivate_license($licenseKey);
+                    } catch (Exception $e) {
+                    }
+                }
+            }
         }
 
         wp_enqueue_style('lmfwc_admin_css', LMFWC_CSS_URL . 'main.css');

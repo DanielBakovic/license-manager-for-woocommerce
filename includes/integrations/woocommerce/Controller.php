@@ -13,6 +13,7 @@ use LicenseManagerForWooCommerce\Interfaces\IntegrationController as Integration
 use LicenseManagerForWooCommerce\Models\Resources\Generator as GeneratorResourceModel;
 use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
 use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResourceRepository;
+use LicenseManagerForWooCommerce\Settings;
 use stdClass;
 use WC_Order;
 use WC_Order_Item_Product;
@@ -46,8 +47,11 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
     {
         new Order();
         new Email();
-        new MyAccount();
         new ProductData();
+
+        if (Settings::get('lmfwc_enable_my_account_endpoint')) {
+            new MyAccount();
+        }
     }
 
     /**
