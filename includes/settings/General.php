@@ -28,9 +28,15 @@ class General
 
         // Initialize the individual sections
         $this->initSectionLicenseKeys();
+        $this->initSectionMyAccount();
         $this->initSectionAPI();
     }
 
+    /**
+     * Initializes the "lmfwc_license_keys" section.
+     *
+     * @return void
+     */
     private function initSectionLicenseKeys()
     {
         // Add the settings sections.
@@ -59,6 +65,52 @@ class General
         );
     }
 
+    /**
+     * Initializes the "lmfwc_my_account" section.
+     *
+     * @return void
+     */
+    private function initSectionMyAccount()
+    {
+        // Add the settings sections.
+        add_settings_section(
+            'my_account_section',
+            __('My account', 'lmfwc'),
+            null,
+            'lmfwc_my_account'
+        );
+
+        // lmfwc_my_account section fields.
+        add_settings_field(
+            'lmfwc_enable_my_account_endpoint',
+            __('Enable "License keys"', 'lmfwc'),
+            array($this, 'fieldEnableMyAccountEndpoint'),
+            'lmfwc_my_account',
+            'my_account_section'
+        );
+
+        add_settings_field(
+            'lmfwc_allow_users_to_activate',
+            __('User activation', 'lmfwc'),
+            array($this, 'fieldAllowUsersToActivate'),
+            'lmfwc_my_account',
+            'my_account_section'
+        );
+
+        add_settings_field(
+            'lmfwc_allow_users_to_deactivate',
+            __('User deactivation', 'lmfwc'),
+            array($this, 'fieldAllowUsersToDeactivate'),
+            'lmfwc_my_account',
+            'my_account_section'
+        );
+    }
+
+    /**
+     * Initializes the "lmfwc_rest_api" section.
+     *
+     * @return void
+     */
     private function initSectionAPI()
     {
         // Add the settings sections.
@@ -88,6 +140,8 @@ class General
 
     /**
      * Callback for the "hide_license_keys" field.
+     *
+     * @return void
      */
     public function fieldHideLicenseKeys()
     {
@@ -115,6 +169,8 @@ class General
 
     /**
      * Callback for the "lmfwc_auto_delivery" field.
+     *
+     * @return void
      */
     public function fieldAutoDelivery()
     {
@@ -144,7 +200,101 @@ class General
     }
 
     /**
+     * Callback for the "lmfwc_enable_my_account_endpoint" field.
+     *
+     * @return void
+     */
+    public function fieldEnableMyAccountEndpoint()
+    {
+        $field = 'lmfwc_enable_my_account_endpoint';
+        (array_key_exists($field, $this->settings)) ? $value = true : $value = false;
+
+        $html = '<fieldset>';
+        $html .= sprintf('<label for="%s">', $field);
+        $html .= sprintf(
+            '<input id="%s" type="checkbox" name="lmfwc_settings_general[%s]" value="1" %s/>',
+            $field,
+            $field,
+            checked(true, $value, false)
+        );
+        $html .= sprintf(
+            '<span>%s</span>',
+            __('Display the \'License keys\' section inside WooCommerce\'s \'My Account\'.', 'lmfwc')
+        );
+        $html .= '</label>';
+        $html .= sprintf(
+            '<p class="description">%s</p>',
+            __('You might need to save your permalinks after enabling this option.', 'lmfwc')
+        );
+        $html .= '</fieldset>';
+
+        echo $html;
+    }
+
+    /**
+     * Callback for the "lmfwc_allow_users_to_activate" field.
+     */
+    public function fieldAllowUsersToActivate()
+    {
+        $field = 'lmfwc_allow_users_to_activate';
+        (array_key_exists($field, $this->settings)) ? $value = true : $value = false;
+
+        $html = '<fieldset>';
+        $html .= sprintf('<label for="%s">', $field);
+        $html .= sprintf(
+            '<input id="%s" type="checkbox" name="lmfwc_settings_general[%s]" value="1" %s/>',
+            $field,
+            $field,
+            checked(true, $value, false)
+        );
+        $html .= sprintf(
+            '<span>%s</span>',
+            __('Allow users to activate their license keys.', 'lmfwc')
+        );
+        $html .= '</label>';
+        $html .= sprintf(
+            '<p class="description">%s</p>',
+            __('The option will be visible from the \'License keys\' section inside WooCommerce\'s \'My Account\'', 'lmfwc')
+        );
+        $html .= '</fieldset>';
+
+        echo $html;
+    }
+
+    /**
+     * Callback for the "lmfwc_allow_users_to_deactivate" field.
+     */
+    public function fieldAllowUsersToDeactivate()
+    {
+        $field = 'lmfwc_allow_users_to_deactivate';
+        (array_key_exists($field, $this->settings)) ? $value = true : $value = false;
+
+        $html = '<fieldset>';
+        $html .= sprintf('<label for="%s">', $field);
+        $html .= sprintf(
+            '<input id="%s" type="checkbox" name="lmfwc_settings_general[%s]" value="1" %s/>',
+            $field,
+            $field,
+            checked(true, $value, false)
+        );
+        $html .= sprintf(
+            '<span>%s</span>',
+            __('Allow users to deactivate their license keys.', 'lmfwc')
+        );
+        $html .= '</label>';
+        $html .= sprintf(
+            '<p class="description">%s</p>',
+            __('The option will be visible from the \'License keys\' section inside WooCommerce\'s \'My Account\'', 'lmfwc')
+        );
+        $html .= '</fieldset>';
+
+        echo $html;
+    }
+
+    /**
      * Callback for the "lmfwc_disable_api_ssl" field.
+     *
+     * @return void
      */
     public function fieldEnableApiOnNonSsl()
     {
@@ -175,6 +325,8 @@ class General
 
     /**
      * Callback for the "lmfwc_enabled_api_routes" field.
+     *
+     * @return void
      */
     public function fieldEnabledApiRoutes()
     {
