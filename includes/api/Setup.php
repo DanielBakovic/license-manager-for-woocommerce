@@ -29,9 +29,6 @@ class Setup
     public function registerRoutes()
     {
         $controllers = array(
-            // REST API v1 controllers.
-            '\LicenseManagerForWooCommerce\API\v1\Licenses',
-            '\LicenseManagerForWooCommerce\API\v1\Generators',
             // REST API v2 controllers.
             '\LicenseManagerForWooCommerce\API\v2\Licenses',
             '\LicenseManagerForWooCommerce\API\v2\Generators'

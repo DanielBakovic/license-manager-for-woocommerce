@@ -334,66 +334,6 @@ class General
         $value = array();
         $routes = array(
             array(
-                'id'         => '000',
-                'name'       => 'v1/licenses',
-                'method'     => 'GET',
-                'deprecated' => true,
-            ),
-            array(
-                'id'         => '001',
-                'name'       => 'v1/licenses/{license_key OR id}',
-                'method'     => 'GET',
-                'deprecated' => true,
-            ),
-            array(
-                'id'         => '002',
-                'name'       => 'v1/licenses',
-                'method'     => 'POST',
-                'deprecated' => true,
-            ),
-            array(
-                'id'         => '003',
-                'name'       => 'v1/licenses/{license_key OR id}',
-                'method'     => 'PUT',
-                'deprecated' => true,
-            ),
-            array(
-                'id'         => '004',
-                'name'       => 'v1/licenses/activate/{license_key OR id}',
-                'method'     => 'PUT',
-                'deprecated' => true,
-            ),
-            array(
-                'id'         => '005',
-                'name'       => 'v1/licenses/validate/{license_key OR id}',
-                'method'     => 'GET',
-                'deprecated' => true,
-            ),
-            array(
-                'id'         => '006',
-                'name'       => 'v1/generators',
-                'method'     => 'GET',
-                'deprecated' => true,
-            ),
-            array(
-                'id'         => '007',
-                'name'       => 'v1/generators/{id}',
-                'method'     => 'GET',
-                'deprecated' => true,
-            ),
-            array(
-                'id'         => '008',
-                'name'       => 'v1/generators',
-                'method'     => 'POST',
-                'deprecated' => true,
-            ),
-            array(
-                'id'         => '009',
-                'name'       => 'v1/generators/{id}',
-                'method'     => 'PUT',
-                'deprecated' => true,
-            ),
-            array(
                 'id'         => '010',
                 'name'       => 'v2/licenses',
                 'method'     => 'GET',
@@ -460,6 +400,11 @@ class General
                 'deprecated' => false,
             ),
         );
+        $classList = array(
+            'GET'  => 'text-success',
+            'PUT'  => 'text-primary',
+            'POST' => 'text-primary'
+        );
 
         if (array_key_exists($field, $this->settings)) {
             $value = $this->settings[$field];
@@ -483,7 +428,7 @@ class General
                 $route['id'],
                 checked(true, $checked, false)
             );
-            $html .= sprintf('<code><b>%s</b> - %s</code>', $route['method'], $route['name']);
+            $html .= sprintf('<code><b class="%s">%s</b> - %s</code>', $classList[$route['method']], $route['method'], $route['name']);
 
             if (true === $route['deprecated']) {
                 $html .= sprintf(
@@ -497,11 +442,10 @@ class General
         }
 
         $html .= sprintf(
-            '<p class="description">%s %s</p>',
-            __('Please note that the v1 routes are currently being deprecated. This means that, while they are still available to use, they will eventually be removed from the plugin. Please adjust any existing implementations to use the v2 routes.', 'lmfwc'),
+            '<p class="description">%s</p>',
             sprintf(
                 __('The complete <b>API documentation</b> can be found <a href="%s" target="_blank" rel="noopener">here</a>.', 'lmfwc'),
-                'https://documenter.getpostman.com/view/6103231/S1ETQGZ1?version=latest'
+                'https://www.licensemanager.at/docs/rest-api/'
             )
         );
         $html .= '</fieldset>';
