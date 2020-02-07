@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const importLicenseOrder   = jQuery('select#bulk__order');
     const addLicenseProduct    = jQuery('select#single__product');
     const addLicenseOrder      = jQuery('select#single__order');
+    const addLicenseUser       = jQuery('select#single__user');
     const addValidFor          = jQuery('input#single__valid_for');
     const addExpiresAt         = jQuery('input#single__expires_at');
     const editLicenseProduct   = jQuery('select#edit__product');
@@ -73,6 +74,37 @@ document.addEventListener('DOMContentLoaded', function() {
         minimumInputLength: 1,
         allowClear: true
     };
+    const userDropdownSearchConfig = {
+        ajax: {
+            cache: true,
+            delay: 500,
+            url: ajaxurl,
+            method: 'POST',
+            dataType: 'json',
+            data: function(params) {
+                return {
+                    action: 'lmfwc_dropdown_search',
+                    security: security.dropdownSearch,
+                    term: params.term,
+                    page: params.page,
+                    type: 'user'
+                };
+            },
+            processResults: function(data, params) {
+                params.page = params.page || 1;
+
+                return {
+                    results: data.results,
+                    pagination: {
+                        more: data.pagination.more
+                    }
+                };
+            }
+        },
+        placeholder: i18n.placeholderSearchUsers,
+        minimumInputLength: 1,
+        allowClear: true
+    };
 
     if (importLicenseProduct.length > 0) {
         importLicenseProduct.select2(productDropdownSearchConfig);
@@ -88,6 +120,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (addLicenseOrder.length > 0) {
         addLicenseOrder.select2(orderDropdownSearchConfig);
+    }
+
+    if (addLicenseUser.length > 0) {
+        addLicenseUser.select2(userDropdownSearchConfig);
     }
 
     if (addExpiresAt.length > 0) {

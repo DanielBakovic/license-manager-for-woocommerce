@@ -1,9 +1,9 @@
 <?php
-    use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
+use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
 
-    defined('ABSPATH') || exit;
+defined('ABSPATH') || exit;
 
-    /** @var LicenseResourceModel $license */
+/** @var LicenseResourceModel $license */
 ?>
 
 <h1 class="wp-heading-inline"><?php esc_html_e('Edit license key', 'lmfwc'); ?></h1>
@@ -16,111 +16,139 @@
 
     <table class="form-table">
         <tbody>
-            <tr scope="row">
-                <th scope="row"><label for="edit__license_id"><?php esc_html_e('ID', 'lmfwc');?></label></th>
-                <td>
-                    <input name="license_id" id="edit__license_id" class="regular-text" type="text" value="<?php echo esc_html($license->getId()); ?>" readonly>
-                </td>
-            </tr>
 
-            <!-- LICENSE KEY -->
-            <tr scope="row">
-                <th scope="row"><label for="edit__license_key"><?php esc_html_e('License key', 'lmfwc');?></label></th>
-                <td>
-                    <input name="license_key" id="edit__license_key" class="regular-text" type="text" value="<?php echo esc_html($licenseKey); ?>">
-                    <p class="description"><?php esc_html_e('The license key will be encrypted before it is stored inside the database.', 'lmfwc');?></p>
-                </td>
-            </tr>
+        <!-- LICENSE ID -->
+        <tr scope="row">
+            <th scope="row"><label for="edit__license_id"><?php esc_html_e('ID', 'lmfwc');?></label></th>
+            <td>
+                <input name="license_id" id="edit__license_id" class="regular-text" type="text" value="<?php echo esc_html($license->getId()); ?>" readonly>
+            </td>
+        </tr>
 
-            <!-- VALID FOR -->
-            <tr scope="row">
-                <th scope="row"><label for="edit__valid_for"><?php esc_html_e('Valid for (days)', 'lmfwc');?></label></th>
-                <td>
-                    <input name="valid_for" id="edit__valid_for" class="regular-text" type="text" value="<?php echo esc_html($license->getValidFor()); ?>">
-                    <p class="description"><?php esc_html_e('Number of days for which the license key is valid after purchase. Leave blank if the license key does not expire. Cannot be used at the same time as the "Expires at" field.', 'lmfwc');?></p>
-                </td>
-            </tr>
+        <!-- LICENSE KEY -->
+        <tr scope="row">
+            <th scope="row"><label for="edit__license_key"><?php esc_html_e('License key', 'lmfwc');?></label></th>
+            <td>
+                <input name="license_key" id="edit__license_key" class="regular-text" type="text" value="<?php echo esc_html($licenseKey); ?>">
+                <p class="description"><?php esc_html_e('The license key will be encrypted before it is stored inside the database.', 'lmfwc');?></p>
+            </td>
+        </tr>
 
-            <!-- EXPIRES AT -->
-            <tr scope="row">
-                <th scope="row"><label for="edit__expires_at"><?php esc_html_e('Expires at', 'lmfwc');?></label></th>
-                <td>
-                    <input name="expires_at" id="edit__expires_at" class="regular-text" type="text" value="<?php echo esc_html($expiresAt); ?>">
-                    <p class="description"><?php esc_html_e('The exact date this license key expires on. Leave blank if the license key does not expire. Cannot be used at the same time as the "Valid for (days)" field.', 'lmfwc');?></p>
-                </td>
-            </tr>
+        <!-- VALID FOR -->
+        <tr scope="row">
+            <th scope="row"><label for="edit__valid_for"><?php esc_html_e('Valid for (days)', 'lmfwc');?></label></th>
+            <td>
+                <input name="valid_for" id="edit__valid_for" class="regular-text" type="text" value="<?php echo esc_html($license->getValidFor()); ?>">
+                <p class="description"><?php esc_html_e('Number of days for which the license key is valid after purchase. Leave blank if the license key does not expire. Cannot be used at the same time as the "Expires at" field.', 'lmfwc');?></p>
+            </td>
+        </tr>
 
-            <!-- TIMES ACTIVATED MAX -->
-            <tr scope="row">
-                <th scope="row"><label for="edit__times_activated_max"><?php esc_html_e('Maximum activation count', 'lmfwc');?></label></th>
-                <td>
-                    <input name="times_activated_max" id="edit__times_activated_max" class="regular-text" type="number" value="<?php echo esc_html($license->getTimesActivatedMax()); ?>">
-                    <p class="description"><?php esc_html_e('Define how many times the license key can be marked as "activated" by using the REST API. Leave blank if you do not use the API.', 'lmfwc');?></p>
-                </td>
-            </tr>
+        <!-- EXPIRES AT -->
+        <tr scope="row">
+            <th scope="row"><label for="edit__expires_at"><?php esc_html_e('Expires at', 'lmfwc');?></label></th>
+            <td>
+                <input name="expires_at" id="edit__expires_at" class="regular-text" type="text" value="<?php echo esc_html($expiresAt); ?>">
+                <p class="description"><?php esc_html_e('The exact date this license key expires on. Leave blank if the license key does not expire. Cannot be used at the same time as the "Valid for (days)" field.', 'lmfwc');?></p>
+            </td>
+        </tr>
 
-            <!-- STATUS -->
-            <tr scope="row">
-                <th scope="row"><label for="edit__status"><?php esc_html_e('Status', 'lmfwc');?></label></th>
-                <td>
-                    <select id="edit__status" name="status" class="regular-text">
-                        <?php foreach($statusOptions as $option): ?>
-                            <option value="<?php echo esc_html($option['value']); ?>" <?php selected($option['value'], $license->getStatus(), true); ?>>
-                                <span><?php echo esc_html($option['name']); ?></span>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </td>
-            </tr>
+        <!-- TIMES ACTIVATED MAX -->
+        <tr scope="row">
+            <th scope="row"><label for="edit__times_activated_max"><?php esc_html_e('Maximum activation count', 'lmfwc');?></label></th>
+            <td>
+                <input name="times_activated_max" id="edit__times_activated_max" class="regular-text" type="number" value="<?php echo esc_html($license->getTimesActivatedMax()); ?>">
+                <p class="description"><?php esc_html_e('Define how many times the license key can be marked as "activated" by using the REST API. Leave blank if you do not use the API.', 'lmfwc');?></p>
+            </td>
+        </tr>
 
-            <!-- ORDER -->
-            <tr scope="row">
-                <th scope="row"><label for="edit__order"><?php esc_html_e('Order', 'lmfwc');?></label></th>
-                <td>
-                    <select name="order_id" id="edit__order" class="regular-text">
-                        <?php
-                            if ($license->getOrderId()) {
-                                /** @var WC_Order $order */
-                                $order = wc_get_order($license->getOrderId());
-                                if ($order) {
-                                    echo sprintf(
-                                        '<option value="%d" selected="selected">#%d %s <%s></option>',
-                                        $order->get_id(),
-                                        $order->get_id(),
-                                        $order->get_formatted_billing_full_name(),
-                                        $order->get_billing_email()
-                                    );
-                                }
-                            }
-                        ?>
-                    </select>
-                    <p class="description"><?php esc_html_e('The product to which the license keys will be assigned.', 'lmfwc');?></p>
-                </td>
-            </tr>
+        <!-- STATUS -->
+        <tr scope="row">
+            <th scope="row"><label for="edit__status"><?php esc_html_e('Status', 'lmfwc');?></label></th>
+            <td>
+                <select id="edit__status" name="status" class="regular-text">
+                    <?php foreach($statusOptions as $option): ?>
+                        <option value="<?php echo esc_html($option['value']); ?>" <?php selected($option['value'], $license->getStatus(), true); ?>>
+                            <span><?php echo esc_html($option['name']); ?></span>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </td>
+        </tr>
 
-            <!-- PRODUCT -->
-            <tr scope="row">
-                <th scope="row"><label for="edit__product"><?php esc_html_e('Product', 'lmfwc');?></label></th>
-                <td>
-                    <select name="product_id" id="edit__product" class="regular-text">
-                        <?php
-                            if ($license->getProductId()) {
-                                /** @var WC_Order $order */
-                                $product = wc_get_product($license->getProductId());
-                                if ($product) {
-                                    echo sprintf(
-                                        '<option value="%d" selected="selected">(#%d) %s</option>',
-                                        $product->get_id(),
-                                        $product->get_id(),
-                                        $product->get_formatted_name()
-                                    );
-                                }
-                            }
-                        ?>
-                    </select>
-                    <p class="description"><?php esc_html_e('The product to which the license keys will be assigned.', 'lmfwc');?></p>
-                </td>
-            </tr>
+        <!-- ORDER -->
+        <tr scope="row">
+            <th scope="row"><label for="edit__order"><?php esc_html_e('Order', 'lmfwc');?></label></th>
+            <td>
+                <select name="order_id" id="edit__order" class="regular-text">
+                    <?php
+                    if ($license->getOrderId()) {
+                        /** @var WC_Order $order */
+                        $order = wc_get_order($license->getOrderId());
+                        if ($order) {
+                            echo sprintf(
+                                '<option value="%d" selected="selected">#%d %s <%s></option>',
+                                $order->get_id(),
+                                $order->get_id(),
+                                $order->get_formatted_billing_full_name(),
+                                $order->get_billing_email()
+                            );
+                        }
+                    }
+                    ?>
+                </select>
+                <p class="description"><?php esc_html_e('The product to which the license keys will be assigned.', 'lmfwc');?></p>
+            </td>
+        </tr>
+
+        <!-- PRODUCT -->
+        <tr scope="row">
+            <th scope="row"><label for="edit__product"><?php esc_html_e('Product', 'lmfwc');?></label></th>
+            <td>
+                <select name="product_id" id="edit__product" class="regular-text">
+                    <?php
+                    if ($license->getProductId()) {
+                        /** @var WC_Order $order */
+                        $product = wc_get_product($license->getProductId());
+                        if ($product) {
+                            echo sprintf(
+                                '<option value="%d" selected="selected">(#%d) %s</option>',
+                                $product->get_id(),
+                                $product->get_id(),
+                                $product->get_formatted_name()
+                            );
+                        }
+                    }
+                    ?>
+                </select>
+                <p class="description"><?php esc_html_e('The product to which the license keys will be assigned.', 'lmfwc');?></p>
+            </td>
+        </tr>
+
+        <!-- CUSTOMER -->
+        <tr scope="row">
+            <th scope="row"><label for="single__user"><?php esc_html_e('Customer', 'lmfwc');?></label></th>
+            <td>
+                <select name="user_id" id="single__user" class="regular-text">
+                    <?php
+                    if ($license->getUserId()) {
+                        /** @var WP_User $user */
+                        $user = get_userdata($license->getUserId());
+                        if ($user) {
+                            echo sprintf(
+                                '<option value="%d" selected="selected">%s (#%d - %s)</option>',
+                                $user->ID,
+                                $user->user_nicename,
+                                $user->ID,
+                                $user->user_email
+                            );
+                        }
+                    }
+                    ?>
+                </select>
+                <p class="description"><?php esc_html_e('The user to which the license keys will be assigned.', 'lmfwc');?></p>
+            </td>
+        </tr>
+
         </tbody>
     </table>
 

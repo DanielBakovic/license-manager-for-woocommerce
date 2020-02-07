@@ -38,6 +38,7 @@ class License
 
         $orderId     = null;
         $productId   = null;
+        $userId      = null;
         $source      = $_POST['source'];
         $licenseKeys = array();
 
@@ -47,6 +48,10 @@ class License
 
         if (array_key_exists('product_id', $_POST) && $_POST['product_id']) {
             $productId = $_POST['product_id'];
+        }
+
+        if (array_key_exists('user_id', $_POST) && $_POST['user_id']) {
+            $userId = $_POST['user_id'];
         }
 
         if ($source === 'file') {
@@ -71,6 +76,7 @@ class License
                 $_POST['status'],
                 $orderId,
                 $productId,
+                $userId,
                 $_POST['valid_for'],
                 $_POST['times_activated_max']
             );
@@ -128,6 +134,7 @@ class License
         $status            = absint($_POST['status']);
         $orderId           = null;
         $productId         = null;
+        $userId            = null;
         $validFor          = null;
         $expiresAt         = null;
         $timesActivatedMax = null;
@@ -138,6 +145,10 @@ class License
 
         if (array_key_exists('product_id', $_POST) && $_POST['product_id']) {
             $productId = $_POST['product_id'];
+        }
+
+        if (array_key_exists('user_id', $_POST) && $_POST['user_id']) {
+            $userId = $_POST['user_id'];
         }
 
         if (array_key_exists('valid_for', $_POST) && $_POST['valid_for']) {
@@ -165,6 +176,7 @@ class License
             array(
                 'order_id'            => $orderId,
                 'product_id'          => $productId,
+                'user_id'             => $userId,
                 'license_key'         => apply_filters('lmfwc_encrypt', $_POST['license_key']),
                 'hash'                => apply_filters('lmfwc_hash', $_POST['license_key']),
                 'expires_at'          => $expiresAt,
@@ -202,6 +214,7 @@ class License
         $status            = absint($_POST['status']);
         $orderId           = null;
         $productId         = null;
+        $userId            = null;
         $validFor          = null;
         $expiresAt         = null;
         $timesActivatedMax = null;
@@ -212,6 +225,10 @@ class License
 
         if (array_key_exists('product_id', $_POST) && $_POST['product_id']) {
             $productId = $_POST['product_id'];
+        }
+
+        if (array_key_exists('user_id', $_POST) && $_POST['user_id']) {
+            $userId = $_POST['user_id'];
         }
 
         if (array_key_exists('valid_for', $_POST) && $_POST['valid_for']) {
@@ -241,6 +258,7 @@ class License
             array(
                 'order_id'            => $orderId,
                 'product_id'          => $productId,
+                'user_id'             => $userId,
                 'license_key'         => apply_filters('lmfwc_encrypt', $_POST['license_key']),
                 'hash'                => apply_filters('lmfwc_hash', $_POST['license_key']),
                 'expires_at'          => $expiresAt,

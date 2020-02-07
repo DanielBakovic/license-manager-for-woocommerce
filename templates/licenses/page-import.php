@@ -9,6 +9,7 @@
 
     <table class="form-table">
         <tbody>
+
         <!-- SOURCE -->
         <tr class="row">
             <th class="row"><?php esc_html_e('Source', 'lmfwc'); ?></th>
@@ -96,6 +97,16 @@
                 <p class="description"><?php esc_html_e('The product to which the license keys will be assigned.', 'lmfwc');?></p>
             </td>
         </tr>
+
+        <!-- CUSTOMER -->
+        <tr scope="row">
+            <th scope="row"><label for="single__user"><?php esc_html_e('Customer', 'lmfwc');?></label></th>
+            <td>
+                <select name="user_id" id="single__user" class="regular-text"></select>
+                <p class="description"><?php esc_html_e('The user to which the license keys will be assigned.', 'lmfwc');?></p>
+            </td>
+        </tr>
+
         </tbody>
     </table>
 

@@ -147,7 +147,8 @@ final class Main extends Singleton
                 'i18n',
                 array(
                     'placeholderSearchOrders'   => __('Search by order ID or customer email', 'lmfwc'),
-                    'placeholderSearchProducts' => __('Search by product ID or product name', 'lmfwc')
+                    'placeholderSearchProducts' => __('Search by product ID or product name', 'lmfwc'),
+                    'placeholderSearchUsers'    => __('Search by user login, name or email', 'lmfwc')
                 )
             );
 
