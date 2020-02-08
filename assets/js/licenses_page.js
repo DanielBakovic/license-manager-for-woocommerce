@@ -11,6 +11,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const editValidFor         = jQuery('input#edit__valid_for');
     const editExpiresAt        = jQuery('input#edit__expires_at');
     const bulkAddSource        = jQuery('input[type="radio"].bulk__type');
+    // Licenses table
+    const dropdownOrders   = jQuery('select#filter-by-order-id');
+    const dropdownProducts = jQuery('select#filter-by-product-id');
+    const dropdownUsers    = jQuery('select#filter-by-user-id');
 
     const productDropdownSearchConfig = {
         ajax: {
@@ -206,5 +210,26 @@ document.addEventListener('DOMContentLoaded', function() {
             expiresAt.prop('disabled', false);
             validFor.prop('disabled', false);
         }
+    }
+
+    if (dropdownOrders) {
+        dropdownOrders.select2({
+            allowClear: true,
+            placeholder: i18n.placeholderFilterByOrder
+        });
+    }
+
+    if (dropdownProducts) {
+        dropdownProducts.select2({
+            allowClear: true,
+            placeholder: i18n.placeholderFilterByProduct
+        });
+    }
+
+    if (dropdownUsers) {
+        dropdownUsers.select2({
+            allowClear: true,
+            placeholder: i18n.placeholderFilterByUser
+        });
     }
 });

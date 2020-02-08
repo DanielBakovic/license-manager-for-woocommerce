@@ -194,7 +194,7 @@ class LicensesList extends WP_List_Table
             <span><?php _e('Filter by order', 'lmfwc'); ?></span>
         </label>
         <select name="order-id" id="filter-by-order-id">
-            <option <?php selected($selectedOrder, ''); ?> value=""><?php _e('All orders', 'lmfwc'); ?></option>
+            <option <?php selected($selectedOrder, ''); ?> value=""></option>
             <?php
             foreach ($orders as $order) {
                 printf(
@@ -251,7 +251,7 @@ class LicensesList extends WP_List_Table
             <span><?php _e('Filter by product', 'lmfwc'); ?></span>
         </label>
         <select name="product-id" id="filter-by-product-id">
-            <option <?php selected($selectedProduct, ''); ?> value=""><?php _e('All products', 'lmfwc'); ?></option>
+            <option <?php selected($selectedProduct, ''); ?> value=""></option>
             <?php
             foreach ($products as $product) {
                 printf(
@@ -302,7 +302,7 @@ class LicensesList extends WP_List_Table
             <span><?php _e('Filter by user', 'lmfwc'); ?></span>
         </label>
         <select name="user-id" id="filter-by-user-id">
-            <option <?php selected($selectedUser, ''); ?> value=""><?php _e('All users', 'lmfwc'); ?></option>
+            <option <?php selected($selectedUser, ''); ?> value=""></option>
             <?php
             /** @var WP_User $user */
             foreach ($users as $user) {

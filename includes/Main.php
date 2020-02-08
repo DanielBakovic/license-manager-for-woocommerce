@@ -146,9 +146,12 @@ final class Main extends Singleton
                 'lmfwc_licenses_page_js',
                 'i18n',
                 array(
-                    'placeholderSearchOrders'   => __('Search by order ID or customer email', 'lmfwc'),
-                    'placeholderSearchProducts' => __('Search by product ID or product name', 'lmfwc'),
-                    'placeholderSearchUsers'    => __('Search by user login, name or email', 'lmfwc')
+                    'placeholderSearchOrders'    => __('Search by order ID or customer email', 'lmfwc'),
+                    'placeholderSearchProducts'  => __('Search by product ID or product name', 'lmfwc'),
+                    'placeholderSearchUsers'     => __('Search by user login, name or email', 'lmfwc'),
+                    'placeholderFilterByOrder'   => __('Filter by order', 'lmfwc'),
+                    'placeholderFilterByProduct' => __('Filter by product', 'lmfwc'),
+                    'placeholderFilterByUser'    => __('Filter by user', 'lmfwc')
                 )
             );
 
