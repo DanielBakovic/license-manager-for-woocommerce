@@ -293,7 +293,9 @@ class Licenses extends LMFWC_REST_Controller
 
         $body = $request->get_params();
 
+        $orderId           = isset($body['order_id'])            ? absint($body['order_id'])                 : null;
         $productId         = isset($body['product_id'])          ? absint($body['product_id'])               : null;
+        $userId            = isset($body['user_id'])             ? absint($body['user_id'])                  : null;
         $licenseKey        = isset($body['license_key'])         ? sanitize_text_field($body['license_key']) : null;
         $validFor          = isset($body['valid_for'])           ? absint($body['valid_for'])                : null;
         $validFor          = $validFor                           ? $validFor                                 : null;
@@ -348,7 +350,9 @@ class Licenses extends LMFWC_REST_Controller
             /** @var LicenseResourceModel $license */
             $license = LicenseResourceRepository::instance()->insert(
                 array(
+                    'order_id'            => $orderId,
                     'product_id'          => $productId,
+                    'user_id'             => $userId,
                     'license_key'         => apply_filters('lmfwc_encrypt', $licenseKey),
                     'hash'                => apply_filters('lmfwc_hash', $licenseKey),
                     'valid_for'           => $validFor,
