@@ -20,6 +20,8 @@ use WC_Order_Item_Product;
 use WC_Product;
 use WC_Product_Simple;
 use WC_Product_Variation;
+use WP_User;
+use WP_User_Query;
 
 defined('ABSPATH') || exit;
 
@@ -35,7 +37,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         add_filter('lmfwc_get_customer_license_keys',     array($this, 'getCustomerLicenseKeys'),     10, 1);
         add_filter('lmfwc_get_all_customer_license_keys', array($this, 'getAllCustomerLicenseKeys'),  10, 1);
         add_filter('lmfwc_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 5);
-        add_filter('lmfwc_insert_imported_license_keys',  array($this, 'insertImportedLicenseKeys'),  10, 6);
+        add_filter('lmfwc_insert_imported_license_keys',  array($this, 'insertImportedLicenseKeys'),  10, 7);
         add_action('lmfwc_sell_imported_license_keys',    array($this, 'sellImportedLicenseKeys'),    10, 3);
         add_action('wp_ajax_lmfwc_dropdown_search',       array($this, 'dropdownDataSearch'),         10);
     }
@@ -210,6 +212,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 array(
                     'order_id'            => $cleanOrderId,
                     'product_id'          => $cleanProductId,
+                    'user_id'             => get_current_user_id(),
                     'license_key'         => $encryptedLicenseKey,
                     'hash'                => $hashedLicenseKey,
                     'expires_at'          => $expiresAt,
@@ -247,19 +250,21 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
      * @param int   $status            License key status
      * @param int   $orderId           WooCommerce Order ID
      * @param int   $productId         WooCommerce Product ID
+     * @param int   $userId            WordPress User ID
      * @param int   $validFor          Validity period (in days)
      * @param int   $timesActivatedMax Maximum activation count
      *
      * @return array
      * @throws Exception
      */
-    public function insertImportedLicenseKeys($licenseKeys, $status, $orderId, $productId, $validFor, $timesActivatedMax)
+    public function insertImportedLicenseKeys($licenseKeys, $status, $orderId, $productId, $userId, $validFor, $timesActivatedMax)
     {
         $result                 = array();
         $cleanLicenseKeys       = array();
         $cleanStatus            = $status            ? absint($status)            : null;
         $cleanOrderId           = $orderId           ? absint($orderId)           : null;
         $cleanProductId         = $productId         ? absint($productId)         : null;
+        $cleanUserId            = $userId            ? absint($userId)            : null;
         $cleanValidFor          = $validFor          ? absint($validFor)          : null;
         $cleanTimesActivatedMax = $timesActivatedMax ? absint($timesActivatedMax) : null;
 
@@ -288,6 +293,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 array(
                     'order_id'            => $cleanOrderId,
                     'product_id'          => $cleanProductId,
+                    'user_id'             => $cleanUserId,
                     'license_key'         => apply_filters('lmfwc_encrypt', $licenseKey),
                     'hash'                => apply_filters('lmfwc_hash', $licenseKey),
                     'valid_for'           => $cleanValidFor,
@@ -353,6 +359,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 $license->getId(),
                 array(
                     'order_id'   => $cleanOrderId,
+                    'user_id'    => get_current_user_id(),
                     'expires_at' => $expiresAt,
                     'status'     => LicenseStatus::SOLD
                 )
@@ -431,6 +438,26 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                     );
                 }
             }
+
+            // Search for a specific user
+            elseif ($type === 'user') {
+                $users = new WP_User_Query(
+                    array(
+                        'search'         => '*'.esc_attr($term).'*',
+                        'search_columns' => array(
+                            'user_id'
+                        ),
+                    )
+                );
+
+                /** @var WP_User $user */
+                foreach ($users->get_results() as $user) {
+                    $results[] = array(
+                        'id' => $user->ID,
+                        'text' => sprintf('%s (#%d - %s)', $user->user_nicename, $user->ID, $user->user_email)
+                    );
+                }
+            }
         }
 
         if (empty($ids)) {
@@ -493,6 +520,29 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                     $results[] = array(
                         'id' => $product->get_id(),
                         'text' => $text
+                    );
+                }
+            }
+
+            // Search for users
+            elseif ($type === 'user') {
+                $users = new WP_User_Query(
+                    array(
+                        'search'         => '*'.esc_attr($term).'*',
+                        'search_columns' => array(
+                            'user_login',
+                            'user_nicename',
+                            'user_email',
+                            'user_url',
+                        ),
+                    )
+                );
+
+                /** @var WP_User $user */
+                foreach ($users->get_results() as $user) {
+                    $results[] = array(
+                        'id' => $user->ID,
+                        'text' => sprintf('%s (#%d - %s)', $user->user_nicename, $user->ID, $user->user_email)
                     );
                 }
             }

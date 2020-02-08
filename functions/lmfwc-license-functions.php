@@ -15,27 +15,54 @@ defined('ABSPATH') || exit;
 /**
  * Adds a new license to the database.
  *
- * @param string      $licenseKey        The license key being added
- * @param int         $status            Possible values: 1 = SOLD, 2 = DELIVERED, 3 = ACTIVE, 4 = INACTIVE
- * @param int|null    $orderId           WooCommerce Order ID
- * @param int|null    $productId         WooCommerce Product ID
- * @param string|null $expiresAt         Expiration DateTime format string: Y-m-d H:i:s
- * @param string|null $validFor          Number of days for which the license key is valid after purchase
- * @param int|null    $timesActivatedMax Maximum activation count
- * @param int|null    $timesActivated    Number of times the license key has been activated.
+ * @param string $licenseKey  The license key being added
+ * @param array  $licenseData Key/value pairs with the license table column names as keys
  *
  * @return bool|LicenseResourceModel
  * @throws Exception
  */
-function lmfwc_add_license($licenseKey, $status, $orderId = null, $productId = null, $expiresAt = null, $validFor = null, $timesActivated = null, $timesActivatedMax = null)
+function lmfwc_add_license($licenseKey, $licenseData = array())
 {
+    $status            = LicenseStatusEnum::INACTIVE;
+    $orderId           = null;
+    $productId         = null;
+    $userId            = null;
+    $expiresAt         = null;
+    $validFor          = null;
+    $timesActivatedMax = null;
+
+    if (array_key_exists('status', $licenseData)) {
+        $status = $licenseData['status'];
+    }
+
+    if (array_key_exists('order_id', $licenseData)) {
+        $orderId = $licenseData['order_id'];
+    }
+
+    if (array_key_exists('product_id', $licenseData)) {
+        $productId = $licenseData['product_id'];
+    }
+
+    if (array_key_exists('user_id', $licenseData)) {
+        $productId = $licenseData['user_id'];
+    }
+
+    if (array_key_exists('expires_at', $licenseData)) {
+        $expiresAt = $licenseData['expires_at'];
+    }
+
+    if (array_key_exists('valid_for', $licenseData)) {
+        $validFor = $licenseData['valid_for'];
+    }
+
+
+    if (array_key_exists('times_activated_max', $licenseData)) {
+        $timesActivatedMax = $licenseData['times_activated_max'];
+    }
+
     if (!in_array($status, LicenseStatusEnum::$status)) {
         throw new Exception('\'status\' array key not valid. Possible values are: 1 for SOLD, 2 for DELIVERED,
         3 for ACTIVE, and 4 for INACTIVE.');
-    }
-
-    if (($timesActivated !== null && $timesActivatedMax !== null) && ($timesActivated > $timesActivatedMax)) {
-        throw new Exception('The activation count cannot be larger than the maximum activation count.');
     }
 
     if (apply_filters('lmfwc_duplicate', $licenseKey)) {
@@ -58,7 +85,6 @@ function lmfwc_add_license($licenseKey, $status, $orderId = null, $productId = n
         'valid_for'           => $validFor,
         'source'              => LicenseSource::IMPORT,
         'status'              => $status,
-        'times_activated'     => $timesActivated,
         'times_activated_max' => $timesActivatedMax
     );
 
@@ -97,17 +123,34 @@ function lmfwc_get_license($licenseKey)
 }
 
 /**
+ * Retrieves multiple license keys by a query array.
+ *
+ * @param array $query Key/value pairs with the license table column names as keys
+ *
+ * @return bool|LicenseResourceModel[]
+ */
+function lmfwc_get_licenses($query)
+{
+    if (array_key_exists('license_key', $query)) {
+        $query['hash'] = apply_filters('lmfwc_hash', $query['license_key']);
+        unset($query['license_key']);
+    }
+
+    return LicenseResourceRepository::instance()->findAllBy($query);
+}
+
+/**
  * Updates the specified license.
  *
- * @param string $licenseKey The license key being updated.
- * @param array  $updateData Key/value pairs of the updated data.
+ * @param string $licenseKey  The license key being updated.
+ * @param array  $licenseData Key/value pairs of the updated data.
  *
  * @return bool|LicenseResourceModel
  * @throws Exception
  */
-function lmfwc_update_license($licenseKey, $updateData)
+function lmfwc_update_license($licenseKey, $licenseData)
 {
-    $updateQuery = array();
+    $updateData = array();
 
     /** @var LicenseResourceModel $oldLicense */
     $oldLicense = LicenseResourceRepository::instance()->findBy(
@@ -121,77 +164,86 @@ function lmfwc_update_license($licenseKey, $updateData)
     }
 
     // Order ID
-    if (array_key_exists('orderId', $updateData)) {
-        if ($updateData['orderId'] === null) {
-            $updateQuery['order_id'] = null;
+    if (array_key_exists('order_id', $licenseData)) {
+        if ($licenseData['order_id'] === null) {
+            $updateData['order_id'] = null;
         } else {
-            $updateQuery['order_id'] = intval($updateData['orderId']);
+            $updateData['order_id'] = intval($licenseData['order_id']);
         }
     }
 
     // Product ID
-    if (array_key_exists('productId', $updateData)) {
-        if ($updateData['productId'] === null) {
-            $updateQuery['product_id'] = null;
+    if (array_key_exists('product_id', $licenseData)) {
+        if ($licenseData['product_id'] === null) {
+            $updateData['product_id'] = null;
         } else {
-            $updateQuery['product_id'] = intval($updateData['productId']);
+            $updateData['product_id'] = intval($licenseData['product_id']);
+        }
+    }
+
+    // User ID
+    if (array_key_exists('user_id', $licenseData)) {
+        if ($licenseData['user_id'] === null) {
+            $updateData['user_id'] = null;
+        } else {
+            $updateData['user_id'] = intval($licenseData['user_id']);
         }
     }
 
     // License key
-    if (array_key_exists('licenseKey', $updateData)) {
+    if (array_key_exists('license_key', $licenseData)) {
         // Check for possible duplicates
-        if (apply_filters('lmfwc_duplicate', $updateData['licenseKey'], $oldLicense->getId())) {
-            throw new Exception("The license key '{$updateData['licenseKey']}' already exists.");
+        if (apply_filters('lmfwc_duplicate', $licenseData['license_key'], $oldLicense->getId())) {
+            throw new Exception("The license key '{$licenseData['license_key']}' already exists.");
         }
 
-        $updateQuery['license_key'] = apply_filters('lmfwc_encrypt', $updateData['licenseKey']);
-        $updateQuery['hash']        = apply_filters('lmfwc_hash', $updateData['licenseKey']);
+        $updateData['license_key'] = apply_filters('lmfwc_encrypt', $licenseData['license_key']);
+        $updateData['hash']        = apply_filters('lmfwc_hash', $licenseData['license_key']);
     }
 
     // Expires at
-    if (array_key_exists('expiresAt', $updateData)) {
-        if ($updateData['expiresAt'] !== null) {
-            new DateTime($updateData['expiresAt']);
+    if (array_key_exists('expires_at', $licenseData)) {
+        if ($licenseData['expires_at'] !== null) {
+            new DateTime($licenseData['expires_at']);
         }
 
-        $updateQuery['expires_at'] = $updateData['expiresAt'];
+        $updateData['expires_at'] = $licenseData['expires_at'];
     }
 
     // Valid for
-    if (array_key_exists('validFor', $updateData)) {
-        if ($updateData['validFor'] === null) {
-            $updateQuery['valid_for'] = null;
+    if (array_key_exists('valid_for', $licenseData)) {
+        if ($licenseData['valid_for'] === null) {
+            $updateData['valid_for'] = null;
         } else {
-            $updateQuery['valid_for'] = intval($updateData['validFor']);
+            $updateData['valid_for'] = intval($licenseData['valid_for']);
         }
     }
 
     // Status
-    if (array_key_exists('status', $updateData)) {
-        if (!in_array(intval($updateData['status']), LicenseStatusEnum::$status)) {
+    if (array_key_exists('status', $licenseData)) {
+        if (!in_array(intval($licenseData['status']), LicenseStatusEnum::$status)) {
             throw new Exception('The \'status\' array key not valid. Possible values are: 1 for SOLD, 2 for
             DELIVERED, 3 for ACTIVE, and 4 for INACTIVE.');
         }
 
-        $updateQuery['status'] = intval($updateData['status']);
+        $updateData['status'] = intval($licenseData['status']);
     }
 
     // Times activated
-    if (array_key_exists('timesActivated', $updateData)) {
-        if ($updateData['timesActivated'] === null) {
-            $updateQuery['times_activated'] = null;
+    if (array_key_exists('times_activated', $licenseData)) {
+        if ($licenseData['times_activated'] === null) {
+            $updateData['times_activated'] = null;
         } else {
-            $updateQuery['times_activated'] = intval($updateData['timesActivated']);
+            $updateData['times_activated'] = intval($licenseData['times_activated']);
         }
     }
 
     // Times activated max
-    if (array_key_exists('timesActivatedMax', $updateData)) {
-        if ($updateData['timesActivatedMax'] === null) {
-            $updateQuery['times_activated_max'] = null;
+    if (array_key_exists('times_activated_max', $licenseData)) {
+        if ($licenseData['times_activated_max'] === null) {
+            $updateData['times_activated_max'] = null;
         } else {
-            $updateQuery['times_activated_max'] = intval($updateData['timesActivatedMax']);
+            $updateData['times_activated_max'] = intval($licenseData['times_activated_max']);
         }
     }
 
@@ -200,7 +252,7 @@ function lmfwc_update_license($licenseKey, $updateData)
         array(
             'hash' => $oldLicense->getHash()
         ),
-        $updateQuery
+        $updateData
     );
 
     if (!$license) {
@@ -209,8 +261,8 @@ function lmfwc_update_license($licenseKey, $updateData)
 
     $newLicenseHash = apply_filters('lmfwc_hash', $licenseKey);
 
-    if (array_key_exists('hash', $updateQuery)) {
-        $newLicenseHash = $updateQuery['hash'];
+    if (array_key_exists('hash', $updateData)) {
+        $newLicenseHash = $updateData['hash'];
     }
 
     $newLicense = LicenseResourceRepository::instance()->findBy(

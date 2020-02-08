@@ -26,6 +26,11 @@ class License extends AbstractResourceModel implements ModelInterface
     protected $productId;
 
     /**
+     * @var int
+     */
+    protected $userId;
+
+    /**
      * @var string
      */
     protected $licenseKey;
@@ -99,6 +104,7 @@ class License extends AbstractResourceModel implements ModelInterface
         $this->id                = $license->id;
         $this->orderId           = $license->order_id;
         $this->productId         = $license->product_id;
+        $this->userId            = $license->user_id;
         $this->licenseKey        = $license->license_key;
         $this->hash              = $license->hash;
         $this->expiresAt         = $license->expires_at;
@@ -159,6 +165,22 @@ class License extends AbstractResourceModel implements ModelInterface
     public function setProductId($productId)
     {
         $this->productId = $productId;
+    }
+
+    /**
+     * @return int
+     */
+    public function getUserId()
+    {
+        return $this->userId;
+    }
+
+    /**
+     * @param int $userId
+     */
+    public function setUserId($userId)
+    {
+        $this->userId = $userId;
     }
 
     /**
