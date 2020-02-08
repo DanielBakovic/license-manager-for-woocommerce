@@ -347,7 +347,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
             /** @var LicenseResourceModel $license */
             $license   = $cleanLicenseKeys[$i];
             $validFor  = intval($license->getValidFor());
-            $expiresAt = null;
+            $expiresAt = $license->getExpiresAt();
 
             if ($validFor) {
                 $date         = new DateTime();
