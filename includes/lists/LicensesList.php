@@ -147,6 +147,7 @@ class LicensesList extends WP_List_Table
             echo '<div class="alignleft actions">';
             $this->orderDropdown();
             $this->productDropdown();
+            $this->userDropdown();
             submit_button(__('Filter', 'lmfwc'), '', 'filter-action', false);
             echo '</div>';
         }
@@ -155,13 +156,13 @@ class LicensesList extends WP_List_Table
     /**
      * Displays the order dropdown filter.
      */
-    public function orderDropdown() {
-
+    public function orderDropdown()
+    {
         global $wpdb;
 
         $orders = array();
         $results = $wpdb->get_results(
-            "SELECT DISTINCT `order_id` FROM {$this->table} WHERE `order_id` IS NOT NULL;",
+            "SELECT DISTINCT `order_id` FROM {$this->table} WHERE `order_id` IS NOT NULL ORDER BY order_id;",
             ARRAY_A
         );
 
@@ -174,10 +175,13 @@ class LicensesList extends WP_List_Table
                 continue;
             }
 
-            array_push($orders, array(
-                'value' => $orderId,
-                'label' => $order->get_formatted_billing_full_name()
-            ));
+            array_push(
+                $orders,
+                array(
+                    'value' => $orderId,
+                    'label' => $order->get_formatted_billing_full_name()
+                )
+            );
         }
 
         if (count($orders) === 0) {
@@ -186,34 +190,35 @@ class LicensesList extends WP_List_Table
 
         $selectedOrder = isset($_REQUEST['order-id']) ? $_REQUEST['order-id'] : '';
         ?>
-            <label for="filter-by-order-id" class="screen-reader-text">
-                <span><?php _e('Filter by order', 'lmfwc'); ?></span>
-            </label>
-            <select name="order-id" id="filter-by-order-id">
-                <option <?php selected($selectedOrder, ''); ?> value=""><?php _e('All orders', 'lmfwc'); ?></option>
-                <?php
-                foreach ($orders as $order) {
-                    printf(
-                        '<option%1$s value="%2$s">%3$s</option>',
-                        selected($selectedOrder, $order['value'], false),
-                        esc_attr($order['value']),
-                        esc_html('#' . $order['value'] . ' ' . $order['label'])
-                    );
-                }
-                ?>
-            </select>
+        <label for="filter-by-order-id" class="screen-reader-text">
+            <span><?php _e('Filter by order', 'lmfwc'); ?></span>
+        </label>
+        <select name="order-id" id="filter-by-order-id">
+            <option <?php selected($selectedOrder, ''); ?> value=""><?php _e('All orders', 'lmfwc'); ?></option>
+            <?php
+            foreach ($orders as $order) {
+                printf(
+                    '<option%1$s value="%2$s">%3$s</option>',
+                    selected($selectedOrder, $order['value'], false),
+                    esc_attr($order['value']),
+                    esc_html('#' . $order['value'] . ' ' . $order['label'])
+                );
+            }
+            ?>
+        </select>
         <?php
     }
 
     /**
      * Displays the product dropdown filter.
      */
-    public function productDropdown() {
+    public function productDropdown()
+    {
         global $wpdb;
 
         $products = array();
         $results  = $wpdb->get_results(
-            "SELECT DISTINCT `product_id` FROM {$this->table} WHERE `product_id` IS NOT NULL;",
+            "SELECT DISTINCT `product_id` FROM {$this->table} WHERE `product_id` IS NOT NULL ORDER BY product_id;",
             ARRAY_A
         );
 
@@ -262,10 +267,64 @@ class LicensesList extends WP_List_Table
     }
 
     /**
+     * Displays the user dropdown filter.
+     */
+    public function userDropdown()
+    {
+        global $wpdb;
+
+        $users = array();
+        $results  = $wpdb->get_results(
+            "SELECT DISTINCT `user_id` FROM {$this->table} WHERE `user_id` IS NOT NULL ORDER BY user_id;",
+            ARRAY_A
+        );
+
+        foreach ($results as $result) {
+            if (!$userId = intval($result['user_id'])) {
+                continue;
+            }
+
+            /** @var $user WP_User */
+            if (!$user = get_userdata($userId)) {
+                continue;
+            }
+
+            array_push($users, $user);
+        }
+
+        if (count($users) === 0) {
+            return $users;
+        }
+
+        $selectedUser = isset($_REQUEST['user-id']) ? $_REQUEST['user-id'] : '';
+        ?>
+        <label for="filter-by-user-id" class="screen-reader-text">
+            <span><?php _e('Filter by user', 'lmfwc'); ?></span>
+        </label>
+        <select name="user-id" id="filter-by-user-id">
+            <option <?php selected($selectedUser, ''); ?> value=""><?php _e('All users', 'lmfwc'); ?></option>
+            <?php
+            /** @var WP_User $user */
+            foreach ($users as $user) {
+                printf(
+                    '<option value="%d" %s>%s (#%d - %s)</option>',
+                    $user->ID,
+                    selected($selectedUser, $user->ID, false),
+                    $user->display_name,
+                    $user->ID,
+                    $user->user_email
+                );
+            }
+            ?>
+        </select>
+        <?php
+    }
+
+    /**
      * Checkbox column.
-     * 
+     *
      * @param array $item Associative array of column name and value pairs
-     * 
+     *
      * @return string
      */
     public function column_cb($item)
@@ -278,9 +337,9 @@ class LicensesList extends WP_List_Table
 
     /**
      * License key column.
-     * 
+     *
      * @param array $item Associative array of column name and value pairs
-     * 
+     *
      * @return string
      */
     public function column_license_key($item)
@@ -391,9 +450,9 @@ class LicensesList extends WP_List_Table
 
     /**
      * Order ID column.
-     * 
+     *
      * @param array $item Associative array of column name and value pairs
-     * 
+     *
      * @return string
      */
     public function column_order_id($item)
@@ -413,9 +472,9 @@ class LicensesList extends WP_List_Table
 
     /**
      * Product ID column.
-     * 
+     *
      * @param array $item Associative array of column name and value pairs
-     * 
+     *
      * @return string
      */
     public function column_product_id($item)
@@ -455,10 +514,48 @@ class LicensesList extends WP_List_Table
     }
 
     /**
-     * Activation column.
-     * 
+     * User ID column.
+     *
      * @param array $item Associative array of column name and value pairs
-     * 
+     *
+     * @return string
+     */
+    public function column_user_id($item)
+    {
+        $html = '';
+
+        if ($item['user_id'] !== null) {
+            /** @var WP_User $user */
+            $user = get_userdata($item['user_id']);
+
+            if ($user instanceof WP_User) {
+                if (current_user_can('manage_options')) {
+                    $html .= sprintf(
+                        '<a href="%s">%s (#%d - %s)</a>',
+                        get_edit_user_link($user->ID),
+                        $user->display_name,
+                        $user->ID,
+                        $user->user_email
+                    );
+                }
+
+                else {
+                    $html .= sprintf(
+                        '<span>%s</span>',
+                        $user->display_name
+                    );
+                }
+            }
+        }
+
+        return $html;
+    }
+
+    /**
+     * Activation column.
+     *
+     * @param array $item Associative array of column name and value pairs
+     *
      * @return string
      */
     public function column_activation($item)
@@ -615,7 +712,7 @@ class LicensesList extends WP_List_Table
 
     /**
      * Expires at column.
-     * 
+     *
      * @param array $item Associative array of column name and value pairs
      *
      * @throws Exception
@@ -651,9 +748,9 @@ class LicensesList extends WP_List_Table
 
     /**
      * Valid for column.
-     * 
+     *
      * @param array $item Associative array of column name and value pairs
-     * 
+     *
      * @return string
      */
     public function column_valid_for($item)
@@ -674,9 +771,9 @@ class LicensesList extends WP_List_Table
 
     /**
      * Status column.
-     * 
+     *
      * @param array $item Associative array of column name and value pairs
-     * 
+     *
      * @return string
      */
     public function column_status($item)
@@ -719,10 +816,10 @@ class LicensesList extends WP_List_Table
 
     /**
      * Default column value.
-     * 
+     *
      * @param array  $item       Associative array of column name and value pairs
      * @param string $columnName Name of the current column
-     * 
+     *
      * @return string
      */
     public function column_default($item, $columnName)
@@ -732,7 +829,7 @@ class LicensesList extends WP_List_Table
 
     /**
      * Defines sortable columns and their sort value.
-     * 
+     *
      * @return array
      */
     public function get_sortable_columns()
@@ -741,6 +838,7 @@ class LicensesList extends WP_List_Table
             'id'         => array('id', true),
             'order_id'   => array('order_id', true),
             'product_id' => array('product_id', true),
+            'user_id'    => array('user_id', true),
             'expires_at' => array('expires_at', true),
             'status'     => array('status', true),
             'created'    => array('created_at', true),
@@ -753,7 +851,7 @@ class LicensesList extends WP_List_Table
 
     /**
      * Defines items in the bulk action dropdown.
-     * 
+     *
      * @return array
      */
     public function get_bulk_actions()
@@ -818,21 +916,23 @@ class LicensesList extends WP_List_Table
         $currentPage = $this->get_pagenum();
         $totalItems  = $this->getLicenseKeyCount();
 
-        $this->set_pagination_args(array(
-            'total_items' => $totalItems,
-            'per_page'    => $perPage,
-            'total_pages' => ceil($totalItems / $perPage)
-        ));
+        $this->set_pagination_args(
+            array(
+                'total_items' => $totalItems,
+                'per_page'    => $perPage,
+                'total_pages' => ceil($totalItems / $perPage)
+            )
+        );
 
         $this->items = $this->getLicenseKeys($perPage, $currentPage);
     }
 
     /**
      * Retrieves the licenses from the database.
-     * 
+     *
      * @param int $perPage    Default amount of licenses per page
      * @param int $pageNumber Default page number
-     * 
+     *
      * @return array
      */
     private function getLicenseKeys($perPage = 20, $pageNumber = 1)
@@ -864,19 +964,22 @@ class LicensesList extends WP_List_Table
             $sql .= $wpdb->prepare(' AND product_id = %d', intval($_REQUEST['product-id']));
         }
 
+        // Applies the user filter
+        if (isset($_REQUEST['user-id']) && is_numeric($_REQUEST['user-id'])) {
+            $sql .= $wpdb->prepare(' AND user_id = %d', intval($_REQUEST['user-id']));
+        }
+
         $sql .= ' ORDER BY ' . (empty($_REQUEST['orderby']) ? 'id' : esc_sql($_REQUEST['orderby']));
         $sql .= ' '          . (empty($_REQUEST['order'])   ? 'DESC'  : esc_sql($_REQUEST['order']));
         $sql .= " LIMIT {$perPage}";
         $sql .= ' OFFSET ' . ($pageNumber - 1) * $perPage;
 
-        $results = $wpdb->get_results($sql, ARRAY_A);
-
-        return $results;
+        return $wpdb->get_results($sql, ARRAY_A);
     }
 
     /**
      * Retrieves the license key table row count.
-     * 
+     *
      * @return int
      */
     private function getLicenseKeyCount()
@@ -916,11 +1019,12 @@ class LicensesList extends WP_List_Table
      */
     public function get_columns()
     {
-        $columns = array(
+        return array(
             'cb'          => '<input type="checkbox" />',
             'license_key' => __('License key', 'lmfwc'),
             'order_id'    => __('Order', 'lmfwc'),
             'product_id'  => __('Product', 'lmfwc'),
+            'user_id'     => __('Customer', 'lmfwc'),
             'activation'  => __('Activation', 'lmfwc'),
             'expires_at'  => __('Expires at', 'lmfwc'),
             'valid_for'   => __('Valid for', 'lmfwc'),
@@ -928,8 +1032,6 @@ class LicensesList extends WP_List_Table
             'created'     => __('Created', 'lmfwc'),
             'updated'     => __('Updated', 'lmfwc')
         );
-
-        return $columns;
     }
 
     /**
@@ -1064,7 +1166,7 @@ class LicensesList extends WP_List_Table
 
     /**
      * Checks if there are currently any license view filters active.
-     * 
+     *
      * @return bool
      */
     private function isViewFilterActive()
