@@ -67,10 +67,10 @@ class Order
             return;
         }
 
-        /** @var WC_Order_Item $itemData */
-        foreach ($order->get_items() as $itemData) {
+        /** @var WC_Order_Item $orderItem */
+        foreach ($order->get_items() as $orderItem) {
             /** @var WC_Product $product */
-            $product = $itemData->get_product();
+            $product = $orderItem->get_product();
 
             // Skip this product because it's not a licensed product.
             if (!get_post_meta($product->get_id(), 'lmfwc_licensed_product', true)) {
@@ -99,7 +99,7 @@ class Order
             }
 
             // Set the needed delivery amount
-            $neededAmount = absint($itemData->get_quantity()) * $deliveredQuantity;
+            $neededAmount = absint($orderItem->get_quantity()) * $deliveredQuantity;
 
             // Sell license keys through available stock.
             if ($useStock) {

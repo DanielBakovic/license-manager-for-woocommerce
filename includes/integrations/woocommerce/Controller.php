@@ -212,6 +212,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 array(
                     'order_id'            => $cleanOrderId,
                     'product_id'          => $cleanProductId,
+                    'user_id'             => get_current_user_id(),
                     'license_key'         => $encryptedLicenseKey,
                     'hash'                => $hashedLicenseKey,
                     'expires_at'          => $expiresAt,
@@ -358,6 +359,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 $license->getId(),
                 array(
                     'order_id'   => $cleanOrderId,
+                    'user_id'    => get_current_user_id(),
                     'expires_at' => $expiresAt,
                     'status'     => LicenseStatus::SOLD
                 )
