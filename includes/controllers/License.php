@@ -274,16 +274,16 @@ class License
             $timesActivatedMax = absint($_POST['times_activated_max']);
         }
 
-        // Update the stock
-        if ($oldLicense->getProductId() !== null && $oldLicense->getStatus() === LicenseStatusEnum::ACTIVE) {
-            apply_filters('lmfwc_stock_decrease', $oldLicense->getProductId());
-        }
-
         // Check for duplicates
         if (apply_filters('lmfwc_duplicate', $_POST['license_key'], $licenseId)) {
             AdminNotice::error(__('The license key already exists.', 'lmfwc'));
             wp_redirect(sprintf('admin.php?page=%s&action=edit&id=%d', AdminMenus::LICENSES_PAGE, $licenseId));
             exit;
+        }
+
+        // Update the stock
+        if ($oldLicense->getProductId() !== null && $oldLicense->getStatus() === LicenseStatusEnum::ACTIVE) {
+            apply_filters('lmfwc_stock_decrease', $oldLicense->getProductId());
         }
 
         /** @var LicenseResourceModel $license */
