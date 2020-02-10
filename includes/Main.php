@@ -322,13 +322,7 @@ final class Main extends Singleton
         }
 
         if (Settings::get('lmfwc_allow_duplicates')) {
-            add_filter(
-                'lmfwc_duplicate',
-                function() {
-                    return false;
-                },
-                PHP_INT_MAX
-            )   ;
+            add_filter('lmfwc_duplicate', '__return_false', PHP_INT_MAX);
         }
     }
 

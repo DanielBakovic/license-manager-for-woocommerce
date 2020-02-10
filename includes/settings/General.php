@@ -71,6 +71,14 @@ class General
             'lmfwc_license_keys',
             'license_keys_section'
         );
+
+        add_settings_field(
+            'lmfwc_enable_stock_manager',
+            __('Automatic stock', 'lmfwc'),
+            array($this, 'fieldEnableStockManager'),
+            'lmfwc_license_keys',
+            'license_keys_section'
+        );
     }
 
     /**
@@ -231,6 +239,39 @@ class General
         );
         $html .= '</label>';
 
+        $html .= '</fieldset>';
+
+        echo $html;
+    }
+
+    /**
+     * Callback for the "lmfwc_enable_stock_manager" field.
+     *
+     * @return void
+     */
+    public function fieldEnableStockManager()
+    {
+        $field = 'lmfwc_enable_stock_manager';
+        (array_key_exists($field, $this->settings)) ? $value = true : $value = false;
+
+        $html = '<fieldset>';
+        $html .= sprintf('<label for="%s">', $field);
+        $html .= sprintf(
+            '<input id="%s" type="checkbox" name="lmfwc_settings_general[%s]" value="1" %s/>',
+            $field,
+            $field,
+            checked(true, $value, false)
+        );
+        $html .= sprintf(
+            '<span>%s</span>',
+            __('Enable automatic stock management for WooCommerce products.', 'lmfwc')
+        );
+        $html .= '</label>';
+        $html .= sprintf(
+            '<p class="description">%s</p>',
+            __('When adding, updating, or deleting license keys the plugin will automatically update the stock of
+            WooCommerce products with the "Manage stock?" option enabled.', 'lmfwc'),
+        );
         $html .= '</fieldset>';
 
         echo $html;

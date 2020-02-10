@@ -2,6 +2,7 @@
 
 namespace LicenseManagerForWooCommerce\Integrations\WooCommerce;
 
+use LicenseManagerForWooCommerce\Settings;
 use WC_Product;
 
 defined('ABSPATH') || exit;
@@ -18,6 +19,54 @@ class Stock
     }
 
     /**
+     * Class internal function used to modify the stock amount.
+     *
+     * @param int|WC_Product $product
+     * @param string         $action
+     * @param int            $amount
+     *
+     * @return bool|WC_Product
+     */
+    private function modify($product, $action, $amount = 1)
+    {
+        // Check if the setting is enabled
+        if (!Settings::get('lmfwc_enable_stock_manager')) {
+            return false;
+        }
+
+        // Retrieve the WooCommerce Product if we're given an ID
+        if (is_numeric($product)) {
+            $product = wc_get_product($product);
+        }
+
+        // No need to modify if WooCommerce is not managing the stock
+        if (!$product instanceof WC_Product || !$product->managing_stock()) {
+            return false;
+        }
+
+        // Retrieve the current stock
+        $stock = $product->get_stock_quantity();
+
+        // Normalize
+        if ($stock === null) {
+            $stock = 0;
+        }
+
+        // Add or subtract the given amount to the stock
+        if ($action === 'increase') {
+            $stock += $amount;
+        } elseif ($action === 'decrease') {
+            $stock -= $amount;
+        }
+
+        // Set and save
+        $product->set_stock_quantity($stock);
+        $product->save();
+
+        return $product;
+    }
+
+    /**
      * Increases the available stock of a WooCommerce Product by $amount.
      *
      * @param int|WC_Product $product WooCommerce Product object
@@ -27,31 +76,7 @@ class Stock
      */
     public function increase($product, $amount = 1)
     {
-        // Check if the setting is enabled
-        if (1 !== 1) {
-            return false;
-        }
-
-        if (is_numeric($product)) {
-            $product = wc_get_product($product);
-        }
-
-        if (!$product instanceof WC_Product) {
-            return false;
-        }
-
-        $stock = $product->get_stock_quantity();
-
-        if ($stock === null) {
-            $stock = 0;
-        }
-
-        $stock += $amount;
-
-        $product->set_stock_quantity($stock);
-        $product->save();
-
-        return $product;
+        return $this->modify($product,'increase', $amount);
     }
 
     /**
@@ -64,30 +89,6 @@ class Stock
      */
     public function decrease($product, $amount = 1)
     {
-        // Check if the setting is enabled
-        if (1 !== 1) {
-            return false;
-        }
-
-        if (is_numeric($product)) {
-            $product = wc_get_product($product);
-        }
-
-        if (!$product instanceof WC_Product) {
-            return false;
-        }
-
-        $stock = $product->get_stock_quantity();
-
-        if ($stock === null) {
-            $stock = 0;
-        }
-
-        $stock -= $amount;
-
-        $product->set_stock_quantity($stock);
-        $product->save();
-
-        return $product;
+        return $this->modify($product,'decrease', $amount);
     }
 }
