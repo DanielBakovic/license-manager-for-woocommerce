@@ -7,6 +7,7 @@ use Exception;
 use LicenseManagerForWooCommerce\AdminMenus;
 use LicenseManagerForWooCommerce\AdminNotice;
 use LicenseManagerForWooCommerce\Enums\LicenseStatus;
+use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
 use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResourceRepository;
 use LicenseManagerForWooCommerce\Settings;
 use LicenseManagerForWooCommerce\Setup;
@@ -1106,7 +1107,26 @@ class LicensesList extends WP_List_Table
         $count         = 0;
 
         foreach ($licenseKeyIds as $licenseKeyId) {
+            /** @var LicenseResourceModel $license */
+            $license = LicenseResourceRepository::instance()->find($licenseKeyId);
+
             LicenseResourceRepository::instance()->update($licenseKeyId, array('status' => $status));
+
+            // The license has a product assigned to it, perhaps a stock update is necessary
+            if ($license->getProductId() !== null) {
+                // License was active, but no longer is
+                if ($license->getStatus() === LicenseStatus::ACTIVE && $status !== LicenseStatus::ACTIVE) {
+                    // Update the stock
+                    apply_filters('lmfwc_stock_decrease', $license->getProductId());
+                }
+
+                // License was not active, but is now
+                if ($license->getStatus() !== LicenseStatus::ACTIVE && $status === LicenseStatus::ACTIVE) {
+                    // Update the stock
+                    apply_filters('lmfwc_stock_increase', $license->getProductId());
+                }
+            }
+
             $count++;
         }
 
@@ -1126,9 +1146,30 @@ class LicensesList extends WP_List_Table
         $this->verifyNonce('delete');
         $this->verifySelection();
 
-        $result = LicenseResourceRepository::instance()->deleteBy(array('id' => (array)($_REQUEST['id'])));
+        $licenseKeyIds = (array)$_REQUEST['id'];
+        $count         = 0;
 
-        $message = sprintf(esc_html__('%d license key(s) permanently deleted.', 'lmfwc'), $result);
+        foreach ($licenseKeyIds as $licenseKeyId) {
+            /** @var LicenseResourceModel $license */
+            $license = LicenseResourceRepository::instance()->find($licenseKeyId);
+
+            if (!$license) {
+                continue;
+            }
+
+            $result = LicenseResourceRepository::instance()->delete((array)$licenseKeyId);
+
+            if ($result) {
+                // Update the stock
+                if ($license->getProductId() !== null && $license->getStatus() === LicenseStatus::ACTIVE) {
+                    apply_filters('lmfwc_stock_decrease', $license->getProductId());
+                }
+
+                $count += $result;
+            }
+        }
+
+        $message = sprintf(esc_html__('%d license key(s) permanently deleted.', 'lmfwc'), $count);
 
         // Set the admin notice
         AdminNotice::success($message);
@@ -1139,8 +1180,6 @@ class LicensesList extends WP_List_Table
                 sprintf('admin.php?page=%s', AdminMenus::LICENSES_PAGE)
             )
         );
-
-        exit();
     }
 
     /**

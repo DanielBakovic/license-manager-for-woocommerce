@@ -55,7 +55,6 @@ function lmfwc_add_license($licenseKey, $licenseData = array())
         $validFor = $licenseData['valid_for'];
     }
 
-
     if (array_key_exists('times_activated_max', $licenseData)) {
         $timesActivatedMax = $licenseData['times_activated_max'];
     }
@@ -93,6 +92,11 @@ function lmfwc_add_license($licenseKey, $licenseData = array())
 
     if (!$license) {
         return false;
+    }
+
+    // Update the stock
+    if ($license->getProductId() !== null && $license->getStatus() === LicenseStatusEnum::ACTIVE) {
+        apply_filters('lmfwc_stock_increase', $license->getProductId());
     }
 
     return $license;
@@ -247,6 +251,11 @@ function lmfwc_update_license($licenseKey, $licenseData)
         }
     }
 
+    // Update the stock
+    if ($oldLicense->getProductId() !== null && $oldLicense->getStatus() === LicenseStatusEnum::ACTIVE) {
+        apply_filters('lmfwc_stock_decrease', $oldLicense->getProductId());
+    }
+
     /** @var LicenseResourceModel $license */
     $license = LicenseResourceRepository::instance()->updateBy(
         array(
@@ -265,6 +274,7 @@ function lmfwc_update_license($licenseKey, $licenseData)
         $newLicenseHash = $updateData['hash'];
     }
 
+    /** @var LicenseResourceModel $newLicense */
     $newLicense = LicenseResourceRepository::instance()->findBy(
         array(
             'hash' => $newLicenseHash
@@ -273,6 +283,11 @@ function lmfwc_update_license($licenseKey, $licenseData)
 
     if (!$newLicense) {
         return false;
+    }
+
+    // Update the stock
+    if ($newLicense->getProductId() !== null && $newLicense->getStatus() === LicenseStatusEnum::ACTIVE) {
+        apply_filters('lmfwc_stock_increase', $newLicense->getProductId());
     }
 
     return $newLicense;
@@ -288,6 +303,21 @@ function lmfwc_update_license($licenseKey, $licenseData)
  */
 function lmfwc_delete_license($licenseKey)
 {
+    /** @var LicenseResourceModel $oldLicense */
+    $oldLicense = LicenseResourceRepository::instance()->findBy(
+        array(
+            'hash' => apply_filters('lmfwc_hash', $licenseKey)
+        )
+    );
+
+    // Update the stock
+    if ($oldLicense
+        && $oldLicense->getProductId() !== null
+        && $oldLicense->getStatus() === LicenseStatusEnum::ACTIVE
+    ) {
+        apply_filters('lmfwc_stock_decrease', $oldLicense->getProductId());
+    }
+
     /** @var LicenseResourceModel $license */
     $license = LicenseResourceRepository::instance()->deleteBy(
         array(

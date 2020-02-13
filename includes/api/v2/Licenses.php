@@ -378,6 +378,11 @@ class Licenses extends LMFWC_REST_Controller
             );
         }
 
+        // Update the stock
+        if ($license->getProductId() !== null && $license->getStatus() === LicenseStatus::ACTIVE) {
+            apply_filters('lmfwc_stock_increase', $license->getProductId());
+        }
+
         $licenseData = $license->toArray();
 
         // Remove the hash and decrypt the license key
@@ -487,6 +492,11 @@ class Licenses extends LMFWC_REST_Controller
             $updateData['valid_for'] = null;
         }
 
+        // Update the stock
+        if ($license->getProductId() !== null && $license->getStatus() === LicenseStatus::ACTIVE) {
+            apply_filters('lmfwc_stock_decrease', $license->getProductId());
+        }
+
         /** @var LicenseResourceModel $updatedLicense */
         $updatedLicense = LicenseResourceRepository::instance()->update($license->getId(), $updateData);
 
@@ -496,6 +506,11 @@ class Licenses extends LMFWC_REST_Controller
                 'The license key could not be updated.',
                 array('status' => 404)
             );
+        }
+
+        // Update the stock
+        if ($updatedLicense->getProductId() !== null && $updatedLicense->getStatus() === LicenseStatus::ACTIVE) {
+            apply_filters('lmfwc_stock_increase', $updatedLicense->getProductId());
         }
 
         $licenseData = $updatedLicense->toArray();

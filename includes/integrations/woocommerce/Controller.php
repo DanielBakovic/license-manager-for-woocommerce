@@ -47,6 +47,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
      */
     private function bootstrap()
     {
+        new Stock();
         new Order();
         new Email();
         new ProductData();
@@ -257,8 +258,15 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
      * @return array
      * @throws Exception
      */
-    public function insertImportedLicenseKeys($licenseKeys, $status, $orderId, $productId, $userId, $validFor, $timesActivatedMax)
-    {
+    public function insertImportedLicenseKeys(
+        $licenseKeys,
+        $status,
+        $orderId,
+        $productId,
+        $userId,
+        $validFor,
+        $timesActivatedMax
+    ) {
         $result                 = array();
         $cleanLicenseKeys       = array();
         $cleanStatus            = $status            ? absint($status)            : null;
@@ -368,7 +376,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
     }
 
     /**
-     * Performs a paginated data search for orders or products to be used inside a select2 dropdown
+     * Performs a paginated data search for orders, products, or users to be used inside a select2 dropdown
      */
     public function dropdownDataSearch()
     {
@@ -404,7 +412,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 // Order exists.
                 if ($order && $order instanceof WC_Order) {
                     $text = sprintf(
-                    /* translators: $1: order id, $2 customer name, $3 customer email */
+                        /* translators: $1: order id, $2: customer name, $3: customer email */
                         '#%1$s %2$s <%3$s>',
                         $order->get_id(),
                         $order->get_formatted_billing_full_name(),
@@ -426,7 +434,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 // Product exists.
                 if ($product) {
                     $text = sprintf(
-                    /* translators: $1: order id, $2 customer name */
+                        /* translators: $1: order id, $2 customer name */
                         '(#%1$s) %2$s',
                         $product->get_id(),
                         $product->get_formatted_name()
@@ -454,7 +462,13 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 foreach ($users->get_results() as $user) {
                     $results[] = array(
                         'id' => $user->ID,
-                        'text' => sprintf('%s (#%d - %s)', $user->user_nicename, $user->ID, $user->user_email)
+                        'text' => sprintf(
+                            /* translators: $1: user nicename, $2: user id, $3: user email */
+                            '%1$s (#%2$d - %3$s)',
+                            $user->user_nicename,
+                            $user->ID,
+                            $user->user_email
+                        )
                     );
                 }
             }

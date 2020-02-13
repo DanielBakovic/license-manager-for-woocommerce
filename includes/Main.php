@@ -2,7 +2,7 @@
 /**
  * Main plugin file.
  * PHP Version: 5.6
- * 
+ *
  * @category WordPress
  * @package  LicenseManagerForWooCommerce
  * @author   Dražen Bebić <drazen.bebic@outlook.com>
@@ -16,6 +16,7 @@ use LicenseManagerForWooCommerce\Abstracts\Singleton;
 use LicenseManagerForWooCommerce\Controllers\ApiKey as ApiKeyController;
 use LicenseManagerForWooCommerce\Controllers\Generator as GeneratorController;
 use LicenseManagerForWooCommerce\Controllers\License as LicenseController;
+use LicenseManagerForWooCommerce\Enums\LicenseStatus;
 
 defined('ABSPATH') || exit;
 
@@ -204,10 +205,10 @@ final class Main extends Singleton
 
     /**
      * Add additional links to the plugin row meta.
-     * 
+     *
      * @param array  $links Array of already present links
      * @param string $file  File name
-     * 
+     *
      * @return array
      */
     public function pluginRowMeta($links, $file)
@@ -230,7 +231,7 @@ final class Main extends Singleton
                     __('Donate', 'lmfwc')
                 )
             );
-            
+
             $links = array_merge($links, $newLinks);
         }
 
@@ -321,9 +322,7 @@ final class Main extends Singleton
         }
 
         if (Settings::get('lmfwc_allow_duplicates')) {
-            add_filter('lmfwc_duplicate', function() {
-                return false;
-            }, PHP_INT_MAX);
+            add_filter('lmfwc_duplicate', '__return_false', PHP_INT_MAX);
         }
     }
 

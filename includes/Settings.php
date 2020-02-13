@@ -39,6 +39,10 @@ class Settings
         $settings = get_option($section, array());
         $value    = false;
 
+        if (!$settings) {
+            $settings = array();
+        }
+
         if (array_key_exists($field, $settings)) {
             $value = $settings[$field];
         }
