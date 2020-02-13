@@ -21,7 +21,9 @@ class General
         /**
          * @see https://developer.wordpress.org/reference/functions/register_setting/#parameters
          */
-        $args = array();
+        $args = array(
+            'sanitize_callback' => array($this, 'sanitize')
+        );
 
         // Register the initial settings group.
         register_setting('lmfwc_settings_group_general', 'lmfwc_settings_general', $args);
@@ -30,6 +32,44 @@ class General
         $this->initSectionLicenseKeys();
         $this->initSectionMyAccount();
         $this->initSectionAPI();
+    }
+
+    /**
+     * Sanitizes the settings input.
+     *
+     * @param array $settings
+     *
+     * @return array
+     */
+    public function sanitize($settings)
+    {
+        if (isset($_POST['lmfwc_stock_synchronize'])) {
+            // Permission check
+            if (!current_user_can('manage_options')) {
+                return $settings;
+            }
+
+            /** @var int $productsSynchronized Number of synchronized products */
+            $productsSynchronized = apply_filters('lmfwc_stock_synchronize', null);
+
+            if ($productsSynchronized > 0) {
+                add_settings_error(
+                    'lmfwc_settings_group_general',
+                    'lmfwc_stock_update',
+                    sprintf(__('Successfully updated the stock of %d WooCommerce products.', 'lmfwc'), $productsSynchronized),
+                    'success'
+                );
+            } else {
+                add_settings_error(
+                    'lmfwc_settings_group_general',
+                    'lmfwc_stock_update',
+                    __('The stock of all WooCommerce products is already synchronized.', 'lmfwc'),
+                    'success'
+                );
+            }
+        }
+
+        return $settings;
     }
 
     /**
@@ -74,7 +114,7 @@ class General
 
         add_settings_field(
             'lmfwc_enable_stock_manager',
-            __('Automatic stock', 'lmfwc'),
+            __('Stock management', 'lmfwc'),
             array($this, 'fieldEnableStockManager'),
             'lmfwc_license_keys',
             'license_keys_section'
@@ -254,25 +294,37 @@ class General
         $field = 'lmfwc_enable_stock_manager';
         (array_key_exists($field, $this->settings)) ? $value = true : $value = false;
 
-        $html = '<fieldset>';
-        $html .= sprintf('<label for="%s">', $field);
+        $html = '<fieldset style="margin-bottom: 0;">';
+        $html .= '<label for="' . $field . '">';
         $html .= sprintf(
             '<input id="%s" type="checkbox" name="lmfwc_settings_general[%s]" value="1" %s/>',
             $field,
             $field,
             checked(true, $value, false)
         );
-        $html .= sprintf(
-            '<span>%s</span>',
-            __('Enable automatic stock management for WooCommerce products.', 'lmfwc')
-        );
+
+        $html .= '<span>' . __('Enable automatic stock management for WooCommerce products.', 'lmfwc') . '</span>';
         $html .= '</label>';
         $html .= sprintf(
-            '<p class="description">%s</p>',
-            __('When adding, updating, or deleting license keys the plugin will automatically update the stock of
-            WooCommerce products with the "Manage stock?" option enabled.', 'lmfwc'),
+            '<p class="description">%s<br/>1. %s<br/>2. %s<br/>3. %s</p>',
+            __('To use this feature, you also need to enable the following settings at a product level:', 'lmfwc'),
+            __('Inventory &rarr; Manage stock?', 'lmfwc'),
+            __('License Manager &rarr; Sell license keys', 'lmfwc'),
+            __('License Manager &rarr; Sell from stock', 'lmfwc'),
         );
         $html .= '</fieldset>';
+
+        $html .= '
+            <fieldset style="margin-top: 1em;">
+                <button class="button button-secondary"
+                        type="submit"
+                        name="lmfwc_stock_synchronize"
+                        value="1">' . __('Synchronize', 'lmfwc') . '</button>
+                <p class="description" style="margin-top: 1em;">
+                    ' . __('The "Synchronize" button can be used to manually synchronize the product stock.', 'lmfwc') . '
+                </p>
+            </fieldset>
+        ';
 
         echo $html;
     }
@@ -520,7 +572,7 @@ class General
         }
 
         $html .= sprintf(
-            '<p class="description">%s</p>',
+            '<p class="description" style="margin-top: 1em;">%s</p>',
             sprintf(
                 __('The complete <b>API documentation</b> can be found <a href="%s" target="_blank" rel="noopener">here</a>.', 'lmfwc'),
                 'https://www.licensemanager.at/docs/rest-api/'
