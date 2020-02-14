@@ -33,8 +33,6 @@ function lmfwc_duplicate($licenseKey, $licenseKeyId = null)
 
     // Update action
     elseif ($licenseKeyId !== null && is_numeric($licenseKeyId)) {
-        global $wpdb;
-
         $table = LicenseResourceRepository::instance()->getTable();
 
         $query = "

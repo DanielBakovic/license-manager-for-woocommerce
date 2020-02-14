@@ -13,12 +13,15 @@ use LicenseManagerForWooCommerce\Interfaces\IntegrationController as Integration
 use LicenseManagerForWooCommerce\Models\Resources\Generator as GeneratorResourceModel;
 use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
 use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResourceRepository;
+use LicenseManagerForWooCommerce\Settings;
 use stdClass;
 use WC_Order;
 use WC_Order_Item_Product;
 use WC_Product;
 use WC_Product_Simple;
 use WC_Product_Variation;
+use WP_User;
+use WP_User_Query;
 
 defined('ABSPATH') || exit;
 
@@ -34,7 +37,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         add_filter('lmfwc_get_customer_license_keys',     array($this, 'getCustomerLicenseKeys'),     10, 1);
         add_filter('lmfwc_get_all_customer_license_keys', array($this, 'getAllCustomerLicenseKeys'),  10, 1);
         add_filter('lmfwc_insert_generated_license_keys', array($this, 'insertGeneratedLicenseKeys'), 10, 5);
-        add_filter('lmfwc_insert_imported_license_keys',  array($this, 'insertImportedLicenseKeys'),  10, 6);
+        add_filter('lmfwc_insert_imported_license_keys',  array($this, 'insertImportedLicenseKeys'),  10, 7);
         add_action('lmfwc_sell_imported_license_keys',    array($this, 'sellImportedLicenseKeys'),    10, 3);
         add_action('wp_ajax_lmfwc_dropdown_search',       array($this, 'dropdownDataSearch'),         10);
     }
@@ -44,10 +47,14 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
      */
     private function bootstrap()
     {
+        new Stock();
         new Order();
         new Email();
-        new MyAccount();
         new ProductData();
+
+        if (Settings::get('lmfwc_enable_my_account_endpoint')) {
+            new MyAccount();
+        }
     }
 
     /**
@@ -118,6 +125,10 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         $result   = array();
         $orderIds = $wpdb->get_col($query);
 
+        if (empty($orderIds)) {
+            return array();
+        }
+
         /** @var LicenseResourceModel[] $licenses */
         $licenses = LicenseResourceRepository::instance()->findAllBy(
             array(
@@ -129,7 +140,12 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
         foreach ($licenses as $license) {
             $product = wc_get_product($license->getProductId());
 
-            $result[$license->getProductId()]['name']       = $product->get_formatted_name();
+            if (!$product) {
+                $result[$license->getProductId()]['name'] = '#' . $license->getProductId();
+            } else {
+                $result[$license->getProductId()]['name'] = $product->get_formatted_name();
+            }
+
             $result[$license->getProductId()]['licenses'][] = $license;
         }
 
@@ -197,6 +213,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 array(
                     'order_id'            => $cleanOrderId,
                     'product_id'          => $cleanProductId,
+                    'user_id'             => get_current_user_id(),
                     'license_key'         => $encryptedLicenseKey,
                     'hash'                => $hashedLicenseKey,
                     'expires_at'          => $expiresAt,
@@ -234,19 +251,28 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
      * @param int   $status            License key status
      * @param int   $orderId           WooCommerce Order ID
      * @param int   $productId         WooCommerce Product ID
+     * @param int   $userId            WordPress User ID
      * @param int   $validFor          Validity period (in days)
      * @param int   $timesActivatedMax Maximum activation count
      *
      * @return array
      * @throws Exception
      */
-    public function insertImportedLicenseKeys($licenseKeys, $status, $orderId, $productId, $validFor, $timesActivatedMax)
-    {
+    public function insertImportedLicenseKeys(
+        $licenseKeys,
+        $status,
+        $orderId,
+        $productId,
+        $userId,
+        $validFor,
+        $timesActivatedMax
+    ) {
         $result                 = array();
         $cleanLicenseKeys       = array();
         $cleanStatus            = $status            ? absint($status)            : null;
         $cleanOrderId           = $orderId           ? absint($orderId)           : null;
         $cleanProductId         = $productId         ? absint($productId)         : null;
+        $cleanUserId            = $userId            ? absint($userId)            : null;
         $cleanValidFor          = $validFor          ? absint($validFor)          : null;
         $cleanTimesActivatedMax = $timesActivatedMax ? absint($timesActivatedMax) : null;
 
@@ -275,6 +301,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 array(
                     'order_id'            => $cleanOrderId,
                     'product_id'          => $cleanProductId,
+                    'user_id'             => $cleanUserId,
                     'license_key'         => apply_filters('lmfwc_encrypt', $licenseKey),
                     'hash'                => apply_filters('lmfwc_hash', $licenseKey),
                     'valid_for'           => $cleanValidFor,
@@ -328,7 +355,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
             /** @var LicenseResourceModel $license */
             $license   = $cleanLicenseKeys[$i];
             $validFor  = intval($license->getValidFor());
-            $expiresAt = null;
+            $expiresAt = $license->getExpiresAt();
 
             if ($validFor) {
                 $date         = new DateTime();
@@ -340,6 +367,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 $license->getId(),
                 array(
                     'order_id'   => $cleanOrderId,
+                    'user_id'    => get_current_user_id(),
                     'expires_at' => $expiresAt,
                     'status'     => LicenseStatus::SOLD
                 )
@@ -348,7 +376,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
     }
 
     /**
-     * Performs a paginated data search for orders or products to be used inside a select2 dropdown
+     * Performs a paginated data search for orders, products, or users to be used inside a select2 dropdown
      */
     public function dropdownDataSearch()
     {
@@ -384,7 +412,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 // Order exists.
                 if ($order && $order instanceof WC_Order) {
                     $text = sprintf(
-                    /* translators: $1: order id, $2 customer name, $3 customer email */
+                        /* translators: $1: order id, $2: customer name, $3: customer email */
                         '#%1$s %2$s <%3$s>',
                         $order->get_id(),
                         $order->get_formatted_billing_full_name(),
@@ -406,7 +434,7 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                 // Product exists.
                 if ($product) {
                     $text = sprintf(
-                    /* translators: $1: order id, $2 customer name */
+                        /* translators: $1: order id, $2 customer name */
                         '(#%1$s) %2$s',
                         $product->get_id(),
                         $product->get_formatted_name()
@@ -415,6 +443,32 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                     $results[] = array(
                         'id' => $product->get_id(),
                         'text' => $text
+                    );
+                }
+            }
+
+            // Search for a specific user
+            elseif ($type === 'user') {
+                $users = new WP_User_Query(
+                    array(
+                        'search'         => '*'.esc_attr($term).'*',
+                        'search_columns' => array(
+                            'user_id'
+                        ),
+                    )
+                );
+
+                /** @var WP_User $user */
+                foreach ($users->get_results() as $user) {
+                    $results[] = array(
+                        'id' => $user->ID,
+                        'text' => sprintf(
+                            /* translators: $1: user nicename, $2: user id, $3: user email */
+                            '%1$s (#%2$d - %3$s)',
+                            $user->user_nicename,
+                            $user->ID,
+                            $user->user_email
+                        )
                     );
                 }
             }
@@ -480,6 +534,29 @@ class Controller extends AbstractIntegrationController implements IntegrationCon
                     $results[] = array(
                         'id' => $product->get_id(),
                         'text' => $text
+                    );
+                }
+            }
+
+            // Search for users
+            elseif ($type === 'user') {
+                $users = new WP_User_Query(
+                    array(
+                        'search'         => '*'.esc_attr($term).'*',
+                        'search_columns' => array(
+                            'user_login',
+                            'user_nicename',
+                            'user_email',
+                            'user_url',
+                        ),
+                    )
+                );
+
+                /** @var WP_User $user */
+                foreach ($users->get_results() as $user) {
+                    $results[] = array(
+                        'id' => $user->ID,
+                        'text' => sprintf('%s (#%d - %s)', $user->user_nicename, $user->ID, $user->user_email)
                     );
                 }
             }

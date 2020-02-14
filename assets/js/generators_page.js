@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', function(event) {
-    var generateLicenseKeysProduct = jQuery('select#generate__product');
-    var generateLicenseKeysOrder   = jQuery('select#generate__order');
+    let generateLicenseKeysProduct = jQuery('select#generate__product');
+    let generateLicenseKeysOrder   = jQuery('select#generate__order');
 
-    var productDropdownSearchConfig = {
+    const productDropdownSearchConfig = {
         ajax: {
             cache: true,
             delay: 500,
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', function(event) {
         minimumInputLength: 1,
         allowClear: true
     };
-    var orderDropdownSearchConfig = {
+    const orderDropdownSearchConfig = {
         ajax: {
             cache: true,
             delay: 500,

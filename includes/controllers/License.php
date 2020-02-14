@@ -6,6 +6,7 @@ use Exception;
 use LicenseManagerForWooCommerce\AdminMenus;
 use LicenseManagerForWooCommerce\AdminNotice;
 use LicenseManagerForWooCommerce\Enums\LicenseSource;
+use LicenseManagerForWooCommerce\Enums\LicenseStatus as LicenseStatusEnum;
 use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
 use LicenseManagerForWooCommerce\Repositories\Resources\License as LicenseResourceRepository;
 
@@ -38,6 +39,8 @@ class License
 
         $orderId     = null;
         $productId   = null;
+        $userId      = null;
+        $status      = LicenseStatusEnum::ACTIVE;
         $source      = $_POST['source'];
         $licenseKeys = array();
 
@@ -47,6 +50,17 @@ class License
 
         if (array_key_exists('product_id', $_POST) && $_POST['product_id']) {
             $productId = $_POST['product_id'];
+        }
+
+        if (array_key_exists('user_id', $_POST) && $_POST['user_id']) {
+            $userId = $_POST['user_id'];
+        }
+
+        if (array_key_exists('status', $_POST)
+            && $_POST['status']
+            && in_array($_POST['status'], LicenseStatusEnum::$status)
+        ) {
+            $status = intval($_POST['status']);
         }
 
         if ($source === 'file') {
@@ -63,14 +77,15 @@ class License
             exit();
         }
 
-        // Save the imported keys.
+        // Save the imported keys
         try {
             $result = apply_filters(
                 'lmfwc_insert_imported_license_keys',
                 $licenseKeys,
-                $_POST['status'],
+                $status,
                 $orderId,
                 $productId,
+                $userId,
                 $_POST['valid_for'],
                 $_POST['times_activated_max']
             );
@@ -88,6 +103,12 @@ class License
         }
 
         if ($result['failed'] == 0 && $result['added'] > 0) {
+            // Update the stock
+            if ($status === LicenseStatusEnum::ACTIVE) {
+                apply_filters('lmfwc_stock_increase', $productId, $result['added']);
+            }
+
+            // Display a success message
             AdminNotice::success(
                 sprintf(
                     __('%d license key(s) added successfully.', 'lmfwc'),
@@ -105,6 +126,12 @@ class License
         }
 
         if ($result['failed'] > 0 && $result['added'] > 0) {
+            // Update the stock
+            if ($status === LicenseStatusEnum::ACTIVE) {
+                apply_filters('lmfwc_stock_increase', $productId, $result['added']);
+            }
+
+            // Display a warning message
             AdminNotice::warning(
                 sprintf(
                     __('%d key(s) have been imported, while %d key(s) were not imported.', 'lmfwc'),
@@ -128,6 +155,7 @@ class License
         $status            = absint($_POST['status']);
         $orderId           = null;
         $productId         = null;
+        $userId            = null;
         $validFor          = null;
         $expiresAt         = null;
         $timesActivatedMax = null;
@@ -138,6 +166,10 @@ class License
 
         if (array_key_exists('product_id', $_POST) && $_POST['product_id']) {
             $productId = $_POST['product_id'];
+        }
+
+        if (array_key_exists('user_id', $_POST) && $_POST['user_id']) {
+            $userId = $_POST['user_id'];
         }
 
         if (array_key_exists('valid_for', $_POST) && $_POST['valid_for']) {
@@ -165,6 +197,7 @@ class License
             array(
                 'order_id'            => $orderId,
                 'product_id'          => $productId,
+                'user_id'             => $userId,
                 'license_key'         => apply_filters('lmfwc_encrypt', $_POST['license_key']),
                 'hash'                => apply_filters('lmfwc_hash', $_POST['license_key']),
                 'expires_at'          => $expiresAt,
@@ -178,6 +211,11 @@ class License
         // Redirect with message
         if ($license) {
             AdminNotice::success(__('1 license key(s) added successfully.', 'lmfwc'));
+
+            // Update the stock
+            if ($license->getStatus() == LicenseStatusEnum::ACTIVE) {
+                apply_filters('lmfwc_stock_increase', $productId);
+            }
         }
 
         else {
@@ -202,9 +240,13 @@ class License
         $status            = absint($_POST['status']);
         $orderId           = null;
         $productId         = null;
+        $userId            = null;
         $validFor          = null;
         $expiresAt         = null;
         $timesActivatedMax = null;
+
+        /** @var LicenseResourceModel $oldLicense */
+        $oldLicense = LicenseResourceRepository::instance()->find($licenseId);
 
         if (array_key_exists('order_id', $_POST) && $_POST['order_id']) {
             $orderId = $_POST['order_id'];
@@ -212,6 +254,10 @@ class License
 
         if (array_key_exists('product_id', $_POST) && $_POST['product_id']) {
             $productId = $_POST['product_id'];
+        }
+
+        if (array_key_exists('user_id', $_POST) && $_POST['user_id']) {
+            $userId = $_POST['user_id'];
         }
 
         if (array_key_exists('valid_for', $_POST) && $_POST['valid_for']) {
@@ -235,12 +281,18 @@ class License
             exit;
         }
 
+        // Update the stock
+        if ($oldLicense->getProductId() !== null && $oldLicense->getStatus() === LicenseStatusEnum::ACTIVE) {
+            apply_filters('lmfwc_stock_decrease', $oldLicense->getProductId());
+        }
+
         /** @var LicenseResourceModel $license */
         $license = LicenseResourceRepository::instance()->update(
             $licenseId,
             array(
                 'order_id'            => $orderId,
                 'product_id'          => $productId,
+                'user_id'             => $userId,
                 'license_key'         => apply_filters('lmfwc_encrypt', $_POST['license_key']),
                 'hash'                => apply_filters('lmfwc_hash', $_POST['license_key']),
                 'expires_at'          => $expiresAt,
@@ -251,12 +303,18 @@ class License
             )
         );
 
-        // Add a message and redirect
         if ($license) {
+            // Update the stock
+            if ($license->getProductId() !== null && $license->getStatus() === LicenseStatusEnum::ACTIVE) {
+                apply_filters('lmfwc_stock_increase', $license->getProductId());
+            }
+
+            // Display a success message
             AdminNotice::success(__('Your license key has been updated successfully.', 'lmfwc'));
         }
 
         else {
+            //Display an error message
             AdminNotice::error(__('There was a problem updating the license key.', 'lmfwc'));
         }
 

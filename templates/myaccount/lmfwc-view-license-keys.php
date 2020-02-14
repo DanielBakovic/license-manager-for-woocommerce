@@ -20,6 +20,7 @@
  */
 
 use LicenseManagerForWooCommerce\Models\Resources\License as LicenseResourceModel;
+use LicenseManagerForWooCommerce\Settings;
 
 defined('ABSPATH') || exit; ?>
 
@@ -35,8 +36,9 @@ defined('ABSPATH') || exit; ?>
     <table class="shop_table shop_table_responsive my_account_orders">
         <thead>
         <tr>
-            <th class="license-key"><?php esc_html_e('License key', 'lmfwc'); ?></th>
-            <th class="valid-until"><?php esc_html_e('Valid until', 'lmfwc'); ?></th>
+            <th class="license-key"><?php _e('License key', 'lmfwc'); ?></th>
+            <th class="activation"><?php _e('Activation status', 'lmfwc'); ?></th>
+            <th class="valid-until"><?php _e('Valid until', 'lmfwc'); ?></th>
             <th class="actions"></th>
         </tr>
         </thead>
@@ -46,10 +48,17 @@ defined('ABSPATH') || exit; ?>
         <?php
             /** @var LicenseResourceModel $license */
             foreach ($licenseKeyData['licenses'] as $license):
-                $order = wc_get_order($license->getOrderId());
+                $timesActivated    = $license->getTimesActivated() ? $license->getTimesActivated() : '0';
+                $timesActivatedMax = $license->getTimesActivatedMax() ? $license->getTimesActivatedMax() : '&infin;';
+                $order             = wc_get_order($license->getOrderId());
         ?>
             <tr>
                 <td><span class="lmfwc-myaccount-license-key"><?php echo $license->getDecryptedLicenseKey(); ?></span></td>
+                <td>
+                    <span><?php esc_html_e($timesActivated); ?></span>
+                    <span>/</span>
+                    <span><?php echo $timesActivatedMax; ?></span>
+                </td>
                 <td><?php
                     if ($license->getExpiresAt()) {
                         $date = new \DateTime($license->getExpiresAt());
@@ -57,7 +66,25 @@ defined('ABSPATH') || exit; ?>
                     }
                 ?></td>
                 <td class="license-key-actions">
-                    <a href="<?php echo esc_url($order->get_view_order_url()); ?>" class="button view"><?php esc_html_e('View', 'lmfwc');?></a>
+                    <?php if (Settings::get('lmfwc_allow_users_to_activate')): ?>
+                        <form method="post" style="display: inline-block; margin: 0;">
+                            <input type="hidden" name="license" value="<?php echo $license->getDecryptedLicenseKey();?>"/>
+                            <input type="hidden" name="action" value="activate">
+                            <?php wp_nonce_field('lmfwc_myaccount_activate_license'); ?>
+                            <button class="button" type="submit"><?php _e('Activate', 'lmfwc');?></button>
+                        </form>
+                    <?php endif; ?>
+
+                    <?php if (Settings::get('lmfwc_allow_users_to_deactivate')): ?>
+                        <form method="post" style="display: inline-block; margin: 0;">
+                            <input type="hidden" name="license" value="<?php echo $license->getDecryptedLicenseKey();?>"/>
+                            <input type="hidden" name="action" value="deactivate">
+                            <?php wp_nonce_field('lmfwc_myaccount_deactivate_license'); ?>
+                            <button class="button" type="submit"><?php _e('Deactivate', 'lmfwc');?></button>
+                        </form>
+                    <?php endif; ?>
+
+                    <a href="<?php echo esc_url($order->get_view_order_url()); ?>" class="button view"><?php _e('Order', 'lmfwc');?></a>
                 </td>
             </tr>
         <?php endforeach; ?>
